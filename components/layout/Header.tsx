@@ -176,10 +176,10 @@ export default function Header() {
             {!me ? (
               <div className="grid gap-3 sm:grid-cols-2">
                 <Button href="/login" variant="ghost" onClick={() => setMobileOpen(false)}>
-                  {t.login}
+                  {t.nav.login}
                 </Button>
                 <Button href="/register" onClick={() => setMobileOpen(false)}>
-                  {t.register}
+                  {t.nav.register}
                 </Button>
               </div>
             ) : null}
