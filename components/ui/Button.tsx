@@ -24,7 +24,7 @@ export default function Button({
 
   if (href) {
     return (
-      <Link href={href} className={cn(base, styles, className)}>
+      <Link href={href} className={cn(base, styles, className)} {...props}>
         {children}
       </Link>
     );

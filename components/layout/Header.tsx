@@ -54,8 +54,8 @@ export default function Header() {
     { href: "/listings/add", label: t.nav.addListing }
   ];
 
-  const authenticatedLinks: NavItem[] =
-    me?.role === "admin"
+  const authenticatedLinks: NavItem[] = me
+    ? me.role === "admin"
       ? [
           { href: "/admin", label: "Dashboard Admin" },
           { href: "/admin#statistics", label: "Statistics" },
@@ -64,7 +64,8 @@ export default function Header() {
       : [
           { href: "/dashboard", label: "My Dashboard" },
           { label: "Logout", onClick: logout }
-        ];
+        ]
+    : [];
 
   return (
     <header className="sticky top-0 z-50 border-b border-slate-900/5 bg-white/80 backdrop-blur-2xl">
@@ -146,27 +147,28 @@ export default function Header() {
                   {item.label}
                 </Link>
               ))}
-              {authenticatedLinks.map((item) =>
-                "href" in item ? (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className="rounded-2xl px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-white"
-                    onClick={() => setMobileOpen(false)}
-                  >
-                    {item.label}
-                  </Link>
-                ) : (
-                  <button
-                    key={item.label}
-                    type="button"
-                    onClick={item.onClick}
-                    className="rounded-2xl px-4 py-3 text-left text-sm font-semibold text-slate-700 hover:bg-white"
-                  >
-                    {item.label}
-                  </button>
-                )
-              )}
+              {me &&
+                authenticatedLinks.map((item) =>
+                  "href" in item ? (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      className="rounded-2xl px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-white"
+                      onClick={() => setMobileOpen(false)}
+                    >
+                      {item.label}
+                    </Link>
+                  ) : (
+                    <button
+                      key={item.label}
+                      type="button"
+                      onClick={item.onClick}
+                      className="rounded-2xl px-4 py-3 text-left text-sm font-semibold text-slate-700 hover:bg-white"
+                    >
+                      {item.label}
+                    </button>
+                  )
+                )}
             </div>
 
             <div className="flex justify-center">
