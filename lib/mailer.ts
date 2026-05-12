@@ -15,10 +15,10 @@ export async function sendMail({
   subject,
   html
 }: {
-  to: string;
+  to: string | string[];
   subject: string;
   html: string;
 }) {
-  const from = process.env.SMTP_FROM || "no-reply@example.com";
+  const from = process.env.SMTP_FROM || process.env.SMTP_USER || "no-reply@example.com";
   return mailer.sendMail({ from, to, subject, html });
 }

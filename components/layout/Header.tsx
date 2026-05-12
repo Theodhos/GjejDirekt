@@ -2,31 +2,69 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { Compass, Globe2, Menu, Search, X } from "lucide-react";
+import { Compass, Menu, X } from "lucide-react";
 import Button from "@/components/ui/Button";
+import { useLanguage } from "@/context/LanguageContext";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 type Me = { name: string; role: "user" | "admin" } | null;
+type NavItem =
+  | { href: string; label: string }
+  | { label: string; onClick: () => void };
 
 export default function Header() {
   const [me, setMe] = useState<Me>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { language, setLanguage, t } = useLanguage();
 
   useEffect(() => {
-    fetch("/api/auth/me")
-      .then((res) => res.json())
-      .then((data) => setMe(data.user ?? null))
-      .catch(() => setMe(null));
+    const loadMe = () => {
+      fetch("/api/auth/me", { cache: "no-store" })
+        .then((res) => res.json())
+        .then((data) => setMe(data.user ?? null))
+        .catch(() => setMe(null));
+    };
+
+    loadMe();
+
+    const handleAuthChange = () => {
+      loadMe();
+    };
+
+    window.addEventListener("auth-changed", handleAuthChange);
+    return () => window.removeEventListener("auth-changed", handleAuthChange);
   }, []);
 
   async function logout() {
     await fetch("/api/auth/logout", { method: "POST" });
     setMe(null);
     setMobileOpen(false);
+    window.dispatchEvent(new Event("auth-changed"));
     window.location.href = "/";
   }
 
   const navLinkClass =
     "text-sm font-semibold text-slate-700 transition hover:text-brand-700";
+  const buttonLinkClass = navLinkClass;
+
+  const publicLinks = [
+    { href: "/", label: t.nav.home },
+    { href: "/services", label: t.nav.services },
+    { href: "/blog", label: t.nav.blog },
+    { href: "/listings/add", label: t.nav.addListing }
+  ];
+
+  const authenticatedLinks: NavItem[] =
+    me?.role === "admin"
+      ? [
+          { href: "/admin", label: "Dashboard Admin" },
+          { href: "/admin#statistics", label: "Statistics" },
+          { label: "Logout", onClick: logout }
+        ]
+      : [
+          { href: "/dashboard", label: "My Dashboard" },
+          { label: "Logout", onClick: logout }
+        ];
 
   return (
     <header className="sticky top-0 z-50 border-b border-slate-900/5 bg-white/80 backdrop-blur-2xl">
@@ -36,73 +74,52 @@ export default function Header() {
             <Compass className="h-5 w-5" />
           </span>
           <span className="leading-tight">
-            <span className="block text-lg font-black tracking-tight text-slate-950">Tourism Platform</span>
+            <span className="block text-lg font-black tracking-tight text-slate-950">Gjej Direkt</span>
             <span className="block text-xs font-semibold uppercase tracking-[0.24em] text-brand-600">Discover more</span>
           </span>
         </Link>
 
-        <nav className="hidden items-center gap-6 lg:flex">
-          <Link href="/" className={navLinkClass}>
-            Home
-          </Link>
-          <Link href="/services" className={navLinkClass}>
-            Services
-          </Link>
-          <Link href="/blog" className={navLinkClass}>
-            Blog
-          </Link>
-          {me ? (
-            <>
-              <Link href="/dashboard" className={navLinkClass}>
-                Dashboard {me.name}
+        <div className="hidden items-center gap-4 lg:flex">
+          <nav className="flex items-center gap-4">
+            {publicLinks.map((item) => (
+              <Link key={item.href} href={item.href} className={navLinkClass}>
+                {item.label}
               </Link>
-              <button type="button" onClick={logout} className={navLinkClass}>
-                Logout
-              </button>
-            </>
-          ) : null}
-          <Link href="/listings/add" className={navLinkClass}>
-            Add Listing
-          </Link>
-          {me?.role === "admin" ? (
-            <Link href="/admin" className={navLinkClass}>
-              Admin
-            </Link>
-          ) : null}
-        </nav>
+            ))}
+          </nav>
 
-        <div className="flex items-center gap-2">
-          <Link
-            href="/services"
-            className="hidden items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm lg:inline-flex"
-          >
-            <Search className="h-4 w-4" />
-            Search
-          </Link>
-          <button className="hidden rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 lg:inline-flex">
-            <Globe2 className="mr-2 h-4 w-4" />
-            USD
-          </button>
+          <LanguageSwitcher />
+
+          <div className="flex items-center gap-3">
+            {me ? (
+              <>
+                {authenticatedLinks.map((item) =>
+                  "href" in item ? (
+                    <Link key={item.href} href={item.href} className={navLinkClass}>
+                      {item.label}
+                    </Link>
+                  ) : (
+                    <button key={item.label} type="button" onClick={item.onClick} className={buttonLinkClass}>
+                      {item.label}
+                    </button>
+                  )
+                )}
+              </>
+            ) : (
+              <>
+                <Button href="/login" variant="ghost">
+                  {t.nav.login}
+                </Button>
+                <Button href="/register">{t.nav.register}</Button>
+              </>
+            )}
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2 lg:hidden">
           {me ? (
-            <>
-              <span className="hidden text-sm text-slate-600 md:inline">Hi, {me.name}</span>
-              <Button href="/dashboard" className="hidden sm:inline-flex">
-                Dashboard
-              </Button>
-              <Button variant="ghost" onClick={logout} className="hidden sm:inline-flex">
-                Logout
-              </Button>
-            </>
-          ) : (
-            <>
-              <Button href="/login" variant="ghost" className="hidden sm:inline-flex">
-                Login
-              </Button>
-              <Button href="/register" className="hidden sm:inline-flex">
-                Register
-              </Button>
-            </>
-          )}
+            <span className="hidden text-sm text-slate-600 md:inline">Hi, {me.name}</span>
+          ) : null}
           <button
             type="button"
             onClick={() => setMobileOpen((value) => !value)}
@@ -119,65 +136,59 @@ export default function Header() {
         <div className="border-t border-slate-200 bg-white lg:hidden">
           <div className="page-shell space-y-4 py-4">
             <div className="grid gap-2 rounded-[1.5rem] border border-slate-200 bg-slate-50 p-3">
-              <Link href="/" className="rounded-2xl px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-white" onClick={() => setMobileOpen(false)}>
-                Home
-              </Link>
-              <Link href="/services" className="rounded-2xl px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-white" onClick={() => setMobileOpen(false)}>
-                Services
-              </Link>
-              <Link href="/blog" className="rounded-2xl px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-white" onClick={() => setMobileOpen(false)}>
-                Blog
-              </Link>
-              <Link href="/listings/add" className="rounded-2xl px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-white" onClick={() => setMobileOpen(false)}>
-                Add Listing
-              </Link>
-              {me ? (
-                <>
-                  <Link href="/dashboard" className="rounded-2xl px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-white" onClick={() => setMobileOpen(false)}>
-                    Dashboard {me.name}
-                  </Link>
-                  <button type="button" onClick={logout} className="rounded-2xl px-4 py-3 text-left text-sm font-semibold text-slate-700 hover:bg-white">
-                    Logout
-                  </button>
-                </>
-              ) : null}
-              {me?.role === "admin" ? (
-                <Link href="/admin" className="rounded-2xl px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-white" onClick={() => setMobileOpen(false)}>
-                  Admin
+              {publicLinks.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className="rounded-2xl px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-white"
+                  onClick={() => setMobileOpen(false)}
+                >
+                  {item.label}
                 </Link>
-              ) : null}
+              ))}
+              {authenticatedLinks.map((item) =>
+                "href" in item ? (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className="rounded-2xl px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-white"
+                    onClick={() => setMobileOpen(false)}
+                  >
+                    {item.label}
+                  </Link>
+                ) : (
+                  <button
+                    key={item.label}
+                    type="button"
+                    onClick={item.onClick}
+                    className="rounded-2xl px-4 py-3 text-left text-sm font-semibold text-slate-700 hover:bg-white"
+                  >
+                    {item.label}
+                  </button>
+                )
+              )}
             </div>
 
-            <div className="grid gap-3 sm:grid-cols-2">
-              <Link href="/services" className="chip justify-center" onClick={() => setMobileOpen(false)}>
-                <Search className="h-4 w-4 text-brand-600" />
-                Search
-              </Link>
-              <button className="chip justify-center">
-                <Globe2 className="h-4 w-4 text-brand-600" />
-                USD
-              </button>
+            <div className="flex justify-center">
+              <LanguageSwitcher />
             </div>
 
-            {me ? (
-              <div className="grid gap-3 sm:grid-cols-2">
-                <Button href="/dashboard" onClick={() => setMobileOpen(false)}>
-                  Dashboard
-                </Button>
-                <Button variant="ghost" onClick={logout}>
-                  Logout
-                </Button>
-              </div>
-            ) : (
+            {!me ? (
               <div className="grid gap-3 sm:grid-cols-2">
                 <Button href="/login" variant="ghost" onClick={() => setMobileOpen(false)}>
-                  Login
+                  {t.login}
                 </Button>
                 <Button href="/register" onClick={() => setMobileOpen(false)}>
-                  Register
+                  {t.register}
                 </Button>
               </div>
-            )}
+            ) : null}
+
+            {me ? (
+              <p className="text-sm font-semibold text-slate-600">
+                Hi, {me.name}
+              </p>
+            ) : null}
           </div>
         </div>
       ) : null}

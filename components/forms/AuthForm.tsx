@@ -31,13 +31,19 @@ export default function AuthForm({ mode = "login" }: { mode?: "login" | "registe
     }
 
     toast.success(mode === "login" ? "Welcome back!" : "Account created!");
+    window.dispatchEvent(new Event("auth-changed"));
     router.push(data.user?.role === "admin" ? "/admin" : "/dashboard");
     router.refresh();
   }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      {mode === "register" ? <Input name="name" label="Name" placeholder="Your name" required /> : null}
+      {mode === "register" ? (
+        <>
+          <Input name="name" label="Name" placeholder="Your name" required />
+          <Input name="phone" type="tel" label="Phone Number" placeholder="+1 234 567 890" required />
+        </>
+      ) : null}
       <Input name="email" type="email" label="Email" placeholder="email@example.com" required />
       <Input name="password" type="password" label="Password" placeholder="••••••••" required />
       <Button type="submit" className="w-full" disabled={loading}>

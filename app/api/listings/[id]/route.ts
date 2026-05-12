@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
 import { getAuthUser } from "@/lib/auth";
+import { sendMail } from "@/lib/mailer";
 import Listing from "@/models/Listing";
 
 function parseList(value: unknown) {
@@ -25,6 +26,15 @@ function parseMaybeNumber(value: unknown) {
 function parseMaybeString(value: unknown) {
   if (typeof value !== "string") return "";
   return value.trim();
+}
+
+function parseCoordinates(body: Record<string, unknown>) {
+  const latValue = body.coordinatesLat ?? body["coordinates.lat"] ?? body.lat;
+  const lngValue = body.coordinatesLng ?? body["coordinates.lng"] ?? body.lng;
+  const lat = parseMaybeNumber(latValue);
+  const lng = parseMaybeNumber(lngValue);
+  if (lat === undefined || lng === undefined) return undefined;
+  return { lat, lng };
 }
 
 export async function GET(_: Request, { params }: { params: { id: string } }) {
@@ -58,6 +68,7 @@ export async function PATCH(request: Request, { params }: { params: { id: string
     }
 
     const body = await request.json();
+    const wasPending = listing.status === "pending";
 
     listing.title = parseMaybeString(body.title) || listing.title;
     listing.description = parseMaybeString(body.description) || listing.description;
@@ -73,6 +84,10 @@ export async function PATCH(request: Request, { params }: { params: { id: string
     listing.amenities = parseList(body.amenities);
     listing.tags = parseList(body.tags);
     listing.highlights = parseList(body.highlights);
+    const coordinates = parseCoordinates(body as Record<string, unknown>);
+    if (coordinates) {
+      listing.coordinates = coordinates;
+    }
     listing.contactInfo = {
       phone: parseMaybeString(body.contactPhone) || "",
       email: parseMaybeString(body.contactEmail) || "",
@@ -96,6 +111,25 @@ export async function PATCH(request: Request, { params }: { params: { id: string
     }
 
     await listing.save();
+
+    if (listing.status === "pending" && !wasPending) {
+      const recipients = [process.env.ADMIN_EMAIL, process.env.LISTING_PENDING_NOTIFY_EMAIL].filter(
+        (item): item is string => Boolean(item && item.trim())
+      );
+      if (recipients.length) {
+        await sendMail({
+          to: recipients,
+          subject: "Listing sent back to pending review",
+          html: `
+            <p>The listing <strong>${listing.title}</strong> is now pending review again.</p>
+            <p><strong>City:</strong> ${listing.location}</p>
+            <p><strong>Category:</strong> ${listing.category}</p>
+            <p><strong>Subcategory:</strong> ${listing.subcategory}</p>
+          `
+        }).catch(() => undefined);
+      }
+    }
+
     return NextResponse.json({ listing });
   } catch (error) {
     return NextResponse.json({ error: error instanceof Error ? error.message : "Update failed" }, { status: 500 });

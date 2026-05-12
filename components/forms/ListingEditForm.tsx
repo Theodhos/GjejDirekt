@@ -9,6 +9,7 @@ import Input from "@/components/ui/Input";
 import Textarea from "@/components/ui/Textarea";
 import Select from "@/components/ui/Select";
 import Button from "@/components/ui/Button";
+import LocationPicker from "@/components/forms/LocationPicker";
 
 type ListingData = {
   _id: string;
@@ -22,6 +23,10 @@ type ListingData = {
   address?: string;
   price?: number;
   priceFrom?: number;
+  coordinates?: {
+    lat?: number;
+    lng?: number;
+  };
   amenities?: string[];
   tags?: string[];
   highlights?: string[];
@@ -109,11 +114,16 @@ export default function ListingEditForm({ listing }: { listing: ListingData }) {
     <form onSubmit={submit} className="space-y-5">
       <div className="grid gap-4 md:grid-cols-2">
         <Input name="title" label="Title" defaultValue={listing.title} required />
-        <Input name="location" label="Location" defaultValue={listing.location} required />
-      </div>
-      <div className="grid gap-4 md:grid-cols-2">
         <Input name="country" label="Country" defaultValue={listing.country || ""} />
+      </div>
+      <LocationPicker
+        defaultValue={listing.location}
+        defaultCoordinates={listing.coordinates}
+        required
+      />
+      <div className="grid gap-4 md:grid-cols-2">
         <Input name="currency" label="Currency" defaultValue={listing.currency || "USD"} />
+        <Input name="address" label="Street address" defaultValue={listing.address || ""} />
       </div>
       <Textarea name="description" label="Description" defaultValue={listing.description} required />
       <div className="grid gap-4 md:grid-cols-2">
@@ -136,25 +146,22 @@ export default function ListingEditForm({ listing }: { listing: ListingData }) {
         />
       </div>
       <div className="grid gap-4 md:grid-cols-2">
-        <Input name="address" label="Address" defaultValue={listing.address || ""} />
         <Input name="price" label="Price" type="number" defaultValue={listing.price || ""} />
+        <Input name="priceFrom" label="Price From" type="number" defaultValue={listing.priceFrom || ""} />
       </div>
       <div className="grid gap-4 md:grid-cols-3">
-        <Input name="priceFrom" label="Price From" type="number" defaultValue={listing.priceFrom || ""} />
         <Input name="amenities" label="Amenities" defaultValue={(listing.amenities || []).join(", ")} />
         <Input name="tags" label="Tags" defaultValue={(listing.tags || []).join(", ")} />
+        <Input name="contactPhone" label="Phone" defaultValue={listing.contactInfo?.phone || ""} />
       </div>
       <Textarea name="highlights" label="Highlights" defaultValue={(listing.highlights || []).join(", ")} />
       <div className="grid gap-4 md:grid-cols-3">
-        <Input name="contactPhone" label="Phone" defaultValue={listing.contactInfo?.phone || ""} />
         <Input name="contactEmail" label="Email" type="email" defaultValue={listing.contactInfo?.email || ""} />
         <Input name="website" label="Website" defaultValue={listing.contactInfo?.website || ""} />
-      </div>
-      <div className="grid gap-4 md:grid-cols-2">
         <Input name="instagram" label="Instagram" defaultValue={listing.socialLinks?.instagram || ""} />
-        <Input name="facebook" label="Facebook" defaultValue={listing.socialLinks?.facebook || ""} />
       </div>
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="grid gap-4 md:grid-cols-3">
+        <Input name="facebook" label="Facebook" defaultValue={listing.socialLinks?.facebook || ""} />
         <Input name="tiktok" label="TikTok" defaultValue={listing.socialLinks?.tiktok || ""} />
         <Input name="x" label="X / Twitter" defaultValue={listing.socialLinks?.x || ""} />
       </div>

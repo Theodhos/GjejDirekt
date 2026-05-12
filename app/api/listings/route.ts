@@ -21,6 +21,19 @@ function parseList(value: unknown) {
   return [];
 }
 
+function parseMaybeNumber(value: unknown) {
+  if (value === null || value === undefined || value === "") return undefined;
+  const numberValue = Number(value);
+  return Number.isFinite(numberValue) ? numberValue : undefined;
+}
+
+function parseCoordinates(body: Record<string, unknown>) {
+  const lat = parseMaybeNumber(body.coordinatesLat ?? body["coordinates.lat"] ?? body.lat);
+  const lng = parseMaybeNumber(body.coordinatesLng ?? body["coordinates.lng"] ?? body.lng);
+  if (lat === undefined || lng === undefined) return undefined;
+  return { lat, lng };
+}
+
 function buildQuery(url: URL) {
   const search = url.searchParams.get("q")?.trim();
   const category = url.searchParams.get("category")?.trim();
@@ -104,6 +117,7 @@ export async function POST(request: Request) {
       amenities: parseList(body.amenities),
       tags: parseList(body.tags),
       highlights: parseList(body.highlights),
+      coordinates: parseCoordinates(body as Record<string, unknown>),
       contactInfo: {
         phone: body.contactPhone || "",
         email: body.contactEmail || "",
@@ -129,12 +143,19 @@ export async function POST(request: Request) {
       meta: { category: listing.category, subcategory: listing.subcategory, location: listing.location }
     });
 
-    const adminEmail = process.env.ADMIN_EMAIL;
-    if (adminEmail) {
+    const pendingRecipients = [process.env.ADMIN_EMAIL, process.env.LISTING_PENDING_NOTIFY_EMAIL].filter(
+      (item): item is string => Boolean(item && item.trim())
+    );
+    if (pendingRecipients.length) {
       await sendMail({
-        to: adminEmail,
+        to: pendingRecipients,
         subject: "New listing awaiting approval",
-        html: `<p>A new listing titled <strong>${listing.title}</strong> was submitted and is waiting for moderation.</p>`
+        html: `
+          <p>A new listing titled <strong>${listing.title}</strong> was submitted and is waiting for moderation.</p>
+          <p><strong>City:</strong> ${listing.location}</p>
+          <p><strong>Category:</strong> ${listing.category}</p>
+          <p><strong>Subcategory:</strong> ${listing.subcategory}</p>
+        `
       }).catch(() => undefined);
     }
 

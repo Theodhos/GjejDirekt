@@ -8,6 +8,7 @@ import Input from "@/components/ui/Input";
 import Textarea from "@/components/ui/Textarea";
 import Select from "@/components/ui/Select";
 import Button from "@/components/ui/Button";
+import LocationPicker from "@/components/forms/LocationPicker";
 
 async function uploadImage(file: File) {
   const formData = new FormData();
@@ -23,8 +24,14 @@ async function uploadImage(file: File) {
   return data.url as string;
 }
 
+import { useLanguage } from "@/context/LanguageContext";
+import { translations } from "@/lib/dictionary";
+
 export default function ListingForm() {
+  const { language } = useLanguage();
+  const t = translations[language];
   const [loading, setLoading] = useState(false);
+
   const router = useRouter();
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedSubcategory, setSelectedSubcategory] = useState("");
@@ -78,19 +85,20 @@ export default function ListingForm() {
   return (
     <form onSubmit={submit} className="space-y-5">
       <div className="grid gap-4 md:grid-cols-2">
-        <Input name="title" label="Title" placeholder="Mountain Escape Villa" required />
-        <Input name="location" label="Location" placeholder="Zanzibar, Tanzania" required />
+        <Input name="title" label={language === 'en' ? 'Title' : 'Titulli'} placeholder="Mountain Escape Villa" required />
+        <Input name="country" label={language === 'en' ? 'Country' : 'Shteti'} placeholder="Albania" />
       </div>
+      <LocationPicker defaultValue="" required />
       <div className="grid gap-4 md:grid-cols-2">
-        <Input name="country" label="Country" placeholder="Tanzania" />
-        <Input name="currency" label="Currency" placeholder="USD" defaultValue="USD" />
+        <Input name="currency" label={language === 'en' ? 'Currency' : 'Valuta'} placeholder="EUR" defaultValue="EUR" />
+        <Input name="address" label={language === 'en' ? 'Street address' : 'Adresa e rrugës'} placeholder="Street, city, country" />
       </div>
-      <Textarea name="description" label="Description" placeholder="Describe the experience..." required />
+      <Textarea name="description" label={language === 'en' ? 'Description' : 'Përshkrimi'} placeholder={language === 'en' ? 'Describe the experience...' : 'Përshkruani përvojën...'} required />
       <div className="grid gap-4 md:grid-cols-2">
         <Select
           name="category"
-          label="Category"
-          options={[{ label: "Select a category", value: "" }, ...categories.map((item) => ({ label: item.label, value: item.value }))]}
+          label={t.common.category}
+          options={[{ label: language === 'en' ? 'Select a category' : 'Zgjidhni një kategori', value: "" }, ...categories.map((item) => ({ label: item.label, value: item.value }))]}
           value={selectedCategory}
           onChange={(event) => {
             setSelectedCategory(event.target.value);
@@ -100,9 +108,9 @@ export default function ListingForm() {
         />
         <Select
           name="subcategory"
-          label="Subcategory"
+          label={t.common.subcategory}
           options={[
-            { label: "Select a subcategory", value: "" },
+            { label: language === 'en' ? 'Select a subcategory' : 'Zgjidhni një nënkategori', value: "" },
             ...subcategories.map((item) => ({ label: item.label, value: item.value }))
           ]}
           value={selectedSubcategory}
@@ -111,30 +119,27 @@ export default function ListingForm() {
         />
       </div>
       <div className="grid gap-4 md:grid-cols-2">
-        <Input name="address" label="Address" placeholder="Street, city, country" />
-        <Input name="price" label="Price" type="number" placeholder="100" />
+        <Input name="price" label={t.common.price} type="number" placeholder="100" />
+        <Input name="priceFrom" label={language === 'en' ? 'Price From' : 'Çmimi prej'} type="number" placeholder="80" />
       </div>
       <div className="grid gap-4 md:grid-cols-3">
-        <Input name="priceFrom" label="Price From" type="number" placeholder="80" />
-        <Input name="amenities" label="Amenities" placeholder="Wifi, Breakfast, Pool" />
+        <Input name="amenities" label={language === 'en' ? 'Amenities' : 'Komoditete'} placeholder="Wifi, Breakfast, Pool" />
         <Input name="tags" label="Tags" placeholder="Luxury, Family, Beach" />
+        <Input name="contactPhone" label={language === 'en' ? 'Phone' : 'Telefon'} placeholder="+355 6X XXX XXXX" />
       </div>
-      <Textarea name="highlights" label="Highlights" placeholder="Sunset view, private chef, guided tours" />
+      <Textarea name="highlights" label={language === 'en' ? 'Highlights' : 'Pikat kryesore'} placeholder="Sunset view, private chef, guided tours" />
       <div className="grid gap-4 md:grid-cols-3">
-        <Input name="contactPhone" label="Phone" placeholder="+1 555 123 4567" />
         <Input name="contactEmail" label="Email" type="email" placeholder="contact@business.com" />
         <Input name="website" label="Website" placeholder="https://example.com" />
-      </div>
-      <div className="grid gap-4 md:grid-cols-2">
         <Input name="instagram" label="Instagram" placeholder="https://instagram.com/..." />
-        <Input name="facebook" label="Facebook" placeholder="https://facebook.com/..." />
       </div>
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="grid gap-4 md:grid-cols-3">
+        <Input name="facebook" label="Facebook" placeholder="https://facebook.com/..." />
         <Input name="tiktok" label="TikTok" placeholder="https://tiktok.com/@..." />
         <Input name="x" label="X / Twitter" placeholder="https://x.com/..." />
       </div>
       <label className="block space-y-1">
-        <span className="text-sm font-medium text-slate-700">Images</span>
+        <span className="text-sm font-medium text-slate-700">{language === 'en' ? 'Images' : 'Foto'}</span>
         <input
           name="images"
           type="file"
@@ -144,8 +149,9 @@ export default function ListingForm() {
         />
       </label>
       <Button type="submit" disabled={loading}>
-        {loading ? "Submitting..." : "Submit listing"}
+        {loading ? (language === 'en' ? 'Submitting...' : 'Duke u dorëzuar...') : (language === 'en' ? 'Submit listing' : 'Dorëzo listimin')}
       </Button>
     </form>
+
   );
 }

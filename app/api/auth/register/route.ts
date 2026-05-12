@@ -10,10 +10,11 @@ export async function POST(request: Request) {
     const body = await request.json();
     const name = String(body.name || "").trim();
     const email = String(body.email || "").toLowerCase().trim();
+    const phone = String(body.phone || "").trim();
     const password = String(body.password || "");
 
-    if (!name || !email || password.length < 6) {
-      return NextResponse.json({ error: "Name, email, and a 6+ character password are required." }, { status: 400 });
+    if (!name || !email || !phone || password.length < 6) {
+      return NextResponse.json({ error: "Name, phone, email, and a 6+ character password are required." }, { status: 400 });
     }
 
     await connectDB();
@@ -24,7 +25,7 @@ export async function POST(request: Request) {
     }
 
     const hash = await bcrypt.hash(password, 12);
-    const user = await User.create({ name, email, password: hash });
+    const user = await User.create({ name, email, phone, password: hash });
     const token = signToken({ id: user._id.toString(), name: user.name, email: user.email, role: user.role });
     const response = NextResponse.json({
       user: { id: user._id, name: user.name, email: user.email, role: user.role }

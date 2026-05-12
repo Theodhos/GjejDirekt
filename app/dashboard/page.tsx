@@ -112,31 +112,6 @@ export default async function DashboardPage() {
         </div>
 
         <div className="space-y-6">
-          <div className="surface p-6">
-            <div className="flex items-center gap-2">
-              <Heart className="h-5 w-5 text-brand-600" />
-              <div>
-                <p className="eyebrow">Favorites</p>
-                <h2 className="text-2xl font-black text-slate-950">Saved listings</h2>
-              </div>
-            </div>
-            <p className="mt-3 text-sm text-slate-600">Your saved experiences and places you want to revisit.</p>
-            <div className="mt-4 grid gap-4">
-              {favorites.length ? (
-                favorites.map((listing: any) => (
-                  <div key={listing._id.toString()} className="rounded-[1.4rem] border border-slate-200 bg-slate-50 p-4">
-                    <p className="font-semibold text-slate-950">{listing.title}</p>
-                    <p className="mt-1 text-sm text-slate-500">
-                      {listing.location}
-                      {listing.country ? `, ${listing.country}` : ""}
-                    </p>
-                  </div>
-                ))
-              ) : (
-                <p className="text-sm text-slate-500">No favorites saved yet.</p>
-              )}
-            </div>
-          </div>
 
           <div className="surface p-6">
             <div className="flex items-center gap-2">
@@ -163,46 +138,45 @@ export default async function DashboardPage() {
             </div>
           </div>
 
-          <div className="surface p-6">
-            <div className="flex items-center gap-2">
-              <Clock3 className="h-5 w-5 text-brand-600" />
+          <div className="surface p-8 border-none shadow-[0_20px_50px_rgba(34,197,94,0.15)] overflow-hidden relative bg-white border border-slate-100 group hover:border-brand-500 transition-all duration-500">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-brand-500/5 rounded-full -mr-16 -mt-16 blur-3xl group-hover:bg-brand-500/10 transition" />
+            <div className="flex items-center gap-4 mb-8 relative z-10">
+              <div className="w-12 h-12 rounded-2xl bg-brand-500 flex items-center justify-center text-white shadow-lg shadow-brand-500/20">
+                <Clock3 className="h-6 w-6" />
+              </div>
               <div>
-                <p className="eyebrow">Recent activity</p>
-                <h2 className="text-2xl font-black text-slate-950">What you did lately</h2>
+                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-600">Active Session</p>
+                <h2 className="text-2xl font-black text-slate-950">Last activity</h2>
               </div>
             </div>
-            <div className="mt-4 space-y-3">
+            
+            <div className="relative z-10 p-6 rounded-3xl bg-slate-50 border border-slate-100 group-hover:bg-white group-hover:shadow-xl transition-all duration-500">
               {activities.length ? (
-                activities.map((activity: any) => (
-                  <div key={activity._id.toString()} className="rounded-[1.4rem] border border-slate-200 bg-slate-50 p-4">
-                    <p className="text-sm font-semibold text-slate-950">{activity.title}</p>
-                    <p className="mt-1 text-sm text-slate-600">{activity.description}</p>
-                    <p className="mt-2 text-xs uppercase tracking-[0.16em] text-slate-400">
-                      {new Date(activity.createdAt).toLocaleString()}
-                    </p>
+                <div className="flex items-start gap-4">
+                  <div className="flex-grow">
+                    <p className="text-xl font-black leading-tight text-slate-950 mb-2">{activities[0].title}</p>
+                    <p className="text-slate-500 text-base font-medium mb-6 leading-relaxed">{activities[0].description}</p>
+                    <div className="flex items-center justify-between gap-4 pt-4 border-t border-slate-200/60">
+                        <div className="flex items-center gap-2">
+                            <span className="w-2.5 h-2.5 rounded-full bg-brand-500 animate-pulse" />
+                            <p className="text-xs font-bold text-slate-950">
+                                {new Date(activities[0].createdAt).toLocaleDateString()}
+                            </p>
+                        </div>
+                        <p className="text-xs font-black uppercase tracking-widest text-brand-600">
+                          {new Date(activities[0].createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        </p>
+                    </div>
                   </div>
-                ))
+                </div>
               ) : (
-                <p className="text-sm text-slate-500">No activity yet.</p>
+                <p className="text-sm text-slate-500 font-medium italic text-center py-4">No recent activity detected.</p>
               )}
             </div>
           </div>
         </div>
       </div>
 
-      <div className="mt-12">
-        <div className="mb-4">
-          <p className="eyebrow">Saved cards</p>
-          <h2 className="text-2xl font-black text-slate-950">Favorite listings in card view</h2>
-        </div>
-        <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-          {favorites.length ? (
-            favorites.map((listing: any) => <ListingCard key={listing._id.toString()} listing={listing} />)
-          ) : (
-            <div className="surface p-8 text-sm text-slate-500 md:col-span-2 xl:col-span-3">No favorites saved yet.</div>
-          )}
-        </div>
-      </div>
     </section>
   );
 }

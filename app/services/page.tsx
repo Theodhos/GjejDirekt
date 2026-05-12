@@ -1,250 +1,184 @@
-import Image from "next/image";
+"use client";
+
 import Link from "next/link";
-import { ArrowRight, Sparkles } from "lucide-react";
+import { Sparkles, MapPin, Search, Filter, ArrowRight, ChevronDown, ChevronLeft, ChevronRight, Star } from "lucide-react";
 import SearchFilters from "@/components/SearchFilters";
 import ListingCard from "@/components/ListingCard";
-import { categories, getCategoryLabel, getCategorySearchValues, getSubcategorySearchValues } from "@/lib/constants";
-import { connectDB } from "@/lib/db";
-import Listing from "@/models/Listing";
+import { useLanguage } from "@/context/LanguageContext";
+import { translations } from "@/lib/dictionary";
+import { useEffect, useState, useRef } from "react";
+import { useSearchParams } from "next/navigation";
+import Image from "next/image";
 
-export const dynamic = "force-dynamic";
+export default function ServicesPage() {
+  const { language } = useLanguage();
+  const t = translations[language];
+  const searchParams = useSearchParams();
 
-function categoryValueFromSearch(value: string | string[] | undefined) {
-  return typeof value === "string" ? value : "";
-}
+  const [listings, setListings] = useState<any[]>([]);
+  const [featuredListings, setFeaturedListings] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [visibleCount, setVisibleCount] = useState(12);
 
-export default async function ServicesPage({
-  searchParams
-}: {
-  searchParams: Record<string, string | string[] | undefined>;
-}) {
-  await connectDB();
+  const railRef = useRef<HTMLDivElement>(null);
 
-  const query: Record<string, unknown> = { status: "approved" };
-  const activeCategory = categoryValueFromSearch(searchParams.category);
-  const activeSubcategory = categoryValueFromSearch(searchParams.subcategory);
-
-  if (activeCategory) {
-    query.category = { $in: getCategorySearchValues(activeCategory) };
-  }
-  if (activeSubcategory) {
-    query.subcategory = {
-      $in: getSubcategorySearchValues(activeCategory || undefined, activeSubcategory)
+  useEffect(() => {
+    const fetchData = async () => {
+        setLoading(true);
+        try {
+            const query = new URLSearchParams(searchParams?.toString());
+            const res = await fetch(`/api/listings?${query.toString()}`);
+            const data = await res.json();
+            setListings(data.listings || []);
+            setFeaturedListings((data.listings || []).filter((l: any) => l.featured).slice(0, 8));
+            setVisibleCount(12); // Reset visible count on filter change
+        } catch (error) {
+            console.error("Error loading services:", error);
+        } finally {
+            setLoading(false);
+        }
     };
-  }
-  if (typeof searchParams.location === "string" && searchParams.location) {
-    query.location = { $regex: searchParams.location, $options: "i" };
-  }
-  if (typeof searchParams.country === "string" && searchParams.country) {
-    query.country = { $regex: searchParams.country, $options: "i" };
-  }
-  if (typeof searchParams.q === "string" && searchParams.q) {
-    query.$text = { $search: searchParams.q };
-  }
-  if (searchParams.featured === "true") {
-    query.featured = true;
-  }
+    fetchData();
+  }, [searchParams]);
 
-  const minPrice =
-    typeof searchParams.minPrice === "string" && searchParams.minPrice.trim() ? Number(searchParams.minPrice) : undefined;
-  const maxPrice =
-    typeof searchParams.maxPrice === "string" && searchParams.maxPrice.trim() ? Number(searchParams.maxPrice) : undefined;
-  if (minPrice !== undefined || maxPrice !== undefined) {
-    query.price = {};
-    if (minPrice !== undefined) (query.price as Record<string, number>).$gte = minPrice;
-    if (maxPrice !== undefined) (query.price as Record<string, number>).$lte = maxPrice;
+  const loadMore = () => {
+    setVisibleCount(prev => prev + 12);
+  };
+
+  const scrollRail = (dir: 'left' | 'right') => {
+    if (!railRef.current) return;
+    const scrollAmount = 400;
+    railRef.current.scrollBy({ left: dir === 'left' ? -scrollAmount : scrollAmount, behavior: 'smooth' });
   }
-
-  const minRating =
-    typeof searchParams.minRating === "string" && searchParams.minRating.trim() ? Number(searchParams.minRating) : undefined;
-  if (minRating !== undefined) {
-    query.ratingAverage = { $gte: minRating };
-  }
-
-  const sort: Record<string, 1 | -1> =
-    searchParams.sort === "popular"
-      ? { views: -1, createdAt: -1 }
-      : searchParams.sort === "rating"
-        ? { ratingAverage: -1, reviewCount: -1, createdAt: -1 }
-        : { createdAt: -1 };
-
-  const listings = await Listing.find(query).sort(sort).lean<any>();
 
   return (
-    <section className="page-shell py-8 sm:py-10">
-      <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
-        <div className="surface overflow-hidden">
-          <div className="grid min-h-[520px] gap-0 lg:grid-cols-[0.95fr_1.05fr]">
-            <div className="relative min-h-[280px] sm:min-h-[320px] lg:min-h-0">
-              <Image
-                src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1400&q=80"
-                alt="Marketplace"
-                fill
-                className="object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/25 to-transparent lg:bg-gradient-to-r lg:from-slate-950/80 lg:via-slate-950/35 lg:to-transparent" />
-              <div className="absolute inset-x-0 bottom-0 p-6 text-white sm:p-8 lg:left-0 lg:right-auto lg:top-0 lg:flex lg:h-full lg:w-full lg:flex-col lg:justify-end lg:p-8">
-                <div className="flex flex-wrap gap-2">
-                  <span className="rounded-full bg-white/15 px-3 py-1 text-xs font-semibold uppercase tracking-[0.22em] backdrop-blur">
-                    Marketplace
-                  </span>
-                  <span className="rounded-full bg-white/15 px-3 py-1 text-xs font-semibold uppercase tracking-[0.22em] backdrop-blur">
-                    Verified
-                  </span>
-                </div>
-                <h1 className="display-font mt-4 max-w-xl text-3xl font-black tracking-tight sm:text-4xl lg:text-5xl">
-                  Verified services, things to do, and places to stay
-                </h1>
-                <p className="mt-4 max-w-xl text-sm leading-7 text-brand-50 sm:text-base">
-                  Each listing is reviewed before it goes live. Travelers can discover experiences, compare options, and filter by what matters most.
-                </p>
-                <div className="mt-5 flex flex-wrap gap-2">
-                  <span className="rounded-full bg-white/15 px-3 py-2 text-xs font-semibold uppercase tracking-[0.18em]">
-                    Trusted by travelers
-                  </span>
-                  <span className="rounded-full bg-white/15 px-3 py-2 text-xs font-semibold uppercase tracking-[0.18em]">
-                    Curated results
-                  </span>
-                </div>
-              </div>
+    <main className="min-h-screen bg-slate-50/50 pb-32">
+      {/* Premium Header */}
+      <section className="bg-slate-950 pt-20 pb-40 sm:pt-32 relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-brand-500/10 rounded-full blur-[120px] -mr-64 -mt-64" />
+        <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-blue-500/5 rounded-full blur-[120px] -ml-64 -mb-64" />
+        <div className="page-shell relative z-10">
+          <div className="max-w-4xl">
+            <div className="inline-flex items-center gap-2 rounded-full bg-brand-500/20 border border-brand-500/30 px-4 py-1.5 text-[10px] font-black uppercase tracking-[0.3em] text-brand-400 mb-8">
+                <Sparkles className="w-3.5 h-3.5" />
+                {t.services.subtitle}
             </div>
-
-            <div className="flex flex-col justify-between p-5 sm:p-6">
-              <div>
-                <p className="eyebrow">Live overview</p>
-                <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-3 lg:grid-cols-1">
-                  <div className="rounded-[1.5rem] bg-brand-50 p-4">
-                    <p className="text-2xl font-black">{listings.length}</p>
-                    <p className="mt-1 text-xs uppercase tracking-[0.16em] text-brand-700">Results</p>
-                  </div>
-                  <div className="rounded-[1.5rem] bg-slate-50 p-4">
-                    <p className="text-2xl font-black">Trust</p>
-                    <p className="mt-1 text-xs uppercase tracking-[0.16em] text-slate-600">Moderated</p>
-                  </div>
-                  <div className="rounded-[1.5rem] bg-emerald-50 p-4">
-                    <p className="text-2xl font-black">Live</p>
-                    <p className="mt-1 text-xs uppercase tracking-[0.16em] text-emerald-700">Active</p>
-                  </div>
-                </div>
-                <div className="mt-6 rounded-[1.5rem] bg-slate-50 p-5">
-                  <p className="text-sm text-slate-600">Selected category</p>
-                  <p className="mt-2 text-2xl font-black text-slate-950">
-                    {activeCategory ? getCategoryLabel(activeCategory) : "All categories"}
-                  </p>
-                  <p className="mt-2 text-sm text-slate-600">
-                    Use the filters below to refine by subcategory, location, country, price, rating, and featured status.
-                  </p>
-                </div>
-              </div>
-
-              <div className="mt-6 rounded-[1.5rem] bg-slate-950 p-5 text-white">
-                <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-300">Quick note</p>
-                <p className="mt-3 text-lg font-bold leading-7">
-                  Discovery first, booking second. That structure keeps users exploring while still making action easy.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="grid gap-6">
-          <div className="surface p-5 sm:p-6">
-            <p className="eyebrow">Trending now</p>
-            <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-1">
-              {[
-                "Can not-miss tours",
-                "Luxury stays",
-                "Family experiences",
-                "Private transfers"
-              ].map((item) => (
-                <div key={item} className="rounded-[1.4rem] border border-slate-200 bg-slate-50 px-4 py-4">
-                  <p className="text-sm font-semibold text-slate-800">{item}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-          <div className="surface p-5 sm:p-6">
-            <p className="text-sm uppercase tracking-[0.24em] text-slate-500">Why it works</p>
-            <p className="mt-3 text-lg font-bold text-slate-950">
-              A clean discovery layer with a TripAdvisor-style filter model and a booking-first presentation.
+            <h1 className="display-font text-6xl sm:text-8xl font-black text-white leading-[0.95] tracking-tighter">
+                {t.services.title}
+            </h1>
+            <p className="mt-8 text-xl text-slate-400 max-w-2xl leading-relaxed font-medium">
+                {language === 'en' 
+                    ? 'Explore thousands of verified services across Albania. From luxury stays to local street food, find everything you need.' 
+                    : 'Eksploroni mijëra shërbime të verifikuara në të gjithë Shqipërinë. Nga qëndrimet luksoze te ushqimi lokal i rrugës, gjeni gjithçka që ju nevojitet.'}
             </p>
-            <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-1">
-              {["Fast filtering", "Editorial feel", "Verified content", "Mobile-ready"].map((item) => (
-                <div key={item} className="rounded-[1.25rem] border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700">
-                  {item}
+          </div>
+        </div>
+      </section>
+
+      {/* Horizontal Filters - Floating */}
+      <section className="page-shell -mt-24 relative z-30">
+        <SearchFilters />
+      </section>
+
+      {/* Featured Slider Section */}
+      {!loading && featuredListings.length > 0 && (
+          <section className="page-shell mt-20">
+            <div className="surface p-8 sm:p-12 border-none shadow-2xl">
+                <div className="flex items-center justify-between gap-6 mb-10">
+                    <div>
+                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-600 mb-2">Editor's Picks</p>
+                        <h2 className="text-3xl font-black text-slate-950 tracking-tight">Hand-picked Services</h2>
+                    </div>
+                    <div className="flex gap-2">
+                        <button onClick={() => scrollRail('left')} className="w-12 h-12 rounded-full border border-slate-200 flex items-center justify-center hover:bg-slate-950 hover:text-white transition shadow-sm bg-white">
+                            <ChevronLeft className="w-6 h-6" />
+                        </button>
+                        <button onClick={() => scrollRail('right')} className="w-12 h-12 rounded-full border border-slate-200 flex items-center justify-center hover:bg-slate-950 hover:text-white transition shadow-sm bg-white">
+                            <ChevronRight className="w-6 h-6" />
+                        </button>
+                    </div>
                 </div>
-              ))}
+                
+                <div 
+                    ref={railRef}
+                    className="flex gap-6 overflow-x-auto pb-6 no-scrollbar snap-x snap-mandatory"
+                >
+                    {featuredListings.map((listing) => (
+                        <Link 
+                            key={listing._id} 
+                            href={`/listings/${listing.slug}`}
+                            className="min-w-[320px] sm:min-w-[400px] snap-start group"
+                        >
+                            <div className="relative aspect-[16/10] rounded-[2.5rem] overflow-hidden mb-4 shadow-xl">
+                                <Image src={listing.images?.[0] || ""} alt={listing.title} fill className="object-cover transition duration-700 group-hover:scale-110" />
+                                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent" />
+                                <div className="absolute bottom-5 left-5 text-white">
+                                    <p className="text-[10px] font-black uppercase tracking-widest text-brand-400 mb-1">{listing.location}</p>
+                                    <h3 className="text-xl font-black">{listing.title}</h3>
+                                </div>
+                                <div className="absolute top-5 right-5 w-10 h-10 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center text-white border border-white/20">
+                                    <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
+                                </div>
+                            </div>
+                        </Link>
+                    ))}
+                </div>
             </div>
-          </div>
-        </div>
-      </div>
+          </section>
+      )}
 
-      <div className="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        {categories.map((category, index) => (
-          <Link
-            key={category.value}
-            href={`/services?category=${category.value}`}
-            className={`group relative overflow-hidden rounded-[2rem] shadow-soft ring-1 ring-black/5 transition hover:-translate-y-1 hover:shadow-xl ${
-              index === 0 ? "md:col-span-2 xl:col-span-2" : ""
-            }`}
-          >
-            <div className="absolute inset-0">
-              <Image
-                src={category.image}
-                alt={category.label}
-                fill
-                className="h-[220px] w-full object-cover transition duration-500 group-hover:scale-105 sm:h-[260px] lg:h-[280px]"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/35 to-transparent" />
+      {/* Full Width Grid Section */}
+      <section className="page-shell mt-20">
+        <div className="flex items-center gap-6 mb-12">
+            <div className="w-16 h-16 rounded-[1.5rem] bg-slate-950 flex items-center justify-center text-white shadow-xl">
+                <Filter className="w-7 h-7" />
             </div>
-            <div className="relative flex min-h-[240px] flex-col justify-between p-5 text-white">
-              <div className="flex items-center justify-between">
-                <span className="rounded-full bg-white/15 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em]">
-                  {index + 1}
-                </span>
-                <span className="inline-flex items-center gap-1 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold">
-                  Browse
-                  <ArrowRight className="h-3.5 w-3.5" />
-                </span>
-              </div>
-              <div>
-                <p className="text-sm uppercase tracking-[0.18em] text-brand-100">Category</p>
-                <h2 className="display-font mt-2 text-3xl font-black">{category.label}</h2>
-                <p className="mt-2 max-w-sm text-sm text-brand-50">
-                  {category.subcategories.slice(0, 3).map((item) => item.label).join(" • ")}
-                </p>
-              </div>
-            </div>
-          </Link>
-        ))}
-      </div>
-
-      <div className="mt-10 grid gap-8 lg:grid-cols-[320px_1fr]">
-        <aside className="lg:sticky lg:top-24 lg:h-fit">
-          <SearchFilters />
-        </aside>
-        <div>
-          <div className="mb-4 flex items-center justify-between gap-4">
             <div>
-              <p className="eyebrow">Results</p>
-              <h2 className="text-2xl font-black tracking-tight text-slate-950">Approved listings</h2>
+                <h2 className="text-4xl font-black text-slate-950 tracking-tight">{t.services.results}</h2>
+                <p className="text-sm font-bold text-slate-400 uppercase tracking-[0.2em] mt-1">
+                    {loading ? t.common.loading : `${listings.length} ${language === 'en' ? 'Verified Listings' : 'Listime të verifikuara'}`}
+                </p>
             </div>
-            <div className="inline-flex items-center gap-2 rounded-full bg-brand-50 px-4 py-2 text-sm font-semibold text-brand-800">
-              <Sparkles className="h-4 w-4" />
-              {listings.length} found
-            </div>
-          </div>
-          <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-            {listings.length ? (
-              listings.map((listing: any) => <ListingCard key={listing._id.toString()} listing={listing} />)
-            ) : (
-              <div className="rounded-3xl border border-dashed border-slate-300 bg-white p-8 text-sm text-slate-500 md:col-span-2 xl:col-span-3">
-                No approved listings match your selected filters.
-              </div>
-            )}
-          </div>
         </div>
-      </div>
-    </section>
+
+        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {loading ? (
+            Array.from({ length: 8 }).map((_, i) => (
+              <div key={i} className="h-[450px] rounded-[3rem] bg-slate-200 animate-pulse" />
+            ))
+          ) : listings.length > 0 ? (
+            listings.slice(0, visibleCount).map((listing) => <ListingCard key={listing._id} listing={listing} />)
+          ) : (
+            <div className="col-span-full py-40 flex flex-col items-center justify-center surface border-none shadow-2xl bg-white">
+                <div className="w-32 h-32 bg-slate-50 rounded-full flex items-center justify-center mb-8 border border-slate-100">
+                    <Search className="w-12 h-12 text-slate-300" />
+                </div>
+                <p className="text-slate-500 text-2xl font-black text-center px-6">{t.common.noResults}</p>
+                <p className="text-slate-400 text-base mt-3 text-center px-6 max-w-md font-medium">{language === 'en' ? 'Try adjusting your filters or search for something else.' : 'Provoni të rregulloni filtrat ose kërkoni për diçka tjetër.'}</p>
+                <Link href="/services" className="mt-12 px-12 py-5 bg-slate-950 text-white rounded-full font-black text-sm hover:bg-brand-600 transition shadow-2xl">
+                    {t.services.reset}
+                </Link>
+            </div>
+          )}
+        </div>
+
+        {!loading && listings.length > visibleCount && (
+            <div className="mt-24 flex justify-center">
+                <button 
+                    onClick={loadMore}
+                    className="group flex items-center gap-6 px-20 py-7 bg-slate-950 text-white rounded-full font-black text-sm hover:bg-brand-600 transition-all shadow-[0_30px_60px_-15px_rgba(0,0,0,0.3)] hover:scale-105 active:scale-95"
+                >
+                    {language === 'en' ? 'Explore More Services' : 'Eksploro më shumë shërbime'}
+                    <ChevronDown className="w-6 h-6 group-hover:translate-y-2 transition" />
+                </button>
+            </div>
+        )}
+      </section>
+      
+      <style jsx global>{`
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+      `}</style>
+    </main>
   );
 }

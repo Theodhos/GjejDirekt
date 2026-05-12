@@ -1,29 +1,31 @@
-import { getAuthUser } from "@/lib/auth";
-import { redirect } from "next/navigation";
+"use client";
+
+import Image from "next/image";
+import { useLanguage } from "@/context/LanguageContext";
+import { translations } from "@/lib/dictionary";
 import ListingForm from "@/components/forms/ListingForm";
+import { Sparkles, CheckCircle, Lightbulb, Camera } from "lucide-react";
 
-export const dynamic = "force-dynamic";
-
-export default async function AddListingPage() {
-  const auth = await getAuthUser();
-  if (!auth) redirect("/login");
+export default function AddListingPage() {
+  const { language } = useLanguage();
+  const t = translations[language];
 
   return (
-    <section className="page-shell py-10">
-      <div className="grid gap-8 lg:grid-cols-[0.95fr_1.05fr]">
-        <div className="surface p-6">
-          <p className="eyebrow">Submit listing</p>
-          <h1 className="display-font mt-3 text-4xl font-black tracking-tight text-slate-950">Add a new travel service</h1>
-          <p className="mt-4 text-slate-600">
-            Listings start in pending status so the admin team can review and approve quality submissions before they go live.
-          </p>
-          <div className="mt-6 rounded-[1.5rem] bg-slate-950 p-5 text-white">
-            <p className="text-sm uppercase tracking-[0.24em] text-slate-300">Pro tip</p>
-            <p className="mt-3 text-lg font-bold">Use strong images, clear categories, and direct contact details to improve approvals.</p>
+    <section className="page-shell py-12 sm:py-20 bg-slate-50/50 min-h-screen">
+      <div className="max-w-5xl mx-auto">
+        <div className="surface p-8 sm:p-16 shadow-2xl border-none overflow-hidden relative">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-brand-500/5 rounded-full -mr-32 -mt-32 blur-3xl" />
+          <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-500/5 rounded-full -ml-32 -mb-32 blur-3xl" />
+
+
+
+          <div className="relative z-10 max-w-3xl">
+            <div className="mb-10">
+              <h2 className="display-font text-4xl font-black tracking-tight text-slate-950 sm:text-6xl mb-8 leading-[1.1]">{t.addListing.formTitle}</h2>
+              <p className="text-slate-500 mt-2">{t.addListing.formDesc}</p>
+            </div>
+            <ListingForm />
           </div>
-        </div>
-        <div className="surface p-6">
-          <ListingForm />
         </div>
       </div>
     </section>

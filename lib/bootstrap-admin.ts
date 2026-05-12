@@ -3,6 +3,10 @@ import User from "@/models/User";
 
 let bootstrapPromise: Promise<void> | null = null;
 
+function getAdminPhone(email: string) {
+  return process.env.ADMIN_PHONE?.trim() || `admin-${email}`;
+}
+
 export async function ensureDefaultAdminAccount() {
   if (bootstrapPromise) return bootstrapPromise;
 
@@ -20,6 +24,9 @@ export async function ensureDefaultAdminAccount() {
       existing.role = "admin";
       existing.name = name;
       existing.password = hash;
+      if (!existing.phone) {
+        existing.phone = getAdminPhone(email);
+      }
       await existing.save();
       return;
     }
@@ -27,6 +34,7 @@ export async function ensureDefaultAdminAccount() {
     await User.create({
       name,
       email,
+      phone: getAdminPhone(email),
       password: hash,
       role: "admin"
     });

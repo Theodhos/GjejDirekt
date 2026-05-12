@@ -89,6 +89,8 @@ export default async function AdminPage() {
   const totalFavorites = favoriteStats[0]?.total || 0;
   const approvalRate = totalListings ? Math.round((approvedListings / totalListings) * 100) : 0;
   const displayName = auth.name || auth.email;
+  const serializedQueue = recentQueue.map(item => ({ ...item, _id: item._id.toString() }));
+  const serializedBlogs = recentBlogs.map(item => ({ ...item, _id: item._id.toString() }));
 
   return (
     <section className="page-shell py-8 sm:py-10">
@@ -133,141 +135,52 @@ export default async function AdminPage() {
         </div>
       </div>
 
-      <div className="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div id="statistics" className="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {[
-          { icon: Users, label: "Users", value: totalUsers, accent: "bg-blue-50 text-blue-700" },
-          { icon: ShieldCheck, label: "Listings", value: totalListings, accent: "bg-brand-50 text-brand-700" },
-          { icon: Clock3, label: "Pending", value: pendingListings, accent: "bg-amber-50 text-amber-700" },
-          { icon: CheckCircle2, label: "Approved", value: approvedListings, accent: "bg-emerald-50 text-emerald-700" },
-          { icon: Flame, label: "Featured", value: featuredListings, accent: "bg-fuchsia-50 text-fuchsia-700" },
-          { icon: BarChart3, label: "Reviews", value: totalReviews, accent: "bg-slate-100 text-slate-700" },
-          { icon: LayoutDashboard, label: "Blogs", value: totalBlogs, accent: "bg-violet-50 text-violet-700" },
-          { icon: Users, label: "Favorites", value: totalFavorites, accent: "bg-cyan-50 text-cyan-700" }
+          { icon: Users, label: "Users", value: totalUsers, accent: "bg-blue-50 text-blue-700", href: "/admin/users" },
+          { icon: ShieldCheck, label: "Listings", value: totalListings, accent: "bg-brand-50 text-brand-700", href: "/admin/listings" },
+          { icon: Clock3, label: "Pending", value: pendingListings, accent: "bg-amber-50 text-amber-700", href: "/admin/listings?status=pending" },
+          { icon: CheckCircle2, label: "Approved", value: approvedListings, accent: "bg-emerald-50 text-emerald-700", href: "/admin/listings?status=approved" },
+          { icon: Flame, label: "Featured", value: featuredListings, accent: "bg-fuchsia-50 text-fuchsia-700", href: "/admin/listings?featured=true" },
+          { icon: BarChart3, label: "Reviews", value: totalReviews, accent: "bg-slate-100 text-slate-700", href: "/admin/reviews" },
+          { icon: LayoutDashboard, label: "Blogs", value: totalBlogs, accent: "bg-violet-50 text-violet-700", href: "#blog-studio" },
+          { icon: Users, label: "Favorites", value: totalFavorites, accent: "bg-cyan-50 text-cyan-700", href: "#" }
         ].map((item) => (
-          <div key={item.label} className="surface p-5">
-            <item.icon className={`h-5 w-5 rounded-xl p-2 ${item.accent}`} />
-            <p className="mt-4 text-sm text-slate-500">{item.label}</p>
-            <p className="mt-1 text-3xl font-black tracking-tight text-slate-950">{item.value}</p>
-          </div>
+          <Link key={item.label} href={item.href} className="surface p-6 hover:border-brand-500 transition-all hover:shadow-xl group">
+            <item.icon className={`h-10 w-10 rounded-2xl p-2.5 ${item.accent} transition-transform group-hover:scale-110`} />
+            <p className="mt-6 text-sm font-bold text-slate-500 uppercase tracking-widest">{item.label}</p>
+            <p className="mt-2 text-4xl font-black tracking-tight text-slate-950">{item.value.toLocaleString()}</p>
+            <div className="mt-4 flex items-center gap-2 text-xs font-bold text-brand-600 opacity-0 group-hover:opacity-100 transition-opacity">
+                Manage {item.label.toLowerCase()} 
+                <PlusCircle className="w-3 h-3" />
+            </div>
+          </Link>
         ))}
       </div>
 
-      <div className="mt-8 grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
-        <div className="surface p-6">
-          <div className="flex items-start justify-between gap-4">
+      <div className="mt-8">
+        <div className="surface p-8 sm:p-10 shadow-2xl border-none">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-10 pb-10 border-b border-slate-100">
             <div>
-              <p className="eyebrow">Pending moderation</p>
-              <h2 className="mt-2 text-2xl font-black text-slate-950">Review queue</h2>
+              <p className="eyebrow text-brand-600">Pending moderation</p>
+              <h2 className="mt-2 text-3xl font-black text-slate-950">Review queue</h2>
+              <p className="mt-2 text-slate-500">There are {pendingListings} listings waiting for your approval.</p>
             </div>
-            <div className="rounded-full bg-brand-50 px-4 py-2 text-sm font-semibold text-brand-800">
-              Approval rate {approvalRate}%
+            <div className="inline-flex flex-col items-center justify-center rounded-3xl bg-brand-50 border border-brand-100 px-8 py-4">
+              <span className="text-2xl font-black text-brand-900 leading-none">{approvalRate}%</span>
+              <span className="text-[10px] font-black text-brand-600 uppercase tracking-[0.2em] mt-1">Approval rate</span>
             </div>
           </div>
           <div className="mt-6">
-            <AdminQueue listings={recentQueue} />
-          </div>
-        </div>
-
-        <div className="surface p-6">
-          <p className="eyebrow">Activity feed</p>
-          <h2 className="mt-2 text-2xl font-black text-slate-950">Platform activity</h2>
-          <div className="mt-6 space-y-3">
-            {recentActivities.length ? (
-              recentActivities.map((activity: any) => {
-                const style = activityStyles[activity.type] || activityStyles.user_logged_in;
-                return (
-                  <div key={activity._id.toString()} className="rounded-[1.5rem] border border-slate-200 p-4">
-                    <div className="flex items-start justify-between gap-3">
-                      <div>
-                        <span className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${style.tone}`}>{style.label}</span>
-                        <p className="mt-2 font-semibold text-slate-950">{activity.title}</p>
-                        <p className="mt-1 text-sm text-slate-600">{activity.description}</p>
-                      </div>
-                      <p className="text-xs text-slate-400">{formatDate(activity.createdAt)}</p>
-                    </div>
-                  </div>
-                );
-              })
-            ) : (
-              <p className="text-sm text-slate-500">No activity recorded yet.</p>
-            )}
+            <AdminQueue listings={serializedQueue} />
           </div>
         </div>
       </div>
 
-      <div className="mt-8">
-        <BlogStudio recentPosts={recentBlogs as any[]} />
+      <div className="mt-12" id="blog-studio">
+        <BlogStudio recentPosts={serializedBlogs as any[]} />
       </div>
 
-      <div className="mt-8 grid gap-6 xl:grid-cols-[0.95fr_1.05fr]">
-        <div className="surface p-6">
-          <p className="eyebrow">Recent users</p>
-          <div className="mt-5 space-y-3">
-            {recentUsers.map((user: any) => (
-              <div key={user._id.toString()} className="flex items-center justify-between rounded-[1.5rem] bg-slate-50 p-4">
-                <div>
-                  <p className="font-semibold text-slate-950">{user.name}</p>
-                  <p className="text-sm text-slate-500">{user.email}</p>
-                </div>
-                <span className="rounded-full bg-white px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-slate-600">
-                  {user.role}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="surface p-6">
-          <p className="eyebrow">Recent services</p>
-          <div className="mt-5 space-y-3">
-            {recentListings.map((listing: any) => (
-              <div key={listing._id.toString()} className="flex items-start justify-between rounded-[1.5rem] bg-slate-50 p-4">
-                <div>
-                  <Link href={`/listings/${listing.slug}`} className="font-semibold text-slate-950 hover:text-brand-700">
-                    {listing.title}
-                  </Link>
-                  <p className="mt-1 text-sm text-slate-500">
-                    {listing.location}
-                    {listing.owner?.name ? ` • ${listing.owner.name}` : ""}
-                  </p>
-                </div>
-                <span className="rounded-full bg-white px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-slate-600">
-                  {listing.status}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      <div className="mt-8 surface p-6">
-        <div className="flex items-center justify-between gap-4">
-          <div>
-            <p className="eyebrow">Latest reviews</p>
-            <h2 className="mt-2 text-2xl font-black text-slate-950">What users are saying</h2>
-          </div>
-        </div>
-        <div className="mt-6 grid gap-4 lg:grid-cols-2">
-          {recentReviews.length ? (
-            recentReviews.map((review: any) => (
-              <div key={review._id.toString()} className="rounded-[1.5rem] border border-slate-200 p-4">
-                <div className="flex items-center justify-between gap-3">
-                  <p className="font-semibold text-slate-950">{review.user?.name || "Anonymous"}</p>
-                  <span className="rounded-full bg-brand-50 px-3 py-1 text-xs font-semibold text-brand-700">
-                    {review.rating}/5
-                  </span>
-                </div>
-                <p className="mt-2 text-sm text-slate-600">{review.comment}</p>
-                <p className="mt-3 text-xs uppercase tracking-[0.16em] text-slate-400">
-                  {review.listing?.title || "Unknown listing"}
-                </p>
-              </div>
-            ))
-          ) : (
-            <p className="text-sm text-slate-500">No reviews yet.</p>
-          )}
-        </div>
-      </div>
     </section>
   );
 }

@@ -1,378 +1,379 @@
-import Link from "next/link";
+"use client";
+
 import Image from "next/image";
-import { ArrowRight, Sparkles, Star } from "lucide-react";
-import { connectDB } from "@/lib/db";
-import Listing from "@/models/Listing";
-import BlogPost from "@/models/BlogPost";
-import { categories } from "@/lib/constants";
+import Link from "next/link";
+import { ArrowRight, MapPin, Sparkles, ChevronLeft, ChevronRight, CheckCircle, Flame, Star, Bed, Utensils, Car, Plane, Anchor, Truck, Calendar, Music, Ticket } from "lucide-react";
 import HomeSearchHero from "@/components/home/HomeSearchHero";
+import HorizontalRail from "@/components/home/HorizontalRail";
 import ListingCard from "@/components/ListingCard";
-import Button from "@/components/ui/Button";
+import { albaniaCities } from "@/lib/albania-cities";
+import { categories } from "@/lib/constants";
+import { useLanguage } from "@/context/LanguageContext";
+import { translations } from "@/lib/dictionary";
+import { useEffect, useState } from "react";
 
-export const dynamic = "force-dynamic";
+export default function HomePage() {
+  const { language } = useLanguage();
+  const t = translations[language];
+  
+  const [blogPosts, setBlogPosts] = useState<any[]>([]);
+  const [listings, setListings] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-const destinationCards = [
-  {
-    title: "Ksamil and Saranda escapes",
-    image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80",
-    rating: 4.9,
-    count: "105"
-  },
-  {
-    title: "Mountain hikes and viewpoints",
-    image: "https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1200&q=80",
-    rating: 4.8,
-    count: "1,099"
-  },
-  {
-    title: "Coastal heritage experiences",
-    image: "https://images.unsplash.com/photo-1500375592092-40eb2168fd21?auto=format&fit=crop&w=1200&q=80",
-    rating: 4.8,
-    count: "102"
-  },
-  {
-    title: "Island boat transfers",
-    image: "https://images.unsplash.com/photo-1504215680853-026ed2a45def?auto=format&fit=crop&w=1200&q=80",
-    rating: 4.9,
-    count: "384"
+  useEffect(() => {
+    const fetchData = async () => {
+        try {
+            const listingsRes = await fetch('/api/listings');
+            const listingsData = await listingsRes.json();
+            setListings(listingsData.listings || []);
+
+            const postsRes = await fetch('/api/blog');
+            const postsData = await postsRes.json();
+            setBlogPosts(postsData.posts || []);
+        } catch (error) {
+            console.error("Error fetching home data:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+    fetchData();
+  }, []);
+
+  const featuredListings = listings.filter(l => l.featured).slice(0, 8);
+  
+  const accommodationCategory = categories.find(c => c.value === "akomodim");
+  const foodCategory = categories.find(c => c.value === "restorante");
+  const transportCategory = categories.find(c => c.value === "transport");
+
+  const blogFallbacks = [
+    { slug: "sample-guide-1", title: "How to choose the right city first", excerpt: "Start with location, then move into the right service category." },
+    { slug: "sample-guide-2", title: "What to look for in a trusted listing", excerpt: "Quality, clarity, and trust signals make booking easier." },
+    { slug: "sample-guide-3", title: "Planning food, stays, and transport together", excerpt: "A practical flow for travelers who want better structure." }
+  ];
+
+  const getTransportIcon = (val: string) => {
+    if (val.includes('aeroport')) return <Plane className="w-8 h-8" />;
+    if (val.includes('varka')) return <Anchor className="w-8 h-8" />;
+    if (val.includes('makine')) return <Car className="w-8 h-8" />;
+    return <Truck className="w-8 h-8" />;
   }
-];
-
-const storyCards = [
-  {
-    title: "6 stunning superblooms worth traveling for",
-    image: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=80"
-  },
-  {
-    title: "Everything you need to know about skillcations",
-    image: "https://images.unsplash.com/photo-1510798831971-661eb04b3739?auto=format&fit=crop&w=1200&q=80"
-  },
-  {
-    title: "12 trips where you will never need to rent a car",
-    image: "https://images.unsplash.com/photo-1493246507139-91e8fad9978e?auto=format&fit=crop&w=1200&q=80"
-  }
-];
-
-export default async function HomePage() {
-  await connectDB();
-  const featuredListings = (await Listing.find({ status: "approved" })
-    .sort({ featured: -1, ratingAverage: -1, createdAt: -1 })
-    .limit(3)
-    .lean<any>()) || [];
-  const blogPosts = (await BlogPost.find({ published: true }).sort({ createdAt: -1 }).limit(3).lean<any>()) || [];
 
   return (
-    <>
+    <main className="pb-12 bg-slate-50/30">
       <HomeSearchHero />
 
-      <section className="page-shell mt-8 grid gap-6 lg:mt-10 lg:grid-cols-[1.25fr_0.75fr]">
-        <div className="surface overflow-hidden">
-          <div className="grid gap-0 lg:grid-cols-[1.1fr_0.9fr]">
-            <div className="relative min-h-[300px] sm:min-h-[360px] lg:min-h-[420px]">
-              <Image
-                src="https://images.unsplash.com/photo-1501555088652-021faa106b9b?auto=format&fit=crop&w=1400&q=80"
-                alt="Travel inspiration"
-                fill
-                className="object-cover"
-              />
-              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-slate-950 via-slate-950/35 to-transparent p-5 text-white sm:p-6">
-                <p className="text-sm uppercase tracking-[0.22em] text-brand-100">Editorial spotlight</p>
-                <h2 className="display-font mt-2 text-3xl font-black leading-tight sm:text-4xl">
-                  Find things to do for everything you are into
-                </h2>
-                <p className="mt-3 max-w-lg text-sm text-slate-200 sm:text-base">
-                  Browse curated experiences and book trusted listings from a marketplace designed for discovery and confidence.
-                </p>
-              </div>
-            </div>
-            <div className="flex flex-col justify-center p-6 sm:p-8 lg:p-10">
-              <p className="eyebrow">Featured experience</p>
-              <h2 className="section-heading mt-4">A travel marketplace built like a guide and a booking engine</h2>
-              <p className="mt-4 max-w-xl text-sm leading-7 text-slate-600 sm:text-base">
-                The structure blends editorial inspiration, traveler trust signals, and direct discovery. It should feel useful before it feels promotional.
-              </p>
-              <div className="mt-7 grid gap-3 sm:grid-cols-2">
-                {[
-                  "Verified listings",
-                  "Traveler reviews",
-                  "Search and filtering",
-                  "Editorial stories"
-                ].map((item) => (
-                  <div key={item} className="rounded-[1.5rem] border border-slate-200 bg-slate-50 p-4">
-                    <p className="text-sm font-semibold text-slate-700">{item}</p>
-                  </div>
-                ))}
-              </div>
-              <Link
-                href="/services"
-                className="mt-7 inline-flex w-full items-center justify-center gap-2 rounded-full bg-slate-950 px-6 py-3 text-sm font-semibold text-white sm:w-fit"
-              >
-                Book now
-                <ArrowRight className="h-4 w-4" />
-              </Link>
-            </div>
-          </div>
-        </div>
-
-        <div className="surface p-5 sm:p-6">
-          <p className="eyebrow">Quick facts</p>
-          <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
-            {[
-              { label: "Verified listings", value: "Quality approved" },
-              { label: "Popular categories", value: "Tours, stays, transport" },
-              { label: "Ratings", value: "4.8 average" },
-              { label: "Support", value: "Fast moderation" }
-            ].map((item) => (
-              <div key={item.label} className="rounded-[1.5rem] border border-slate-200 p-4">
-                <p className="text-xs uppercase tracking-[0.18em] text-slate-500">{item.label}</p>
-                <p className="mt-1 text-lg font-bold text-slate-950">{item.value}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="page-shell py-12 sm:py-14 lg:py-16">
-        <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <p className="eyebrow">Categories</p>
-            <h2 className="section-heading mt-2">Choose the service you need</h2>
-          </div>
-          <Link href="/services" className="inline-flex items-center gap-2 rounded-full bg-slate-950 px-4 py-2 text-sm font-semibold text-white">
-            View all categories
-            <ArrowRight className="h-4 w-4" />
-          </Link>
-        </div>
-        <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
-          {categories.map((category, index) => (
+      <div className="page-shell space-y-20 py-10 sm:space-y-32 sm:py-24">
+        
+        {/* 1. POPULAR DESTINATIONS (CITIES) - Logical First Step */}
+        <HorizontalRail
+          eyebrow={t.common.category}
+          title={t.home.popularDestinations}
+          description={t.home.popularSub}
+        >
+          {albaniaCities.slice(0, 8).map((city) => (
             <Link
-              key={category.value}
-              href={`/services?category=${category.value}`}
-              className={`group relative overflow-hidden rounded-[2rem] shadow-soft ${
-                index === 0 || index === 1 ? "md:col-span-1 xl:col-span-2" : ""
-              }`}
+              key={city.value}
+              href={`/services?location=${encodeURIComponent(city.label)}`}
+              className="group min-w-[280px] overflow-hidden rounded-[2.5rem] border border-slate-200 bg-white transition hover:-translate-y-2 hover:border-brand-300 hover:shadow-2xl"
             >
-              <Image
-                src={category.image}
-                alt={category.label}
-                width={900}
-                height={700}
-                className="h-[220px] w-full object-cover transition duration-500 group-hover:scale-105 sm:h-[260px] lg:h-[280px]"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/25 to-transparent" />
-              <div className="absolute inset-x-0 bottom-0 p-5 text-white">
-                <div className="flex items-center justify-between gap-3">
-                  <div>
-                    <p className="text-xs uppercase tracking-[0.24em] text-brand-100">Browse by category</p>
-                    <h3 className="display-font mt-1 text-3xl font-black">{category.label}</h3>
-                  </div>
-                  <span className="rounded-full bg-white/15 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em]">
-                    {String(index + 1).padStart(2, "0")}
-                  </span>
+              <div className="relative aspect-[16/10]">
+                <Image src={city.image || "https://images.unsplash.com/photo-1512917774080-9991f1c4c750"} alt={city.label} fill className="object-cover transition duration-700 group-hover:scale-110" />
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/20 to-transparent" />
+                <div className="absolute inset-0 flex flex-col justify-end p-6">
+                    <p className="text-xs font-black uppercase tracking-widest text-brand-400 mb-2">City</p>
+                    <h3 className="text-2xl font-black text-white">{city.label}</h3>
                 </div>
-                <p className="mt-2 max-w-md text-sm text-brand-50">
-                  {category.subcategories.slice(0, 4).map((item) => item.label).join(" • ")}
-                </p>
               </div>
             </Link>
           ))}
-        </div>
-      </section>
+        </HorizontalRail>
 
-      <section className="page-shell py-8 sm:py-10">
-        <div className="mb-8">
-          <p className="eyebrow">Explore experiences</p>
-          <h2 className="mt-2 text-2xl font-black tracking-tight text-slate-950 sm:text-3xl">Can not-miss picks near you</h2>
-        </div>
-        <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
-          {destinationCards.map((card) => (
-            <article key={card.title} className="travel-card bg-white p-0">
-              <div className="relative overflow-hidden">
-                <Image src={card.image} alt={card.title} width={700} height={500} className="h-[210px] w-full object-cover sm:h-[230px]" />
-                <div className="absolute left-4 top-4 rounded-full bg-white/90 px-3 py-2 text-xs font-semibold text-slate-900">
-                  Traveler favorite
+        {/* 2. ACCOMMODATION */}
+        <section>
+            <div className="mb-12">
+                <div className="inline-flex items-center gap-2 rounded-full bg-blue-50 px-4 py-1.5 text-[10px] font-black uppercase tracking-[0.2em] text-blue-700 mb-6">
+                    <Bed className="w-3.5 h-3.5" />
+                    {language === 'en' ? 'Accommodation' : 'Akomodimi'}
                 </div>
-              </div>
-              <div className="p-4">
-                <h3 className="text-lg font-black leading-snug text-slate-950 sm:text-xl">{card.title}</h3>
-                <p className="mt-3 flex items-center gap-2 text-sm text-slate-500">
-                  <Star className="h-4 w-4 text-amber-500" />
-                  {card.rating} <span>({card.count})</span>
+                <h2 className="text-4xl sm:text-6xl font-black tracking-tight text-slate-950 mb-6">{t.home.whereToSleepTitle}</h2>
+                <p className="max-w-3xl text-lg text-slate-500 leading-relaxed font-medium">
+                    {t.home.whereToSleepDesc}
                 </p>
-                <p className="mt-2 text-sm font-semibold text-brand-700">from $38 per adult</p>
+            </div>
+            
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+                {accommodationCategory?.subcategories.map(sub => (
+                    <Link 
+                        key={sub.value} 
+                        href={`/categories/akomodim/${sub.value}`}
+                        className="group relative h-64 overflow-hidden rounded-[2.5rem] bg-slate-100 transition hover:-translate-y-2 hover:shadow-2xl"
+                    >
+                        <Image 
+                            src={`https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80`} 
+                            alt={sub.label} 
+                            fill 
+                            className="object-cover transition duration-700 group-hover:scale-110 opacity-80" 
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/20 to-transparent" />
+                        <div className="absolute inset-0 flex flex-col justify-end p-8">
+                            <h3 className="text-2xl font-black text-white">{sub.label}</h3>
+                            <p className="text-xs font-bold text-slate-300 uppercase tracking-widest mt-2 flex items-center gap-2 group-hover:gap-4 transition-all">
+                                {t.common.explore} <ArrowRight className="w-3.5 h-3.5" />
+                            </p>
+                        </div>
+                    </Link>
+                ))}
+            </div>
+        </section>
+
+        {/* 3. FOOD & DRINK */}
+        <section>
+            <div className="mb-12">
+                <div className="inline-flex items-center gap-2 rounded-full bg-orange-50 px-4 py-1.5 text-[10px] font-black uppercase tracking-[0.2em] text-orange-700 mb-6">
+                    <Utensils className="w-3.5 h-3.5" />
+                    {language === 'en' ? 'Food & Drink' : 'Ushqimi dhe pija'}
+                </div>
+                <h2 className="text-4xl sm:text-6xl font-black tracking-tight text-slate-950 mb-6">{t.home.whereToEatTitle}</h2>
+                <p className="max-w-3xl text-lg text-slate-500 leading-relaxed font-medium">
+                    {t.home.whereToEatDesc}
+                </p>
+            </div>
+            
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+                {foodCategory?.subcategories.map(sub => (
+                    <Link 
+                        key={sub.value} 
+                        href={`/categories/restorante/${sub.value}`}
+                        className="group relative h-72 overflow-hidden rounded-[2.5rem] bg-slate-100 transition hover:-translate-y-2 hover:shadow-2xl"
+                    >
+                        <Image 
+                            src={`https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=600&q=80`} 
+                            alt={sub.label} 
+                            fill 
+                            className="object-cover transition duration-700 group-hover:scale-110 opacity-80" 
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/20 to-transparent" />
+                        <div className="absolute inset-0 flex flex-col justify-end p-8">
+                            <h3 className="text-2xl font-black text-white">{sub.label}</h3>
+                            <p className="text-xs font-bold text-slate-300 uppercase tracking-widest mt-2 flex items-center gap-2 group-hover:gap-4 transition-all">
+                                {t.common.explore} <ArrowRight className="w-3.5 h-3.5" />
+                            </p>
+                        </div>
+                    </Link>
+                ))}
+            </div>
+        </section>
+
+        {/* 4. NEW: EVENTS SECTION - CLEAN VERSION */}
+        <section className="relative overflow-hidden">
+            <div className="relative z-10">
+                <div className="mb-16">
+                    <div className="inline-flex items-center gap-2 rounded-full bg-brand-50 px-4 py-1.5 text-[10px] font-black uppercase tracking-[0.3em] text-brand-700 mb-8">
+                        <Calendar className="w-3.5 h-3.5" />
+                        {language === 'en' ? 'What\'s On' : 'Çfarë po ndodh'}
+                    </div>
+                    <h2 className="text-5xl sm:text-7xl font-black tracking-tight text-slate-950 mb-6 leading-none">{t.home.eventsTitle}</h2>
+                    <p className="max-w-2xl text-xl text-slate-500 font-medium leading-relaxed">
+                        {t.home.eventsDesc}
+                    </p>
+                </div>
+
+                <div className="grid gap-10 lg:grid-cols-3">
+                    {[
+                        { title: 'Tirana Jazz Festival', date: 'July 15-20', img: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=800&q=80', icon: Music },
+                        { title: 'Kala Festival', date: 'June 01-08', img: 'https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?auto=format&fit=crop&w=800&q=80', icon: Ticket },
+                        { title: 'Beer Fest Korca', date: 'August 12-16', img: 'https://images.unsplash.com/photo-1538332576228-eb5b4c4de6f5?auto=format&fit=crop&w=800&q=80', icon: Star }
+                    ].map((event, i) => (
+                        <div key={i} className="group relative aspect-[4/5] overflow-hidden rounded-[3rem] bg-slate-900 border border-slate-800 transition hover:-translate-y-4 hover:border-brand-500 hover:shadow-2xl hover:shadow-brand-500/20">
+                            <Image src={event.img} alt={event.title} fill className="object-cover transition duration-700 group-hover:scale-110 opacity-50 group-hover:opacity-80" />
+                            <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent" />
+                            <div className="absolute top-8 left-8">
+                                <div className="w-12 h-12 rounded-2xl bg-brand-500 flex items-center justify-center text-white shadow-xl">
+                                    <event.icon className="w-6 h-6" />
+                                </div>
+                            </div>
+                            <div className="absolute inset-0 flex flex-col justify-end p-10">
+                                <p className="text-xs font-black uppercase tracking-widest text-brand-400 mb-3">{event.date}</p>
+                                <h3 className="text-3xl font-black text-white mb-6 group-hover:text-brand-400 transition">{event.title}</h3>
+                                <Link href="/services?category=evente" className="inline-flex items-center gap-3 text-xs font-black uppercase tracking-widest text-white border-b-2 border-brand-500 pb-1 w-fit">
+                                    {language === 'en' ? 'Get Tickets' : 'Merr Bileta'} <ArrowRight className="w-4 h-4" />
+                                </Link>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </section>
+
+        {/* 5. TRANSPORT */}
+        <section>
+            <div className="mb-12 text-center max-w-4xl mx-auto">
+                <div className="inline-flex items-center gap-2 rounded-full bg-brand-50 px-4 py-1.5 text-[10px] font-black uppercase tracking-[0.2em] text-brand-700 mb-6">
+                    <Car className="w-3.5 h-3.5" />
+                    {language === 'en' ? 'Transportation' : 'Transporti'}
+                </div>
+                <h2 className="text-5xl sm:text-7xl font-black tracking-tight text-slate-950 mb-6 leading-none">{t.home.transportTitle}</h2>
+                <p className="text-xl text-slate-500 leading-relaxed font-medium">
+                    {t.home.transportDesc}
+                </p>
+            </div>
+            
+            <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+                {transportCategory?.subcategories.map(sub => (
+                    <Link 
+                        key={sub.value} 
+                        href={`/categories/transport/${sub.value}`}
+                        className="group relative overflow-hidden rounded-[3rem] bg-slate-950 p-10 h-72 flex flex-col justify-between transition-all duration-500 hover:-translate-y-4 hover:shadow-[0_40px_80px_-15px_rgba(0,0,0,0.3)]"
+                    >
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-brand-500/10 rounded-full blur-3xl -mr-16 -mt-16 group-hover:bg-brand-500/20 transition" />
+                        <div className="relative z-10">
+                            <div className="w-16 h-16 rounded-[1.5rem] bg-brand-500 flex items-center justify-center text-white mb-8 shadow-xl shadow-brand-500/20 group-hover:scale-110 group-hover:rotate-6 transition duration-500">
+                                {getTransportIcon(sub.value)}
+                            </div>
+                            <h3 className="text-3xl font-black text-white leading-tight">{sub.label}</h3>
+                        </div>
+                        <div className="relative z-10 flex items-center justify-between">
+                            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-400">
+                                {language === 'en' ? 'Book Service' : 'Rezervo Shërbimin'}
+                            </p>
+                            <ArrowRight className="w-6 h-6 text-white opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-500" />
+                        </div>
+                    </Link>
+                ))}
+            </div>
+        </section>
+
+        {/* 6. TRUST / WHY CHOOSE US */}
+        <section className="bg-white rounded-[4rem] p-8 sm:p-20 border border-slate-100 shadow-2xl overflow-hidden relative">
+            <div className="absolute top-0 left-0 w-96 h-96 bg-brand-500/5 rounded-full blur-[100px] -ml-48 -mt-48" />
+            <div className="relative z-10 grid gap-20 lg:grid-cols-3">
+                <div className="lg:col-span-1">
+                    <p className="text-xs uppercase tracking-[0.4em] font-black text-brand-700 mb-6">{language === 'en' ? 'The Advantage' : 'Avantazhi'}</p>
+                    <h2 className="text-4xl sm:text-6xl font-black tracking-tight text-slate-950 mb-10 leading-[1.1]">
+                        {language === 'en' ? 'Why choose our marketplace?' : 'Pse të zgjidhni tregun tonë?'}
+                    </h2>
+                    <p className="text-lg text-slate-500 leading-relaxed font-medium mb-12">
+                        {language === 'en' 
+                            ? 'We connect you directly with verified local hosts to ensure authentic experiences and the best prices.' 
+                            : 'Ne ju lidhim drejtpërdrejt me hostë lokalë të verifikuar për të siguruar përvoja autentike dhe çmimet më të mira.'}
+                    </p>
+                    <Link href="/services" className="inline-flex items-center gap-4 px-10 py-5 bg-slate-950 text-white rounded-full font-black text-sm hover:bg-brand-600 transition-all duration-300 shadow-2xl hover:scale-105 active:scale-95">
+                        {language === 'en' ? 'Explore All Services' : 'Eksploro të gjitha shërbimet'} <ArrowRight className="w-5 h-5" />
+                    </Link>
+                </div>
+                
+                <div className="lg:col-span-2 grid gap-8 sm:grid-cols-2">
+                    {[
+                        { title: language === 'en' ? 'Verified Quality' : 'Cilësi e Verifikuar', desc: language === 'en' ? 'Every listing is manually reviewed for accuracy.' : 'Çdo listim shqyrtohet manualisht për saktësi.', icon: CheckCircle },
+                        { title: language === 'en' ? 'Direct Booking' : 'Rezervim Direkt', desc: language === 'en' ? 'Communicate directly with the hosts via phone or WhatsApp.' : 'Komunikoni drejtpërdrejt me hostët me telefon ose WhatsApp.', icon: Sparkles },
+                        { title: language === 'en' ? 'Local Expertise' : 'Ekspertizë Lokale', desc: language === 'en' ? 'Get insider tips from people who live in the cities you visit.' : 'Merrni këshilla nga njerëzit që jetojnë në qytetet që vizitoni.', icon: Star },
+                        { title: language === 'en' ? 'No Hidden Fees' : 'Pa Tarifa të Fshehura', desc: language === 'en' ? 'What you see is what you pay. Transparent pricing always.' : 'Ajo që shihni është ajo që paguani. Çmime transparente gjithmonë.', icon: Flame }
+                    ].map((benefit, i) => (
+                        <div key={i} className="group p-10 rounded-[3rem] bg-slate-50 border border-slate-100 hover:border-brand-300 hover:bg-white transition-all duration-500 shadow-sm hover:shadow-2xl">
+                            <div className="w-14 h-14 rounded-2xl bg-white border border-slate-100 flex items-center justify-center text-brand-600 mb-8 group-hover:scale-110 group-hover:bg-brand-600 group-hover:text-white transition duration-500 shadow-sm">
+                                <benefit.icon className="w-7 h-7" />
+                            </div>
+                            <h3 className="text-2xl font-black text-slate-950 mb-4">{benefit.title}</h3>
+                            <p className="text-base text-slate-500 leading-relaxed font-medium">{benefit.desc}</p>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </section>
+
+        {/* 7. HOST SPOTLIGHT */}
+        <section className="relative overflow-hidden rounded-[4rem] bg-slate-950 px-8 py-24 sm:px-20 sm:py-32">
+          <Image
+            src="https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&w=2000&q=80"
+            alt="Host Spotlight"
+            fill
+            className="object-cover opacity-20"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-950/80 to-transparent" />
+          <div className="relative z-10 grid gap-16 lg:grid-cols-2 lg:items-center">
+            <div className="max-w-xl">
+              <div className="inline-flex items-center gap-2 rounded-full bg-brand-500/20 border border-brand-500/30 px-4 py-1.5 text-[10px] font-black uppercase tracking-[0.3em] text-brand-400 mb-8 w-fit">
+                  <Sparkles className="w-3.5 h-3.5" />
+                  {t.host.spotlight}
               </div>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <section className="page-shell py-8 sm:py-10">
-        <div className="mb-8 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-          <div>
-            <p className="eyebrow">Popular listings</p>
-            <h2 className="section-heading mt-2">Featured marketplace picks</h2>
-          </div>
-          <p className="max-w-2xl text-sm text-slate-600">
-            These cards should feel like premium inventory from the moment they load. Strong imagery, rating context, and a direct path to details.
-          </p>
-        </div>
-        <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-          {featuredListings.length ? (
-            featuredListings.map((listing: any) => <ListingCard key={listing._id.toString()} listing={listing} />)
-          ) : (
-            <>
-              <ListingCard
-                listing={{
-                  slug: "sample-villa",
-                  title: "Oceanfront Villa Escape",
-                  location: "Mombasa",
-                  country: "Kenya",
-                  category: "Stays",
-                  subcategory: "Villas",
-                  description: "A quiet, luxury stay with sunset views and curated local experiences.",
-                  images: ["https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1200&q=80"],
-                  status: "approved",
-                  featured: true,
-                  priceFrom: 180,
-                  currency: "USD",
-                  ratingAverage: 4.9
-                }}
-              />
-              <ListingCard
-                listing={{
-                  slug: "sample-tour",
-                  title: "Cultural City Tour",
-                  location: "Stone Town",
-                  country: "Tanzania",
-                  category: "Tours",
-                  subcategory: "Cultural",
-                  description: "Walk historic streets with an expert local guide and taste regional food.",
-                  images: ["https://images.unsplash.com/photo-1548013146-72479768bada?auto=format&fit=crop&w=1200&q=80"],
-                  status: "approved",
-                  featured: true,
-                  priceFrom: 38,
-                  currency: "USD",
-                  ratingAverage: 4.8
-                }}
-              />
-              <ListingCard
-                listing={{
-                  slug: "sample-transfer",
-                  title: "Private Airport Transfer",
-                  location: "Dar es Salaam",
-                  country: "Tanzania",
-                  category: "Transport",
-                  subcategory: "Airport Transfer",
-                  description: "Reliable pickup and drop-off for travelers arriving any time of day.",
-                  images: ["https://images.unsplash.com/photo-1504215680853-026ed2a45def?auto=format&fit=crop&w=1200&q=80"],
-                  status: "approved",
-                  featured: false,
-                  priceFrom: 25,
-                  currency: "USD",
-                  ratingAverage: 4.7
-                }}
-              />
-            </>
-          )}
-        </div>
-      </section>
-
-      <section className="page-shell py-12 sm:py-14 lg:py-16">
-        <div className="surface-strong px-6 py-8 sm:px-8 sm:py-10">
-          <div className="grid gap-8 lg:grid-cols-[1.15fr_0.85fr] lg:items-center">
-            <div>
-              <p className="text-sm uppercase tracking-[0.22em] text-brand-200">Travelers choice</p>
-              <h2 className="display-font mt-3 text-3xl font-black leading-tight sm:text-4xl">
-                Awards Best of the Best for trusted tourism listings
+              <h2 className="display-font text-5xl sm:text-7xl font-black leading-[1.05] tracking-tighter text-white">
+                {t.host.title}
               </h2>
-              <p className="mt-4 max-w-2xl text-brand-50">
-                Top picks from across the marketplace, chosen by visitors, ratings, and quality moderation.
+              <p className="mt-8 text-xl text-slate-300 leading-relaxed font-medium">
+                {t.host.description}
               </p>
-              <Button href="/services" className="mt-8 bg-white text-slate-950 hover:bg-slate-50">
-                See the winners
-              </Button>
-            </div>
-            <div className="grid gap-4 sm:grid-cols-2">
-              {[
-                {
-                  title: "Verified stays",
-                  text: "Premium properties, boutique villas, and homestays."
-                },
-                {
-                  title: "Guided tours",
-                  text: "City tours, heritage walks, and nature adventures."
-                },
-                {
-                  title: "Local transport",
-                  text: "Transfers, rentals, boats, and airport pickups."
-                },
-                {
-                  title: "Editorial blog",
-                  text: "Stories, guides, and inspiration for travelers."
-                }
-              ].map((item) => (
-                <div key={item.title} className="rounded-[1.5rem] bg-white/10 p-5 backdrop-blur">
-                  <p className="text-lg font-bold">{item.title}</p>
-                  <p className="mt-2 text-sm text-brand-50">{item.text}</p>
-                </div>
-              ))}
+              <div className="mt-12 flex flex-wrap gap-6">
+                <Link
+                  href="/listings/add"
+                  className="rounded-full bg-brand-500 px-12 py-6 text-sm font-black text-slate-950 transition hover:bg-brand-400 hover:scale-105 active:scale-95 shadow-2xl shadow-brand-500/30"
+                >
+                  {t.host.button}
+                </Link>
+              </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      <section className="page-shell pb-12 sm:pb-14 lg:pb-16">
-        <div className="grid gap-8 lg:grid-cols-[0.95fr_1.05fr]">
-          <div className="surface p-5 sm:p-6">
-            <p className="eyebrow">Inspiration to get you going</p>
-            <h2 className="mt-2 text-3xl font-black tracking-tight text-slate-950">
-              Travel stories with a premium editorial feel
-            </h2>
-            <p className="mt-3 text-slate-600">
-              Use the blog to publish guides, destination tips, and seasonal recommendations.
-            </p>
+        {/* 8. BLOG (RE-PRESENTED IN NEW FORM) - CLEAN VERSION */}
+        <section className="relative overflow-hidden">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-20 relative z-10">
+            <div>
+                <p className="text-xs uppercase tracking-[0.4em] font-black text-brand-700 mb-4">{t.blog.archiveTitle}</p>
+                <h2 className="text-5xl sm:text-8xl font-black tracking-tight text-slate-950 leading-none">{t.blog.latestPub}</h2>
+            </div>
+            <Link href="/blog" className="inline-flex items-center gap-4 px-10 py-5 bg-slate-950 text-white rounded-full font-black text-sm hover:bg-brand-600 transition-all duration-300 shadow-2xl">
+                {language === 'en' ? 'Visit Journal' : 'Vizito Revistën'} <ArrowRight className="w-5 h-5" />
+            </Link>
           </div>
-          <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
-            {storyCards.map((card) => (
-              <article key={card.title} className="travel-card">
-                <Image src={card.image} alt={card.title} width={700} height={500} className="h-[220px] w-full object-cover" />
-                <div className="p-5">
-                  <h3 className="text-xl font-bold leading-snug text-slate-950">{card.title}</h3>
-                </div>
-              </article>
-            ))}
+          
+          <div className="grid gap-12 lg:grid-cols-12 relative z-10">
+            {/* Main Featured */}
+            <div className="lg:col-span-12">
+                <Link href={`/blog/${blogPosts[0]?.slug || "sample"}`} className="group relative block h-[500px] sm:h-[650px] overflow-hidden rounded-[4rem] shadow-2xl">
+                    <Image src={blogPosts[0]?.coverImage || "https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=1200&q=80"} alt="Hero Blog" fill className="object-cover transition duration-1000 group-hover:scale-105" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent" />
+                    <div className="absolute inset-0 p-10 sm:p-20 flex flex-col justify-end text-white">
+                        <div className="inline-flex items-center gap-3 rounded-full bg-brand-500 px-6 py-2 text-[10px] font-black uppercase tracking-[0.4em] mb-8 w-fit shadow-lg">
+                            {language === 'en' ? 'Featured Story' : 'Historia e rekomanduar'}
+                        </div>
+                        <h3 className="text-4xl sm:text-7xl font-black mb-8 leading-[1] group-hover:text-brand-400 transition duration-500">{blogPosts[0]?.title || blogFallbacks[0].title}</h3>
+                        <p className="text-slate-200 text-xl mb-10 line-clamp-2 max-w-3xl leading-relaxed font-medium">
+                            {blogPosts[0]?.excerpt || blogFallbacks[0].excerpt}
+                        </p>
+                        <span className="inline-flex items-center gap-4 text-sm font-black uppercase tracking-widest text-white border-b-2 border-brand-500 pb-2 w-fit">
+                            {t.blog.readStory} <ArrowRight className="w-5 h-5" />
+                        </span>
+                    </div>
+                </Link>
+            </div>
+            
+            {/* Small Cards below */}
+            <div className="lg:col-span-12 grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
+                {(blogPosts.length > 1 ? blogPosts.slice(1, 4) : blogFallbacks).map((post: any) => (
+                    <Link
+                        key={post._id?.toString?.() || post.slug}
+                        href={`/blog/${post.slug}`}
+                        className="group flex flex-col gap-6 surface p-8 border-none hover:bg-slate-50 transition duration-500 rounded-[3rem] shadow-sm hover:shadow-xl"
+                    >
+                        <div className="relative w-full aspect-[16/10] rounded-[2.5rem] overflow-hidden flex-shrink-0">
+                            <Image src={post.coverImage || "https://images.unsplash.com/photo-1507525428034-b723cf961d3e"} alt={post.title} fill className="object-cover transition duration-700 group-hover:scale-110" />
+                        </div>
+                        <div className="flex flex-col min-w-0">
+                            <p className="text-[10px] uppercase font-black text-brand-700 tracking-[0.4em] mb-3">
+                                {post.createdAt ? new Date(post.createdAt).toLocaleDateString() : "Editorial"}
+                            </p>
+                            <h4 className="text-2xl font-black text-slate-950 line-clamp-2 group-hover:text-brand-700 transition duration-300 leading-tight mb-4">{post.title}</h4>
+                            <p className="text-base text-slate-500 line-clamp-2 leading-relaxed font-medium mb-6">{post.excerpt}</p>
+                            <span className="text-xs font-black uppercase tracking-widest text-slate-950 group-hover:text-brand-700 flex items-center gap-2">
+                                {language === 'en' ? 'Full Story' : 'Lexo të plotë'} <ArrowRight className="w-4 h-4" />
+                            </span>
+                        </div>
+                    </Link>
+                ))}
+            </div>
           </div>
-        </div>
-      </section>
-
-      <section className="page-shell pb-12 sm:pb-14 lg:pb-16">
-        <div className="mb-8 rounded-[2rem] border border-slate-200 bg-white p-5 shadow-soft sm:p-6">
-          <p className="eyebrow">Journal</p>
-          <h2 className="display-font text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">Latest travel stories</h2>
-          <p className="mt-2 max-w-2xl text-slate-600">
-            Read destination guides, listing tips, and travel ideas designed to help visitors and hosts make better decisions.
-          </p>
-        </div>
-        <div className="grid gap-6 md:grid-cols-3">
-          {blogPosts.length ? (
-            blogPosts.map((post: any) => (
-              <article key={post._id.toString()} className="travel-card p-6">
-                <p className="text-sm text-slate-500">{new Date(post.createdAt).toLocaleDateString()}</p>
-                <h3 className="mt-3 text-xl font-bold">{post.title}</h3>
-                <p className="mt-3 text-sm text-slate-600">{post.excerpt}</p>
-                <Button href={`/blog/${post.slug}`} variant="ghost" className="mt-4 px-0">
-                  Read more
-                </Button>
-              </article>
-            ))
-          ) : (
-            <article className="travel-card p-6 md:col-span-3">
-              <h3 className="text-xl font-bold">No published posts yet</h3>
-              <p className="mt-2 text-sm text-slate-600">Use the blog section to share destination guides and booking tips.</p>
-            </article>
-          )}
-        </div>
-      </section>
-    </>
+        </section>
+      </div>
+    </main>
   );
 }
