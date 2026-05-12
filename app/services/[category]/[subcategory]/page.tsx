@@ -75,7 +75,7 @@ export default async function SubcategoryPage({
             <div className="max-w-2xl text-center md:text-left">
                 <h2 className="text-2xl sm:text-3xl font-black text-slate-950 mb-4">Explore {listings.length} premium {subcategoryLabel.toLowerCase()}</h2>
                 <p className="text-slate-600 leading-relaxed">
-                    We've curated the best {subcategoryLabel.toLowerCase()} across Albania. Each listing is verified for quality and trust to ensure you have the best experience.
+                    We&apos;ve curated the best {subcategoryLabel.toLowerCase()} across Albania. Each listing is verified for quality and trust to ensure you have the best experience.
                 </p>
             </div>
             <div className="flex flex-col items-center gap-2 rounded-[2rem] bg-brand-50 border border-brand-100 px-10 py-6 min-w-[180px]">

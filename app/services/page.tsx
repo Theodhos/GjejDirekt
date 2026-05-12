@@ -86,7 +86,7 @@ export default function ServicesPage() {
             <div className="surface p-8 sm:p-12 border-none shadow-2xl">
                 <div className="flex items-center justify-between gap-6 mb-10">
                     <div>
-                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-600 mb-2">Editor's Picks</p>
+                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-600 mb-2">Editor&apos;s Picks</p>
                         <h2 className="text-3xl font-black text-slate-950 tracking-tight">Hand-picked Services</h2>
                     </div>
                     <div className="flex gap-2">

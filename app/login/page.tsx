@@ -61,7 +61,7 @@ export default function LoginPage() {
 
             <div className="mt-8 flex flex-col gap-4">
                 <button className="w-full flex items-center justify-center gap-4 rounded-2xl border-2 border-slate-100 p-4 font-black text-slate-950 hover:bg-slate-50 transition-all shadow-sm">
-                    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" className="w-5 h-5" />
+                    <Image src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" width={20} height={20} />
                     {language === 'en' ? 'Continue with Google' : 'Vazhdoni me Google'}
                 </button>
                 

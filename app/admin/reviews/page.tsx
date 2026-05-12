@@ -56,7 +56,7 @@ export default async function AdminReviewsPage() {
                         
                         <div className="bg-slate-50 rounded-2xl p-5 border border-slate-100 italic text-slate-700 mb-4">
                             <MessageSquare className="w-5 h-5 text-slate-300 mb-3" />
-                            "{review.comment}"
+                            &quot;{review.comment}&quot;
                         </div>
 
                         <div className="flex items-center justify-between gap-4 pt-4 border-t border-slate-100">

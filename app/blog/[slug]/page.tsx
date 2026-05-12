@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { CalendarDays, UserRound, ArrowLeft, Share2, Bookmark } from "lucide-react";
+import { CalendarDays, UserRound, ArrowLeft, ArrowRight, Share2, Bookmark } from "lucide-react";
 import { connectDB } from "@/lib/db";
 import BlogPost from "@/models/BlogPost";
 import Link from "next/link";

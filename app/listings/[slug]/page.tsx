@@ -128,7 +128,7 @@ export default async function ListingDetailPage({ params }: { params: { slug: st
       {/* 2. Photo Space - Elegant Grid */}
       <section className="page-shell mt-12">
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-            {gallery.map((img, i) => (
+            {gallery.map((img: string, i: number) => (
                 <div key={i} className={`relative overflow-hidden rounded-[3rem] shadow-2xl group transition-all duration-500 hover:z-10 hover:scale-105 ${i === 0 ? 'md:col-span-2 md:row-span-2 aspect-square' : 'aspect-square'}`}>
                     <Image src={img} alt={`${listing.title} ${i}`} fill className="object-cover" />
                     <div className="absolute inset-0 bg-slate-950/0 group-hover:bg-slate-950/20 transition duration-500" />

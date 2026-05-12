@@ -89,8 +89,8 @@ export default async function AdminPage() {
   const totalFavorites = favoriteStats[0]?.total || 0;
   const approvalRate = totalListings ? Math.round((approvedListings / totalListings) * 100) : 0;
   const displayName = auth.name || auth.email;
-  const serializedQueue = recentQueue.map(item => ({ ...item, _id: item._id.toString() }));
-  const serializedBlogs = recentBlogs.map(item => ({ ...item, _id: item._id.toString() }));
+  const serializedQueue = recentQueue.map((item: any) => ({ ...item, _id: item._id.toString() }));
+  const serializedBlogs = recentBlogs.map((item: any) => ({ ...item, _id: item._id.toString() }));
 
   return (
     <section className="page-shell py-8 sm:py-10">
