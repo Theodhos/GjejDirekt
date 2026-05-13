@@ -201,7 +201,7 @@ export default function CheckoutPage() {
                         <Image src="https://www.paypalobjects.com/webstatic/mktg/logo/pp_cc_mark_111x69.jpg" alt="PayPal" fill className="object-contain" />
                       </div>
                       <p className="text-slate-500 font-medium mb-10">Securely pay using your PayPal account or saved cards.</p>
-                      <PayPalScriptProvider options={{ "client-id": process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID || "test" , currency: "EUR" }}>
+                      <PayPalScriptProvider options={{ clientId: process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID || "test" , currency: "EUR" }}>
                         <PayPalButtons 
                           style={{ layout: "vertical", shape: "pill", label: "pay" }}
                           createOrder={(data, actions) => {
