@@ -49,7 +49,7 @@ export default function Header() {
 
   const publicLinks = [
     { href: "/", label: t.nav.home },
-    { href: "/services", label: t.nav.services },
+    { href: "/packet", label: language === 'en' ? 'Packet' : 'Paketat' },
     { href: "/blog", label: t.nav.blog },
     { href: "/listings/add", label: t.nav.addListing }
   ];
@@ -67,6 +67,7 @@ export default function Header() {
         ]
     : [];
 
+  
   return (
     <header className="sticky top-0 z-50 border-b border-slate-900/5 bg-white/80 backdrop-blur-2xl">
       <div className="page-shell flex items-center justify-between gap-4 py-4">

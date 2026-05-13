@@ -34,7 +34,7 @@ export default function CitySlider() {
         {albaniaCities.map((city) => (
           <Link
             key={city.value}
-            href={`/services?location=${encodeURIComponent(city.label)}`}
+            href={`/city/${city.value}`}
             className="inline-flex min-w-max items-center gap-2 rounded-full border border-slate-200 bg-white px-5 py-2.5 text-sm font-bold text-slate-700 transition hover:border-brand-500 hover:text-brand-700 hover:shadow-lg hover:-translate-y-0.5"
           >
             <MapPin className="w-4 h-4 text-brand-500" />

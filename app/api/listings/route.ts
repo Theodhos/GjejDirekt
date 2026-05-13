@@ -75,7 +75,20 @@ export async function GET(request: Request) {
     const url = new URL(request.url);
     const { query, sortQuery } = buildQuery(url);
     const listings = await Listing.find(query).sort(sortQuery).populate("owner", "name email role").lean<any>();
-    return NextResponse.json({ listings });
+
+    // Sort by package tier for better visibility
+    const sorted = listings.sort((a: any, b: any) => {
+      const packageOrder = { features: 0, trading: 1, verify: 2, null: 3 };
+      const tierA = packageOrder[a.package as keyof typeof packageOrder] ?? 3;
+      const tierB = packageOrder[b.package as keyof typeof packageOrder] ?? 3;
+
+      if (tierA !== tierB) return tierA - tierB;
+
+      // Within same tier, sort by creation date (newest first)
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+    });
+
+    return NextResponse.json({ listings: sorted });
   } catch (error) {
     return NextResponse.json({ error: error instanceof Error ? error.message : "Failed to load listings" }, { status: 500 });
   }
@@ -90,7 +103,7 @@ export async function POST(request: Request) {
     const body = await request.json();
     const title = String(body.title || "").trim();
 
-    if (!title || !body.description || !body.category || !body.subcategory || !body.location) {
+    if (!title || !body.description || !body.category || !body.subcategory || !body.location || !body.contactPhone || !body.bannerImage) {
       return NextResponse.json({ error: "Missing required fields." }, { status: 400 });
     }
 
@@ -110,25 +123,22 @@ export async function POST(request: Request) {
       location: body.location,
       country: body.country || "",
       address: body.address || "",
+      bannerImage: body.bannerImage || "",
+      photos: Array.isArray(body.photos) ? body.photos : parseList(body.photos),
       images: Array.isArray(body.images) ? body.images : [],
-      price: body.price ? Number(body.price) : undefined,
-      priceFrom: body.priceFrom ? Number(body.priceFrom) : undefined,
-      currency: body.currency || "USD",
-      amenities: parseList(body.amenities),
-      tags: parseList(body.tags),
-      highlights: parseList(body.highlights),
-      coordinates: parseCoordinates(body as Record<string, unknown>),
+      priceFrom: parseMaybeNumber(body.priceFrom),
+      currency: body.currency || "€",
+      businessHours: body.businessHours || "",
       contactInfo: {
         phone: body.contactPhone || "",
         email: body.contactEmail || "",
         website: body.website || ""
       },
       socialLinks: {
-        facebook: body.facebook || "",
-        instagram: body.instagram || "",
-        tiktok: body.tiktok || "",
-        x: body.x || ""
+        instagram: body.instagramLink || "",
+        facebook: body.facebookLink || "",
       },
+      googleMapsLink: body.googleMapsLink || "",
       status: "pending"
     });
 
@@ -143,20 +153,19 @@ export async function POST(request: Request) {
       meta: { category: listing.category, subcategory: listing.subcategory, location: listing.location }
     });
 
-    const pendingRecipients = [process.env.ADMIN_EMAIL, process.env.LISTING_PENDING_NOTIFY_EMAIL].filter(
+    const pendingRecipients = [process.env.ADMIN_EMAIL].filter(
       (item): item is string => Boolean(item && item.trim())
     );
+
     if (pendingRecipients.length) {
-      await sendMail({
-        to: pendingRecipients,
-        subject: "New listing awaiting approval",
-        html: `
-          <p>A new listing titled <strong>${listing.title}</strong> was submitted and is waiting for moderation.</p>
-          <p><strong>City:</strong> ${listing.location}</p>
-          <p><strong>Category:</strong> ${listing.category}</p>
-          <p><strong>Subcategory:</strong> ${listing.subcategory}</p>
-        `
-      }).catch(() => undefined);
+      const { sendListingSubmissionEmail } = await import("@/lib/mail");
+      await sendListingSubmissionEmail({
+        listingTitle: listing.title,
+        listingId: listing._id.toString(),
+        ownerName: auth.name || auth.email,
+        category: listing.category,
+        location: listing.location
+      }).catch(err => console.error("Email send error:", err));
     }
 
     const owner = await User.findById(auth.id).lean<any>();

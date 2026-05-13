@@ -1,6 +1,7 @@
 import { Schema, model, models, type Document } from "mongoose";
 
 export type ListingStatus = "pending" | "approved" | "rejected";
+export type PackageTier = "verify" | "trading" | "features" | null;
 
 export interface IListing extends Document {
   owner: Schema.Types.ObjectId;
@@ -12,6 +13,8 @@ export interface IListing extends Document {
   location: string;
   country?: string;
   address?: string;
+  bannerImage?: string;
+  photos: string[];
   images: string[];
   price?: number;
   priceFrom?: number;
@@ -30,15 +33,16 @@ export interface IListing extends Document {
     tiktok?: string;
     x?: string;
   };
-  coordinates?: {
-    lat: number;
-    lng: number;
-  };
+  googleMapsLink?: string;
   status: ListingStatus;
   views: number;
   featured: boolean;
   ratingAverage: number;
   reviewCount: number;
+  businessHours?: string;
+  package?: PackageTier;
+  packageExpiryDate?: Date;
+  packagePurchaseDate?: Date;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -54,6 +58,8 @@ const ListingSchema = new Schema<IListing>(
     location: { type: String, required: true, index: true },
     country: { type: String, index: true },
     address: { type: String },
+    bannerImage: { type: String },
+    photos: { type: [String], default: [] },
     images: [{ type: String, required: true }],
     price: { type: Number },
     priceFrom: { type: Number },
@@ -72,10 +78,7 @@ const ListingSchema = new Schema<IListing>(
       tiktok: String,
       x: String
     },
-    coordinates: {
-      lat: Number,
-      lng: Number
-    },
+    googleMapsLink: { type: String },
     status: {
       type: String,
       enum: ["pending", "approved", "rejected"],
@@ -83,10 +86,17 @@ const ListingSchema = new Schema<IListing>(
       index: true
     },
     views: { type: Number, default: 0 },
-    featured: { type: Boolean, default: false }
-    ,
+    featured: { type: Boolean, default: false },
     ratingAverage: { type: Number, default: 0 },
-    reviewCount: { type: Number, default: 0 }
+    reviewCount: { type: Number, default: 0 },
+    businessHours: { type: String },
+    package: {
+      type: String,
+      enum: ["verify", "trading", "features"],
+      default: null
+    },
+    packageExpiryDate: { type: Date },
+    packagePurchaseDate: { type: Date }
   },
   { timestamps: true }
 );

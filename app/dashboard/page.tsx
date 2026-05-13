@@ -51,6 +51,7 @@ export default async function DashboardPage() {
 
             <div className="mt-6 flex flex-col gap-3 sm:flex-row">
               <Button href="/listings/add">Add Listing</Button>
+              <Button href="/packages">Buy Package</Button>
               <Button href="/services" variant="ghost">
                 Explore services
               </Button>

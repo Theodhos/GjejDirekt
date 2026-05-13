@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { BarChart3, CheckCircle2, Clock3, Flame, LayoutDashboard, PlusCircle, ShieldCheck, Users } from "lucide-react";
+import { BarChart3, CheckCircle2, Clock3, Flame, LayoutDashboard, PlusCircle, ShieldCheck, Users, AlertTriangle } from "lucide-react";
 import { getAuthUser } from "@/lib/auth";
 import { connectDB } from "@/lib/db";
 import Listing from "@/models/Listing";
@@ -8,8 +8,10 @@ import User from "@/models/User";
 import Review from "@/models/Review";
 import BlogPost from "@/models/BlogPost";
 import Activity from "@/models/Activity";
+import Report from "@/models/Report";
 import AdminQueue from "@/components/dashboard/AdminQueue";
 import BlogStudio from "@/components/dashboard/BlogStudio";
+import AdminReports from "@/components/dashboard/AdminReports";
 
 export const dynamic = "force-dynamic";
 
@@ -45,15 +47,13 @@ export default async function AdminPage() {
     totalListings,
     pendingListings,
     approvedListings,
-    rejectedListings,
+    totalReports,
     totalReviews,
     totalBlogs,
     featuredListings,
     recentBlogs,
     recentQueue,
-    recentUsers,
-    recentListings,
-    recentReviews,
+    recentReports,
     recentActivities,
     favoriteStats
   ] = await Promise.all([
@@ -61,15 +61,13 @@ export default async function AdminPage() {
     Listing.countDocuments(),
     Listing.countDocuments({ status: "pending" }),
     Listing.countDocuments({ status: "approved" }),
-    Listing.countDocuments({ status: "rejected" }),
+    Report.countDocuments({ status: "pending" }),
     Review.countDocuments(),
     BlogPost.countDocuments(),
     Listing.countDocuments({ status: "approved", featured: true }),
     BlogPost.find().sort({ createdAt: -1 }).limit(5).populate("author", "name").lean<any>(),
     Listing.find({ status: "pending" }).sort({ createdAt: -1 }).limit(8).lean<any>(),
-    User.find().sort({ createdAt: -1 }).limit(6).lean<any>(),
-    Listing.find().sort({ createdAt: -1 }).limit(6).populate("owner", "name email role").lean<any>(),
-    Review.find().sort({ createdAt: -1 }).limit(6).populate("user", "name").populate("listing", "title slug").lean<any>(),
+    Report.find({ status: "pending" }).sort({ createdAt: -1 }).populate("reporter", "name email").populate("listing", "title slug").limit(10).lean<any>(),
     Activity.find().sort({ createdAt: -1 }).limit(10).lean<any>(),
     User.aggregate([
       {
@@ -141,7 +139,7 @@ export default async function AdminPage() {
           { icon: ShieldCheck, label: "Listings", value: totalListings, accent: "bg-brand-50 text-brand-700", href: "/admin/listings" },
           { icon: Clock3, label: "Pending", value: pendingListings, accent: "bg-amber-50 text-amber-700", href: "/admin/listings?status=pending" },
           { icon: CheckCircle2, label: "Approved", value: approvedListings, accent: "bg-emerald-50 text-emerald-700", href: "/admin/listings?status=approved" },
-          { icon: Flame, label: "Featured", value: featuredListings, accent: "bg-fuchsia-50 text-fuchsia-700", href: "/admin/listings?featured=true" },
+          { icon: AlertTriangle, label: "Reports", value: totalReports, accent: "bg-red-50 text-red-700", href: "#reports-section" },
           { icon: BarChart3, label: "Reviews", value: totalReviews, accent: "bg-slate-100 text-slate-700", href: "/admin/reviews" },
           { icon: LayoutDashboard, label: "Blogs", value: totalBlogs, accent: "bg-violet-50 text-violet-700", href: "#blog-studio" },
           { icon: Users, label: "Favorites", value: totalFavorites, accent: "bg-cyan-50 text-cyan-700", href: "#" }
@@ -156,6 +154,23 @@ export default async function AdminPage() {
             </div>
           </Link>
         ))}
+      </div>
+
+      <div className="mt-12" id="reports-section">
+        <div className="surface p-8 sm:p-10 shadow-2xl border-none bg-red-50/20 border-red-100">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-10 pb-10 border-b border-red-100/50">
+            <div>
+              <p className="eyebrow text-red-600 flex items-center gap-2">
+                <AlertTriangle className="w-4 h-4" /> Community reports
+              </p>
+              <h2 className="mt-2 text-3xl font-black text-slate-950">Reported posts</h2>
+              <p className="mt-2 text-slate-500">There are {totalReports} reports waiting for review.</p>
+            </div>
+          </div>
+          <div className="mt-6">
+            <AdminReports reports={recentReports.map((r: any) => ({ ...r, _id: r._id.toString() }))} />
+          </div>
+        </div>
       </div>
 
       <div className="mt-8">

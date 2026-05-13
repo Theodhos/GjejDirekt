@@ -6,6 +6,7 @@ import Image from "next/image";
 import { useLanguage } from "@/context/LanguageContext";
 import { translations } from "@/lib/dictionary";
 import { Star, CheckCircle } from "lucide-react";
+import SocialLogin from "@/components/auth/SocialLogin";
 
 export default function LoginPage() {
   const { language } = useLanguage();
@@ -60,11 +61,7 @@ export default function LoginPage() {
             </div>
 
             <div className="mt-8 flex flex-col gap-4">
-                <button className="w-full flex items-center justify-center gap-4 rounded-2xl border-2 border-slate-100 p-4 font-black text-slate-950 hover:bg-slate-50 transition-all shadow-sm">
-                    <Image src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" width={20} height={20} />
-                    {language === 'en' ? 'Continue with Google' : 'Vazhdoni me Google'}
-                </button>
-                
+                <SocialLogin />
             </div>
             
             <p className="mt-8 text-center text-sm text-slate-500 font-medium">

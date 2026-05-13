@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, MapPin, Sparkles, ChevronLeft, ChevronRight, CheckCircle, Flame, Star, Bed, Utensils, Car, Plane, Anchor, Truck, Calendar, Music, Ticket } from "lucide-react";
+import { ArrowRight, MapPin, Sparkles, ChevronLeft, ChevronRight, CheckCircle, Flame, Star, Bed, Utensils, Car, Plane, Anchor, Truck, Calendar, Music, Ticket, ShoppingBag, Camera } from "lucide-react";
 import HomeSearchHero from "@/components/home/HomeSearchHero";
 import HorizontalRail from "@/components/home/HorizontalRail";
 import ListingCard from "@/components/ListingCard";
@@ -10,7 +10,7 @@ import { albaniaCities } from "@/lib/albania-cities";
 import { categories } from "@/lib/constants";
 import { useLanguage } from "@/context/LanguageContext";
 import { translations } from "@/lib/dictionary";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 
 export default function HomePage() {
   const { language } = useLanguage();
@@ -43,13 +43,43 @@ export default function HomePage() {
   
   const accommodationCategory = categories.find(c => c.value === "akomodim");
   const foodCategory = categories.find(c => c.value === "restorante");
+  const eventCategory = categories.find(c => c.value === "evente");
   const transportCategory = categories.find(c => c.value === "transport");
+  const serviceCategory = categories.find(c => c.value === "sherbime-turistike");
+  const localCategory = categories.find(c => c.value === "produkte-lokale");
+  const attractionCategory = categories.find(c => c.value === "atraksione");
 
   const blogFallbacks = [
     { slug: "sample-guide-1", title: "How to choose the right city first", excerpt: "Start with location, then move into the right service category." },
     { slug: "sample-guide-2", title: "What to look for in a trusted listing", excerpt: "Quality, clarity, and trust signals make booking easier." },
     { slug: "sample-guide-3", title: "Planning food, stays, and transport together", excerpt: "A practical flow for travelers who want better structure." }
   ];
+
+  const railsRef = useRef<Record<string, HTMLDivElement | null>>({});
+
+  const scrollRail = (id: string, direction: 'left' | 'right') => {
+    const rail = railsRef.current[id];
+    if (!rail) return;
+    const offset = direction === 'left' ? -420 : 420;
+    rail.scrollBy({ left: offset, behavior: 'smooth' });
+  };
+
+  const normalizeValue = (value: unknown) => String(value || "").toLowerCase();
+
+  const getCategoryListings = (category: any) => {
+    if (!category) return [];
+    const normalizedCategory = normalizeValue(category.value);
+    const normalizedLabel = normalizeValue(category.label);
+
+    return listings.filter((listing: any) => {
+      const listingCategory = normalizeValue(listing.category);
+      return (
+        listingCategory === normalizedCategory ||
+        listingCategory === normalizedLabel ||
+        category.aliases.some((alias: string) => alias === listingCategory)
+      );
+    }).slice(0, 12);
+  };
 
   const getTransportIcon = (val: string) => {
     if (val.includes('aeroport')) return <Plane className="w-8 h-8" />;
@@ -73,7 +103,7 @@ export default function HomePage() {
           {albaniaCities.slice(0, 8).map((city) => (
             <Link
               key={city.value}
-              href={`/services?location=${encodeURIComponent(city.label)}`}
+              href={`/city/${city.value}`}
               className="group min-w-[280px] overflow-hidden rounded-[2.5rem] border border-slate-200 bg-white transition hover:-translate-y-2 hover:border-brand-300 hover:shadow-2xl"
             >
               <div className="relative aspect-[16/10]">
@@ -88,162 +118,122 @@ export default function HomePage() {
           ))}
         </HorizontalRail>
 
-        {/* 2. ACCOMMODATION */}
-        <section>
-            <div className="mb-12">
-                <div className="inline-flex items-center gap-2 rounded-full bg-blue-50 px-4 py-1.5 text-[10px] font-black uppercase tracking-[0.2em] text-blue-700 mb-6">
-                    <Bed className="w-3.5 h-3.5" />
-                    {language === 'en' ? 'Accommodation' : 'Akomodimi'}
-                </div>
-                <h2 className="text-4xl sm:text-6xl font-black tracking-tight text-slate-950 mb-6">{t.home.whereToSleepTitle}</h2>
-                <p className="max-w-3xl text-lg text-slate-500 leading-relaxed font-medium">
-                    {t.home.whereToSleepDesc}
-                </p>
-            </div>
-            
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-                {accommodationCategory?.subcategories.map(sub => (
-                    <Link 
-                        key={sub.value} 
-                        href={`/categories/akomodim/${sub.value}`}
-                        className="group relative h-64 overflow-hidden rounded-[2.5rem] bg-slate-100 transition hover:-translate-y-2 hover:shadow-2xl"
-                    >
-                        <Image 
-                            src={`https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80`} 
-                            alt={sub.label} 
-                            fill 
-                            className="object-cover transition duration-700 group-hover:scale-110 opacity-80" 
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/20 to-transparent" />
-                        <div className="absolute inset-0 flex flex-col justify-end p-8">
-                            <h3 className="text-2xl font-black text-white">{sub.label}</h3>
-                            <p className="text-xs font-bold text-slate-300 uppercase tracking-widest mt-2 flex items-center gap-2 group-hover:gap-4 transition-all">
-                                {t.common.explore} <ArrowRight className="w-3.5 h-3.5" />
-                            </p>
-                        </div>
-                    </Link>
-                ))}
-            </div>
-        </section>
+        {[
+          {
+            id: "akomodim",
+            category: accommodationCategory,
+            eyebrow: language === 'en' ? 'Accommodation' : 'Akomodimi',
+            title: t.home.whereToSleepTitle,
+            description: t.home.whereToSleepDesc,
+            accent: 'bg-blue-50 text-blue-700',
+            fallbackImage: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80'
+          },
+          {
+            id: "restorante",
+            category: foodCategory,
+            eyebrow: language === 'en' ? 'Food & Drink' : 'Ushqimi dhe pija',
+            title: t.home.whereToEatTitle,
+            description: t.home.whereToEatDesc,
+            accent: 'bg-orange-50 text-orange-700',
+            fallbackImage: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=600&q=80'
+          },
+          {
+            id: "evente",
+            category: eventCategory,
+            eyebrow: language === 'en' ? 'Events' : 'Eventet',
+            title: t.home.eventsTitle,
+            description: t.home.eventsDesc,
+            accent: 'bg-brand-50 text-brand-700',
+            fallbackImage: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=600&q=80'
+          },
+          {
+            id: "transport",
+            category: transportCategory,
+            eyebrow: language === 'en' ? 'Transportation' : 'Transporti',
+            title: t.home.transportTitle,
+            description: t.home.transportDesc,
+            accent: 'bg-brand-50 text-brand-700',
+            fallbackImage: 'https://images.unsplash.com/photo-1504215680853-026ed2a45def?auto=format&fit=crop&w=600&q=80'
+          },
+          {
+            id: "sherbime-turistike",
+            category: serviceCategory,
+            eyebrow: language === 'en' ? 'Tourism Services' : 'Shërbime Turistike',
+            title: language === 'en' ? 'Local Tourism Services' : 'Shërbimet Turistike Lokale',
+            description: language === 'en'
+              ? 'Browse local tourism services in a design that matches the rest of the homepage.'
+              : 'Shfletoni shërbimet turistike lokale me stil të njëjtë si pjesët e tjera.',
+            accent: 'bg-emerald-50 text-emerald-700',
+            fallbackImage: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=600&q=80'
+          },
+          {
+            id: "produkte-lokale",
+            category: localCategory,
+            eyebrow: language === 'en' ? 'Local Products' : 'Produkte Lokale',
+            title: language === 'en' ? 'Shop Local Products' : 'Produkte Lokale',
+            description: language === 'en'
+              ? 'Discover artisan products, souvenirs and local specialties.'
+              : 'Zbuloni produkte artizanale, suvenire dhe specialitete lokale.',
+            accent: 'bg-cyan-50 text-cyan-700',
+            fallbackImage: 'https://images.unsplash.com/photo-1498654896293-37aacf113fd9?auto=format&fit=crop&w=600&q=80'
+          },
+          {
+            id: "atraksione",
+            category: attractionCategory,
+            eyebrow: language === 'en' ? 'Attractions' : 'Atraksione',
+            title: language === 'en' ? 'Explore Attractions' : 'Atraksione për të Eksploruar',
+            description: language === 'en'
+              ? 'Find top places, museums, and outdoor activities.'
+              : 'Gjeni vendet kryesore, muzeun dhe aktivitete jashtë.',
+            accent: 'bg-violet-50 text-violet-700',
+            fallbackImage: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=600&q=80'
+          }
+        ].map((section) => {
+          const categoryListings = getCategoryListings(section.category);
+          const showFallback = categoryListings.length === 0;
 
-        {/* 3. FOOD & DRINK */}
-        <section>
-            <div className="mb-12">
-                <div className="inline-flex items-center gap-2 rounded-full bg-orange-50 px-4 py-1.5 text-[10px] font-black uppercase tracking-[0.2em] text-orange-700 mb-6">
-                    <Utensils className="w-3.5 h-3.5" />
-                    {language === 'en' ? 'Food & Drink' : 'Ushqimi dhe pija'}
-                </div>
-                <h2 className="text-4xl sm:text-6xl font-black tracking-tight text-slate-950 mb-6">{t.home.whereToEatTitle}</h2>
-                <p className="max-w-3xl text-lg text-slate-500 leading-relaxed font-medium">
-                    {t.home.whereToEatDesc}
-                </p>
-            </div>
-            
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-                {foodCategory?.subcategories.map(sub => (
-                    <Link 
-                        key={sub.value} 
-                        href={`/categories/restorante/${sub.value}`}
-                        className="group relative h-72 overflow-hidden rounded-[2.5rem] bg-slate-100 transition hover:-translate-y-2 hover:shadow-2xl"
-                    >
-                        <Image 
-                            src={`https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=600&q=80`} 
-                            alt={sub.label} 
-                            fill 
-                            className="object-cover transition duration-700 group-hover:scale-110 opacity-80" 
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/20 to-transparent" />
-                        <div className="absolute inset-0 flex flex-col justify-end p-8">
-                            <h3 className="text-2xl font-black text-white">{sub.label}</h3>
-                            <p className="text-xs font-bold text-slate-300 uppercase tracking-widest mt-2 flex items-center gap-2 group-hover:gap-4 transition-all">
-                                {t.common.explore} <ArrowRight className="w-3.5 h-3.5" />
-                            </p>
-                        </div>
-                    </Link>
-                ))}
-            </div>
-        </section>
-
-        {/* 4. NEW: EVENTS SECTION - CLEAN VERSION */}
-        <section className="relative overflow-hidden">
-            <div className="relative z-10">
-                <div className="mb-16">
-                    <div className="inline-flex items-center gap-2 rounded-full bg-brand-50 px-4 py-1.5 text-[10px] font-black uppercase tracking-[0.3em] text-brand-700 mb-8">
-                        <Calendar className="w-3.5 h-3.5" />
-                        {language === 'en' ? 'What\'s On' : 'Çfarë po ndodh'}
+          return (
+            <HorizontalRail
+              key={section.id}
+              id={section.id}
+              eyebrow={section.eyebrow}
+              title={section.title}
+              description={section.description}
+            >
+              {showFallback ? (
+                section.category?.subcategories.map((sub) => (
+                  <Link
+                    key={sub.value}
+                    href={`/categories/${section.category?.value}/${sub.value}`}
+                    className="min-w-[320px] max-w-[320px] shrink-0 snap-start group relative overflow-hidden rounded-[2.5rem] bg-slate-100 transition hover:-translate-y-2 hover:shadow-2xl"
+                  >
+                    <Image
+                      src={section.fallbackImage}
+                      alt={sub.label}
+                      fill
+                      className="object-cover transition duration-700 group-hover:scale-110 opacity-80"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/20 to-transparent" />
+                    <div className="absolute inset-0 flex flex-col justify-end p-8">
+                      <h3 className="text-2xl font-black text-white">{sub.label}</h3>
+                      <p className="text-xs font-bold text-slate-300 uppercase tracking-widest mt-2 flex items-center gap-2 group-hover:gap-4 transition-all">
+                        {t.common.explore} <ArrowRight className="w-3.5 h-3.5" />
+                      </p>
                     </div>
-                    <h2 className="text-5xl sm:text-7xl font-black tracking-tight text-slate-950 mb-6 leading-none">{t.home.eventsTitle}</h2>
-                    <p className="max-w-2xl text-xl text-slate-500 font-medium leading-relaxed">
-                        {t.home.eventsDesc}
-                    </p>
-                </div>
+                  </Link>
+                ))
+              ) : (
+                categoryListings.map((listing) => (
+                  <div key={listing._id} className="min-w-[280px] max-w-[280px] shrink-0 snap-start">
+                    <ListingCard listing={listing} />
+                  </div>
+                ))
+              )}
+            </HorizontalRail>
+          );
+        })}
 
-                <div className="grid gap-10 lg:grid-cols-3">
-                    {[
-                        { title: 'Tirana Jazz Festival', date: 'July 15-20', img: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=800&q=80', icon: Music },
-                        { title: 'Kala Festival', date: 'June 01-08', img: 'https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?auto=format&fit=crop&w=800&q=80', icon: Ticket },
-                        { title: 'Beer Fest Korca', date: 'August 12-16', img: 'https://images.unsplash.com/photo-1538332576228-eb5b4c4de6f5?auto=format&fit=crop&w=800&q=80', icon: Star }
-                    ].map((event, i) => (
-                        <div key={i} className="group relative aspect-[4/5] overflow-hidden rounded-[3rem] bg-slate-900 border border-slate-800 transition hover:-translate-y-4 hover:border-brand-500 hover:shadow-2xl hover:shadow-brand-500/20">
-                            <Image src={event.img} alt={event.title} fill className="object-cover transition duration-700 group-hover:scale-110 opacity-50 group-hover:opacity-80" />
-                            <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent" />
-                            <div className="absolute top-8 left-8">
-                                <div className="w-12 h-12 rounded-2xl bg-brand-500 flex items-center justify-center text-white shadow-xl">
-                                    <event.icon className="w-6 h-6" />
-                                </div>
-                            </div>
-                            <div className="absolute inset-0 flex flex-col justify-end p-10">
-                                <p className="text-xs font-black uppercase tracking-widest text-brand-400 mb-3">{event.date}</p>
-                                <h3 className="text-3xl font-black text-white mb-6 group-hover:text-brand-400 transition">{event.title}</h3>
-                                <Link href="/services?category=evente" className="inline-flex items-center gap-3 text-xs font-black uppercase tracking-widest text-white border-b-2 border-brand-500 pb-1 w-fit">
-                                    {language === 'en' ? 'Get Tickets' : 'Merr Bileta'} <ArrowRight className="w-4 h-4" />
-                                </Link>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            </div>
-        </section>
-
-        {/* 5. TRANSPORT */}
-        <section>
-            <div className="mb-12 text-center max-w-4xl mx-auto">
-                <div className="inline-flex items-center gap-2 rounded-full bg-brand-50 px-4 py-1.5 text-[10px] font-black uppercase tracking-[0.2em] text-brand-700 mb-6">
-                    <Car className="w-3.5 h-3.5" />
-                    {language === 'en' ? 'Transportation' : 'Transporti'}
-                </div>
-                <h2 className="text-5xl sm:text-7xl font-black tracking-tight text-slate-950 mb-6 leading-none">{t.home.transportTitle}</h2>
-                <p className="text-xl text-slate-500 leading-relaxed font-medium">
-                    {t.home.transportDesc}
-                </p>
-            </div>
-            
-            <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-                {transportCategory?.subcategories.map(sub => (
-                    <Link 
-                        key={sub.value} 
-                        href={`/categories/transport/${sub.value}`}
-                        className="group relative overflow-hidden rounded-[3rem] bg-slate-950 p-10 h-72 flex flex-col justify-between transition-all duration-500 hover:-translate-y-4 hover:shadow-[0_40px_80px_-15px_rgba(0,0,0,0.3)]"
-                    >
-                        <div className="absolute top-0 right-0 w-32 h-32 bg-brand-500/10 rounded-full blur-3xl -mr-16 -mt-16 group-hover:bg-brand-500/20 transition" />
-                        <div className="relative z-10">
-                            <div className="w-16 h-16 rounded-[1.5rem] bg-brand-500 flex items-center justify-center text-white mb-8 shadow-xl shadow-brand-500/20 group-hover:scale-110 group-hover:rotate-6 transition duration-500">
-                                {getTransportIcon(sub.value)}
-                            </div>
-                            <h3 className="text-3xl font-black text-white leading-tight">{sub.label}</h3>
-                        </div>
-                        <div className="relative z-10 flex items-center justify-between">
-                            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-400">
-                                {language === 'en' ? 'Book Service' : 'Rezervo Shërbimin'}
-                            </p>
-                            <ArrowRight className="w-6 h-6 text-white opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-500" />
-                        </div>
-                    </Link>
-                ))}
-            </div>
-        </section>
-
-        {/* 6. TRUST / WHY CHOOSE US */}
+        {/* 9. TRUST / WHY CHOOSE US */}
         <section className="bg-white rounded-[4rem] p-8 sm:p-20 border border-slate-100 shadow-2xl overflow-hidden relative">
             <div className="absolute top-0 left-0 w-96 h-96 bg-brand-500/5 rounded-full blur-[100px] -ml-48 -mt-48" />
             <div className="relative z-10 grid gap-20 lg:grid-cols-3">
@@ -279,39 +269,6 @@ export default function HomePage() {
                     ))}
                 </div>
             </div>
-        </section>
-
-        {/* 7. HOST SPOTLIGHT */}
-        <section className="relative overflow-hidden rounded-[4rem] bg-slate-950 px-8 py-24 sm:px-20 sm:py-32">
-          <Image
-            src="https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&w=2000&q=80"
-            alt="Host Spotlight"
-            fill
-            className="object-cover opacity-20"
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-950/80 to-transparent" />
-          <div className="relative z-10 grid gap-16 lg:grid-cols-2 lg:items-center">
-            <div className="max-w-xl">
-              <div className="inline-flex items-center gap-2 rounded-full bg-brand-500/20 border border-brand-500/30 px-4 py-1.5 text-[10px] font-black uppercase tracking-[0.3em] text-brand-400 mb-8 w-fit">
-                  <Sparkles className="w-3.5 h-3.5" />
-                  {t.host.spotlight}
-              </div>
-              <h2 className="display-font text-5xl sm:text-7xl font-black leading-[1.05] tracking-tighter text-white">
-                {t.host.title}
-              </h2>
-              <p className="mt-8 text-xl text-slate-300 leading-relaxed font-medium">
-                {t.host.description}
-              </p>
-              <div className="mt-12 flex flex-wrap gap-6">
-                <Link
-                  href="/listings/add"
-                  className="rounded-full bg-brand-500 px-12 py-6 text-sm font-black text-slate-950 transition hover:bg-brand-400 hover:scale-105 active:scale-95 shadow-2xl shadow-brand-500/30"
-                >
-                  {t.host.button}
-                </Link>
-              </div>
-            </div>
-          </div>
         </section>
 
         {/* 8. BLOG (RE-PRESENTED IN NEW FORM) - CLEAN VERSION */}

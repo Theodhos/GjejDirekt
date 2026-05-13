@@ -4,13 +4,14 @@ import { ReactNode, useRef } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 type HorizontalRailProps = {
+  id?: string;
   eyebrow?: string;
   title: string;
   description?: string;
   children: ReactNode;
 };
 
-export default function HorizontalRail({ eyebrow, title, description, children }: HorizontalRailProps) {
+export default function HorizontalRail({ id, eyebrow, title, description, children }: HorizontalRailProps) {
   const railRef = useRef<HTMLDivElement>(null);
 
   function scroll(direction: -1 | 1) {
@@ -18,37 +19,36 @@ export default function HorizontalRail({ eyebrow, title, description, children }
   }
 
   return (
-    <section className="page-shell py-8 sm:py-10 lg:py-12">
-      <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          {eyebrow ? <p className="eyebrow">{eyebrow}</p> : null}
-          <h2 className="mt-2 text-2xl font-black tracking-tight text-slate-950 sm:text-3xl">{title}</h2>
-          {description ? <p className="mt-2 max-w-2xl text-sm leading-7 text-slate-600 sm:text-base">{description}</p> : null}
+    <section id={id} className="py-8 sm:py-12">
+      <div className="mb-10 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+        <div className="max-w-2xl">
+          {eyebrow ? <p className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-600 mb-2">{eyebrow}</p> : null}
+          <h2 className="text-3xl sm:text-5xl font-black tracking-tight text-slate-950">{title}</h2>
+          {description ? <p className="mt-4 text-lg font-medium text-slate-500 leading-relaxed">{description}</p> : null}
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           <button
             type="button"
             onClick={() => scroll(-1)}
-            className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 shadow-sm transition hover:border-slate-300 hover:text-slate-950"
+            className="group inline-flex h-14 w-14 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-700 shadow-soft transition-all hover:bg-slate-950 hover:text-white hover:shadow-xl active:scale-95"
             aria-label={`Scroll ${title} left`}
           >
-            <ChevronLeft className="h-5 w-5" />
+            <ChevronLeft className="h-6 w-6 transition-transform group-hover:-translate-x-1" />
           </button>
           <button
             type="button"
             onClick={() => scroll(1)}
-            className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 shadow-sm transition hover:border-slate-300 hover:text-slate-950"
+            className="group inline-flex h-14 w-14 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-700 shadow-soft transition-all hover:bg-slate-950 hover:text-white hover:shadow-xl active:scale-95"
             aria-label={`Scroll ${title} right`}
           >
-            <ChevronRight className="h-5 w-5" />
+            <ChevronRight className="h-6 w-6 transition-transform group-hover:translate-x-1" />
           </button>
         </div>
       </div>
 
       <div
         ref={railRef}
-        className="flex gap-4 overflow-x-auto pb-2 [scrollbar-width:none]"
-        style={{ msOverflowStyle: "none" }}
+        className="flex gap-6 overflow-x-auto no-scrollbar scroll-smooth snap-x snap-mandatory py-6 px-1 -mx-1"
       >
         {children}
       </div>
