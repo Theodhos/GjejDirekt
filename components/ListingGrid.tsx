@@ -53,7 +53,7 @@ export default function ListingGrid() {
         </div>
         <h3 className="text-3xl font-black text-slate-950 mb-4">No results found</h3>
         <p className="text-slate-500 font-medium max-w-sm mx-auto">
-          We couldn't find any services matching your filters. Try adjusting your search criteria.
+          We couldn&apos;t find any services matching your filters. Try adjusting your search criteria.
         </p>
       </div>
     );

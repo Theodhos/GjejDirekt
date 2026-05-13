@@ -113,7 +113,7 @@ export default async function CityPage({ params }: { params: { city: string } })
             </div>
             <h2 className="text-3xl font-black text-slate-950 mb-4">Asnjë shërbim nuk u gjet</h2>
             <p className="text-slate-500 max-w-md mx-auto">
-                Nuk mundëm të gjenim asnjë shërbim për "{cityName}" për momentin. Provoni një qytet tjetër!
+                Nuk mundëm të gjenim asnjë shërbim për &quot;{cityName}&quot; për momentin. Provoni një qytet tjetër!
             </p>
           </div>
         )}

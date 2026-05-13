@@ -85,7 +85,7 @@ export default function AdminReports({ reports: initialReports }: { reports: any
                     <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100">
                       <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">Reason for report:</p>
                       <p className="text-slate-700 text-sm font-bold leading-relaxed">
-                        "{report.reason}"
+                        &quot;{report.reason}&quot;
                       </p>
                     </div>
                  </div>
