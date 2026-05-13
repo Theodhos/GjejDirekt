@@ -183,13 +183,15 @@ export default function CheckoutPage() {
                     <Loader2 className="w-10 h-10 animate-spin text-brand-500" />
                     <p className="text-xs font-black uppercase tracking-widest text-slate-400">Initializing Secure Session...</p>
                   </div>
-                ) : clientSecret ? (
-                  <Elements stripe={stripePromise} options={{ clientSecret }}>
-                    <StripeForm clientSecret={clientSecret} price={price} onSuccess={() => setIsSuccess(true)} />
-                  </Elements>
                 ) : (
-                  <div className="p-10 bg-amber-50 border border-amber-100 rounded-[2rem] text-amber-800 font-bold text-sm">
-                    Stripe is not configured. Please provide your API keys.
+                  <div className="p-16 bg-white border border-slate-100 rounded-[3rem] shadow-xl text-center space-y-6">
+                    <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto text-slate-400">
+                      <CreditCard className="w-10 h-10" />
+                    </div>
+                    <h3 className="text-2xl font-black text-slate-950">Card Payments Maintenance</h3>
+                    <p className="text-slate-500 font-medium max-w-sm mx-auto">
+                      Direct card payments are temporarily unavailable while we update our payment gateway. Please use PayPal or contact support for assistance.
+                    </p>
                   </div>
                 )
               ) : (
