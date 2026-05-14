@@ -3,8 +3,13 @@ import cloudinary from "@/lib/cloudinary";
 import { mkdir, writeFile } from "fs/promises";
 import { extname, join } from "path";
 import { randomUUID } from "crypto";
+import os from "os";
 
 export const runtime = "nodejs";
+
+function isVercelBuild() {
+  return process.env.VERCEL === "1";
+}
 
 function hasValidCloudinaryConfig() {
   const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
@@ -21,13 +26,20 @@ function hasValidCloudinaryConfig() {
   );
 }
 
-async function saveLocally(file: File) {
-  const buffer = Buffer.from(await file.arrayBuffer());
-  const uploadsDir = join(process.cwd(), "public", "uploads");
+async function saveLocally(fileName: string, buffer: Buffer) {
+  const uploadsDir = isVercelBuild()
+    ? join(os.tmpdir(), "uploads")
+    : join(process.cwd(), "public", "uploads");
+
   await mkdir(uploadsDir, { recursive: true });
-  const extension = extname(file.name) || (file.type === "image/png" ? ".png" : ".jpg");
+  const extension = extname(fileName) || ".jpg";
   const filename = `${randomUUID()}${extension}`;
   await writeFile(join(uploadsDir, filename), buffer);
+
+  if (isVercelBuild()) {
+    throw new Error("Local uploads are not supported on Vercel. Configure Cloudinary or another remote file storage provider.");
+  }
+
   return `/uploads/${filename}`;
 }
 
@@ -61,13 +73,20 @@ export async function POST(request: Request) {
               resolve(result.secure_url);
             }
           );
+
           upload.end(buffer);
         });
-      } catch {
-        url = await saveLocally(file);
+      } catch (error) {
+        if (isVercelBuild()) {
+          throw new Error("Cloudinary upload failed on Vercel. Please verify your Cloudinary credentials in Vercel environment variables.");
+        }
+        url = await saveLocally(file.name, buffer);
       }
     } else {
-      url = await saveLocally(file);
+      if (isVercelBuild()) {
+        throw new Error("File uploads are disabled in Vercel because Cloudinary is not configured. Set CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, and CLOUDINARY_API_SECRET.");
+      }
+      url = await saveLocally(file.name, buffer);
     }
 
     return NextResponse.json({ url });

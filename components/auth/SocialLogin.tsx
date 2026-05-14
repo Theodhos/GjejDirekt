@@ -47,7 +47,12 @@ export default function SocialLogin() {
       
     } catch (error: any) {
       console.error("Google Auth Error:", error);
-      toast.error(error.message || "Google authentication failed");
+      const message = error?.code === "auth/unauthorized-domain"
+        ? language === 'en'
+          ? "Google sign-in failed because this domain is not authorized in Firebase. Add your Vercel domain to Firebase Auth authorized domains."
+          : "Hyrja me Google dështoi sepse ky domen nuk është i autorizuar në Firebase. Shtoni domenin e Vercel tek domenet e autorizuara të Firebase Auth."
+        : error.message || (language === 'en' ? "Google authentication failed" : "Autentikimi me Google dështoi");
+      toast.error(message);
     } finally {
       setLoading(false);
     }
