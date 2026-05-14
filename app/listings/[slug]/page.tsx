@@ -188,11 +188,11 @@ export default async function ListingDetailPage({ params }: { params: { slug: st
           <aside className="space-y-8 lg:sticky lg:top-24 h-fit">
             <div className="bg-slate-950 text-white p-10 rounded-[3.5rem] shadow-xl relative overflow-hidden group">
                <div className="absolute top-0 right-0 w-32 h-32 bg-brand-500/10 rounded-full blur-[40px] -mr-16 -mt-16 group-hover:bg-brand-500/20 transition-colors duration-1000" />
-               <h3 className="text-3xl font-black mb-10 relative z-10 leading-tight">Ready to book or inquire?</h3>
+               <h3 className="text-3xl font-bold text-white mb-10 relative z-10 leading-tight">Ready to book or inquire?</h3>
                <div className="space-y-4 relative z-10">
                   {phone ? (
                     <>
-                      <a href={`tel:${phone}`} className="flex items-center justify-center gap-4 w-full h-16 bg-white text-slate-950 rounded-[1.5rem] font-black text-sm hover:bg-brand-500 transition-all active:scale-95">
+                      <a href={`tel:${phone}`} className="flex items-center justify-center gap-4 w-full h-16 bg-emerald-600 text-slate-950 rounded-[1.5rem] font-black text-sm hover:bg-brand-500 transition-all active:scale-95">
                         <Phone className="w-5 h-5" /> Call Directly
                       </a>
                       {whatsappHref && (
