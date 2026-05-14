@@ -76,7 +76,7 @@ export default function Header() {
             <Compass className="h-5 w-5" />
           </span>
           <span className="leading-tight">
-            <span className="block text-lg font-black tracking-tight text-slate-950">Gjej Direkt</span>
+            <span className="block text-lg font-black tracking-tight text-slate-950">Trip Shqip</span>
             <span className="block text-xs font-semibold uppercase tracking-[0.24em] text-brand-600">Discover more</span>
           </span>
         </Link>
