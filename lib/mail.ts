@@ -10,6 +10,12 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+function getAppUrl() {
+  if (process.env.NEXT_PUBLIC_APP_URL) return process.env.NEXT_PUBLIC_APP_URL;
+  if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
+  return "http://localhost:3000";
+}
+
 export async function sendReportEmail({
   listingTitle,
   listingId,
@@ -22,7 +28,7 @@ export async function sendReportEmail({
   reason: string;
 }) {
   const adminEmail = process.env.ADMIN_EMAIL || "admin@tourismmarketplace.com";
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+  const appUrl = getAppUrl();
   
   // Secret token for direct deletion from email
   const deleteToken = process.env.ADMIN_DELETE_SECRET || "super-secret-token";
@@ -76,7 +82,7 @@ export async function sendListingSubmissionEmail({
   location: string;
 }) {
   const adminEmail = process.env.ADMIN_EMAIL || "admin@tourismmarketplace.com";
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+  const appUrl = getAppUrl();
   const token = process.env.ADMIN_DELETE_SECRET || "super-secret-token";
 
   const approveUrl = `${appUrl}/api/admin/listings/status-via-email?id=${listingId}&status=approved&token=${token}`;
