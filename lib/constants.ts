@@ -9,6 +9,7 @@ export type CategoryDefinition = {
   label: string;
   aliases: string[];
   image: string;
+  tags?: string[];
   subcategories: CategorySubcategory[];
 };
 

@@ -7,6 +7,8 @@ export interface IUser extends Document {
   email: string;
   password: string;
   phone: string;
+  avatar?: string;
+  provider?: string;
   resetCode?: string;
   resetCodeExpires?: Date;
   role: UserRole;

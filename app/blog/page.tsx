@@ -62,7 +62,7 @@ export default function BlogPage() {
 
                 <div className="absolute inset-0 z-20 flex flex-col items-center justify-center px-6 text-center text-white">
                     <div className="max-w-5xl">
-                        <div className="mb-8 inline-flex items-center gap-2 rounded-full bg-brand-500/20 border border-brand-500/30 backdrop-blur-md px-6 py-2 text-xs font-black uppercase tracking-[0.4em] text-brand-400 animate-in fade-in slide-in-from-bottom-4 duration-700">
+                       <div className="mb-8 inline-flex items-center gap-2 rounded-full bg-brand-500/20 border border-brand-500/30 backdrop-blur-md px-6 py-2 text-xs font-black uppercase tracking-[0.4em] text-black   animate-in fade-in slide-in-from-bottom-4 duration-700">
                             <Sparkles className="w-4 h-4" />
                             {language === 'en' ? 'The Journal' : 'Revista'}
                         </div>
