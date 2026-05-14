@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { ArrowRight, MapPin, Sparkles, ChevronLeft, ChevronRight, CheckCircle, Flame, Star, Bed, Utensils, Car, Plane, Anchor, Truck, Calendar, Music, Ticket, ShoppingBag, Camera } from "lucide-react";
 import HomeSearchHero from "@/components/home/HomeSearchHero";
 import HorizontalRail from "@/components/home/HorizontalRail";
@@ -15,10 +16,19 @@ import { useEffect, useState, useRef } from "react";
 export default function HomePage() {
   const { language } = useLanguage();
   const t = translations[language];
+  const searchParams = useSearchParams();
   
   const [blogPosts, setBlogPosts] = useState<any[]>([]);
   const [listings, setListings] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [showSearchResults, setShowSearchResults] = useState(false);
+
+  // Get search parameters
+  const category = searchParams.get('category');
+  const subcategory = searchParams.get('subcategory');
+  const query = searchParams.get('q');
+  const city = searchParams.get('city');
 
   useEffect(() => {
     const fetchData = async () => {
@@ -38,6 +48,59 @@ export default function HomePage() {
     };
     fetchData();
   }, []);
+
+  // Handle search results filtering
+  useEffect(() => {
+    if (category || subcategory || query || city) {
+      let filtered = listings;
+
+      if (category) {
+        const normalizedCategory = String(category).toLowerCase();
+        const categoryObj = categories.find(c => c.value === normalizedCategory);
+        
+        filtered = filtered.filter(listing => {
+          const listingCategory = String(listing.category).toLowerCase();
+          if (categoryObj?.aliases.some(alias => alias === listingCategory)) return true;
+          return listingCategory === normalizedCategory;
+        });
+
+        if (subcategory) {
+          const normalizedSubcategory = String(subcategory).toLowerCase();
+          filtered = filtered.filter(listing => {
+            const listingSubcategory = String(listing.subcategory || '').toLowerCase();
+            return listingSubcategory === normalizedSubcategory;
+          });
+        }
+      }
+
+      if (query) {
+        const normalizedQuery = String(query).toLowerCase();
+        filtered = filtered.filter(listing => {
+          const title = String(listing.title).toLowerCase();
+          const description = String(listing.description).toLowerCase();
+          const listingCity = String(listing.city).toLowerCase();
+          return title.includes(normalizedQuery) || description.includes(normalizedQuery) || listingCity.includes(normalizedQuery);
+        });
+      }
+
+      if (city) {
+        const normalizedCity = String(city).toLowerCase();
+        filtered = filtered.filter(listing => {
+          const listingCity = String(listing.city).toLowerCase();
+          return listingCity === normalizedCity;
+        });
+      }
+
+      setSearchResults(filtered);
+      setShowSearchResults(true);
+      
+      // Scroll to top to show results
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      setShowSearchResults(false);
+      setSearchResults([]);
+    }
+  }, [category, subcategory, query, city, listings]);
 
   const featuredListings = listings.filter(l => l.featured).slice(0, 8);
   
@@ -90,7 +153,46 @@ export default function HomePage() {
 
   return (
     <main className="pb-12 bg-slate-50/30">
-      <HomeSearchHero />
+      {/* Search Results Section - Appears when search is active */}
+      {showSearchResults && (
+        <section className="relative bg-slate-50 py-32 min-h-screen flex flex-col justify-center">
+          <div className="page-shell">
+            <div className="mb-12 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p className="text-sm uppercase tracking-[0.35em] text-brand-600 font-black mb-2">
+                  {searchResults.length} {searchResults.length === 1 ? (language === 'en' ? 'result' : 'rezultat') : (language === 'en' ? 'results' : 'rezultate')}
+                </p>
+                <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black text-slate-950">
+                  {category && categories.find(c => c.value === category)?.label}
+                  {subcategory && ` > ${subcategory}`}
+                  {city && albaniaCities.find(c => c.value === city)?.label && ` • ${albaniaCities.find(c => c.value === city)?.label}`}
+                  {query && `${language === 'en' ? 'Search: ' : 'Kërkimi: '}"${query}"`}
+                </h2>
+              </div>
+            </div>
+
+            {searchResults.length ? (
+              <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+                {searchResults.map((listing: any) => (
+                  <ListingCard key={listing._id?.toString() || listing.id} listing={listing} />
+                ))}
+              </div>
+            ) : (
+              <div className="rounded-[2.5rem] border border-dashed border-slate-300 bg-white p-16 text-center">
+                <p className="text-2xl font-black text-slate-900 mb-4">
+                  {language === 'en' ? 'No listings found.' : 'Nuk u gjet asnjë listim.'}
+                </p>
+                <p className="text-slate-500">
+                  {language === 'en' ? 'Try adjusting your search criteria.' : 'Përpiquni të ndryshoni kriteret e kërkimit.'}
+                </p>
+              </div>
+            )}
+          </div>
+        </section>
+      )}
+
+      {/* Hero Section - Hidden when search is active */}
+      {!showSearchResults && <HomeSearchHero />}
 
       <div className="page-shell space-y-20 py-10 sm:space-y-32 sm:py-24">
         
@@ -242,12 +344,12 @@ export default function HomePage() {
                     <h2 className="text-4xl sm:text-6xl font-black tracking-tight text-slate-950 mb-10 leading-[1.1]">
                         {language === 'en' ? 'Why choose our marketplace?' : 'Pse të zgjidhni tregun tonë?'}
                     </h2>
-                    <p className="text-lg text-slate-500 leading-relaxed font-medium mb-12">
+                    <p className="text-xl text-slate-700 leading-relaxed font-medium mb-12">
                         {language === 'en' 
                             ? 'We connect you directly with verified local hosts to ensure authentic experiences and the best prices.' 
                             : 'Ne ju lidhim drejtpërdrejt me hostë lokalë të verifikuar për të siguruar përvoja autentike dhe çmimet më të mira.'}
                     </p>
-                    <Link href="/services" className="inline-flex items-center gap-4 px-10 py-5 bg-slate-950 text-white rounded-full font-black text-sm hover:bg-brand-600 transition-all duration-300 shadow-2xl hover:scale-105 active:scale-95">
+                    <Link href="/services" className="inline-flex items-center gap-4 px-10 py-5 bg-brand-600 text-white rounded-full font-black text-sm hover:bg-brand-700 transition-all duration-300 shadow-2xl hover:scale-105 active:scale-95">
                         {language === 'en' ? 'Explore All Services' : 'Eksploro të gjitha shërbimet'} <ArrowRight className="w-5 h-5" />
                     </Link>
                 </div>
@@ -264,7 +366,7 @@ export default function HomePage() {
                                 <benefit.icon className="w-7 h-7" />
                             </div>
                             <h3 className="text-2xl font-black text-slate-950 mb-4">{benefit.title}</h3>
-                            <p className="text-base text-slate-500 leading-relaxed font-medium">{benefit.desc}</p>
+                            <p className="text-base text-slate-700 leading-relaxed font-medium">{benefit.desc}</p>
                         </div>
                     ))}
                 </div>
@@ -278,7 +380,7 @@ export default function HomePage() {
                 <p className="text-xs uppercase tracking-[0.4em] font-black text-brand-700 mb-4">{t.blog.archiveTitle}</p>
                 <h2 className="text-5xl sm:text-8xl font-black tracking-tight text-slate-950 leading-none">{t.blog.latestPub}</h2>
             </div>
-            <Link href="/blog" className="inline-flex items-center gap-4 px-10 py-5 bg-slate-950 text-white rounded-full font-black text-sm hover:bg-brand-600 transition-all duration-300 shadow-2xl">
+            <Link href="/blog" className="inline-flex items-center gap-4 px-10 py-5 bg-brand-600 text-white rounded-full font-black text-sm hover:bg-brand-700 transition-all duration-300 shadow-2xl">
                 {language === 'en' ? 'Visit Journal' : 'Vizito Revistën'} <ArrowRight className="w-5 h-5" />
             </Link>
           </div>
@@ -288,13 +390,13 @@ export default function HomePage() {
             <div className="lg:col-span-12">
                 <Link href={`/blog/${blogPosts[0]?.slug || "sample"}`} className="group relative block h-[500px] sm:h-[650px] overflow-hidden rounded-[4rem] shadow-2xl">
                     <Image src={blogPosts[0]?.coverImage || "https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=1200&q=80"} alt="Hero Blog" fill className="object-cover transition duration-1000 group-hover:scale-105" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/95 via-slate-950/30 to-transparent" />
                     <div className="absolute inset-0 p-10 sm:p-20 flex flex-col justify-end text-white">
-                        <div className="inline-flex items-center gap-3 rounded-full bg-brand-500 px-6 py-2 text-[10px] font-black uppercase tracking-[0.4em] mb-8 w-fit shadow-lg">
+                        <div className="inline-flex items-center gap-3 rounded-full bg-brand-500 px-6 py-2 text-[10px] font-black uppercase tracking-[0.4em] mb-8 w-fit shadow-lg shadow-brand-500/30">
                             {language === 'en' ? 'Featured Story' : 'Historia e rekomanduar'}
                         </div>
-                        <h3 className="text-4xl sm:text-7xl font-black mb-8 leading-[1] group-hover:text-brand-400 transition duration-500">{blogPosts[0]?.title || blogFallbacks[0].title}</h3>
-                        <p className="text-slate-200 text-xl mb-10 line-clamp-2 max-w-3xl leading-relaxed font-medium">
+                        <h3 className="text-4xl sm:text-7xl font-black mb-8 leading-[1] text-white group-hover:text-brand-100 transition duration-500">{blogPosts[0]?.title || blogFallbacks[0].title}</h3>
+                        <p className="text-slate-100 text-xl mb-10 line-clamp-2 max-w-3xl leading-relaxed font-medium">
                             {blogPosts[0]?.excerpt || blogFallbacks[0].excerpt}
                         </p>
                         <span className="inline-flex items-center gap-4 text-sm font-black uppercase tracking-widest text-white border-b-2 border-brand-500 pb-2 w-fit">
@@ -320,8 +422,8 @@ export default function HomePage() {
                                 {post.createdAt ? new Date(post.createdAt).toLocaleDateString() : "Editorial"}
                             </p>
                             <h4 className="text-2xl font-black text-slate-950 line-clamp-2 group-hover:text-brand-700 transition duration-300 leading-tight mb-4">{post.title}</h4>
-                            <p className="text-base text-slate-500 line-clamp-2 leading-relaxed font-medium mb-6">{post.excerpt}</p>
-                            <span className="text-xs font-black uppercase tracking-widest text-slate-950 group-hover:text-brand-700 flex items-center gap-2">
+                            <p className="text-base text-slate-700 line-clamp-2 leading-relaxed font-medium mb-6">{post.excerpt}</p>
+                            <span className="text-xs font-black uppercase tracking-widest text-brand-700 group-hover:text-brand-900 flex items-center gap-2">
                                 {language === 'en' ? 'Full Story' : 'Lexo të plotë'} <ArrowRight className="w-4 h-4" />
                             </span>
                         </div>

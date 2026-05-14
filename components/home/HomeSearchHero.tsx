@@ -143,12 +143,10 @@ export default function HomeSearchHero() {
       params.set("category", suggestion.categoryValue);
       params.set("subcategory", suggestion.value);
     } else if (suggestion.type === 'city') {
-      router.push(`/city/${suggestion.value}`);
-      setShowSuggestions(false);
-      return;
+      params.set("city", suggestion.value);
     }
 
-    router.push(`/services?${params.toString()}`);
+    router.push(`/?${params.toString()}`);
     setShowSuggestions(false);
   }
 
@@ -158,14 +156,14 @@ export default function HomeSearchHero() {
     
     const params = new URLSearchParams();
     if (query) params.set("q", query);
-    router.push(`/services${params.toString() ? `?${params.toString()}` : ""}`);
+    router.push(`/${params.toString() ? `?${params.toString()}` : ""}`);
     setShowSuggestions(false);
   }
 
   return (
-    <section className="relative h-screen flex items-center justify-center overflow-hidden bg-slate-950">
+    <section className="relative min-h-screen flex items-center justify-center overflow-visible bg-slate-950">
       {/* Background Layer */}
-      <div className="absolute inset-0">
+      <div className="absolute inset-0 overflow-hidden">
         <Image 
           src="https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=2000&q=80" 
           alt="Albania Landscapes" 
@@ -276,10 +274,10 @@ export default function HomeSearchHero() {
             </form>
           </div>
 
-          {/* Suggestions Dropdown - Positioned outside the clipping containers */}
+          {/* Suggestions Dropdown - Positioned BELOW the search and outside the clipping containers */}
           {showSuggestions && suggestions.length > 0 && (
-            <div className="absolute top-full left-0 right-0 mt-6 bg-white rounded-[2.5rem] shadow-[0_64px_128px_-32px_rgba(0,0,0,0.6)] border border-slate-200 overflow-hidden z-[101] animate-in fade-in slide-in-from-top-6 duration-500">
-              <div className="p-4 max-h-[520px] overflow-y-auto custom-scrollbar">
+            <div className="absolute top-full left-0 right-0 mt-6 bg-white rounded-[2.5rem] shadow-[0_64px_128px_-32px_rgba(0,0,0,0.6)] border border-slate-200 overflow-hidden z-[9999] animate-in fade-in slide-in-from-top-6 duration-500">
+              <div className="p-4 max-h-[calc(100vh-200px)] overflow-y-auto custom-scrollbar">
                 <div className="flex items-center justify-between px-8 py-6 border-b border-slate-50 mb-4">
                   <div className="flex items-center gap-3">
                     <Compass className="w-5 h-5 text-brand-600 animate-spin-slow" />

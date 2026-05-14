@@ -29,10 +29,58 @@ body {
 /* Global Text Visibility Enhancements */
 h1, h2, h3, h4, h5, h6 {
   @apply text-slate-950 tracking-tight;
+  text-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
 }
 
 p {
   @apply text-slate-800 leading-relaxed;
+}
+
+/* Global section-level text visibility */
+section,
+main,
+article,
+header,
+footer,
+nav,
+aside,
+form,
+fieldset,
+legend {
+  color: #0f172a;
+}
+
+.bg-slate-950,
+.bg-slate-900,
+.bg-slate-800,
+.bg-slate-700,
+.surface-strong,
+.glass,
+section[class*="bg-slate-9"],
+section[class*="bg-slate-8"],
+section[class*="bg-slate-7"] {
+  color: #f8fafc;
+}
+
+.bg-slate-950 a,
+.bg-slate-900 a,
+.bg-slate-800 a,
+.bg-slate-700 a,
+.surface-strong a,
+.glass a {
+  color: #a5f3fc;
+}
+
+section p,
+section li,
+section dd,
+section dt,
+section label,
+section span,
+section small,
+section strong,
+section b {
+  color: inherit;
 }
 
 /* Boost visibility for common utility classes */

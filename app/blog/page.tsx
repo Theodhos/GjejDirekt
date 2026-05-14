@@ -58,7 +58,7 @@ export default function BlogPage() {
                 </div>
 
                 {/* Dark overlay for readability */}
-                <div className="absolute inset-0 z-10 bg-gradient-to-b from-slate-950/60 via-slate-950/20 to-slate-950/90" />
+                <div className="absolute inset-0 z-10 bg-gradient-to-b from-slate-950/90 via-slate-950/50 to-slate-950/95" />
 
                 <div className="absolute inset-0 z-20 flex flex-col items-center justify-center px-6 text-center text-white">
                     <div className="max-w-5xl">
@@ -67,9 +67,9 @@ export default function BlogPage() {
                             {language === 'en' ? 'The Journal' : 'Revista'}
                         </div>
 
-                        <h1 className="display-font text-6xl font-black leading-[1.05] tracking-tighter sm:text-8xl lg:text-9xl animate-in fade-in slide-in-from-bottom-8 duration-1000">
+                        <h1 className="display-font text-6xl font-black leading-[1.05] tracking-tighter sm:text-8xl lg:text-9xl animate-in fade-in slide-in-from-bottom-8 duration-1000 text-white drop-shadow-[0_15px_30px_rgba(0,0,0,0.35)]">
                             {language === 'en' ? 'Stories that' : 'Histori që'} <br />
-                            <span className="italic font-light text-slate-300">
+                            <span className="italic font-light text-white/90">
                                 {language === 'en' ? 'Inspire' : 'Inspirojnë'}
                             </span>
                         </h1>

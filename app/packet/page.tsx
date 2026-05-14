@@ -150,16 +150,16 @@ export default function PacketPage() {
         </div>
 
         <div className="mt-24 p-12 rounded-[4rem] bg-slate-950 text-white text-center">
-          <h3 className="text-3xl font-black mb-6">
+          <h3 className="text-3xl font-black mb-6 text-white">
             {language === 'en' ? 'Need a custom solution?' : 'Keni nevojë për një zgjidhje të personalizuar?'}
           </h3>
-          <p className="text-slate-400 font-medium mb-10 max-w-2xl mx-auto">
+          <p className="text-slate-200 font-medium mb-10 max-w-2xl mx-auto">
             {language === 'en' 
               ? 'Contact our sales team for enterprise solutions or multiple listings packages.' 
               : 'Kontaktoni ekipin tonë të shitjeve për zgjidhje ndërmarrjeje ose paketa për listime të shumta.'}
           </p>
-          <Link href="/contact" className="inline-flex items-center gap-4 px-10 py-5 bg-white text-slate-950 rounded-full font-black text-sm hover:bg-brand-500 hover:text-white transition-all duration-300">
-            {language === 'en' ? 'Contact Us' : 'Na Kontaktoni'} <ArrowRight className="w-5 h-5" />
+          <Link href="/contact" style={{ color: '#000' }} className="inline-flex items-center gap-4 px-10 py-5 bg-white !text-black font-extrabold text-sm rounded-full border border-slate-200 shadow-lg transition-all duration-300 hover:bg-brand-500 hover:text-white">
+            {language === 'en' ? 'Contact Us' : 'Na Kontaktoni'} <ArrowRight className="w-5 h-5 text-black group-hover:text-white" />
           </Link>
         </div>
       </div>
