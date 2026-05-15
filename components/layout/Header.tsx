@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { Compass, Menu, X } from "lucide-react";
+import { Compass, Menu, X, PlusCircle } from "lucide-react";
 import Button from "@/components/ui/Button";
 import { useLanguage } from "@/context/LanguageContext";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
@@ -122,6 +122,15 @@ export default function Header() {
           {me ? (
             <span className="hidden text-sm text-slate-600 md:inline">Hi, {me.name}</span>
           ) : null}
+          {/* Add Listing button — visible on mobile next to hamburger */}
+          <Link
+            href="/listings/add"
+            className="inline-flex items-center gap-1.5 rounded-full bg-brand-600 px-3 py-2 text-[10px] font-black uppercase tracking-widest text-white shadow-md hover:bg-brand-700 transition-all active:scale-95"
+          >
+            <PlusCircle className="h-3.5 w-3.5" />
+            <span className="hidden xs:inline">{t.nav.addListing}</span>
+            <span className="xs:hidden">+</span>
+          </Link>
           <button
             type="button"
             onClick={() => setMobileOpen((value) => !value)}

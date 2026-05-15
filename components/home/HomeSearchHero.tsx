@@ -1,7 +1,6 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ArrowRight, Search, Compass, Sparkles, MapPin, Tag } from "lucide-react";
 import { useState, useMemo, useEffect, useRef } from "react";
@@ -20,7 +19,7 @@ export default function HomeSearchHero() {
   const { language } = useLanguage();
   const searchRef = useRef<HTMLDivElement>(null);
 
-  const [activeCityTab, setActiveCityTab] = useState("all");
+
 
   // Handle clicking outside of suggestions
   useEffect(() => {
@@ -116,18 +115,7 @@ export default function HomeSearchHero() {
     return merged;
   }, [city, listingSuggestions]);
 
-  const cityTabs = [
-    { id: "all", label: language === 'en' ? "Search All" : "Kërko gjithçka" },
-    { id: "tirane", label: "Tiranë" },
-    { id: "durres", label: "Durrës" },
-    { id: "vlore", label: "Vlorë" },
-    { id: "sarande", label: "Sarandë" },
-    { id: "shkoder", label: "Shkodër" },
-    { id: "berat", label: "Berat" },
-    { id: "gjirokaster", label: "Gjirokastër" },
-    { id: "korce", label: "Korçë" },
-    { id: "cities", label: language === 'en' ? "More Cities" : "Më shumë qytete", isLink: true },
-  ];
+
 
   function handleSuggestionClick(suggestion: any) {
     if (suggestion.type === 'listing') {
@@ -207,43 +195,6 @@ export default function HomeSearchHero() {
         <div className="w-full max-w-4xl relative z-[100]" ref={searchRef}>
           {/* Glassmorphism Container */}
           <div className="relative z-20 glass shadow-[0_32px_64px_-12px_rgba(0,0,0,0.5)] rounded-[2.5rem] sm:rounded-[3.5rem] p-3 sm:p-5 border-white/10 backdrop-blur-3xl bg-white/40">
-            {/* Tabs */}
-            <div className="flex items-center gap-2 sm:gap-6 px-6 mb-4 overflow-x-auto no-scrollbar">
-              {cityTabs.map((tab) => (
-                tab.isLink ? (
-                  <Link 
-                    key={tab.id}
-                    href="/services" 
-                    className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-white transition whitespace-nowrap"
-                  >
-                    {tab.label}
-                  </Link>
-                ) : (
-                  <button
-                    key={tab.id}
-                    onClick={() => {
-                      setActiveCityTab(tab.id);
-                      if (tab.id === "all") {
-                        router.push("/services");
-                      } else {
-                        router.push(`/city/${tab.id}`);
-                      }
-                    }}
-                    className="group relative py-2 transition whitespace-nowrap"
-                  >
-                    <span className={`text-[11px] font-black uppercase tracking-widest transition-all duration-300 ${
-                      activeCityTab === tab.id ? "text-brand-600 scale-110 drop-shadow-[0_0_8px_rgba(34,153,120,0.3)]" : "text-slate-700 hover:text-slate-900"
-                    }`}>
-                      {tab.label}
-                    </span>
-                    {activeCityTab === tab.id && (
-                      <div className="absolute bottom-0 left-0 right-0 h-1 bg-brand-400 rounded-full shadow-[0_0_20px_rgba(34,153,120,0.8)]" />
-                    )}
-                  </button>
-                )
-              ))}
-            </div>
-
             {/* Input Form */}
             <form onSubmit={submit} className="relative">
               <div className="flex flex-col sm:flex-row items-center gap-4 p-2 pl-4 sm:pl-8 bg-white rounded-[2rem] sm:rounded-[2.5rem] shadow-2xl transition-all duration-500 focus-within:ring-8 focus-within:ring-brand-500/20">
