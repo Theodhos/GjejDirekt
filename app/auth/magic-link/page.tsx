@@ -30,6 +30,7 @@ function MagicLinkVerify() {
       }
 
       setMessage("Success! Redirecting...");
+      window.dispatchEvent(new Event("auth-changed"));
       router.push(data.user?.role === "admin" ? "/admin" : "/dashboard");
       router.refresh();
     })();
