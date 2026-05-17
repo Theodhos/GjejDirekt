@@ -33,7 +33,7 @@ export default function HomeSearchHero() {
 
   useEffect(() => {
     const fetchListings = async () => {
-      if (!debouncedSearch.trim() || debouncedSearch.length < 2) {
+      if (!debouncedSearch.trim() || debouncedSearch.length < 1) {
         setListingSuggestions([]);
         return;
       }
@@ -90,6 +90,14 @@ export default function HomeSearchHero() {
 
   const suggestions = useMemo(() => {
     const query = city.toLowerCase().trim();
+    const scoreMatch = (text: string) => {
+      const value = text.toLowerCase();
+      if (!query) return 0;
+      if (value.startsWith(query)) return 0;
+      const index = value.indexOf(query);
+      if (index >= 0) return 1 + index;
+      return 9999;
+    };
 
     if (!query) {
       return categories.map((cat) => ({
@@ -104,7 +112,7 @@ export default function HomeSearchHero() {
 
     categories.forEach((cat) => {
       if (cat.label.toLowerCase().includes(query) || cat.aliases.some((a) => a.includes(query))) {
-        results.push({ type: "category", label: cat.label, value: cat.value, icon: Tag });
+        results.push({ type: "category", label: cat.label, value: cat.value, icon: Tag, score: scoreMatch(cat.label) });
       }
 
       cat.subcategories.forEach((sub) => {
@@ -115,6 +123,7 @@ export default function HomeSearchHero() {
             value: sub.value,
             categoryValue: cat.value,
             icon: Compass,
+            score: scoreMatch(sub.label),
           });
         }
       });
@@ -122,24 +131,28 @@ export default function HomeSearchHero() {
 
     availableCities.forEach((c) => {
       if (c.label.toLowerCase().includes(query)) {
-        results.push({ type: "city", label: c.label, value: c.value, icon: MapPin });
+        results.push({ type: "city", label: c.label, value: c.value, icon: MapPin, score: scoreMatch(c.label) });
       }
     });
 
-    const merged = [...results.slice(0, 6)];
+    const merged = [...results.sort((a, b) => a.score - b.score).slice(0, 8)];
 
     listingSuggestions.forEach((listing) => {
+      const listingLabel = listing.title || "";
+      const listingLocation = listing.location || "";
+      const listingCategory = listing.category || "";
       merged.push({
         type: "listing",
-        label: listing.title,
+        label: listingLabel,
         value: listing.slug,
-        category: listing.category,
+        category: listingCategory,
         image: listing.coverImage || listing.image || listing.images?.[0] || listing.gallery?.[0] || null,
         icon: Sparkles,
+        score: Math.min(scoreMatch(listingLabel), scoreMatch(listingLocation), scoreMatch(listingCategory)),
       });
     });
 
-    return merged;
+    return merged.sort((a, b) => a.score - b.score).slice(0, 12);
   }, [city, listingSuggestions, availableCities]);
 
   function handleSuggestionClick(suggestion: any) {
@@ -263,6 +276,7 @@ export default function HomeSearchHero() {
           {showSuggestions && suggestions.length > 0 && (
             <div className="sm:absolute sm:top-full sm:left-0 sm:right-0 sm:mt-6 flex-grow sm:flex-grow-0 bg-white sm:rounded-[2.5rem] sm:shadow-[0_64px_128px_-32px_rgba(0,0,0,0.6)] sm:border border-slate-200 overflow-hidden z-[9999] animate-in fade-in sm:slide-in-from-top-6 duration-500">
               <div className="p-3 sm:p-4 h-full sm:max-h-[calc(100vh-200px)] overflow-y-auto custom-scrollbar">
+                {!city.trim() && (
                 <div className="sm:hidden px-2 pb-3">
                   <div className="flex items-start gap-3 pb-3 border-b border-slate-200 mb-3">
                     <MapPin className="w-6 h-6 text-slate-700 mt-0.5" />
@@ -288,6 +302,7 @@ export default function HomeSearchHero() {
                     ))}
                   </div>
                 </div>
+                )}
 
                 {isLoadingListings && (
                   <div className="flex items-center justify-center gap-3 px-4 py-3 mb-2 bg-slate-50 rounded-2xl border border-slate-100">
@@ -296,12 +311,12 @@ export default function HomeSearchHero() {
                   </div>
                 )}
 
-                <div className="grid grid-cols-1 gap-2 p-2">
-                  {suggestions.filter((s) => s.type !== "city").map((suggestion, index) => (
+                <div className="grid grid-cols-1 gap-1 p-1 sm:gap-2 sm:p-2">
+                  {suggestions.map((suggestion, index) => (
                     <button
                       key={index}
                       onClick={() => handleSuggestionClick(suggestion)}
-                      className="w-full flex items-center gap-6 px-4 sm:px-8 py-4 sm:py-5 hover:bg-slate-50 transition-all text-left group rounded-3xl"
+                      className="w-full flex items-center gap-3 sm:gap-6 px-3 sm:px-8 py-2.5 sm:py-5 hover:bg-slate-50 transition-all text-left group rounded-2xl sm:rounded-3xl border-b border-slate-100 last:border-b-0"
                     >
                       {suggestion.type === "listing" && suggestion.image ? (
                         <div className="relative w-14 h-14 overflow-hidden rounded-[1.25rem] border border-slate-200 shadow-sm">
@@ -313,7 +328,7 @@ export default function HomeSearchHero() {
                         </div>
                       )}
                       <div className="flex-grow min-w-0">
-                        <p className="text-lg font-black text-slate-950 group-hover:text-brand-700 transition truncate">{suggestion.label}</p>
+                        <p className="text-base sm:text-lg font-semibold sm:font-black text-slate-950 group-hover:text-brand-700 transition truncate">{suggestion.label}</p>
                         <div className="flex items-center gap-3 mt-1.5">
                           <span
                             className={`text-[10px] font-black uppercase tracking-[0.2em] px-3 py-1 rounded-lg ${
