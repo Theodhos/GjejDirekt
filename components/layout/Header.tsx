@@ -15,6 +15,7 @@ type NavItem =
 export default function Header() {
   const [me, setMe] = useState<Me>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [hideForSearchOverlay, setHideForSearchOverlay] = useState(false);
   const { language, setLanguage, t } = useLanguage();
 
   useEffect(() => {
@@ -33,6 +34,17 @@ export default function Header() {
 
     window.addEventListener("auth-changed", handleAuthChange);
     return () => window.removeEventListener("auth-changed", handleAuthChange);
+  }, []);
+
+  useEffect(() => {
+    const handleSearchOverlay = (event: Event) => {
+      const custom = event as CustomEvent<{ open?: boolean }>;
+      setHideForSearchOverlay(Boolean(custom.detail?.open));
+      if (custom.detail?.open) setMobileOpen(false);
+    };
+
+    window.addEventListener("mobile-search-overlay", handleSearchOverlay as EventListener);
+    return () => window.removeEventListener("mobile-search-overlay", handleSearchOverlay as EventListener);
   }, []);
 
   async function logout() {
@@ -68,6 +80,10 @@ export default function Header() {
     : [];
 
   
+  if (hideForSearchOverlay) {
+    return null;
+  }
+
   return (
     <header className="sticky top-0 z-50 border-b border-slate-900/5 bg-white/80 backdrop-blur-2xl">
       <div className="page-shell flex items-center justify-between gap-4 py-4">
@@ -77,7 +93,7 @@ export default function Header() {
           </span>
           <span className="leading-tight">
             <span className="block text-lg font-black tracking-tight text-slate-950">Trip Shqip</span>
-            <span className="block text-xs font-semibold uppercase tracking-[0.24em] text-brand-600">Discover more</span>
+            <span className="hidden sm:block text-xs font-semibold uppercase tracking-[0.24em] text-brand-600">Discover more</span>
           </span>
         </Link>
 
@@ -128,8 +144,7 @@ export default function Header() {
             className="inline-flex items-center gap-1.5 rounded-full bg-brand-600 px-3 py-2 text-[10px] font-black uppercase tracking-widest text-white shadow-md hover:bg-brand-700 transition-all active:scale-95"
           >
             <PlusCircle className="h-3.5 w-3.5" />
-            <span className="hidden xs:inline">{t.nav.addListing}</span>
-            <span className="xs:hidden">+</span>
+            <span>{t.nav.addListing}</span>
           </Link>
           <button
             type="button"

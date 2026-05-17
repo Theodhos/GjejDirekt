@@ -23,6 +23,7 @@ function HomePageClient() {
   const [loading, setLoading] = useState(true);
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [showSearchResults, setShowSearchResults] = useState(false);
+  const [dynamicCities, setDynamicCities] = useState<any[]>(albaniaCities);
 
   // Get search parameters
   const category = searchParams.get('category');
@@ -40,6 +41,12 @@ function HomePageClient() {
             const postsRes = await fetch('/api/blog');
             const postsData = await postsRes.json();
             setBlogPosts(postsData.posts || []);
+
+            const citiesRes = await fetch('/api/cities');
+            const citiesData = await citiesRes.json();
+            if (Array.isArray(citiesData.cities) && citiesData.cities.length) {
+              setDynamicCities(citiesData.cities);
+            }
         } catch (error) {
             console.error("Error fetching home data:", error);
         } finally {
@@ -165,7 +172,7 @@ function HomePageClient() {
                 <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black text-slate-950">
                   {category && categories.find(c => c.value === category)?.label}
                   {subcategory && ` > ${subcategory}`}
-                  {city && albaniaCities.find(c => c.value === city)?.label && ` • ${albaniaCities.find(c => c.value === city)?.label}`}
+                  {city && dynamicCities.find(c => c.value === city)?.label && ` • ${dynamicCities.find(c => c.value === city)?.label}`}
                   {query && `${language === 'en' ? 'Search: ' : 'Kërkimi: '}"${query}"`}
                 </h2>
               </div>
@@ -203,7 +210,7 @@ function HomePageClient() {
           title={t.home.popularDestinations}
           description={t.home.popularSub}
         >
-          {albaniaCities.slice(0, 8).map((city) => (
+          {dynamicCities.slice(0, 8).map((city) => (
             <Link
               key={city.value}
               href={`/city/${city.value}`}

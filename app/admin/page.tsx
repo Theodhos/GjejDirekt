@@ -12,6 +12,7 @@ import Report from "@/models/Report";
 import AdminQueue from "@/components/dashboard/AdminQueue";
 import BlogStudio from "@/components/dashboard/BlogStudio";
 import AdminReports from "@/components/dashboard/AdminReports";
+import AdminCityManager from "@/components/dashboard/AdminCityManager";
 
 export const dynamic = "force-dynamic";
 
@@ -141,7 +142,7 @@ export default async function AdminPage() {
           { icon: CheckCircle2, label: "Approved", value: approvedListings, accent: "bg-emerald-50 text-emerald-700", href: "/admin/listings?status=approved" },
           { icon: AlertTriangle, label: "Reports", value: totalReports, accent: "bg-red-50 text-red-700", href: "#reports-section" },
           { icon: BarChart3, label: "Reviews", value: totalReviews, accent: "bg-slate-100 text-slate-700", href: "/admin/reviews" },
-          { icon: LayoutDashboard, label: "Blogs", value: totalBlogs, accent: "bg-violet-50 text-violet-700", href: "#blog-studio" },
+          { icon: LayoutDashboard, label: "Blogs", value: totalBlogs, accent: "bg-violet-50 text-violet-700", href: "/admin/blogs" },
           { icon: Users, label: "Favorites", value: totalFavorites, accent: "bg-cyan-50 text-cyan-700", href: "#" }
         ].map((item) => (
           <Link key={item.label} href={item.href} className="surface p-6 hover:border-brand-500 transition-all hover:shadow-xl group">
@@ -194,6 +195,10 @@ export default async function AdminPage() {
 
       <div className="mt-12" id="blog-studio">
         <BlogStudio recentPosts={serializedBlogs as any[]} />
+      </div>
+
+      <div className="mt-8" id="city-admin">
+        <AdminCityManager />
       </div>
 
     </section>

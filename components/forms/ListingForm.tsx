@@ -50,6 +50,9 @@ export default function ListingForm() {
   const [address, setAddress] = useState("");
   const [activeTags, setActiveTags] = useState<string[]>([]);
   const [customTag, setCustomTag] = useState("");
+  const [cities, setCities] = useState<any[]>(albaniaCities);
+  const [villages, setVillages] = useState<string[]>([]);
+  const [selectedVillage, setSelectedVillage] = useState("");
 
   const subcategories = useMemo(() => {
     return categories.find((item) => item.value === selectedCategory)?.subcategories || [];
@@ -62,6 +65,26 @@ export default function ListingForm() {
   const [instagramLink, setInstagramLink] = useState("");
   const [facebookLink, setFacebookLink] = useState("");
   const [googleMapsLink, setGoogleMapsLink] = useState("");
+
+  useEffect(() => {
+    const loadCities = async () => {
+      try {
+        const res = await fetch("/api/cities");
+        const data = await res.json();
+        if (Array.isArray(data.cities) && data.cities.length) {
+          setCities(data.cities);
+        }
+      } catch {}
+    };
+    loadCities();
+  }, []);
+
+  useEffect(() => {
+    const found = cities.find((c) => String(c.label).toLowerCase() === location.toLowerCase());
+    const nextVillages = found?.villages || [];
+    setVillages(nextVillages);
+    if (!nextVillages.includes(selectedVillage)) setSelectedVillage("");
+  }, [location, cities, selectedVillage]);
 
   const toggleTag = (tag: string) => {
     setActiveTags(prev => 
@@ -152,10 +175,23 @@ export default function ListingForm() {
       />
 
       <datalist id="city-list">
-        {albaniaCities.map((item) => (
+        {cities.map((item) => (
           <option key={item.value} value={item.label} />
         ))}
       </datalist>
+
+      {villages.length > 0 && (
+        <Select
+          name="village"
+          label={language === "en" ? "Village / Area" : "Fshati / Zona"}
+          options={[
+            { label: language === "en" ? "Select village" : "Zgjidh fshatin", value: "" },
+            ...villages.map((v) => ({ label: v, value: v }))
+          ]}
+          value={selectedVillage}
+          onChange={(event) => setSelectedVillage(event.target.value)}
+        />
+      )}
 
       <div className="grid gap-4 lg:grid-cols-2">
         <Select
