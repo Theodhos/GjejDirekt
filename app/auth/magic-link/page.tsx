@@ -31,8 +31,7 @@ function MagicLinkVerify() {
 
       setMessage("Success! Redirecting...");
       window.dispatchEvent(new Event("auth-changed"));
-      router.push(data.user?.role === "admin" ? "/admin" : "/dashboard");
-      router.refresh();
+      window.location.href = data.user?.role === "admin" ? "/admin" : "/dashboard";
     })();
   }, [router, searchParams]);
 
