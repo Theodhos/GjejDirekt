@@ -124,11 +124,18 @@ export default function AuthForm({ mode = "login" }: { mode?: "login" | "registe
       )}
 
       {mode === "login" && isMagicMode && (
-        <p className="text-xs text-slate-500 -mt-2">
-          {language === "en"
-            ? "If you do not see the email, check your Spam folder."
-            : "Nëse nuk e shihni email-in, kontrolloni folderin Spam."}
-        </p>
+        <div className="space-y-1 -mt-2">
+          <p className="text-xs text-slate-500">
+            {language === "en"
+              ? "If you do not see the email, check your Spam folder."
+              : "Nëse nuk e shihni email-in, kontrolloni folderin Spam."}
+          </p>
+          <p className="text-xs text-amber-600 font-medium">
+            {language === "en"
+              ? "Important: If you request multiple links, only the most recent one will work!"
+              : "E rëndësishme: Nëse kërkoni disa linqe, vetëm linku më i fundit do të funksionojë!"}
+          </p>
+        </div>
       )}
 
       {mode === "login" && isMagicMode ? (

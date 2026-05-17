@@ -17,13 +17,14 @@ export async function POST(request: Request) {
     await connectDB();
     const tokenHash = crypto.createHash("sha256").update(token).digest("hex");
 
-    const user = await User.findOne({
-      resetCode: tokenHash,
-      resetCodeExpires: { $gt: new Date() }
-    });
+    const user = await User.findOne({ resetCode: tokenHash });
 
     if (!user) {
-      return NextResponse.json({ error: "Invalid or expired magic link." }, { status: 401 });
+      return NextResponse.json({ error: "Invalid magic link. Code not found in database." }, { status: 401 });
+    }
+
+    if (user.resetCodeExpires && new Date() > user.resetCodeExpires) {
+      return NextResponse.json({ error: "This magic link has expired." }, { status: 401 });
     }
 
     user.resetCode = undefined;
