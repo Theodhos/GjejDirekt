@@ -51,7 +51,7 @@ export default function Header() {
     { href: "/", label: t.nav.home },
     { href: "/packet", label: language === 'en' ? 'Packet' : 'Paketat' },
     { href: "/blog", label: t.nav.blog },
-    { href: "/listings/add", label: t.nav.addListing }
+    { href: "/create-listing", label: t.nav.addListing }
   ];
 
   const authenticatedLinks: NavItem[] = me
@@ -124,7 +124,7 @@ export default function Header() {
           ) : null}
           {/* Add Listing button — visible on mobile next to hamburger */}
           <Link
-            href="/listings/add"
+            href="/create-listing"
             className="inline-flex items-center gap-1.5 rounded-full bg-brand-600 px-3 py-2 text-[10px] font-black uppercase tracking-widest text-white shadow-md hover:bg-brand-700 transition-all active:scale-95"
           >
             <PlusCircle className="h-3.5 w-3.5" />

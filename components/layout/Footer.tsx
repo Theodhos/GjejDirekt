@@ -10,9 +10,9 @@ export default function Footer() {
   const t = translations[language];
 
   return (
-    <footer className="mt-20 border-t border-slate-900/5 bg-white">
+    <footer className="mt-0 border-t border-slate-900/5 bg-white">
       <div className="page-shell py-12">
-        <div className="surface-strong px-6 py-8 sm:px-8">
+        <div className="bg-slate-950 rounded-[2.5rem] px-6 py-10 sm:p-12 shadow-2xl">
           <div className="grid gap-8 lg:grid-cols-[1.15fr_0.85fr] lg:items-center">
             <div>
               <p className="text-sm uppercase tracking-[0.24em] text-white/80">{language === 'en' ? 'Tourism Platform' : 'Platforma Turistike'}</p>

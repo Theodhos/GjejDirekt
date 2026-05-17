@@ -194,7 +194,8 @@ function HomePageClient() {
       {/* Hero Section - Hidden when search is active */}
       {!showSearchResults && <HomeSearchHero />}
 
-      <div className="page-shell space-y-20 py-10 sm:space-y-32 sm:py-24">
+      {showSearchResults ? null : (
+      <div className="page-shell space-y-10 py-6 sm:space-y-12 sm:py-12">
         
         {/* 1. POPULAR DESTINATIONS (CITIES) - Logical First Step */}
         <HorizontalRail
@@ -206,7 +207,7 @@ function HomePageClient() {
             <Link
               key={city.value}
               href={`/city/${city.value}`}
-              className="group min-w-[280px] overflow-hidden rounded-[2.5rem] border border-slate-200 bg-white transition hover:-translate-y-2 hover:border-brand-300 hover:shadow-2xl"
+              className="group min-w-[280px] overflow-hidden rounded-[2.5rem] border border-slate-200 bg-white transition-all duration-300 hover:-translate-y-1 hover:border-brand-300 hover:shadow-xl hover:shadow-brand-500/10"
             >
               <div className="relative aspect-[16/10]">
                 <Image src={city.image || "https://images.unsplash.com/photo-1512917774080-9991f1c4c750"} alt={city.label} fill className="object-cover transition duration-700 group-hover:scale-110" />
@@ -228,7 +229,8 @@ function HomePageClient() {
             title: t.home.whereToSleepTitle,
             description: t.home.whereToSleepDesc,
             accent: 'bg-blue-50 text-blue-700',
-            fallbackImage: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80'
+            fallbackImage: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80',
+            buttonLabel: language === 'en' ? 'Add Accommodation' : 'Shto Akomodim'
           },
           {
             id: "restorante",
@@ -237,7 +239,8 @@ function HomePageClient() {
             title: t.home.whereToEatTitle,
             description: t.home.whereToEatDesc,
             accent: 'bg-orange-50 text-orange-700',
-            fallbackImage: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=600&q=80'
+            fallbackImage: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=600&q=80',
+            buttonLabel: language === 'en' ? 'Add Place to Eat' : 'Shto Restorant'
           },
           {
             id: "evente",
@@ -246,7 +249,8 @@ function HomePageClient() {
             title: t.home.eventsTitle,
             description: t.home.eventsDesc,
             accent: 'bg-brand-50 text-brand-700',
-            fallbackImage: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=600&q=80'
+            fallbackImage: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=600&q=80',
+            buttonLabel: language === 'en' ? 'Add Event' : 'Shto Event'
           },
           {
             id: "transport",
@@ -255,7 +259,8 @@ function HomePageClient() {
             title: t.home.transportTitle,
             description: t.home.transportDesc,
             accent: 'bg-brand-50 text-brand-700',
-            fallbackImage: 'https://images.unsplash.com/photo-1504215680853-026ed2a45def?auto=format&fit=crop&w=600&q=80'
+            fallbackImage: 'https://images.unsplash.com/photo-1504215680853-026ed2a45def?auto=format&fit=crop&w=600&q=80',
+            buttonLabel: language === 'en' ? 'Add Transport' : 'Shto Transport'
           },
           {
             id: "sherbime-turistike",
@@ -266,7 +271,8 @@ function HomePageClient() {
               ? 'Browse local tourism services in a design that matches the rest of the homepage.'
               : 'Shfletoni shërbimet turistike lokale me stil të njëjtë si pjesët e tjera.',
             accent: 'bg-emerald-50 text-emerald-700',
-            fallbackImage: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=600&q=80'
+            fallbackImage: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=600&q=80',
+            buttonLabel: language === 'en' ? 'Add Service' : 'Shto Shërbim'
           },
           {
             id: "produkte-lokale",
@@ -277,7 +283,8 @@ function HomePageClient() {
               ? 'Discover artisan products, souvenirs and local specialties.'
               : 'Zbuloni produkte artizanale, suvenire dhe specialitete lokale.',
             accent: 'bg-cyan-50 text-cyan-700',
-            fallbackImage: 'https://images.unsplash.com/photo-1498654896293-37aacf113fd9?auto=format&fit=crop&w=600&q=80'
+            fallbackImage: 'https://images.unsplash.com/photo-1498654896293-37aacf113fd9?auto=format&fit=crop&w=600&q=80',
+            buttonLabel: language === 'en' ? 'Add Product' : 'Shto Produkt'
           },
           {
             id: "atraksione",
@@ -288,7 +295,8 @@ function HomePageClient() {
               ? 'Find top places, museums, and outdoor activities.'
               : 'Gjeni vendet kryesore, muzeun dhe aktivitete jashtë.',
             accent: 'bg-violet-50 text-violet-700',
-            fallbackImage: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=600&q=80'
+            fallbackImage: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=600&q=80',
+            buttonLabel: language === 'en' ? 'Add Attraction' : 'Shto Atraksion'
           }
         ].map((section) => {
           const categoryListings = getCategoryListings(section.category);
@@ -301,6 +309,19 @@ function HomePageClient() {
               eyebrow={section.eyebrow}
               title={section.title}
               description={section.description}
+              actionButton={
+                <Link 
+                  href={`/create-listing?category=${section.id}`} 
+                  className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full bg-white px-5 py-2.5 text-sm font-black text-slate-800 shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-slate-100 transition-all duration-300 hover:-translate-y-1 hover:border-brand-300 hover:text-brand-600 hover:shadow-[0_8px_30px_rgb(var(--brand-500)/0.12)] active:translate-y-0 active:scale-95"
+                >
+                  <span className="flex h-6 w-6 items-center justify-center rounded-full bg-slate-100 text-slate-600 transition-colors group-hover:bg-brand-100 group-hover:text-brand-600">
+                    <svg className="w-3.5 h-3.5 transition-transform duration-300 group-hover:rotate-90" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+                    </svg>
+                  </span>
+                  {section.buttonLabel}
+                </Link>
+              }
             >
               {showFallback ? (
                 section.category?.subcategories.map((sub) => (
@@ -326,7 +347,7 @@ function HomePageClient() {
                 ))
               ) : (
                 categoryListings.map((listing) => (
-                  <div key={listing._id} className="min-w-[280px] max-w-[280px] shrink-0 snap-start">
+                  <div key={listing._id} className="min-w-[280px] max-w-[280px] shrink-0 snap-start h-full">
                     <ListingCard listing={listing} />
                   </div>
                 ))
@@ -412,18 +433,18 @@ function HomePageClient() {
                     <Link
                         key={post._id?.toString?.() || post.slug}
                         href={`/blog/${post.slug}`}
-                        className="group flex flex-col gap-6 surface p-8 border-none hover:bg-slate-50 transition duration-500 rounded-[3rem] shadow-sm hover:shadow-xl"
+                        className="group flex flex-col gap-6 bg-white p-5 border border-slate-100 transition-all duration-300 rounded-[2.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-xl hover:-translate-y-1 hover:border-brand-200 hover:shadow-brand-500/10"
                     >
-                        <div className="relative w-full aspect-[16/10] rounded-[2.5rem] overflow-hidden flex-shrink-0">
-                            <Image src={post.coverImage || "https://images.unsplash.com/photo-1507525428034-b723cf961d3e"} alt={post.title} fill className="object-cover transition duration-700 group-hover:scale-110" />
+                        <div className="relative w-full aspect-[16/10] rounded-[2rem] overflow-hidden flex-shrink-0">
+                            <Image src={post.coverImage || "https://images.unsplash.com/photo-1507525428034-b723cf961d3e"} alt={post.title} fill className="object-cover transition duration-700 group-hover:scale-105" />
                         </div>
-                        <div className="flex flex-col min-w-0">
-                            <p className="text-[10px] uppercase font-black text-brand-700 tracking-[0.4em] mb-3">
+                        <div className="flex flex-col min-w-0 px-2 pb-2">
+                            <p className="text-[10px] uppercase font-black text-brand-600 tracking-[0.3em] mb-3">
                                 {post.createdAt ? new Date(post.createdAt).toLocaleDateString() : "Editorial"}
                             </p>
-                            <h4 className="text-2xl font-black text-slate-950 line-clamp-2 group-hover:text-brand-700 transition duration-300 leading-tight mb-4">{post.title}</h4>
-                            <p className="text-base text-slate-700 line-clamp-2 leading-relaxed font-medium mb-6">{post.excerpt}</p>
-                            <span className="text-xs font-black uppercase tracking-widest text-brand-700 group-hover:text-brand-900 flex items-center gap-2">
+                            <h4 className="text-xl font-black text-slate-950 line-clamp-2 group-hover:text-brand-600 transition duration-300 leading-tight mb-3">{post.title}</h4>
+                            <p className="text-sm text-slate-500 line-clamp-2 leading-relaxed font-medium mb-6">{post.excerpt}</p>
+                            <span className="mt-auto text-[11px] font-black uppercase tracking-widest text-slate-800 group-hover:text-brand-600 flex items-center gap-2 transition-colors">
                                 {language === 'en' ? 'Full Story' : 'Lexo të plotë'} <ArrowRight className="w-4 h-4" />
                             </span>
                         </div>
@@ -433,6 +454,7 @@ function HomePageClient() {
           </div>
         </section>
       </div>
+      )}
     </main>
   );
 }

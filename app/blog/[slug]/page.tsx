@@ -70,9 +70,8 @@ export default async function BlogDetailPage({ params }: { params: { slug: strin
             </div>
         </header>
 
-        {/* 3. Main Hero Image */}
-        <div className="page-shell max-w-6xl mx-auto mb-20">
-            <div className="relative aspect-[21/9] rounded-[4rem] overflow-hidden shadow-[0_50px_100px_-20px_rgba(0,0,0,0.15)]">
+        <div className="page-shell max-w-6xl mx-auto mb-20 px-4 sm:px-6 lg:px-8">
+            <div className="relative aspect-[16/10] sm:aspect-[21/9] rounded-[2rem] sm:rounded-[4rem] overflow-hidden shadow-[0_50px_100px_-20px_rgba(0,0,0,0.15)]">
                 <Image src={image} alt={post.title} fill className="object-cover" priority />
             </div>
         </div>

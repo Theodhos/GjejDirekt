@@ -1,7 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useMemo, useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import toast from "react-hot-toast";
 import { categories } from "@/lib/constants";
 import { albaniaCities } from "@/lib/albania-cities";
@@ -34,9 +34,18 @@ export default function ListingForm() {
   const { language } = useLanguage();
   const t = translations[language];
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [loading, setLoading] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedSubcategory, setSelectedSubcategory] = useState("");
+
+  // Pre-select category from URL parameter
+  useEffect(() => {
+    const categoryParam = searchParams.get('category');
+    if (categoryParam && !selectedCategory) {
+      setSelectedCategory(categoryParam);
+    }
+  }, [searchParams, selectedCategory]);
   const [location, setLocation] = useState("");
   const [address, setAddress] = useState("");
   const [activeTags, setActiveTags] = useState<string[]>([]);

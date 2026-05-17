@@ -62,7 +62,7 @@ export default function BlogPage() {
 
                 <div className="absolute inset-0 z-20 flex flex-col items-center justify-center px-6 text-center text-white">
                     <div className="max-w-5xl">
-                       <div className="mb-8 inline-flex items-center gap-2 rounded-full bg-brand-500/20 border border-brand-500/30 backdrop-blur-md px-6 py-2 text-xs font-black uppercase tracking-[0.4em] text-black   animate-in fade-in slide-in-from-bottom-4 duration-700">
+                       <div className="mb-8 inline-flex items-center gap-2 rounded-full bg-brand-500/20 border border-brand-500/30 backdrop-blur-md px-6 py-2 text-xs font-black uppercase tracking-[0.4em] text-whitew   animate-in fade-in slide-in-from-bottom-4 duration-700">
                             <Sparkles className="w-4 h-4" />
                             {language === 'en' ? 'The Journal' : 'Revista'}
                         </div>
@@ -99,10 +99,10 @@ export default function BlogPage() {
             </section>
 
             {/* SECTION 2: ARTICLES GRID */}
-            <section className="bg-slate-50 py-24 sm:py-32">
+            <section className="bg-white py-24 sm:py-32">
                 <div className="page-shell">
-                    <div className="mb-16 flex flex-col md:flex-row md:items-end justify-between gap-6">
-                        <div>
+                    <div className="mb-16 flex flex-col items-start gap-6">
+                        <div className="text-left">
                             <p className="text-xs uppercase tracking-[0.3em] font-black text-brand-700 mb-4">{t.blog.archiveTitle}</p>
                             <h2 className="text-4xl sm:text-6xl font-black tracking-tight text-slate-950">
                                 {t.blog.latestPub}

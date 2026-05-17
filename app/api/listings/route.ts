@@ -4,7 +4,7 @@ import { getAuthUser } from "@/lib/auth";
 import { sendMail } from "@/lib/mailer";
 import { logActivity } from "@/lib/activity";
 import { slugify } from "@/lib/utils";
-import { getCategorySearchValues, getSubcategorySearchValues } from "@/lib/constants";
+import { categories, getCategorySearchValues, getSubcategorySearchValues } from "@/lib/constants";
 import Listing from "@/models/Listing";
 import User from "@/models/User";
 
@@ -34,6 +34,10 @@ function parseCoordinates(body: Record<string, unknown>) {
   return { lat, lng };
 }
 
+function escapeRegex(value: string) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
 function buildQuery(url: URL) {
   const search = url.searchParams.get("q")?.trim();
   const category = url.searchParams.get("category")?.trim();
@@ -61,7 +65,40 @@ function buildQuery(url: URL) {
     query.ratingAverage = { $gte: Number(minRating) };
   }
   if (search) {
-    query.$text = { $search: search };
+    const normalizedSearch = search.toLowerCase();
+    const searchRegex = new RegExp(escapeRegex(search), "i");
+    const matchedCategories = categories
+      .filter(
+        (cat) =>
+          cat.value.includes(normalizedSearch) ||
+          cat.label.toLowerCase().includes(normalizedSearch) ||
+          cat.aliases.some((alias) => alias.includes(normalizedSearch))
+      )
+      .map((cat) => cat.value);
+
+    const matchedSubcategories = categories.flatMap((cat) =>
+      cat.subcategories
+        .filter(
+          (sub) =>
+            sub.value.includes(normalizedSearch) ||
+            sub.label.toLowerCase().includes(normalizedSearch) ||
+            sub.aliases?.some((alias) => alias.includes(normalizedSearch))
+        )
+        .map((sub) => sub.value)
+    );
+
+    query.$or = [
+      { title: { $regex: searchRegex } },
+      { description: { $regex: searchRegex } },
+      { location: { $regex: searchRegex } },
+      { country: { $regex: searchRegex } },
+      { category: { $regex: searchRegex } },
+      { subcategory: { $regex: searchRegex } },
+      { tags: { $elemMatch: { $regex: searchRegex } } },
+      { highlights: { $elemMatch: { $regex: searchRegex } } },
+      ...(matchedCategories.length ? [{ category: { $in: matchedCategories } }] : []),
+      ...(matchedSubcategories.length ? [{ subcategory: { $in: matchedSubcategories } }] : [])
+    ];
   }
 
   const sortQuery: Record<string, 1 | -1> =

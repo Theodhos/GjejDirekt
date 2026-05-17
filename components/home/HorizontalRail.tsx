@@ -8,10 +8,11 @@ type HorizontalRailProps = {
   eyebrow?: string;
   title: string;
   description?: string;
+  actionButton?: ReactNode;
   children: ReactNode;
 };
 
-export default function HorizontalRail({ id, eyebrow, title, description, children }: HorizontalRailProps) {
+export default function HorizontalRail({ id, eyebrow, title, description, actionButton, children }: HorizontalRailProps) {
   const railRef = useRef<HTMLDivElement>(null);
 
   function scroll(direction: -1 | 1) {
@@ -19,14 +20,16 @@ export default function HorizontalRail({ id, eyebrow, title, description, childr
   }
 
   return (
-    <section id={id} className="py-8 sm:py-12">
-      <div className="mb-10 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+    <section id={id} className="py-4 sm:py-6">
+      <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div className="max-w-2xl">
           {eyebrow ? <p className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-600 mb-2">{eyebrow}</p> : null}
           <h2 className="text-3xl sm:text-5xl font-black tracking-tight text-slate-950">{title}</h2>
           {description ? <p className="mt-4 text-lg font-medium text-slate-500 leading-relaxed">{description}</p> : null}
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-col items-start md:items-end gap-3 mt-4 md:mt-0">
+          {actionButton}
+          <div className="flex items-center gap-3">
           <button
             type="button"
             onClick={() => scroll(-1)}
@@ -44,11 +47,12 @@ export default function HorizontalRail({ id, eyebrow, title, description, childr
             <ChevronRight className="h-6 w-6 transition-transform group-hover:translate-x-1" />
           </button>
         </div>
+        </div>
       </div>
 
       <div
         ref={railRef}
-        className="flex gap-6 overflow-x-auto no-scrollbar scroll-smooth snap-x snap-mandatory py-6 px-1 -mx-1"
+        className="flex items-stretch gap-6 overflow-x-auto no-scrollbar scroll-smooth snap-x snap-mandatory py-6 px-1 -mx-1"
       >
         {children}
       </div>

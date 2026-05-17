@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { ArrowRight, Search, Compass, Sparkles, MapPin, Tag } from "lucide-react";
+import { ArrowRight, Search, Compass, Sparkles, MapPin, Tag, X } from "lucide-react";
 import { useState, useMemo, useEffect, useRef } from "react";
 import { useLanguage } from "@/context/LanguageContext";
 import { categories } from "@/lib/constants";
@@ -45,7 +45,7 @@ export default function HomeSearchHero() {
         const response = await fetch(`/api/listings?q=${encodeURIComponent(debouncedSearch)}`);
         const data = await response.json();
         if (data.listings) {
-          setListingSuggestions(data.listings.slice(0, 4));
+          setListingSuggestions(data.listings.slice(0, 12));
         }
       } catch (error) {
         console.error("Error fetching listings:", error);
@@ -192,12 +192,22 @@ export default function HomeSearchHero() {
         </div>
 
         {/* Search Wrapper - High Z-index and overflow visible */}
-        <div className="w-full max-w-4xl relative z-[100]" ref={searchRef}>
-          {/* Glassmorphism Container */}
-          <div className="relative z-20 glass shadow-[0_32px_64px_-12px_rgba(0,0,0,0.5)] rounded-[2.5rem] sm:rounded-[3.5rem] p-3 sm:p-5 border-white/10 backdrop-blur-3xl bg-white/40">
+        <div className={`w-full max-w-4xl z-[100] ${showSuggestions ? 'fixed inset-0 z-[99999] bg-slate-50 sm:relative sm:z-[100] sm:bg-transparent sm:block flex flex-col' : 'relative'}`} ref={searchRef}>
+          
+          {/* Mobile Header */}
+          {showSuggestions && (
+            <div className="sm:hidden flex items-center justify-end p-4">
+              <button onClick={() => setShowSuggestions(false)} className="p-2 bg-slate-200/50 hover:bg-slate-200 rounded-full transition-colors">
+                <X className="w-6 h-6 text-slate-700" />
+              </button>
+            </div>
+          )}
+
+          {/* Container */}
+          <div className={`relative z-20 ${showSuggestions ? 'sm:glass sm:shadow-[0_32px_64px_-12px_rgba(0,0,0,0.5)] sm:rounded-[3.5rem] sm:p-5 sm:border-white/10 sm:backdrop-blur-3xl sm:bg-white/40 p-4' : 'glass shadow-[0_32px_64px_-12px_rgba(0,0,0,0.5)] rounded-[2.5rem] sm:rounded-[3.5rem] p-3 sm:p-5 border-white/10 backdrop-blur-3xl bg-white/40'}`}>
             {/* Input Form */}
             <form onSubmit={submit} className="relative">
-              <div className="flex flex-col sm:flex-row items-center gap-4 p-2 pl-4 sm:pl-8 bg-white rounded-[2rem] sm:rounded-[2.5rem] shadow-2xl transition-all duration-500 focus-within:ring-8 focus-within:ring-brand-500/20">
+              <div className="flex flex-col sm:flex-row items-center gap-4 p-2 pl-4 sm:pl-8 bg-white rounded-[2rem] sm:rounded-[2.5rem] shadow-2xl transition-all duration-500 focus-within:ring-8 focus-within:ring-brand-500/20 border border-slate-100 sm:border-transparent">
                 <div className="flex items-center gap-3 sm:gap-5 w-full">
                   <Search className="h-6 w-6 sm:h-7 sm:w-7 text-brand-600 shrink-0" />
                   <input
@@ -206,7 +216,12 @@ export default function HomeSearchHero() {
                       setCity(event.target.value);
                       setShowSuggestions(true);
                     }}
-                    onFocus={() => setShowSuggestions(true)}
+                    onFocus={() => {
+                      setShowSuggestions(true);
+                      if (window.innerWidth >= 640) {
+                        searchRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                      }
+                    }}
                     placeholder={language === 'en' ? "Search for cities, hotels, activities..." : "Kërko për qytete, hotele, aktivitete..."}
                     className="w-full bg-transparent py-3 sm:py-5 text-lg sm:text-xl text-slate-950 outline-none font-black placeholder:text-slate-400 placeholder:font-bold"
                   />
@@ -227,22 +242,14 @@ export default function HomeSearchHero() {
 
           {/* Suggestions Dropdown - Positioned BELOW the search and outside the clipping containers */}
           {showSuggestions && suggestions.length > 0 && (
-            <div className="absolute top-full left-0 right-0 mt-6 bg-white rounded-[2.5rem] shadow-[0_64px_128px_-32px_rgba(0,0,0,0.6)] border border-slate-200 overflow-hidden z-[9999] animate-in fade-in slide-in-from-top-6 duration-500">
-              <div className="p-4 max-h-[calc(100vh-200px)] overflow-y-auto custom-scrollbar">
-                <div className="flex items-center justify-between px-8 py-6 border-b border-slate-50 mb-4">
-                  <div className="flex items-center gap-3">
-                    <Compass className="w-5 h-5 text-brand-600 animate-spin-slow" />
-                    <span className="text-xs font-black uppercase tracking-[0.3em] text-slate-950">
-                      {language === 'en' ? "Quick Discovery" : "Zbulim i shpejtë"}
-                    </span>
+            <div className="sm:absolute sm:top-full sm:left-0 sm:right-0 sm:mt-6 flex-grow sm:flex-grow-0 bg-white sm:rounded-[2.5rem] sm:shadow-[0_64px_128px_-32px_rgba(0,0,0,0.6)] sm:border border-slate-200 overflow-hidden z-[9999] animate-in fade-in sm:slide-in-from-top-6 duration-500">
+              <div className="p-2 sm:p-4 h-full sm:max-h-[calc(100vh-200px)] overflow-y-auto custom-scrollbar">
+                {isLoadingListings && (
+                  <div className="flex items-center justify-center gap-3 px-4 py-3 mb-2 bg-slate-50 rounded-2xl border border-slate-100">
+                    <div className="w-2 h-2 bg-brand-500 rounded-full animate-ping" />
+                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Searching...</span>
                   </div>
-                  {isLoadingListings && (
-                    <div className="flex items-center gap-3 px-4 py-1.5 bg-slate-50 rounded-full border border-slate-100">
-                      <div className="w-2 h-2 bg-brand-500 rounded-full animate-ping" />
-                      <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Searching...</span>
-                    </div>
-                  )}
-                </div>
+                )}
 
                 <div className="grid grid-cols-1 gap-2 p-2">
                   {suggestions.map((suggestion, index) => (
