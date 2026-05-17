@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
-export default function MagicLinkPage() {
+function MagicLinkVerify() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [message, setMessage] = useState("Verifying sign-in link...");
@@ -36,11 +36,24 @@ export default function MagicLinkPage() {
   }, [router, searchParams]);
 
   return (
+    <div className="max-w-lg w-full rounded-[2rem] border border-slate-200 bg-white p-8 text-center shadow-soft">
+      <h1 className="text-2xl font-black text-slate-950">Magic Link Sign In</h1>
+      <p className="mt-4 text-slate-600 font-medium">{message}</p>
+    </div>
+  );
+}
+
+export default function MagicLinkPage() {
+  return (
     <main className="min-h-[60vh] page-shell flex items-center justify-center py-16">
-      <div className="max-w-lg w-full rounded-[2rem] border border-slate-200 bg-white p-8 text-center shadow-soft">
-        <h1 className="text-2xl font-black text-slate-950">Magic Link Sign In</h1>
-        <p className="mt-4 text-slate-600 font-medium">{message}</p>
-      </div>
+      <Suspense fallback={
+        <div className="max-w-lg w-full rounded-[2rem] border border-slate-200 bg-white p-8 text-center shadow-soft">
+          <h1 className="text-2xl font-black text-slate-950">Magic Link Sign In</h1>
+          <p className="mt-4 text-slate-600 font-medium">Verifying sign-in link...</p>
+        </div>
+      }>
+        <MagicLinkVerify />
+      </Suspense>
     </main>
   );
 }

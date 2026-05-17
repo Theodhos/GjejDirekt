@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
-export default function LegacyAuthResetRedirectPage() {
+function LegacyAuthResetRedirect() {
   const router = useRouter();
   const params = useSearchParams();
 
@@ -14,8 +14,16 @@ export default function LegacyAuthResetRedirectPage() {
   }, [params, router]);
 
   return (
+    <p className="text-slate-600 font-medium">Redirecting to password reset...</p>
+  );
+}
+
+export default function LegacyAuthResetRedirectPage() {
+  return (
     <main className="page-shell min-h-[50vh] flex items-center justify-center py-16">
-      <p className="text-slate-600 font-medium">Redirecting to password reset...</p>
+      <Suspense fallback={<p className="text-slate-600 font-medium">Redirecting to password reset...</p>}>
+        <LegacyAuthResetRedirect />
+      </Suspense>
     </main>
   );
 }
