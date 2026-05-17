@@ -130,7 +130,7 @@ export default function ListingCard({ listing }: { listing: any }) {
             </button>
             {/* Dots */}
             <div className="absolute bottom-3 left-3 flex gap-1.5 z-10">
-              {allImages.map((_, idx) => (
+              {allImages.map((_: string, idx: number) => (
                 <div key={idx} className={`h-1.5 rounded-full transition-all ${idx === currentImageIndex ? "w-4 bg-white" : "w-1.5 bg-white/80"}`} />
               ))}
             </div>
