@@ -92,7 +92,7 @@ export default async function CityPage({ params }: { params: { city: string } })
             </div>
             <h2 className="text-3xl font-black text-slate-950 mb-4">Asnje sherbim nuk u gjet</h2>
             <p className="text-slate-500 max-w-md mx-auto">
-              Nuk u gjet asnje sherbim per "{cityLabel}" per momentin. Provoni nje qytet tjeter.
+              Nuk u gjet asnje sherbim per &quot;{cityLabel}&quot; per momentin. Provoni nje qytet tjeter.
             </p>
           </div>
         ) : (
