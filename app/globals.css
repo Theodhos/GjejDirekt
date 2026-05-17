@@ -227,3 +227,64 @@ a {
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: #cbd5e1;
 }
+
+/* Mobile-first global polish */
+@media (max-width: 640px) {
+  .page-shell {
+    padding-left: 0.9rem;
+    padding-right: 0.9rem;
+  }
+
+  h1 {
+    font-size: clamp(1.85rem, 8vw, 2.4rem) !important;
+    line-height: 1.08 !important;
+  }
+
+  h2 {
+    font-size: clamp(1.45rem, 6.2vw, 2rem) !important;
+    line-height: 1.15 !important;
+  }
+
+  h3 {
+    font-size: clamp(1.1rem, 4.8vw, 1.4rem) !important;
+    line-height: 1.2 !important;
+  }
+
+  p {
+    font-size: 0.98rem;
+    line-height: 1.65;
+  }
+
+  img,
+  video,
+  canvas,
+  svg {
+    max-width: 100%;
+    height: auto;
+  }
+
+  .surface,
+  .surface-strong,
+  .travel-card,
+  .glass {
+    border-radius: 1.25rem !important;
+  }
+
+  .chip {
+    font-size: 0.74rem;
+    padding: 0.35rem 0.65rem;
+  }
+
+  table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  input,
+  textarea,
+  select,
+  button {
+    font-size: 16px;
+  }
+}
