@@ -4,6 +4,7 @@ import { connectDB } from "@/lib/db";
 import { AUTH_COOKIE, signToken } from "@/lib/auth";
 import { logActivity } from "@/lib/activity";
 import User from "@/models/User";
+import { sendUserRegistrationEmail } from "@/lib/mail";
 
 export async function POST(request: Request) {
   try {
@@ -44,6 +45,11 @@ export async function POST(request: Request) {
       actor: user._id.toString(),
       actorName: user.name
     });
+    await sendUserRegistrationEmail({
+      userName: user.name,
+      userEmail: user.email,
+      userPhone: user.phone || phone
+    }).catch((err) => console.error("Registration email send error:", err));
     return response;
   } catch (error) {
     return NextResponse.json(
