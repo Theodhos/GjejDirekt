@@ -1,5 +1,7 @@
 import React from 'react';
 
+export const dynamic = "force-dynamic";
+
 // Define a functional component for the home page
 const HomePage: React.FC = () => {
   // Function to handle navigation
