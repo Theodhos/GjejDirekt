@@ -220,8 +220,8 @@ function HomePageClient() {
                 <Image src={city.image || "https://images.unsplash.com/photo-1512917774080-9991f1c4c750"} alt={city.label} fill className="object-cover transition duration-700 group-hover:scale-110" />
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/20 to-transparent" />
                 <div className="absolute inset-0 flex flex-col justify-end p-6">
-                    <p className="text-xs font-black uppercase tracking-widest text-brand-400 mb-2">City</p>
-                    <h3 className="text-2xl font-black text-white">{city.label}</h3>
+                    <p className="text-xs font-black uppercase tracking-widest text-emerald-200 drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)] mb-2">City</p>
+                    <h3 className="text-2xl font-black text-white drop-shadow-[0_4px_16px_rgba(0,0,0,0.9)]">{city.label}</h3>
                 </div>
               </div>
             </Link>
