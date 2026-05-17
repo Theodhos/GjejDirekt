@@ -90,7 +90,7 @@ export default async function AdminPage() {
         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-3xl">
             <p className="text-sm font-semibold uppercase tracking-[0.28em] text-brand-100">Administrator console</p>
-            <h1 className="display-font mt-3 text-3xl font-black tracking-tight sm:text-4xl lg:text-5xl">
+            <h1 className="display-font mt-3 text-3xl font-black tracking-tight text-white sm:text-4xl lg:text-5xl">
               Control the tourism marketplace from one place.
             </h1>
             <p className="mt-4 max-w-2xl text-sm leading-7 text-brand-50 sm:text-base">
@@ -99,14 +99,14 @@ export default async function AdminPage() {
         <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
             <Link
               href="/create-listing"
-              className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-3 text-sm font-semibold text-slate-950 shadow-lg transition hover:scale-[1.02]"
+              className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-3 text-sm font-semibold !text-black shadow-lg transition hover:scale-[1.02]"
             >
-              <PlusCircle className="h-4 w-4" />
-              Add listing
+              <PlusCircle className="h-4 w-4 !text-black" />
+              <span className="!text-black">Add listing</span>
             </Link>
             <Link
               href="/services"
-              className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/20"
+              className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-5 py-3 text-sm font-semibold text-black transition hover:bg-white/20"
             >
               <LayoutDashboard className="h-4 w-4" />
               View services
@@ -120,9 +120,9 @@ export default async function AdminPage() {
             </Link>
           </div>
         </div>
-        <div className="mt-6 flex flex-wrap gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-brand-100">
-          <span className="rounded-full bg-white/10 px-3 py-2">Logged in as {displayName}</span>
-          <span className="rounded-full bg-white/10 px-3 py-2">{auth.email}</span>
+        <div className="mt-6 flex flex-wrap gap-2 text-xs font-semibold uppercase tracking-[0.18em]">
+          <span className="rounded-full bg-white px-3 py-2 text-slate-800">Logged in as {displayName}</span>
+          <span className="rounded-full bg-white px-3 py-2 text-slate-800">{auth.email}</span>
         </div>
       </div>
 
