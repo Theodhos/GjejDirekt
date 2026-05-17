@@ -20,7 +20,7 @@ export default function Header() {
 
   useEffect(() => {
     const loadMe = () => {
-      fetch("/api/auth/me", { cache: "no-store" })
+      fetch(`/api/auth/me?t=${Date.now()}`, { cache: "no-store" })
         .then((res) => res.json())
         .then((data) => setMe(data.user ?? null))
         .catch(() => setMe(null));

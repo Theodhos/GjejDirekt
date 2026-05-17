@@ -1,6 +1,6 @@
 import crypto from "crypto";
 import { NextResponse } from "next/server";
-import { AUTH_COOKIE, signToken } from "@/lib/auth";
+import { AUTH_COOKIE, signToken, setAuthCookie } from "@/lib/auth";
 import { connectDB } from "@/lib/db";
 import User from "@/models/User";
 import { logActivity } from "@/lib/activity";
@@ -32,6 +32,7 @@ export async function POST(request: Request) {
     await user.save();
 
     const jwt = signToken({ id: user._id.toString(), name: user.name, email: user.email, role: user.role });
+    setAuthCookie(jwt);
     const response = NextResponse.json({
       user: { id: user._id, name: user.name, email: user.email, role: user.role }
     });
