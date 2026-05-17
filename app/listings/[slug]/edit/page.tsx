@@ -15,8 +15,7 @@ export default async function EditListingPage({ params }: { params: { slug: stri
   if (!listing) notFound();
 
   const isOwner = listing.owner?.toString() === auth.id;
-  const isAdmin = auth.role === "admin";
-  if (!isOwner && !isAdmin) notFound();
+  if (!isOwner) notFound();
 
   return (
     <section className="page-shell py-10">

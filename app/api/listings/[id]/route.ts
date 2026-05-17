@@ -63,7 +63,7 @@ export async function PATCH(request: Request, { params }: { params: { id: string
     const listing = await Listing.findById(params.id);
     if (!listing) return NextResponse.json({ error: "Listing not found" }, { status: 404 });
 
-    if (listing.owner.toString() !== auth.id && auth.role !== "admin") {
+    if (listing.owner.toString() !== auth.id) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 

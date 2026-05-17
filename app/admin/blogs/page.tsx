@@ -1,5 +1,6 @@
 ﻿import Link from "next/link";
 import { redirect } from "next/navigation";
+import { ArrowLeft } from "lucide-react";
 import { getAuthUser } from "@/lib/auth";
 import { connectDB } from "@/lib/db";
 import BlogPost from "@/models/BlogPost";
@@ -16,9 +17,16 @@ export default async function AdminBlogsPage() {
   return (
     <section className="page-shell py-8 sm:py-10">
       <div className="surface p-6 sm:p-8">
-        <p className="eyebrow">Admin blogs</p>
-        <h1 className="mt-2 text-3xl font-black text-slate-950">All uploaded blog posts</h1>
-        <p className="mt-2 text-sm text-slate-600">Click any card to open the full blog page.</p>
+        <div className="flex items-start gap-4">
+          <Link href="/admin" className="w-10 h-10 rounded-full border border-slate-200 flex items-center justify-center hover:bg-slate-50 transition shrink-0">
+            <ArrowLeft className="w-5 h-5 text-slate-600" />
+          </Link>
+          <div>
+            <p className="eyebrow">Admin blogs</p>
+            <h1 className="mt-2 text-3xl font-black text-slate-950">All uploaded blog posts</h1>
+            <p className="mt-2 text-sm text-slate-600">Click any card to open the full blog page.</p>
+          </div>
+        </div>
 
         <div className="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {posts.map((post) => (
