@@ -76,28 +76,11 @@ function buildQuery(url: URL) {
       )
       .map((cat) => cat.value);
 
-    const matchedSubcategories = categories.flatMap((cat) =>
-      cat.subcategories
-        .filter(
-          (sub) =>
-            sub.value.includes(normalizedSearch) ||
-            sub.label.toLowerCase().includes(normalizedSearch) ||
-            sub.aliases?.some((alias) => alias.includes(normalizedSearch))
-        )
-        .map((sub) => sub.value)
-    );
-
     query.$or = [
       { title: { $regex: searchRegex } },
-      { description: { $regex: searchRegex } },
       { location: { $regex: searchRegex } },
-      { country: { $regex: searchRegex } },
       { category: { $regex: searchRegex } },
-      { subcategory: { $regex: searchRegex } },
-      { tags: { $elemMatch: { $regex: searchRegex } } },
-      { highlights: { $elemMatch: { $regex: searchRegex } } },
-      ...(matchedCategories.length ? [{ category: { $in: matchedCategories } }] : []),
-      ...(matchedSubcategories.length ? [{ subcategory: { $in: matchedSubcategories } }] : [])
+      ...(matchedCategories.length ? [{ category: { $in: matchedCategories } }] : [])
     ];
   }
 

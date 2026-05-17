@@ -25,14 +25,14 @@ const categoryIcons: Record<string, React.ReactNode> = {
 };
 
 // Color mapping for category cards
-const categoryColors: Record<string, { bg: string; icon: string }> = {
-  'akomodim': { bg: 'bg-purple-50 hover:bg-purple-100', icon: 'bg-purple-500' },
-  'restorante': { bg: 'bg-pink-50 hover:bg-pink-100', icon: 'bg-pink-500' },
-  'atraksione': { bg: 'bg-blue-50 hover:bg-blue-100', icon: 'bg-blue-400' },
-  'evente': { bg: 'bg-orange-50 hover:bg-orange-100', icon: 'bg-orange-500' },
-  'sherbime-turistike': { bg: 'bg-teal-50 hover:bg-teal-100', icon: 'bg-teal-500' },
-  'produkte-lokale': { bg: 'bg-green-50 hover:bg-green-100', icon: 'bg-green-500' },
-  'transport': { bg: 'bg-cyan-50 hover:bg-cyan-100', icon: 'bg-cyan-500' }
+const categoryColors: Record<string, { bg: string; icon: string; border: string }> = {
+  'akomodim': { bg: 'bg-purple-100 hover:bg-purple-200', icon: 'bg-purple-600', border: 'border-purple-200 hover:border-purple-300' },
+  'restorante': { bg: 'bg-pink-100 hover:bg-pink-200', icon: 'bg-pink-600', border: 'border-pink-200 hover:border-pink-300' },
+  'atraksione': { bg: 'bg-blue-100 hover:bg-blue-200', icon: 'bg-blue-600', border: 'border-blue-200 hover:border-blue-300' },
+  'evente': { bg: 'bg-orange-100 hover:bg-orange-200', icon: 'bg-orange-600', border: 'border-orange-200 hover:border-orange-300' },
+  'sherbime-turistike': { bg: 'bg-teal-100 hover:bg-teal-200', icon: 'bg-teal-600', border: 'border-teal-200 hover:border-teal-300' },
+  'produkte-lokale': { bg: 'bg-green-100 hover:bg-green-200', icon: 'bg-green-600', border: 'border-green-200 hover:border-green-300' },
+  'transport': { bg: 'bg-cyan-100 hover:bg-cyan-200', icon: 'bg-cyan-600', border: 'border-cyan-200 hover:border-cyan-300' }
 };
 
 export default function CreateListingPage() {
@@ -59,9 +59,10 @@ export default function CreateListingPage() {
         {/* Category Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {categories.map((category) => {
-            const colors = categoryColors[category.value] || { 
+            const colors = categoryColors[category.value] || {
               bg: 'bg-gray-50 hover:bg-gray-100', 
-              icon: 'bg-gray-500' 
+              icon: 'bg-gray-600',
+              border: 'border-gray-200 hover:border-gray-300'
             };
             const icon = categoryIcons[category.value] || <MapPin className="w-12 h-12" />;
 
@@ -69,11 +70,11 @@ export default function CreateListingPage() {
               <div
                 key={category.value}
                 onClick={() => handleCategoryClick(category.value)}
-                className={`${colors.bg} rounded-2xl p-8 cursor-pointer transition-all duration-200 transform hover:scale-105 hover:shadow-lg`}
+                className={`${colors.bg} ${colors.border} border rounded-2xl p-8 cursor-pointer transition-all duration-200 transform hover:scale-[1.03] hover:shadow-xl shadow-sm`}
               >
                 <div className="flex flex-col items-center text-center">
                   {/* Icon Circle */}
-                  <div className={`${colors.icon} rounded-full p-4 mb-4 text-white`}>
+                  <div className={`${colors.icon} rounded-full p-4 mb-4 text-white shadow-lg`}>
                     {icon}
                   </div>
                   

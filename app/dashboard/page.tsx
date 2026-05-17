@@ -1,5 +1,5 @@
 ﻿import { redirect } from "next/navigation";
-import { CalendarDays, Clock3, Heart, MessageSquareText, ShieldCheck, Star } from "lucide-react";
+import { CalendarDays, Clock3, MessageSquareText, ShieldCheck, Star } from "lucide-react";
 import { getAuthUser } from "@/lib/auth";
 import { connectDB } from "@/lib/db";
 import Listing from "@/models/Listing";
@@ -9,7 +9,6 @@ import Activity from "@/models/Activity";
 import UserListingTable from "@/components/dashboard/UserListingTable";
 import ProfilePanel from "@/components/dashboard/ProfilePanel";
 import Button from "@/components/ui/Button";
-import ListingCard from "@/components/ListingCard";
 
 export const dynamic = "force-dynamic";
 
@@ -61,8 +60,7 @@ export default async function DashboardPage() {
               {[
                 { label: "Member since", value: joinedAt || "Now", icon: CalendarDays },
                 { label: "Role", value: auth.role, icon: ShieldCheck },
-                { label: "Listings", value: String(listings.length), icon: MessageSquareText },
-                { label: "Reviews", value: String(totalReviews), icon: Star }
+                { label: "Listings", value: String(listings.length), icon: MessageSquareText }
               ].map((item) => (
                 <div key={item.label} className="rounded-[1.5rem] border border-slate-200 bg-slate-50 p-4">
                   <item.icon className="h-5 w-5 text-brand-600" />
@@ -113,31 +111,6 @@ export default async function DashboardPage() {
         </div>
 
         <div className="space-y-6">
-
-          <div className="surface p-6">
-            <div className="flex items-center gap-2">
-              <Star className="h-5 w-5 text-brand-600" />
-              <div>
-                <p className="eyebrow">Your reviews</p>
-                <h2 className="text-2xl font-black text-slate-950">Feedback you posted</h2>
-              </div>
-            </div>
-            <div className="mt-4 space-y-3">
-              {reviews.length ? (
-                reviews.map((review: any) => (
-                  <div key={review._id.toString()} className="rounded-[1.4rem] border border-slate-200 bg-slate-50 p-4">
-                    <div className="flex items-center justify-between gap-3">
-                      <p className="font-semibold text-slate-950">{review.listing?.title || "Unknown listing"}</p>
-                      <span className="rounded-full bg-white px-3 py-1 text-xs font-semibold text-brand-700">{review.rating}/5</span>
-                    </div>
-                    <p className="mt-2 text-sm text-slate-600">{review.comment}</p>
-                  </div>
-                ))
-              ) : (
-                <p className="text-sm text-slate-500">No reviews posted yet.</p>
-              )}
-            </div>
-          </div>
 
           <div className="surface p-8 border-none shadow-[0_20px_50px_rgba(34,197,94,0.15)] overflow-hidden relative bg-white border border-slate-100 group hover:border-brand-500 transition-all duration-500">
             <div className="absolute top-0 right-0 w-32 h-32 bg-brand-500/5 rounded-full -mr-16 -mt-16 blur-3xl group-hover:bg-brand-500/10 transition" />

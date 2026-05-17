@@ -169,7 +169,9 @@ export default function HomeSearchHero() {
       params.set("category", suggestion.categoryValue);
       params.set("subcategory", suggestion.value);
     } else if (suggestion.type === "city") {
-      params.set("city", suggestion.value);
+      router.push(`/city/${suggestion.value}`);
+      setShowSuggestions(false);
+      return;
     }
 
     router.push(`/?${params.toString()}`);
@@ -179,6 +181,15 @@ export default function HomeSearchHero() {
   function submit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const query = city.toLowerCase().trim();
+    const matchedCity = availableCities.find(
+      (c) => String(c.label).toLowerCase() === query || String(c.value).toLowerCase() === query
+    );
+
+    if (matchedCity) {
+      router.push(`/city/${matchedCity.value}`);
+      setShowSuggestions(false);
+      return;
+    }
 
     const params = new URLSearchParams();
     if (query) params.set("q", query);

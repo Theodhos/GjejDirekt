@@ -14,7 +14,7 @@ export default function Footer() {
     <footer className="mt-0 border-t border-slate-200 bg-[radial-gradient(circle_at_top_right,#dbeafe_0%,#f8fafc_32%,#ffffff_65%)]">
       <div className="page-shell py-14 sm:py-16">
         <div className="rounded-[2rem] bg-slate-950 border border-slate-800 px-6 py-10 sm:p-12">
-          <div className="grid gap-8 lg:grid-cols-[1.15fr_0.85fr] lg:items-center">
+          <div className="grid gap-8 lg:gri d-cols-[1.15fr_0.85fr] lg:items-center">
             <div>
               <p className="text-sm uppercase tracking-[0.24em] text-white/80">{language === "en" ? "Tourism Platform" : "Platforma Turistike"}</p>
               <h2 className="display-font mt-3 text-4xl font-black leading-tight text-white">
@@ -59,8 +59,7 @@ export default function Footer() {
               <Link href="/create-listing" className="block hover:text-brand-700 transition-colors">{t.nav.addListing}</Link>
               <Link href="/register" className="block hover:text-brand-700 transition-colors">{t.nav.register}</Link>
               <Link href="/login" className="block hover:text-brand-700 transition-colors">{t.nav.login}</Link>
-              <Link href="/terms-and-conditions" className="block hover:text-brand-700 transition-colors">{language === "en" ? "Terms and Conditions" : "Kushtet dhe Termat"}</Link>
-              <Link href="/privacy-policy" className="block hover:text-brand-700 transition-colors">{language === "en" ? "Privacy Policy" : "Politika e Privatesise"}</Link>
+              <Link href="/dashboard" className="block hover:text-brand-700 transition-colors">{t.nav.dashboard}</Link>
             </div>
 
             <div className="space-y-4 text-sm text-slate-600">
@@ -77,8 +76,8 @@ export default function Footer() {
           <div className="mt-8 border-t border-slate-200 pt-5 text-xs font-medium text-slate-500 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <p>© {year} Gjej Direkt. {language === "en" ? "All rights reserved." : "Te gjitha te drejtat e rezervuara."}</p>
             <div className="flex items-center gap-4">
-              <Link href="/terms-and-conditions" className="hover:text-brand-700 transition-colors">{language === "en" ? "Terms" : "Kushtet"}</Link>
-              <Link href="/privacy-policy" className="hover:text-brand-700 transition-colors">{language === "en" ? "Privacy" : "Privatesia"}</Link>
+              <Link href="/terms-and-conditions" className="hover:text-brand-700 transition-colors">{language === "en" ? "Terms and Conditions" : "Kushtet"}</Link>
+              <Link href="/privacy-policy" className="hover:text-brand-700 transition-colors">{language === "en" ? "Privacy Policy" : "Privatesia"}</Link>
             </div>
           </div>
         </div>

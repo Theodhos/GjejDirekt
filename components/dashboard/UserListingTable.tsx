@@ -8,7 +8,7 @@ export default function UserListingTable({ listings }: { listings: any[] }) {
 
   return (
     <div className="space-y-4">
-      <div className="sm:hidden space-y-4">
+      <div className="sm:hidden space-y-4 max-h-[60vh] overflow-y-auto pr-1">
         {listings.map((listing) => (
           <div key={listing._id} className="surface rounded-[1.75rem] border border-slate-200 p-4">
             <div className="flex flex-col gap-2">
@@ -49,7 +49,7 @@ export default function UserListingTable({ listings }: { listings: any[] }) {
       </div>
 
       <div className="hidden sm:block surface overflow-hidden">
-        <div className="overflow-x-auto">
+        <div className="max-h-[520px] overflow-y-auto overflow-x-auto">
           <table className="min-w-[760px] w-full divide-y divide-slate-200">
             <thead className="bg-slate-50 text-left text-xs uppercase tracking-wide text-slate-500">
               <tr>

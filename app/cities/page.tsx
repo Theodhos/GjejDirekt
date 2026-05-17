@@ -5,9 +5,24 @@ import Link from "next/link";
 import { MapPin, ArrowRight } from "lucide-react";
 import { albaniaCities } from "@/lib/albania-cities";
 import { useLanguage } from "@/context/LanguageContext";
+import { useEffect, useState } from "react";
 
 export default function CitiesPage() {
   const { language } = useLanguage();
+  const [cities, setCities] = useState<any[]>(albaniaCities);
+
+  useEffect(() => {
+    const loadCities = async () => {
+      try {
+        const res = await fetch("/api/cities");
+        const data = await res.json();
+        if (Array.isArray(data.cities) && data.cities.length) {
+          setCities(data.cities);
+        }
+      } catch {}
+    };
+    loadCities();
+  }, []);
 
   return (
     <main className="min-h-screen bg-slate-50 py-24">
@@ -24,10 +39,11 @@ export default function CitiesPage() {
         </div>
 
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
-          {albaniaCities.map((city) => (
+          {cities.map((city) => (
             <Link
               key={city.value}
               href={`/city/${city.value}`}
+              id={city.value}
               className="group relative overflow-hidden rounded-[3rem] bg-white border border-slate-100 transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl shadow-soft"
             >
               <div className="relative aspect-[16/10] overflow-hidden">

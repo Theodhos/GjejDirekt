@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Search, MapPin, Tag, SlidersHorizontal, RotateCcw, Loader2, Star, Euro, ArrowUpDown } from "lucide-react";
+import { Search, MapPin, Tag, SlidersHorizontal, RotateCcw, Loader2, Star, Euro, X } from "lucide-react";
 import { categories } from "@/lib/constants";
 import { useLanguage } from "@/context/LanguageContext";
 import { translations } from "@/lib/dictionary";
@@ -22,7 +22,7 @@ export default function SearchFilters() {
   const [minPrice, setMinPrice] = useState(params?.get("minPrice") || "");
   const [maxPrice, setMaxPrice] = useState(params?.get("maxPrice") || "");
   const [minRating, setMinRating] = useState(params?.get("minRating") || "");
-  const [sort, setSort] = useState(params?.get("sort") || "latest");
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
   const subcategories = useMemo(() => {
     return categories.find((item) => item.value === selectedCategory)?.subcategories || [];
@@ -60,12 +60,34 @@ export default function SearchFilters() {
     setMinPrice("");
     setMaxPrice("");
     setMinRating("");
-    setSort("latest");
     router.push('/services');
   };
 
   return (
-    <div className="flex flex-col gap-8 bg-white rounded-[2.5rem] border border-slate-100 shadow-soft p-8 sticky top-24">
+    <>
+    <div className="lg:hidden sticky top-20 z-30 mb-5 rounded-3xl border border-slate-200 bg-white/95 backdrop-blur p-3 shadow-sm">
+      <div className="flex items-center gap-2">
+        <div className="relative flex-1">
+          <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+          <input
+            type="text"
+            value={keyword}
+            onChange={(e) => setKeyword(e.target.value)}
+            placeholder={t.hero.searchPlaceholder}
+            className="w-full h-11 rounded-2xl border border-slate-200 pl-9 pr-3 text-sm font-semibold text-slate-900 outline-none focus:border-brand-500"
+          />
+        </div>
+        <button
+          onClick={() => setMobileFiltersOpen(true)}
+          className="h-11 px-4 rounded-2xl bg-slate-950 text-white text-xs font-black uppercase tracking-widest inline-flex items-center gap-2"
+        >
+          <SlidersHorizontal className="w-4 h-4" />
+          {language === "en" ? "Filters" : "Filtra"}
+        </button>
+      </div>
+    </div>
+
+    <div className="hidden lg:flex flex-col gap-8 bg-white rounded-[2.5rem] border border-slate-100 shadow-soft p-8 sticky top-24">
       <div className="flex items-center justify-between">
         <h3 className="text-xl font-black text-slate-950 flex items-center gap-2">
           <SlidersHorizontal className="w-5 h-5 text-brand-600" />
@@ -76,7 +98,7 @@ export default function SearchFilters() {
           className="text-[10px] font-black uppercase tracking-widest text-slate-600 hover:text-brand-600 transition flex items-center gap-1"
         >
           <RotateCcw className="w-3 h-3" />
-          {language === 'en' ? 'Reset' : 'Fshi'}
+          {language === 'en' ? 'Clear all filters' : 'Pastro te gjithe filtrat'}
         </button>
       </div>
 
@@ -221,25 +243,6 @@ export default function SearchFilters() {
           </div>
         </div>
 
-        {/* Sort */}
-        <div className="space-y-3">
-          <label className="text-[10px] font-black uppercase tracking-widest text-slate-900 ml-2 flex items-center gap-2">
-            <ArrowUpDown className="w-3 h-3" />
-            {language === 'en' ? 'Sort By' : 'Rendit sipas'}
-          </label>
-          <select 
-            value={sort}
-            onChange={(e) => {
-              const val = e.target.value;
-              setSort(val);
-              applyFilters({ sort: val });
-            }}
-            className="w-full h-14 px-5 rounded-2xl bg-slate-50 border-2 border-transparent focus:border-brand-500 focus:bg-white transition-all font-bold text-slate-950 text-sm shadow-inner appearance-none cursor-pointer"
-          >
-            <option value="latest">{language === 'en' ? 'Latest' : 'Më të fundit'}</option>
-            <option value="popular">{language === 'en' ? 'Most Popular' : 'Më populloret'}</option>
-          </select>
-        </div>
       </div>
 
       {isPending && (
@@ -249,5 +252,62 @@ export default function SearchFilters() {
         </div>
       )}
     </div>
+
+    {mobileFiltersOpen && (
+      <div className="lg:hidden fixed inset-0 z-50 bg-slate-950/55" onClick={() => setMobileFiltersOpen(false)}>
+        <div
+          className="absolute inset-x-0 bottom-0 max-h-[88vh] overflow-y-auto rounded-t-[2rem] bg-white p-5"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="mb-5 flex items-center justify-between">
+            <h3 className="text-lg font-black text-slate-950 flex items-center gap-2">
+              <SlidersHorizontal className="w-5 h-5 text-brand-600" />
+              {language === "en" ? "Filters" : "Filtrat"}
+            </h3>
+            <button onClick={() => setMobileFiltersOpen(false)} className="p-2 rounded-xl bg-slate-100 text-slate-700">
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+
+          <div className="space-y-6">
+            <div className="space-y-2">
+              <label className="text-[10px] font-black uppercase tracking-widest text-slate-900 ml-1">{language === 'en' ? 'Location' : 'Vendndodhja'}</label>
+              <input type="text" value={location} onChange={(e) => setLocation(e.target.value)} placeholder={language === 'en' ? 'Any city...' : 'Cdo qytet...'} className="w-full h-12 px-4 rounded-xl bg-slate-50 border border-slate-200 focus:border-brand-500 outline-none text-sm font-semibold" />
+            </div>
+            <div className="space-y-2">
+              <label className="text-[10px] font-black uppercase tracking-widest text-slate-900 ml-1">{language === 'en' ? 'Category' : 'Kategoria'}</label>
+              <select value={selectedCategory} onChange={(e) => { const val = e.target.value; setSelectedCategory(val); setSelectedSubcategory(""); applyFilters({ category: val, subcategory: "" }); }} className="w-full h-12 px-4 rounded-xl bg-slate-50 border border-slate-200 focus:border-brand-500 outline-none text-sm font-semibold">
+                <option value="">{t.services.allCategories}</option>
+                {categories.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}
+              </select>
+            </div>
+            <div className="space-y-2">
+              <label className="text-[10px] font-black uppercase tracking-widest text-slate-900 ml-1">{language === 'en' ? 'Price range' : 'Gama e cmimit'}</label>
+              <div className="flex items-center gap-2">
+                <input type="number" value={minPrice} onChange={(e) => setMinPrice(e.target.value)} onBlur={() => applyFilters({ minPrice })} placeholder={language === 'en' ? 'Min price' : 'Cmimi min'} className="w-full h-12 px-4 rounded-xl bg-slate-50 border border-slate-200 focus:border-brand-500 outline-none text-sm font-semibold" />
+                <input type="number" value={maxPrice} onChange={(e) => setMaxPrice(e.target.value)} onBlur={() => applyFilters({ maxPrice })} placeholder={language === 'en' ? 'Max price' : 'Cmimi max'} className="w-full h-12 px-4 rounded-xl bg-slate-50 border border-slate-200 focus:border-brand-500 outline-none text-sm font-semibold" />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <label className="text-[10px] font-black uppercase tracking-widest text-slate-900 ml-1">{language === 'en' ? 'Minimum rating' : 'Vleresimi minimal'}</label>
+              <div className="flex gap-2">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <button key={star} onClick={() => { const val = String(star); setMinRating(val); applyFilters({ minRating: val }); }} className={`flex-1 h-10 rounded-xl flex items-center justify-center transition-all ${Number(minRating) === star ? 'bg-amber-500 text-white shadow-lg' : 'bg-slate-100 text-slate-500'}`}>
+                    <span className="text-xs font-black">{star}</span>
+                    <Star className={`w-3 h-3 ml-1 ${Number(minRating) === star ? 'fill-current' : ''}`} />
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-6 grid grid-cols-2 gap-3">
+            <button onClick={handleReset} className="h-11 rounded-xl bg-slate-100 text-slate-700 text-[10px] font-black uppercase tracking-widest">{language === 'en' ? 'Clear all' : 'Pastro te gjitha'}</button>
+            <button onClick={() => setMobileFiltersOpen(false)} className="h-11 rounded-xl bg-slate-950 text-white text-xs font-black uppercase tracking-widest">{language === 'en' ? 'Show results' : 'Shfaq rezultatet'}</button>
+          </div>
+        </div>
+      </div>
+    )}
+    </>
   );
 }

@@ -210,7 +210,7 @@ function HomePageClient() {
           title={t.home.popularDestinations}
           description={t.home.popularSub}
         >
-          {dynamicCities.slice(0, 8).map((city) => (
+          {dynamicCities.map((city) => (
             <Link
               key={city.value}
               href={`/city/${city.value}`}

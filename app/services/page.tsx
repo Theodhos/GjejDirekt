@@ -44,8 +44,8 @@ export default function ServicesPage() {
       </section>
 
       {/* Two Column Layout: Filters Left, Services Right */}
-      <section className="page-shell -mt-20">
-        <div className="grid gap-12 lg:grid-cols-[340px_1fr]">
+      <section className="page-shell -mt-12 lg:-mt-20">
+        <div className="grid gap-6 lg:gap-12 lg:grid-cols-[340px_1fr]">
           {/* Left: Filters Sidebar */}
           <aside className="relative z-20">
             <Suspense fallback={<div className="h-96 bg-white rounded-[2.5rem] animate-pulse shadow-soft" />}>
@@ -54,7 +54,7 @@ export default function ServicesPage() {
           </aside>
 
           {/* Right: Results Grid */}
-          <div className="relative z-10 pt-20 lg:pt-0">
+          <div className="relative z-10 pt-0 lg:pt-0">
             <Suspense fallback={<LoadingFallback />}>
               <ListingGrid />
             </Suspense>

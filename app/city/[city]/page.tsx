@@ -68,8 +68,7 @@ export default async function CityPage({ params }: { params: { city: string } })
     <main className="min-h-screen bg-slate-50">
       <section className="relative h-[65vh] flex items-center justify-center bg-slate-950 overflow-hidden">
         <div className="absolute inset-0">
-          <Image src={cityImage} alt={cityLabel} fill className="object-cover opacity-30 animate-slow-zoom" unoptimized />
-          <div className="absolute inset-0 bg-gradient-to-b from-slate-950/90 via-slate-950/40 to-slate-50" />
+          <Image src={cityImage} alt={cityLabel} fill className="object-cover animate-slow-zoom" unoptimized />
         </div>
 
         <div className="page-shell relative z-10 text-center">
