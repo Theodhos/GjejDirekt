@@ -3,11 +3,15 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
+import { sendSignInLinkToEmail } from "firebase/auth";
+import { firebaseAuth } from "@/lib/firebase";
 import Input from "@/components/ui/Input";
 import Button from "@/components/ui/Button";
 
 export default function AuthForm({ mode = "login" }: { mode?: "login" | "register" }) {
   const [loading, setLoading] = useState(false);
+  const [magicLoading, setMagicLoading] = useState(false);
+  const [emailForMagic, setEmailForMagic] = useState("");
   const router = useRouter();
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -44,8 +48,50 @@ export default function AuthForm({ mode = "login" }: { mode?: "login" | "registe
           <Input name="phone" type="tel" label="Phone Number" placeholder="+1 234 567 890" required />
         </>
       ) : null}
-      <Input name="email" type="email" label="Email" placeholder="email@example.com" required />
-      <Input name="password" type="password" label="Password" placeholder="••••••••" required />
+
+      <Input
+        name="email"
+        type="email"
+        label="Email"
+        placeholder="email@example.com"
+        required
+        value={emailForMagic}
+        onChange={(event) => setEmailForMagic(event.target.value)}
+      />
+      <Input name="password" type="password" label="Password" placeholder="********" required />
+
+      {mode === "login" ? (
+        <div className="flex items-center justify-end">
+          <button
+            type="button"
+            onClick={async () => {
+              if (!emailForMagic.trim()) {
+                toast.error("Write your email first.");
+                return;
+              }
+
+              setMagicLoading(true);
+              try {
+                await sendSignInLinkToEmail(firebaseAuth, emailForMagic.trim(), {
+                  url: `${window.location.origin}/auth/magic-link`,
+                  handleCodeInApp: true
+                });
+                window.localStorage.setItem("emailForSignIn", emailForMagic.trim());
+                toast.success("Magic link sent. Check your email.");
+              } catch (error) {
+                toast.error(error instanceof Error ? error.message : "Could not send magic link.");
+              } finally {
+                setMagicLoading(false);
+              }
+            }}
+            className="text-xs font-semibold text-brand-700 hover:underline"
+            disabled={magicLoading}
+          >
+            {magicLoading ? "Sending..." : "Forgot password? Send magic link"}
+          </button>
+        </div>
+      ) : null}
+
       <Button type="submit" className="w-full" disabled={loading}>
         {loading ? "Please wait..." : mode === "login" ? "Login" : "Create account"}
       </Button>
