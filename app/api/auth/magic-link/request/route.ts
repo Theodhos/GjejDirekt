@@ -28,11 +28,7 @@ export async function POST(request: Request) {
     user.resetCodeExpires = expiresAt;
     await user.save();
 
-    const requestUrl = new URL(request.url);
-    let appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://marketplace-tourism.vercel.app";
-    if (requestUrl.hostname === "localhost" || requestUrl.hostname === "127.0.0.1") {
-      appUrl = requestUrl.origin;
-    }
+    const appUrl = "https://www.tripshqip.com";
     const verifyUrl = `${appUrl}/auth/magic-link?token=${rawToken}`;
 
     await sendMail({
