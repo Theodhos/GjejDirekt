@@ -3,8 +3,6 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
-import { sendSignInLinkToEmail } from "firebase/auth";
-import { firebaseAuth } from "@/lib/firebase";
 import Input from "@/components/ui/Input";
 import Button from "@/components/ui/Button";
 
@@ -72,14 +70,18 @@ export default function AuthForm({ mode = "login" }: { mode?: "login" | "registe
 
               setMagicLoading(true);
               try {
-                await sendSignInLinkToEmail(firebaseAuth, emailForMagic.trim(), {
-                  url: `${window.location.origin}/auth/magic-link`,
-                  handleCodeInApp: true
+                const normalizedEmail = emailForMagic.trim().toLowerCase();
+                const response = await fetch("/api/auth/magic-link/request", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ email: normalizedEmail })
                 });
-                window.localStorage.setItem("emailForSignIn", emailForMagic.trim());
-                toast.success("Magic link sent. Check your email.");
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.error || "Could not send sign-in link.");
+                toast.success("Sign-in link sent. Check inbox and Spam folder.");
+                window.alert(`Sign-in link u dergua te: ${normalizedEmail}\nKontrollo edhe Spam folder.`);
               } catch (error) {
-                toast.error(error instanceof Error ? error.message : "Could not send magic link.");
+                toast.error(error instanceof Error ? error.message : "Could not send sign-in link.");
               } finally {
                 setMagicLoading(false);
               }
@@ -87,9 +89,13 @@ export default function AuthForm({ mode = "login" }: { mode?: "login" | "registe
             className="text-xs font-semibold text-brand-700 hover:underline"
             disabled={magicLoading}
           >
-            {magicLoading ? "Sending..." : "Forgot password? Send magic link"}
+            {magicLoading ? "Sending..." : "Login with magic link"}
           </button>
         </div>
+      ) : null}
+
+      {mode === "login" ? (
+        <p className="-mt-2 text-xs text-slate-500">If you do not see the email, check your Spam folder.</p>
       ) : null}
 
       <Button type="submit" className="w-full" disabled={loading}>

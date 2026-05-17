@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import toast from "react-hot-toast";
-import { auth } from "@/lib/firebase";
+import { auth, firebaseEnabled } from "@/lib/firebase";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { useLanguage } from "@/context/LanguageContext";
 
@@ -18,7 +18,11 @@ export default function SocialLogin() {
     const provider = new GoogleAuthProvider();
     
     try {
-      const result = await signInWithPopup(auth, provider);
+      if (!firebaseEnabled || !auth) {
+        throw new Error("Firebase is not configured yet.");
+      }
+      const firebaseInstance = auth!;
+      const result = await signInWithPopup(firebaseInstance, provider);
       const user = result.user;
 
       const response = await fetch("/api/auth/social", {
