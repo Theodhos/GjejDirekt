@@ -1,4 +1,4 @@
-import { redirect } from "next/navigation";
+﻿import { redirect } from "next/navigation";
 import { CalendarDays, Clock3, Heart, MessageSquareText, ShieldCheck, Star } from "lucide-react";
 import { getAuthUser } from "@/lib/auth";
 import { connectDB } from "@/lib/db";
@@ -50,8 +50,8 @@ export default async function DashboardPage() {
             </p>
 
             <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-              <Button href="/listings/add">Add Listing</Button>
-              <Button href="/packages">Buy Package</Button>
+              <Button href="/create-listing">Add Listing</Button>
+              <Button href="/packet">Buy Package</Button>
               <Button href="/services" variant="ghost">
                 Explore services
               </Button>

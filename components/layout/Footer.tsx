@@ -30,7 +30,7 @@ export default function Footer() {
               <Link href="/services" className="rounded-full bg-brand-600 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-brand-600/25 transition hover:bg-brand-700 hover:scale-105 active:scale-95">
                 {language === "en" ? "Explore services" : "Eksploro sherbimet"}
               </Link>
-              <Link href="/listings/add" className="rounded-full border border-white/30 bg-white/10 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/20 hover:scale-105 active:scale-95">
+              <Link href="/create-listing" className="rounded-full border border-white/30 bg-white/10 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/20 hover:scale-105 active:scale-95">
                 {language === "en" ? "Add a listing" : "Shto nje listim"}
               </Link>
             </div>
@@ -56,7 +56,7 @@ export default function Footer() {
 
             <div className="space-y-2.5 text-sm font-medium text-slate-700">
               <p className="text-base font-black uppercase tracking-[0.14em] text-slate-950">{language === "en" ? "Get started" : "Fillo tani"}</p>
-              <Link href="/listings/add" className="block hover:text-brand-700 transition-colors">{t.nav.addListing}</Link>
+              <Link href="/create-listing" className="block hover:text-brand-700 transition-colors">{t.nav.addListing}</Link>
               <Link href="/register" className="block hover:text-brand-700 transition-colors">{t.nav.register}</Link>
               <Link href="/login" className="block hover:text-brand-700 transition-colors">{t.nav.login}</Link>
               <Link href="/terms-and-conditions" className="block hover:text-brand-700 transition-colors">{language === "en" ? "Terms and Conditions" : "Kushtet dhe Termat"}</Link>
@@ -86,3 +86,4 @@ export default function Footer() {
     </footer>
   );
 }
+
