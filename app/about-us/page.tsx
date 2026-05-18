@@ -173,32 +173,7 @@ export default function AboutUsPage() {
           </div>
         </div>
 
-        {/* Call to Action Banner */}
-        <div className="relative rounded-[3rem] bg-slate-950 border border-slate-800 text-white overflow-hidden p-8 sm:p-14 shadow-2xl">
-          <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_bottom_left,#0284c7_0%,transparent_50%)]" />
-          <div className="relative z-10 grid gap-8 lg:grid-cols-[1.2fr_0.8fr] items-center">
-            <div className="space-y-4">
-              <h3 className="text-3xl sm:text-4xl font-black leading-tight">
-                {language === "en" 
-                  ? "Ready to show Albania to the world?" 
-                  : "Gati për t'i treguar botës bukurinë e Shqipërisë?"}
-              </h3>
-              <p className="text-slate-300 text-sm max-w-2xl leading-relaxed">
-                {language === "en"
-                  ? "Join our curated collective of hosts, hotels, adventure operators, and local service providers. Make your tourism business discoverable beautifully."
-                  : "Bashkohuni me rrjetin tonë të përzgjedhur të hotelerive, guidave të aventurës, restoranteve dhe shërbimeve. Bëjeni biznesin tuaj të zbulueshëm bukur."}
-              </p>
-            </div>
-            <div className="flex flex-col sm:flex-row gap-3 lg:justify-end">
-              <Link 
-                href="/create-listing" 
-                className="px-8 py-4 rounded-full bg-brand-600 text-white font-black text-xs uppercase tracking-widest text-center shadow-lg shadow-brand-600/30 hover:bg-brand-700 hover:scale-105 active:scale-95 transition-all"
-              >
-                {language === "en" ? "List Your Business" : "Regjistro Biznesin Tënd"}
-              </Link>
-            </div>
-          </div>
-        </div>
+
       </div>
     </div>
   );
