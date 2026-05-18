@@ -87,14 +87,12 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-50 border-b border-slate-900/5 bg-white/80 backdrop-blur-2xl">
       <div className="page-shell flex items-center justify-between gap-4 py-4">
-        <Link href="/" className="flex items-center gap-3" onClick={() => setMobileOpen(false)}>
-          <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-950 text-white shadow-lg shadow-slate-950/20">
-            <Compass className="h-5 w-5" />
-          </span>
-          <span className="leading-tight">
-            <span className="block text-lg font-black tracking-tight text-slate-950">Trip Shqip</span>
-            <span className="hidden sm:block text-xs font-semibold uppercase tracking-[0.24em] text-brand-600">Discover more</span>
-          </span>
+        <Link href="/" className="flex items-center" onClick={() => setMobileOpen(false)}>
+          <img 
+            src="/uploads/Logo-black.png" 
+            alt="TripShqip Logo" 
+            className="h-10 md:h-12 w-auto object-contain"
+          />
         </Link>
 
         <div className="hidden items-center gap-4 lg:flex">
