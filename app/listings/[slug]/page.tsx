@@ -174,13 +174,13 @@ export default async function ListingDetailPage({ params }: { params: { slug: st
                     )}
                   </p>
                </div>
-               <div className="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100">
-                  <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-brand-600 mb-6">
-                    <Phone className="w-5 h-5" />
-                  </div>
-                  <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Contact Number</h4>
-                  <p className="text-slate-950 font-black">{phone || "Not public"}</p>
-               </div>
+                <div className="hidden sm:block bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100">
+                   <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-brand-600 mb-6">
+                     <Phone className="w-5 h-5" />
+                   </div>
+                   <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Contact Number</h4>
+                   <p className="text-slate-950 font-black">{phone || "Not public"}</p>
+                </div>
             </div>
 
           </div>
