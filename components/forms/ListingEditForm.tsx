@@ -10,6 +10,7 @@ import Textarea from "@/components/ui/Textarea";
 import Select from "@/components/ui/Select";
 import Button from "@/components/ui/Button";
 import LocationPicker from "@/components/forms/LocationPicker";
+import { useLanguage } from "@/context/LanguageContext";
 
 type ListingData = {
   _id: string;
@@ -60,6 +61,7 @@ async function uploadImage(file: File) {
 
 export default function ListingEditForm({ listing }: { listing: ListingData }) {
   const router = useRouter();
+  const { language } = useLanguage();
   const [loading, setLoading] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(getCategoryFormValue(listing.category));
   const [selectedSubcategory, setSelectedSubcategory] = useState(
@@ -122,33 +124,61 @@ export default function ListingEditForm({ listing }: { listing: ListingData }) {
         required
       />
       <div className="grid gap-4 md:grid-cols-2">
-        <Input name="currency" label="Currency" defaultValue={listing.currency || "USD"} />
-        <Input name="address" label="Street address" defaultValue={listing.address || ""} />
+        <Input name="address" label={language === 'en' ? 'Street address' : 'Adresa e rrugës'} defaultValue={listing.address || ""} />
+        <Select
+          name="currency"
+          label={language === 'en' ? 'Currency' : 'Valuta'}
+          defaultValue={listing.currency || "LEK"}
+          options={[
+            { label: "LEK (L)", value: "LEK" },
+            { label: "Euro (€)", value: "€" },
+            { label: "USD ($)", value: "$" }
+          ]}
+        />
       </div>
-      <Textarea name="description" label="Description" defaultValue={listing.description} required />
+      <Textarea name="description" label={language === 'en' ? 'Description' : 'Përshkrimi'} defaultValue={listing.description} required />
       <div className="grid gap-4 md:grid-cols-2">
         <Select
           name="category"
-          label="Category"
+          label={language === 'en' ? 'Category' : 'Kategoria'}
           value={selectedCategory}
           onChange={(event) => {
             setSelectedCategory(event.target.value);
             setSelectedSubcategory("");
           }}
-          options={[{ label: "Select a category", value: "" }, ...categories.map((item) => ({ label: item.label, value: item.value }))]}
+          options={[{ label: language === 'en' ? 'Select a category' : 'Zgjidh një kategori', value: "" }, ...categories.map((item) => ({ label: item.label, value: item.value }))]}
         />
         <Select
           name="subcategory"
-          label="Subcategory"
+          label={language === 'en' ? 'Subcategory' : 'Nënkategoria'}
           value={selectedSubcategory}
           onChange={(event) => setSelectedSubcategory(event.target.value)}
-          options={[{ label: "Select a subcategory", value: "" }, ...subcategories.map((item) => ({ label: item.label, value: item.value }))]}
+          options={[{ label: language === 'en' ? 'Select a subcategory' : 'Zgjidh një nënkategori', value: "" }, ...subcategories.map((item) => ({ label: item.label, value: item.value }))]}
         />
       </div>
-      <div className="grid gap-4 md:grid-cols-2">
-        <Input name="price" label="Price" type="number" defaultValue={listing.price || ""} />
-        <Input name="priceFrom" label="Price From" type="number" defaultValue={listing.priceFrom || ""} />
-      </div>
+      {(() => {
+        const isPerPersonCategory = selectedCategory === "akomodim" || selectedCategory === "restorante";
+        return (
+          <div className="grid gap-4 md:grid-cols-2">
+            <Input 
+              name="priceFrom" 
+              label={isPerPersonCategory 
+                ? (language === 'en' ? 'Min Price (per person)' : 'Çmimi Min (për person)')
+                : (language === 'en' ? 'Minimum Price' : 'Çmimi Minimal')}
+              type="number" 
+              defaultValue={listing.priceFrom || ""} 
+            />
+            <Input 
+              name="price" 
+              label={isPerPersonCategory
+                ? (language === 'en' ? 'Max Price (per person)' : 'Çmimi Max (për person)')
+                : (language === 'en' ? 'Maximum Price' : 'Çmimi Maksimal')}
+              type="number" 
+              defaultValue={listing.price || ""} 
+            />
+          </div>
+        );
+      })()}
       <div className="grid gap-4 md:grid-cols-3">
         <Input name="amenities" label="Amenities" defaultValue={(listing.amenities || []).join(", ")} />
         <Input name="tags" label="Tags" defaultValue={(listing.tags || []).join(", ")} />

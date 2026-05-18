@@ -25,7 +25,8 @@ export const categories: CategoryDefinition[] = [
       { value: "resort", label: "Resort", aliases: ["resorts"] },
       { value: "vila", label: "Vila", aliases: ["villa", "villas"] },
       { value: "apartament", label: "Apartament", aliases: ["apartments", "apartment"] },
-      { value: "guesthouse", label: "Guesthouse", aliases: ["homestays", "home stay"] }
+      { value: "guesthouse", label: "Guesthouse", aliases: ["homestays", "home stay"] },
+      { value: "te-tjera", label: "Të tjera", aliases: ["others", "other"] }
     ]
   },
   {
@@ -38,7 +39,8 @@ export const categories: CategoryDefinition[] = [
       { value: "tradicional", label: "Tradicional" },
       { value: "internacional", label: "Internacional" },
       { value: "fast-food", label: "Fast Food", aliases: ["fast food"] },
-      { value: "kafe-bar", label: "Kafe & Bar", aliases: ["cafe", "bar"] }
+      { value: "kafe-bar", label: "Kafe & Bar", aliases: ["cafe", "bar"] },
+      { value: "te-tjera", label: "Të tjera", aliases: ["others", "other"] }
     ]
   },
   {
@@ -51,7 +53,8 @@ export const categories: CategoryDefinition[] = [
       { value: "natyre", label: "Natyrë", aliases: ["nature"] },
       { value: "historike", label: "Historike", aliases: ["historical"] },
       { value: "muze", label: "Muze", aliases: ["museum"] },
-      { value: "plazh", label: "Plazh", aliases: ["beach"] }
+      { value: "plazh", label: "Plazh", aliases: ["beach"] },
+      { value: "te-tjera", label: "Të tjera", aliases: ["others", "other"] }
     ]
   },
   {
@@ -64,7 +67,8 @@ export const categories: CategoryDefinition[] = [
       { value: "koncerte", label: "Koncerte", aliases: ["concerts"] },
       { value: "festivale", label: "Festivale", aliases: ["festivals"] },
       { value: "panaire", label: "Panaire", aliases: ["fairs"] },
-      { value: "dasma", label: "Dasma", aliases: ["weddings"] }
+      { value: "dasma", label: "Dasma", aliases: ["weddings"] },
+      { value: "te-tjera", label: "Të tjera", aliases: ["others", "other"] }
     ]
   },
   {
@@ -77,7 +81,8 @@ export const categories: CategoryDefinition[] = [
       { value: "guida", label: "Guida", aliases: ["guides"] },
       { value: "agjenci", label: "Agjenci", aliases: ["agency", "agencies"] },
       { value: "ekskursione", label: "Ekskursione", aliases: ["excursions"] },
-      { value: "rezervime", label: "Rezervime", aliases: ["bookings"] }
+      { value: "rezervime", label: "Rezervime", aliases: ["bookings"] },
+      { value: "te-tjera", label: "Të tjera", aliases: ["others", "other"] }
     ]
   },
   {
@@ -90,7 +95,8 @@ export const categories: CategoryDefinition[] = [
       { value: "artizanat", label: "Artizanat", aliases: ["handmade"] },
       { value: "ushqimore", label: "Ushqimore", aliases: ["groceries"] },
       { value: "suvenire", label: "Suvenire", aliases: ["souvenirs"] },
-      { value: "agro", label: "Agro-Produkte", aliases: ["agriculture", "farm"] }
+      { value: "agro", label: "Agro-Produkte", aliases: ["agriculture", "farm"] },
+      { value: "te-tjera", label: "Të tjera", aliases: ["others", "other"] }
     ]
   },
   {
@@ -103,7 +109,8 @@ export const categories: CategoryDefinition[] = [
       { value: "aeroport", label: "Aeroport", aliases: ["airport transfer", "airport"] },
       { value: "makine-me-qira", label: "Makina me Qira", aliases: ["car rental"] },
       { value: "varka", label: "Varka", aliases: ["boat ride", "boat"] },
-      { value: "taksi", label: "Taksi", aliases: ["taxi"] }
+      { value: "taksi", label: "Taksi", aliases: ["taxi"] },
+      { value: "te-tjera", label: "Të tjera", aliases: ["others", "other"] }
     ]
   }
 ];

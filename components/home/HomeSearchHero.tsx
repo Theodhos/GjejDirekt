@@ -289,13 +289,6 @@ export default function HomeSearchHero() {
               <div className="p-3 sm:p-4 h-full sm:max-h-[calc(100vh-200px)] overflow-y-auto custom-scrollbar">
                 {!city.trim() && (
                 <div className="sm:hidden px-2 pb-3">
-                  <div className="flex items-start gap-3 pb-3 border-b border-slate-200 mb-3">
-                    <MapPin className="w-6 h-6 text-slate-700 mt-0.5" />
-                    <div>
-                      <p className="text-slate-900 font-semibold text-[1.1rem] leading-6">{language === "en" ? "Search around me" : "Kerko afer meje"}</p>
-                      <p className="text-slate-600 text-sm">{language === "en" ? "Available accommodations nearby" : "Akomodime te disponueshme prane teje"}</p>
-                    </div>
-                  </div>
                   <h3 className="text-slate-700 text-[1.75rem] font-medium mb-3">{language === "en" ? "Popular destinations" : "Destinacione popullore"}</h3>
                   <div className="flex flex-wrap gap-2 mb-4">
                     {popularCities.map((name) => (

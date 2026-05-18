@@ -1,4 +1,4 @@
-﻿import { redirect } from "next/navigation";
+import { redirect } from "next/navigation";
 import { CalendarDays, Clock3, MessageSquareText, ShieldCheck, Star } from "lucide-react";
 import { getAuthUser } from "@/lib/auth";
 import { connectDB } from "@/lib/db";
@@ -17,7 +17,9 @@ export default async function DashboardPage() {
   if (!auth) redirect("/login");
 
   await connectDB();
-  const listings = await Listing.find({ owner: auth.id }).sort({ createdAt: -1 }).lean<any>();
+  const listings = auth.role === "admin"
+    ? await Listing.find({}).sort({ createdAt: -1 }).populate("owner", "name email").lean<any>()
+    : await Listing.find({ owner: auth.id }).sort({ createdAt: -1 }).lean<any>();
   const user = await User.findById(auth.id).populate("favorites").lean<any>();
   const reviews = await Review.find({ user: auth.id }).sort({ createdAt: -1 }).populate("listing", "title slug images location country category subcategory ratingAverage reviewCount").lean<any>();
   const activities = await Activity.find({ actor: auth.id }).sort({ createdAt: -1 }).limit(8).lean<any>();
@@ -106,7 +108,7 @@ export default async function DashboardPage() {
             </div>
           </div>
           <div className="mt-6">
-            <UserListingTable listings={listings} />
+            <UserListingTable listings={listings} isAdmin={auth.role === "admin"} />
           </div>
         </div>
 

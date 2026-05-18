@@ -63,7 +63,7 @@ export async function PATCH(request: Request, { params }: { params: { id: string
     const listing = await Listing.findById(params.id);
     if (!listing) return NextResponse.json({ error: "Listing not found" }, { status: 404 });
 
-    if (listing.owner.toString() !== auth.id) {
+    if (listing.owner.toString() !== auth.id && auth.role !== "admin") {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
@@ -133,5 +133,42 @@ export async function PATCH(request: Request, { params }: { params: { id: string
     return NextResponse.json({ listing });
   } catch (error) {
     return NextResponse.json({ error: error instanceof Error ? error.message : "Update failed" }, { status: 500 });
+  }
+}
+
+export async function DELETE(request: Request, { params }: { params: { id: string } }) {
+  try {
+    const auth = await getAuthUser();
+    if (!auth) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+    await connectDB();
+    const listing = await Listing.findById(params.id);
+    if (!listing) return NextResponse.json({ error: "Listing not found" }, { status: 404 });
+
+    // Allow deletion if the user is the owner OR is an admin
+    if (listing.owner.toString() !== auth.id && auth.role !== "admin") {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+
+    await Listing.findByIdAndDelete(params.id);
+
+    try {
+      const { logActivity } = await import("@/lib/activity");
+      await logActivity({
+        type: "listing_deleted",
+        title: "Listing deleted",
+        description: `${listing.title} was successfully deleted by ${auth.name || auth.email}.`,
+        actor: auth.id,
+        actorName: auth.name,
+        listing: listing._id.toString(),
+        listingTitle: listing.title
+      });
+    } catch {
+      // Activity logging fails silently if not present
+    }
+
+    return NextResponse.json({ success: true, message: "Listing deleted successfully" });
+  } catch (error) {
+    return NextResponse.json({ error: error instanceof Error ? error.message : "Deletion failed" }, { status: 500 });
   }
 }

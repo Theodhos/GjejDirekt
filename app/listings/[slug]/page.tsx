@@ -156,8 +156,26 @@ export default async function ListingDetailPage({ params }: { params: { slug: st
                   <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-brand-600 mb-6">
                     <Euro className="w-5 h-5" />
                   </div>
-                  <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Price Starting</h4>
-                  <p className="text-slate-950 font-black">{listing.currency || "€"}{listing.priceFrom || "Contact for price"}</p>
+                  <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">
+                    {listing.category === "akomodim" || listing.category === "restorante"
+                      ? "Price (per person) / Çmimi (për person)"
+                      : "Price / Çmimi"}
+                  </h4>
+                  <p className="text-slate-950 font-black">
+                    {(() => {
+                      const symbol = listing.currency === "ALL" || listing.currency === "LEK" ? "L" : (listing.currency || "€");
+                      if (listing.priceFrom && listing.price) {
+                        return `${symbol}${listing.priceFrom} - ${symbol}${listing.price}`;
+                      }
+                      if (listing.priceFrom) {
+                        return `${symbol}${listing.priceFrom}`;
+                      }
+                      if (listing.price) {
+                        return `${symbol}${listing.price}`;
+                      }
+                      return "Contact for price / Kontakto për çmimin";
+                    })()}
+                  </p>
                </div>
                <div className="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100">
                   <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-brand-600 mb-6">

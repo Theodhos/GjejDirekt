@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import Link from "next/link";
 import { Facebook, Instagram, Linkedin, Youtube } from "lucide-react";
@@ -38,7 +38,7 @@ export default function Footer() {
         </div>
 
         <div className="mt-12 bg-transparent p-0 sm:p-0">
-          <div className="grid gap-10 md:grid-cols-4">
+          <div className="grid gap-10 md:grid-cols-5">
             <div className="md:pr-4">
               <p className="text-2xl font-black tracking-tight text-slate-950">Gjej Direkt</p>
               <p className="mt-3 text-sm font-medium leading-7 text-slate-700">
@@ -52,6 +52,8 @@ export default function Footer() {
               <Link href="/services" className="block hover:text-brand-700 transition-colors">{t.nav.services}</Link>
               <Link href="/cities" className="block hover:text-brand-700 transition-colors">{language === "en" ? "Cities" : "Qytetet"}</Link>
               <Link href="/blog" className="block hover:text-brand-700 transition-colors">{t.nav.blog}</Link>
+              <Link href="/about-us" className="block hover:text-brand-700 transition-colors">{language === "en" ? "About Us" : "Rreth Nesh"}</Link>
+              <Link href="/faq" className="block hover:text-brand-700 transition-colors">{language === "en" ? "FAQ" : "Pyetje të Shpeshta"}</Link>
             </div>
 
             <div className="space-y-2.5 text-sm font-medium text-slate-700">
@@ -60,6 +62,19 @@ export default function Footer() {
               <Link href="/register" className="block hover:text-brand-700 transition-colors">{t.nav.register}</Link>
               <Link href="/login" className="block hover:text-brand-700 transition-colors">{t.nav.login}</Link>
               <Link href="/dashboard" className="block hover:text-brand-700 transition-colors">{t.nav.dashboard}</Link>
+            </div>
+
+            <div className="space-y-2.5 text-sm font-medium text-slate-700">
+              <p className="text-base font-black uppercase tracking-[0.14em] text-slate-950">{language === "en" ? "Contact Us" : "Na Kontaktoni"}</p>
+              <a 
+                href="mailto:infoturizemalbania@gmail.com" 
+                className="block hover:text-brand-700 transition-colors font-bold text-brand-600 break-all"
+              >
+                infoturizemalbania@gmail.com
+              </a>
+              <p className="text-xs text-slate-500 mt-1">
+                {language === "en" ? "We respond within 24 hours" : "Përgjigjemi brenda 24 orëve"}
+              </p>
             </div>
 
             <div className="space-y-4 text-sm text-slate-600">

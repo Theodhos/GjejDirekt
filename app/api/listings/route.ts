@@ -146,6 +146,7 @@ export async function POST(request: Request) {
       bannerImage: body.bannerImage || "",
       photos: Array.isArray(body.photos) ? body.photos : parseList(body.photos),
       images: Array.isArray(body.images) ? body.images : [],
+      price: parseMaybeNumber(body.price),
       priceFrom: parseMaybeNumber(body.priceFrom),
       currency: body.currency || "€",
       businessHours: body.businessHours || "",

@@ -84,7 +84,7 @@ export default function ListingCard({ listing }: { listing: any }) {
   return (
     <Card className="group relative flex h-full flex-col overflow-hidden rounded-3xl bg-white shadow-sm transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl hover:shadow-brand-500/10 border border-slate-200">
       {/* Image Section */}
-      <Link href={`/listings/${listing.slug}`} className="relative aspect-[4/3] overflow-hidden block shrink-0 rounded-t-3xl">
+      <Link href={`/listings/${listing.slug}`} className="relative aspect-square overflow-hidden block shrink-0 rounded-t-3xl">
         <Image 
           src={imageError ? "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80" : allImages[currentImageIndex]}
           alt={listing.title} 
@@ -106,14 +106,48 @@ export default function ListingCard({ listing }: { listing: any }) {
         {/* Price Overlay - Bottom Right (Image 2 style) */}
         <div className="absolute bottom-0 right-0 z-10">
           <div className="rounded-tl-2xl bg-[#0f2e3c] px-4 py-2 text-white shadow-lg">
-            {listing.priceFrom ? (
-              <div className="flex items-baseline gap-1">
-                <span className="text-2xl font-black leading-none">{listing.currency === 'ALL' ? 'L' : '€'}{listing.priceFrom}</span>
-                <span className="text-xs font-bold text-slate-300">/{language === 'en' ? 'night' : 'natë'}</span>
-              </div>
-            ) : (
-              <span className="text-sm font-bold">{language === 'en' ? 'Request' : 'Kërkesë'}</span>
-            )}
+            {(() => {
+              const symbol = listing.currency === "ALL" || listing.currency === "LEK" ? "L" : (listing.currency || "€");
+              const suffix = listing.category === "akomodim" 
+                ? `/${language === 'en' ? 'night' : 'natë'}`
+                : (listing.category === "restorante" ? `/${language === 'en' ? 'person' : 'person'}` : "");
+
+              if (listing.priceFrom && listing.price) {
+                if (listing.priceFrom === listing.price) {
+                  return (
+                    <div className="flex items-baseline gap-1">
+                      <span className="text-2xl font-black leading-none">{symbol}{listing.priceFrom}</span>
+                      {suffix && <span className="text-xs font-bold text-slate-300">{suffix}</span>}
+                    </div>
+                  );
+                }
+                return (
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-lg sm:text-xl font-black leading-none">{symbol}{listing.priceFrom} - {symbol}{listing.price}</span>
+                    {suffix && <span className="text-xs font-bold text-slate-300">{suffix}</span>}
+                  </div>
+                );
+              }
+              if (listing.priceFrom) {
+                return (
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-2xl font-black leading-none">{symbol}{listing.priceFrom}</span>
+                    {suffix && <span className="text-xs font-bold text-slate-300">{suffix}</span>}
+                  </div>
+                );
+              }
+              if (listing.price) {
+                return (
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-2xl font-black leading-none">{symbol}{listing.price}</span>
+                    {suffix && <span className="text-xs font-bold text-slate-300">{suffix}</span>}
+                  </div>
+                );
+              }
+              return (
+                <span className="text-sm font-bold">{language === 'en' ? 'Request' : 'Kërkesë'}</span>
+              );
+            })()}
           </div>
         </div>
 
@@ -143,9 +177,9 @@ export default function ListingCard({ listing }: { listing: any }) {
       </Link>
 
       {/* Content Section */}
-      <div className="flex flex-1 flex-col p-4">
+      <div className="flex flex-1 flex-col px-4 py-3">
         {/* Title */}
-        <div className="mb-2">
+        <div className="mb-1">
           <Link href={`/listings/${listing.slug}`} className="group/link block">
             <h3 className="text-[17px] font-black leading-tight text-slate-900 transition group-hover/link:text-brand-600 line-clamp-2">
               {listing.title}
@@ -154,7 +188,7 @@ export default function ListingCard({ listing }: { listing: any }) {
         </div>
 
         {/* Location */}
-        <div className="mb-4 flex items-center gap-1.5 text-[13px] text-slate-500 font-medium">
+        <div className="mb-2.5 flex items-center gap-1.5 text-[13px] text-slate-500 font-medium">
           <MapPin className="h-3.5 w-3.5 shrink-0" />
           <span className="truncate">{listing.location}{listing.country ? `, ${listing.country}` : ""}</span>
         </div>
@@ -167,7 +201,7 @@ export default function ListingCard({ listing }: { listing: any }) {
           ].filter((value, index, self) => self.indexOf(value) === index);
           
           return (
-            <div className="mb-4 flex flex-wrap gap-1.5 mt-auto">
+            <div className="mb-2.5 flex flex-wrap gap-1.5 mt-auto">
               {categoryLabel && (
                 <span className="flex items-center gap-1 rounded-md bg-slate-100 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-600">
                   <Tag className="h-3 w-3" />
@@ -192,15 +226,15 @@ export default function ListingCard({ listing }: { listing: any }) {
         })()}
 
         {/* Contact Section / Bottom Actions */}
-        <div className="mt-2 grid grid-cols-3 gap-2 rounded-[1.25rem] bg-[#f8fafc] border border-slate-100 p-2">
+        <div className="mt-1.5 grid grid-cols-3 gap-1 rounded-[1.15rem] bg-[#f8fafc] border border-slate-100 p-1.5">
           {/* Call */}
           <a
             href={phone ? `tel:${phone}` : "#"}
             onClick={(e) => { e.stopPropagation(); if(!phone) e.preventDefault(); }}
-            className={`flex flex-col items-center justify-center gap-1 rounded-xl py-1.5 transition ${phone ? 'hover:bg-slate-200' : 'opacity-50 cursor-not-allowed'}`}
+            className={`flex flex-col items-center justify-center gap-1 rounded-xl py-1 transition ${phone ? 'hover:bg-slate-200' : 'opacity-50 cursor-not-allowed'}`}
           >
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#3b82f6] text-white shadow-sm transition-transform hover:scale-105">
-              <Phone className="h-4 w-4 fill-current" />
+            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#3b82f6] text-white shadow-sm transition-transform hover:scale-105">
+              <Phone className="h-3.5 w-3.5 fill-current" />
             </div>
             <span className="text-[10px] font-bold uppercase tracking-wider text-slate-600">{language === 'en' ? 'Call' : 'Telefon'}</span>
           </a>
@@ -211,10 +245,10 @@ export default function ListingCard({ listing }: { listing: any }) {
             target={whatsappHref ? "_blank" : undefined}
             rel="noreferrer"
             onClick={(e) => { e.stopPropagation(); if(!whatsappHref) e.preventDefault(); }}
-            className={`flex flex-col items-center justify-center gap-1 rounded-xl py-1.5 transition ${whatsappHref ? 'hover:bg-slate-200' : 'opacity-50 cursor-not-allowed'}`}
+            className={`flex flex-col items-center justify-center gap-1 rounded-xl py-1 transition ${whatsappHref ? 'hover:bg-slate-200' : 'opacity-50 cursor-not-allowed'}`}
           >
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#25D366] text-white shadow-sm transition-transform hover:scale-105">
-              <MessageCircle className="h-5 w-5 fill-current" />
+            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#25D366] text-white shadow-sm transition-transform hover:scale-105">
+              <MessageCircle className="h-4.5 w-4.5 fill-current" />
             </div>
             <span className="text-[10px] font-bold uppercase tracking-wider text-[#16a34a]">{language === 'en' ? 'WhatsApp' : 'WhatsApp'}</span>
           </a>
@@ -222,10 +256,10 @@ export default function ListingCard({ listing }: { listing: any }) {
           {/* Share */}
           <button
             onClick={handleShare}
-            className="flex flex-col items-center justify-center gap-1 rounded-xl py-1.5 transition hover:bg-slate-200"
+            className="flex flex-col items-center justify-center gap-1 rounded-xl py-1 transition hover:bg-slate-200"
           >
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#ef4444] text-white shadow-sm transition-transform hover:scale-105">
-              <Share2 className="h-4 w-4" />
+            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#ef4444] text-white shadow-sm transition-transform hover:scale-105">
+              <Share2 className="h-3.5 w-3.5" />
             </div>
             <span className="text-[10px] font-bold uppercase tracking-wider text-slate-600">{language === 'en' ? 'Share' : 'Shpërnda'}</span>
           </button>

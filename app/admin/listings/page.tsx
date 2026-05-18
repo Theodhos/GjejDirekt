@@ -6,6 +6,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { ArrowLeft, Search, Filter, MapPin, CheckCircle, Clock, XCircle, Sparkles } from "lucide-react";
 import { categories } from "@/lib/constants";
+import AdminListingActions from "@/components/admin/AdminListingActions";
 
 export const dynamic = "force-dynamic";
 
@@ -133,10 +134,11 @@ export default async function AdminListingsPage({
                         <div className="text-xs text-slate-400 font-medium">
                             By <span className="text-slate-900 font-bold">{listing.owner?.name || 'Unknown'}</span>
                         </div>
-                        <div className="flex gap-4">
-                            <Link href={`/listings/${listing.slug}`} className="text-xs font-black text-slate-950 hover:text-brand-600 transition">View Details</Link>
-                            <button className="text-xs font-black text-slate-950 hover:text-brand-600 transition">Edit</button>
-                        </div>
+                        <AdminListingActions 
+                          id={listing._id.toString()} 
+                          slug={listing.slug} 
+                          title={listing.title} 
+                        />
                     </div>
                 </div>
             </div>

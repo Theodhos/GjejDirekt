@@ -7,6 +7,7 @@ export type ActivityType =
   | "listing_submitted"
   | "listing_approved"
   | "listing_rejected"
+  | "listing_deleted"
   | "review_created"
   | "blog_created";
 
@@ -34,6 +35,7 @@ const ActivitySchema = new Schema<IActivity>(
         "listing_submitted",
         "listing_approved",
         "listing_rejected",
+        "listing_deleted",
         "review_created",
         "blog_created"
       ],

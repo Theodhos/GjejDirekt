@@ -30,6 +30,83 @@ import { translations } from "@/lib/dictionary";
 
 const GOOGLE_MAPS_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 
+const CATEGORY_DEFAULT_TAGS: Record<string, string[]> = {
+  akomodim: ["Wifi", "AC", "Parking", "Kuzhinë", "TV"],
+  restorante: ["Wifi", "Outdoor Seating", "Vegan Options", "Rezervime", "Parking"],
+  atraksione: ["Entry Fee", "Family Friendly", "Guide Available", "Parking", "Pamje piktoreske"],
+  evente: ["Tickets Needed", "Outdoor", "Indoor", "Parking", "Muzikë live"],
+  "sherbime-turistike": ["English Speaking", "Licensed Guide", "Group Discount", "Tur privat", "Eksperiencë lokale"],
+  "produkte-lokale": ["Handmade", "Organic", "Shipping Available", "Bio", "Tradicionale"],
+  transport: ["AC", "English Speaking Driver", "Airport Pickup", "Shofer profesionist", "Taksi e licencuar"]
+};
+
+const SUBCATEGORY_DEFAULT_TAGS: Record<string, Record<string, string[]>> = {
+  akomodim: {
+    hotel: ["Wifi", "AC", "Mëngjesi", "Shërbim dhome", "Parking"],
+    resort: ["Pishinë", "Pamje nga deti", "Spa", "Plazh privat", "Wifi"],
+    vila: ["Pishinë", "Kopsht", "Kuzhinë", "AC", "Pamje nga mali"],
+    apartament: ["Wifi", "AC", "Kuzhinë", "Lavatriçe", "Ballkon"],
+    guesthouse: ["Mëngjesi", "Kopsht", "Mikpritje", "Parking", "Wifi"],
+    hostel: ["Wifi", "Kuzhinë e përbashkët", "Zonë sociale", "Lokacion qendror", "Çmim ekonomik"],
+    glamping: ["Natyre", "Barbecue", "Zonë jashtë", "Pamje piktoreske", "Flihet në çadër"],
+    motel: ["Parking falas", "AC", "TV", "Recepsoin 24/7", "Pranë autostradës"]
+  },
+  restorante: {
+    tradicional: ["Ushqim tradicional", "Zonë jashtë", "Rezervime", "Parking", "Muzikë live"],
+    internacional: ["Menu moderne", "Pije alkoolike", "Zonë jashtë", "Wifi", "Rezervime"],
+    "fast-food": ["Marrje me vete", "Ushqim i shpejtë", "WiFi", "Kënd lojërash", "AC"],
+    "kafe-bar": ["Kafe", "Kokteje", "Zonë jashtë", "Wifi", "Muzikë e mirë"],
+    pizzeria: ["Pica me dru", "Ushqim Italian", "Marrje me vete", "Dërgesa", "E përshtatshme për familje"],
+    taverne: ["Muzikë live", "Ushqime deti", "Zonë tradicionale", "Rezervime", "Verë shtëpie"],
+    "shisha-lounge": ["Shisha", "Kokteje", "Muzikë DJ", "Zonë VIP", "Udhëheqje nate"]
+  },
+  atraksione: {
+    natyre: ["Pamje piktoreske", "E përshtatshme për familje", "Shtigje ecjeje", "Udhërrëfyes", "Falas"],
+    historike: ["Vlerë historike", "Arkitekturë", "Udhërrëfyes", "Biletë hyrjeje", "Parking"],
+    muze: ["Ekspozitë", "Udhërrëfyes audio", "E përshtatshme për fëmijë", "Biletë hyrjeje", "AC"],
+    plazh: ["Rërë", "Shezlongë", "Pamje nga perëndimi", "Sportet e ujit", "Zonë për not"],
+    adventure: ["Sporte ekstreme", "Adrenalinë", "Udhërrëfyes profesionist", "Pajisje të sigurisë", "Tur në grup"],
+    arkeologji: ["Gërmime arkeologjike", "Histori e lashtë", "Udhërrëfyes", "Biletë hyrjeje", "Arkitekturë"],
+    kulture: ["Ngjarje kulturore", "Teatër", "Punëtori arti", "Lokale", "E përshtatshme për të gjithë"]
+  },
+  evente: {
+    koncerte: ["Muzikë live", "Biletë e nevojshme", "Skenë e hapur", "Parking", "Zonë VIP"],
+    festivale: ["Festival", "Ushqim & Pije", "Zonë jashtë", "Biletë e nevojshme", "Muzikë"],
+    panaire: ["Ekspozitë", "Falas", "Punime dore", "Zonë brenda", "Parking"],
+    dasma: ["Dekorim", "Katering", "Muzikë", "Zonë jashtë", "Fotograf"],
+    ekspozita: ["Punime arti", "Hyrje e lirë", "Zonë brenda", "Fotografi", "Pije mirëseardhjeje"],
+    teater: ["Performancë live", "Aktorë profesionistë", "Biletë e nevojshme", "Zonë e mbyllur", "Drama & Komedi"],
+    sportive: ["Gara", "Aktivitet fizik", "Pamje live", "Biletë e nevojshme", "Për të gjitha moshat"]
+  },
+  "sherbime-turistike": {
+    guida: ["Anglisht folës", "Udhërrëfyes i licencuar", "Tur privat", "Eksperiencë lokale", "Mikpritës"],
+    agjenci: ["Planifikim udhëtimi", "Bileta", "Transport i përfshirë", "Paketa turistike", "Mbështetje 24/7"],
+    ekskursione: ["Tur ditor", "Udhërrëfyes", "Piknik", "Transport", "E përshtatshme për grupe"],
+    rezervime: ["Konfirmim i shpejtë", "Asistencë", "Pa pagesë paraprake", "Fleksibël", "Mbështetje"],
+    "rent-equipment": ["Pajisje cilësore", "Sporte ujore/malore", "Dorëzim i shpejtë", "Çmim ditor", "Asistencë teknike"],
+    "foto-video": ["Fotograf profesionist", "Video me dron", "Redaktim profesional", "Portofolio e pasur", "Udhëtimes"],
+    "tours-boat": ["Tur me varkë", "Pamje nga deti", "Kapiten i licencuar", "Kolete shpëtimi", "Eksplorim shpellash"]
+  },
+  "produkte-lokale": {
+    artizanat: ["Punim dore", "Autentike", "Dhurata", "Unike", "Lokale"],
+    ushqimore: ["Organike", "Bio", "Tradicionale", "E freskët", "Pa konservantë"],
+    suvenire: ["Suvenire", "Lokale", "Dhurata", "Punim dore", "Çmime të arsyeshme"],
+    agro: ["Nga ferma", "Organike", "E freskët", "Ekologjike", "Lokale"],
+    veret: ["Degustim verash", "Vreshta", "Lokale", "Traditë familjare", "Dhurata"],
+    "punime-druri": ["Punim dore", "Druri natyral", "Dekor shtëpie", "Unike", "Porosi speciale"],
+    "kozmetike-natyrale": ["Bio", "Vegane", "Pa kimikate", "Vajra esenciale", "Punim dore"]
+  },
+  transport: {
+    aeroport: ["Transfertë aeroporti", "Shofer profesionist", "Pritje me emër", "Bagazhe", "AC"],
+    "makine-me-qira": ["Makina të reja", "Kasko e plotë", "Pa depozitë", "Kilometra pa limit", "AC"],
+    varka: ["Tur me varkë", "Pamje nga deti", "Kolete shpëtimi", "Kapiten", "Muzikë në varkë"],
+    taksi: ["Taksi e licencuar", "Shofer i shpejtë", "AC", "Çmim fiks", "Ndihmë me bagazhet"],
+    bicikleta: ["Bicikleta cilësore", "Kaskë e përfshirë", "Çmim ekonomik", "Harta turistike", "Motorë elektrikë"],
+    autobus: ["Udhëtim në grup", "Komoditet", "AC", "Linja të rregullta", "Bagazhe të mëdha"],
+    helikopter: ["Fluturim panoramik", "Adrenalinë", "Pilot i certifikuar", "Siguri maksimale", "Pamje VIP"]
+  }
+};
+
 export default function ListingForm() {
   const { language } = useLanguage();
   const t = translations[language];
@@ -59,8 +136,30 @@ export default function ListingForm() {
   }, [selectedCategory]);
 
   const suggestedTags = useMemo(() => {
-    return categories.find((item) => item.value === selectedCategory)?.tags || [];
-  }, [selectedCategory]);
+    if (selectedCategory) {
+      if (selectedSubcategory && SUBCATEGORY_DEFAULT_TAGS[selectedCategory]?.[selectedSubcategory]) {
+        return SUBCATEGORY_DEFAULT_TAGS[selectedCategory][selectedSubcategory];
+      }
+      return categories.find((item) => item.value === selectedCategory)?.tags || [];
+    }
+    return [];
+  }, [selectedCategory, selectedSubcategory]);
+
+  // Set default 5 tags dynamically depending on selected Category and Subcategory
+  useEffect(() => {
+    if (selectedCategory) {
+      if (selectedSubcategory && SUBCATEGORY_DEFAULT_TAGS[selectedCategory]?.[selectedSubcategory]) {
+        setActiveTags(SUBCATEGORY_DEFAULT_TAGS[selectedCategory][selectedSubcategory].slice(0, 5));
+      } else if (CATEGORY_DEFAULT_TAGS[selectedCategory]) {
+        setActiveTags(CATEGORY_DEFAULT_TAGS[selectedCategory].slice(0, 5));
+      } else {
+        const standardTags = categories.find((item) => item.value === selectedCategory)?.tags || [];
+        setActiveTags(standardTags.slice(0, 5));
+      }
+    } else {
+      setActiveTags([]);
+    }
+  }, [selectedCategory, selectedSubcategory]);
 
   const [instagramLink, setInstagramLink] = useState("");
   const [facebookLink, setFacebookLink] = useState("");
@@ -101,6 +200,8 @@ export default function ListingForm() {
       setCustomTag("");
     }
   };
+
+  const isPerPersonCategory = selectedCategory === "akomodim" || selectedCategory === "restorante";
 
   async function submit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -229,28 +330,39 @@ export default function ListingForm() {
         </label>
         <div className="p-8 rounded-[2.5rem] bg-slate-50 border border-slate-200">
           <div className="flex flex-wrap gap-2 mb-6">
-            {suggestedTags.map(tag => (
-              <button
-                key={tag}
-                type="button"
-                onClick={() => toggleTag(tag)}
-                className={`px-4 py-2 rounded-full text-xs font-bold transition-all ${
-                  activeTags.includes(tag) 
-                    ? 'bg-brand-500 text-white shadow-lg shadow-brand-500/30' 
-                    : 'bg-white text-slate-600 border border-slate-200 hover:border-brand-300'
-                }`}
-              >
-                {tag}
-              </button>
-            ))}
+            {suggestedTags.map(tag => {
+              const isActive = activeTags.includes(tag);
+              return (
+                <button
+                  key={tag}
+                  type="button"
+                  onClick={() => toggleTag(tag)}
+                  className={`px-4 py-2 rounded-full text-xs font-bold transition-all flex items-center gap-1.5 ${
+                    isActive 
+                      ? 'bg-brand-500 text-white shadow-lg shadow-brand-500/30' 
+                      : 'bg-white text-slate-600 border border-slate-200 hover:border-brand-300'
+                  }`}
+                >
+                  <span>{tag}</span>
+                  {isActive && (
+                    <span className="w-3.5 h-3.5 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center text-[10px] leading-none transition-colors font-black">
+                      ×
+                    </span>
+                  )}
+                </button>
+              );
+            })}
             {activeTags.filter(t => !suggestedTags.includes(t)).map(tag => (
               <button
                 key={tag}
                 type="button"
                 onClick={() => toggleTag(tag)}
-                className="px-4 py-2 rounded-full text-xs font-bold bg-slate-900 text-white shadow-lg"
+                className="px-4 py-2 rounded-full text-xs font-bold bg-slate-900 text-white shadow-lg flex items-center gap-1.5"
               >
-                {tag}
+                <span>{tag}</span>
+                <span className="w-3.5 h-3.5 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center text-[10px] leading-none transition-colors font-black">
+                  ×
+                </span>
               </button>
             ))}
           </div>
@@ -291,20 +403,34 @@ export default function ListingForm() {
           label={language === 'en' ? 'Opening Hours' : 'Orari i punës'}
           placeholder="08:00 - 22:00"
         />
-        <div className="grid grid-cols-[1fr_80px] gap-2">
+        <div className="grid grid-cols-[1fr_1fr_100px] gap-2">
           <Input
             name="priceFrom"
             type="number"
-            label={language === 'en' ? 'Price Starting From' : 'Çmimi fillon nga'}
+            label={
+              isPerPersonCategory
+                ? (language === 'en' ? 'Min Price (per person)' : 'Çmimi Min (për person)')
+                : (language === 'en' ? 'Min Price' : 'Çmimi Minimal')
+            }
             placeholder="50"
+          />
+          <Input
+            name="price"
+            type="number"
+            label={
+              isPerPersonCategory
+                ? (language === 'en' ? 'Max Price (per person)' : 'Çmimi Max (për person)')
+                : (language === 'en' ? 'Max Price' : 'Çmimi Maksimal')
+            }
+            placeholder="150"
           />
           <Select
             name="currency"
             label={language === 'en' ? 'Currency' : 'Valuta'}
             options={[
+              { label: "LEK", value: "LEK" },
               { label: "€", value: "€" },
-              { label: "$", value: "$" },
-              { label: "ALL", value: "ALL" }
+              { label: "$", value: "$" }
             ]}
           />
         </div>
