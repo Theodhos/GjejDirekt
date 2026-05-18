@@ -159,6 +159,8 @@ export async function POST(request: Request) {
         facebook: body.facebookLink || "",
       },
       googleMapsLink: body.googleMapsLink || "",
+      tags: Array.isArray(body.tags) ? body.tags : parseList(body.tags),
+      amenities: Array.isArray(body.tags) ? body.tags : parseList(body.tags),
       status: "pending"
     });
 

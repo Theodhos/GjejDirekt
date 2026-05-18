@@ -2,9 +2,9 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { MessageCircle, Phone, Star, Share2, MapPin, CheckCircle, ChevronLeft, ChevronRight, Tag } from "lucide-react";
+import { MessageCircle, Phone, Share2, MapPin, CheckCircle, ChevronLeft, ChevronRight, Tag } from "lucide-react";
 import Card from "@/components/ui/Card";
-import { getCategoryLabel } from "@/lib/constants";
+import { getCategoryLabel, getSubcategoryLabel } from "@/lib/constants";
 import { useLanguage } from "@/context/LanguageContext";
 import { useState } from "react";
 import toast from "react-hot-toast";
@@ -32,6 +32,7 @@ export default function ListingCard({ listing }: { listing: any }) {
   };
 
   const categoryLabel = getCategoryLabel(listing.category);
+  const subcategoryLabel = getSubcategoryLabel(listing.category, listing.subcategory);
   const phone = listing.contactInfo?.phone || listing.contactPhone || "";
   const phoneDigits = phone.replace(/\D/g, "");
   const whatsappHref = phoneDigits
@@ -42,28 +43,39 @@ export default function ListingCard({ listing }: { listing: any }) {
     e.preventDefault();
     e.stopPropagation();
     
-    const url = `${window.location.origin}/listings/${listing.slug}`;
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://marketplace-tourism.vercel.app";
+    const url = `${baseUrl}/listings/${listing.slug}`;
     
     if (navigator.share) {
       try {
         await navigator.share({
-          title: listing.title,
-          text: listing.description,
           url: url,
         });
       } catch (err) {
         // User cancelled or error occurred
       }
     } else {
-      // Fallback: copy to clipboard
       try {
-        await navigator.clipboard.writeText(url);
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          await navigator.clipboard.writeText(url);
+        } else {
+          // Fallback for older/unsupported browsers
+          const textarea = document.createElement("textarea");
+          textarea.value = url;
+          textarea.style.position = "fixed";
+          document.body.appendChild(textarea);
+          textarea.focus();
+          textarea.select();
+          document.execCommand("copy");
+          document.body.removeChild(textarea);
+        }
         toast.success(language === 'en' ? 'Link copied to clipboard!' : 'Linku u kopjua!');
       } catch (err) {
         toast.error(language === 'en' ? 'Failed to copy link' : 'Dështoi kopjimi i linkut');
       }
     }
   };
+
 
   const isVerified = listing.verified !== false; // Assuming true by default if not set, or you can check a specific property
 
@@ -88,16 +100,6 @@ export default function ListingCard({ listing }: { listing: any }) {
             </div>
           </div>
         )}
-
-        {/* Rating Badge - Top Right */}
-        <div className="absolute right-3 top-3 z-10">
-          <div className="flex items-center gap-1 rounded-lg bg-white/95 backdrop-blur-sm px-2 py-1 shadow-sm">
-            <Star className="h-3.5 w-3.5 fill-yellow-400 text-yellow-400" />
-            <span className="text-xs font-black text-slate-900">
-              {Number(listing.ratingAverage || 0).toFixed(1)}
-            </span>
-          </div>
-        </div>
 
         {/* Price Overlay - Bottom Right (Image 2 style) */}
         <div className="absolute bottom-0 right-0 z-10">
@@ -156,27 +158,36 @@ export default function ListingCard({ listing }: { listing: any }) {
         </div>
 
         {/* Tags */}
-        <div className="mb-4 flex flex-wrap gap-1.5 mt-auto">
-          {categoryLabel && (
-            <span className="flex items-center gap-1 rounded-md bg-slate-100 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-600">
-              <Tag className="h-3 w-3" />
-              {categoryLabel}
-            </span>
-          )}
-          {listing.tags && listing.tags.slice(0, 2).map((tag: string, index: number) => (
-            <span
-              key={index}
-              className="flex items-center gap-1 rounded-md bg-slate-100 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-600"
-            >
-              {tag}
-            </span>
-          ))}
-          {listing.tags && listing.tags.length > 2 && (
-            <span className="flex items-center rounded-md bg-slate-100 px-2 py-1 text-[10px] font-bold text-slate-500">
-              +{listing.tags.length - 2}
-            </span>
-          )}
-        </div>
+        {(() => {
+          const displayTags = [
+            ...(listing.tags || []),
+            ...(listing.amenities || [])
+          ].filter((value, index, self) => self.indexOf(value) === index);
+          
+          return (
+            <div className="mb-4 flex flex-wrap gap-1.5 mt-auto">
+              {categoryLabel && (
+                <span className="flex items-center gap-1 rounded-md bg-slate-100 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-600">
+                  <Tag className="h-3 w-3" />
+                  {categoryLabel}
+                </span>
+              )}
+              {displayTags.slice(0, 2).map((tag: string, index: number) => (
+                <span
+                  key={index}
+                  className="flex items-center gap-1 rounded-md bg-[#e8fbf0] text-[#15803d] border border-[#bbf7d0] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider"
+                >
+                  {tag}
+                </span>
+              ))}
+              {displayTags.length > 2 && (
+                <span className="flex items-center rounded-md bg-slate-100 px-2.5 py-1 text-[10px] font-bold text-slate-500">
+                  +{displayTags.length - 2}
+                </span>
+              )}
+            </div>
+          );
+        })()}
 
         {/* Contact Section / Bottom Actions */}
         <div className="mt-2 grid grid-cols-3 gap-2 rounded-[1.25rem] bg-[#f8fafc] border border-slate-100 p-2">
