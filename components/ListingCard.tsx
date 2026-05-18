@@ -43,7 +43,9 @@ export default function ListingCard({ listing }: { listing: any }) {
     e.preventDefault();
     e.stopPropagation();
     
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://marketplace-tourism.vercel.app";
+    const baseUrl = typeof window !== "undefined" && !window.location.hostname.includes("localhost")
+      ? "https://www.tripshqip.com"
+      : "http://localhost:3000";
     const url = `${baseUrl}/listings/${listing.slug}`;
     
     if (navigator.share) {
