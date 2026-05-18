@@ -69,17 +69,17 @@ export default function Header() {
   const authenticatedLinks: NavItem[] = me
     ? me.role === "admin"
       ? [
-          { href: "/admin", label: "Dashboard Admin" },
-          { href: "/admin#statistics", label: "Statistics" },
-          { label: "Logout", onClick: logout }
-        ]
+        { href: "/admin", label: "Dashboard Admin" },
+        { href: "/admin#statistics", label: "Statistics" },
+        { label: "Logout", onClick: logout }
+      ]
       : [
-          { href: "/dashboard", label: "My Dashboard" },
-          { label: "Logout", onClick: logout }
-        ]
+        { href: "/dashboard", label: "My Dashboard" },
+        { label: "Logout", onClick: logout }
+      ]
     : [];
 
-  
+
   if (hideForSearchOverlay) {
     return null;
   }

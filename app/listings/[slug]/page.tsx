@@ -49,6 +49,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
 }
 
 import ListingGallery from "@/components/listings/ListingGallery";
+import ListingStickyBottom from "@/components/listings/ListingStickyBottom";
 
 export default async function ListingDetailPage({ params }: { params: { slug: string } }) {
   await connectDB();
@@ -98,7 +99,7 @@ export default async function ListingDetailPage({ params }: { params: { slug: st
       
       {/* 1. Gallery Section (Acts as Hero) */}
       <section className="page-shell pt-10">
-        <ListingGallery images={allImages} />
+        <ListingGallery images={allImages} listing={listing} />
       </section>
 
       {/* 2. Main Content */}
@@ -186,7 +187,7 @@ export default async function ListingDetailPage({ params }: { params: { slug: st
 
           {/* Sidebar */}
           <aside className="space-y-8 lg:sticky lg:top-24 h-fit">
-            <div className="bg-slate-950 text-white p-10 rounded-[3.5rem] shadow-xl relative overflow-hidden group">
+            <div className="hidden lg:block bg-slate-950 text-white p-10 rounded-[3.5rem] shadow-xl relative overflow-hidden group">
                <div className="absolute top-0 right-0 w-32 h-32 bg-brand-500/10 rounded-full blur-[40px] -mr-16 -mt-16 group-hover:bg-brand-500/20 transition-colors duration-1000" />
                <h3 className="text-3xl font-bold text-white mb-10 relative z-10 leading-tight">Ready to book or inquire?</h3>
                <div className="space-y-4 relative z-10">
@@ -261,6 +262,13 @@ export default async function ListingDetailPage({ params }: { params: { slug: st
         </section>
       )}
 
-    </main>
+      <ListingStickyBottom 
+      phone={phone} 
+      whatsappHref={whatsappHref} 
+      priceFrom={listing.priceFrom} 
+      currency={listing.currency} 
+      categoryLabel={categoryLabel} 
+    />
+  </main>
   );
 }
