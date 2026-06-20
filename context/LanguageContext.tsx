@@ -12,14 +12,27 @@ interface LanguageContextType {
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
-  const [language, setLanguageState] = useState<Language>("en");
+  const [language, setLanguageState] = useState<Language>("al");
 
   useEffect(() => {
     const saved = localStorage.getItem("language") as Language;
     if (saved && (saved === "en" || saved === "al")) {
       setLanguageState(saved);
+    } else {
+      localStorage.setItem("language", "al");
     }
   }, []);
+
+  // Keep the document <html> lang attribute in sync with the selected language
+  useEffect(() => {
+    try {
+      if (typeof document !== "undefined") {
+        document.documentElement.lang = language === "en" ? "en" : "sq";
+      }
+    } catch (e) {
+      // noop for SSR
+    }
+  }, [language]);
 
   const setLanguage = (lang: Language) => {
     setLanguageState(lang);

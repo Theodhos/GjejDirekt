@@ -40,6 +40,16 @@ export interface IListing extends Document {
   ratingAverage: number;
   reviewCount: number;
   businessHours?: string;
+  whatsapp?: string;
+  website?: string;
+  checkIn?: string;
+  checkOut?: string;
+  menuLink?: string;
+  tips?: string;
+  eventDate?: string;
+  eventTime?: string;
+  bookingLink?: string;
+  transportType?: string;
   package?: PackageTier;
   packageExpiryDate?: Date;
   packagePurchaseDate?: Date;
@@ -90,6 +100,16 @@ const ListingSchema = new Schema<IListing>(
     ratingAverage: { type: Number, default: 0 },
     reviewCount: { type: Number, default: 0 },
     businessHours: { type: String },
+    whatsapp: { type: String },
+    website: { type: String },
+    checkIn: { type: String },
+    checkOut: { type: String },
+    menuLink: { type: String },
+    tips: { type: String },
+    eventDate: { type: String },
+    eventTime: { type: String },
+    bookingLink: { type: String },
+    transportType: { type: String },
     package: {
       type: String,
       enum: ["verify", "trading", "features"],

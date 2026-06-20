@@ -385,7 +385,7 @@ export default function ListingForm() {
           name="contactPhone"
           label={language === 'en' ? 'Contact Phone' : 'Telefoni i Kontaktit'}
           placeholder="+355 69 ..."
-          required
+          required={selectedCategory !== "atraksione"}
         />
         <Input
           name="address"
@@ -397,44 +397,153 @@ export default function ListingForm() {
         />
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-2">
-        <Input
-          name="businessHours"
-          label={language === 'en' ? 'Opening Hours' : 'Orari i punës'}
-          placeholder="08:00 - 22:00"
-        />
-        <div className="grid grid-cols-[1fr_1fr_100px] gap-2">
+      {/* WhatsApp & Website (available for all except Atraksione) */}
+      {selectedCategory && selectedCategory !== "atraksione" && (
+        <div className="grid gap-4 lg:grid-cols-2">
           <Input
-            name="priceFrom"
-            type="number"
-            label={
-              isPerPersonCategory
-                ? (language === 'en' ? 'Min Price (per person)' : 'Çmimi Min (për person)')
-                : (language === 'en' ? 'Min Price' : 'Çmimi Minimal')
-            }
-            placeholder="50"
+            name="whatsapp"
+            label="WhatsApp"
+            placeholder="+355 69 ..."
           />
           <Input
-            name="price"
-            type="number"
-            label={
-              isPerPersonCategory
-                ? (language === 'en' ? 'Max Price (per person)' : 'Çmimi Max (për person)')
-                : (language === 'en' ? 'Max Price' : 'Çmimi Maksimal')
-            }
-            placeholder="150"
-          />
-          <Select
-            name="currency"
-            label={language === 'en' ? 'Currency' : 'Valuta'}
-            options={[
-              { label: "LEK", value: "LEK" },
-              { label: "€", value: "€" },
-              { label: "$", value: "$" }
-            ]}
+            name="website"
+            label="Website"
+            placeholder="https://..."
           />
         </div>
-      </div>
+      )}
+
+      {/* Check-in / Check-out (only for Akomodim) */}
+      {selectedCategory === "akomodim" && (
+        <div className="grid gap-4 lg:grid-cols-2">
+          <Input
+            name="checkIn"
+            label={language === 'en' ? 'Check-in Time (optional)' : 'Check-in (opsionale)'}
+            placeholder="14:00"
+          />
+          <Input
+            name="checkOut"
+            label={language === 'en' ? 'Check-out Time (optional)' : 'Check-out (opsionale)'}
+            placeholder="11:00"
+          />
+        </div>
+      )}
+
+      {/* Menu Link (only for Restorante) */}
+      {selectedCategory === "restorante" && (
+        <Input
+          name="menuLink"
+          label={language === 'en' ? 'Menu Link (optional)' : 'Linku i Menusë (opsionale)'}
+          placeholder="https://..."
+        />
+      )}
+
+      {/* Event Details (only for Evente) */}
+      {selectedCategory === "evente" && (
+        <>
+          <div className="grid gap-4 lg:grid-cols-2">
+            <Input
+              name="eventDate"
+              type="date"
+              label={language === 'en' ? 'Event Date' : 'Data e Eventit'}
+              required
+            />
+            <Input
+              name="eventTime"
+              type="time"
+              label={language === 'en' ? 'Event Time' : 'Ora e Eventit'}
+              required
+            />
+          </div>
+          <Input
+            name="bookingLink"
+            label={language === 'en' ? 'Booking Link (optional)' : 'Linku i Rezervimit (opsionale)'}
+            placeholder="https://..."
+          />
+        </>
+      )}
+
+      {/* Transport Type (only for Transport) */}
+      {selectedCategory === "transport" && (
+        <Input
+          name="transportType"
+          label={language === 'en' ? 'Type of Transport' : 'Lloji i Transportit'}
+          placeholder={language === 'en' ? 'e.g. Taxi, Boat, Rental Car...' : 'p.sh. Taksi, Varkë, Makinë me Qira...'}
+          required
+        />
+      )}
+
+      {/* Tips / Additional Info (only for Atraksione) */}
+      {selectedCategory === "atraksione" && (
+        <Textarea
+          name="tips"
+          label={language === 'en' ? 'Tips / Additional Information (optional)' : 'Këshilla / Informacion shtesë (opsionale)'}
+          placeholder={language === 'en' ? 'e.g. Best time to visit, tickets info...' : 'p.sh. Koha më e mirë për vizitë, biletat...'}
+        />
+      )}
+
+      {/* Conditionally Render Business Hours & Price Fields */}
+      {(selectedCategory === "restorante" ||
+        selectedCategory === "sherbime-turistike" ||
+        selectedCategory === "transport" ||
+        selectedCategory === "atraksione" ||
+        selectedCategory === "akomodim" ||
+        selectedCategory === "produkte-lokale") && (
+        <div className="grid gap-4 lg:grid-cols-2">
+          {(selectedCategory === "restorante" ||
+            selectedCategory === "sherbime-turistike" ||
+            selectedCategory === "transport" ||
+            selectedCategory === "atraksione") ? (
+            <Input
+              name="businessHours"
+              label={language === 'en' ? 'Opening Hours' : 'Orari i punës'}
+              placeholder="08:00 - 22:00"
+            />
+          ) : (
+            <div />
+          )}
+
+          {(selectedCategory === "akomodim" ||
+            selectedCategory === "sherbime-turistike" ||
+            selectedCategory === "produkte-lokale" ||
+            selectedCategory === "transport" ||
+            selectedCategory === "atraksione") ? (
+            <div className="grid grid-cols-[1fr_1fr_100px] gap-2">
+              <Input
+                name="priceFrom"
+                type="number"
+                label={
+                  isPerPersonCategory
+                    ? (language === 'en' ? 'Min Price (per person)' : 'Çmimi Min (për person)')
+                    : (language === 'en' ? 'Min Price' : 'Çmimi Minimal')
+                }
+                placeholder="50"
+              />
+              <Input
+                name="price"
+                type="number"
+                label={
+                  isPerPersonCategory
+                    ? (language === 'en' ? 'Max Price (per person)' : 'Çmimi Max (për person)')
+                    : (language === 'en' ? 'Max Price' : 'Çmimi Maksimal')
+                }
+                placeholder="150"
+              />
+              <Select
+                name="currency"
+                label={language === 'en' ? 'Currency' : 'Valuta'}
+                options={[
+                  { label: "LEK", value: "LEK" },
+                  { label: "€", value: "€" },
+                  { label: "$", value: "$" }
+                ]}
+              />
+            </div>
+          ) : (
+            <div />
+          )}
+        </div>
+      )}
 
       <div className="grid gap-4 lg:grid-cols-3">
         <Input

@@ -134,7 +134,7 @@ export default function Header() {
 
         <div className="flex items-center gap-2 lg:hidden">
           {me ? (
-            <span className="hidden text-sm text-slate-600 md:inline">Hi, {me.name}</span>
+            <span className="hidden text-sm text-slate-600 md:inline">{language === 'en' ? `Hi, ${me.name}` : `Përshëndetje, ${me.name}`}</span>
           ) : null}
           {/* Add Listing button — visible on mobile next to hamburger */}
           <Link
@@ -211,7 +211,7 @@ export default function Header() {
 
             {me ? (
               <p className="text-sm font-semibold text-slate-600">
-                Hi, {me.name}
+                {language === 'en' ? `Hi, ${me.name}` : `Përshëndetje, ${me.name}`}
               </p>
             ) : null}
           </div>

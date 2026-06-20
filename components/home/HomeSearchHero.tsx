@@ -198,7 +198,7 @@ export default function HomeSearchHero() {
   }
 
   return (
-    <section className="relative min-h-[72svh] sm:min-h-screen flex items-center justify-center overflow-visible bg-slate-950 py-8 sm:py-0">
+    <section className="relative min-h-hero flex items-center justify-center overflow-visible bg-slate-950 py-8 sm:py-0">
       <div className="absolute inset-0 overflow-hidden">
         <Image
           src="https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=2000&q=80"
@@ -217,10 +217,15 @@ export default function HomeSearchHero() {
       </div>
 
       <div className="page-shell relative z-10 w-full flex flex-col items-center pt-4 sm:pt-0">
-        <div className="text-center max-w-4xl mb-5 sm:mb-12">
-          <h1 className="text-[2.05rem] sm:text-8xl font-black tracking-[-0.02em] text-white mb-3 sm:mb-4 leading-[1.02] animate-slide-up drop-shadow-[0_10px_30px_rgba(0,0,0,0.5)] px-2">
-            {language === "en" ? "Discover Albania Beautifully" : "Zbulo Shqiperine Bukur"}
+        <div className="text-center max-w-5xl mb-8 sm:mb-12">
+          <h1 className="text-[2.05rem] xs:text-[2.4rem] sm:text-6xl md:text-7xl lg:text-[5.25rem] font-black tracking-[-0.03em] text-white mb-4 sm:mb-6 leading-[1.1] sm:leading-[1.03] animate-slide-up drop-shadow-[0_10px_30px_rgba(0,0,0,0.6)] px-2">
+            {language === "en" ? "Find easily. Contact directly. Enjoy holidays." : "Gjej lehtë. Kontakto direkt. Shijo pushimet."}
           </h1>
+          <p className="text-xs sm:text-base md:text-lg lg:text-xl text-slate-200/90 font-medium sm:font-semibold tracking-wide leading-relaxed sm:leading-loose animate-fade-in drop-shadow-md max-w-3xl mx-auto px-4">
+            {language === "en"
+              ? "Discover hotels, restaurants, attractions, experiences, and authentic Albanian businesses in a single platform."
+              : "Zbulo hotele, restorante, atraksione, eksperienca dhe biznese autentike shqiptare në një platformë të vetme."}
+          </p>
         </div>
 
         <div
@@ -235,7 +240,7 @@ export default function HomeSearchHero() {
                   <input
                   value={city}
                   onChange={(event) => setCity(event.target.value)}
-                  placeholder={language === "en" ? "ex. city, hotel, address..." : "p.sh. qytet, hotel, adrese..."}
+                  placeholder={language === "en" ? "Search hotels, restaurants, beaches, tours..." : "Kërko hotele, restorante, plazhe, ture..."}
                   className="w-full bg-transparent text-lg text-slate-700 outline-none font-semibold placeholder:text-slate-500"
                   autoFocus
                 />
@@ -266,7 +271,7 @@ export default function HomeSearchHero() {
                         searchRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
                       }
                     }}
-                    placeholder={language === "en" ? "Search for cities, hotels, activities..." : "Kerko per qytete, hotele, aktivitete..."}
+                    placeholder={language === "en" ? "Search hotels, restaurants, beaches, tours..." : "Kërko hotele, restorante, plazhe, ture..."}
                     className="w-full bg-transparent py-3 sm:py-5 text-lg sm:text-xl text-slate-950 outline-none font-black placeholder:text-slate-400 placeholder:font-bold"
                   />
                 </div>
@@ -276,7 +281,7 @@ export default function HomeSearchHero() {
                     type="submit"
                     className="w-full sm:w-auto px-12 py-5 rounded-2xl font-black text-xs uppercase tracking-widest bg-brand-600 text-white hover:bg-brand-700 transition-all shadow-2xl shadow-brand-600/30 active:scale-95 flex items-center justify-center gap-3"
                   >
-                    {language === "en" ? "Search" : "Kerko"}
+                    {language === "en" ? "Explore Albania" : "Eksploro Shqipërinë"}
                     <ArrowRight className="w-5 h-5" />
                   </button>
                 </div>

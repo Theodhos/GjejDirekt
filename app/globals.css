@@ -4,6 +4,18 @@
 
 :root {
   color-scheme: light;
+  --header-height: 73px;
+}
+
+@media (min-width: 768px) {
+  :root {
+    --header-height: 81px;
+  }
+}
+
+.min-h-hero {
+  min-height: calc(100vh - var(--header-height));
+  min-height: calc(100dvh - var(--header-height));
 }
 
 html {

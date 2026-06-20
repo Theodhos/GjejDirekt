@@ -145,38 +145,44 @@ export default async function ListingDetailPage({ params }: { params: { slug: st
 
             {/* All Fields Presentation */}
             <div className="grid gap-6 sm:grid-cols-2">
-               <div className="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100">
-                  <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-brand-600 mb-6">
-                    <Clock className="w-5 h-5" />
-                  </div>
-                  <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Business Hours</h4>
-                  <p className="text-slate-950 font-black">{listing.businessHours || "Open for inquiries"}</p>
-               </div>
-               <div className="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100">
-                  <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-brand-600 mb-6">
-                    <Euro className="w-5 h-5" />
-                  </div>
-                  <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">
-                    {listing.category === "akomodim" || listing.category === "restorante"
-                      ? "Price (per person) / Çmimi (për person)"
-                      : "Price / Çmimi"}
-                  </h4>
-                  <p className="text-slate-950 font-black">
-                    {(() => {
-                      const symbol = listing.currency === "ALL" || listing.currency === "LEK" ? "L" : (listing.currency || "€");
-                      if (listing.priceFrom && listing.price) {
-                        return `${symbol}${listing.priceFrom} - ${symbol}${listing.price}`;
-                      }
-                      if (listing.priceFrom) {
-                        return `${symbol}${listing.priceFrom}`;
-                      }
-                      if (listing.price) {
-                        return `${symbol}${listing.price}`;
-                      }
-                      return "Contact for price / Kontakto për çmimin";
-                    })()}
-                  </p>
-               </div>
+               {(listing.businessHours || listing.category === "restorante" || listing.category === "sherbime-turistike" || listing.category === "transport") && (
+                 <div className="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100">
+                    <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-brand-600 mb-6">
+                      <Clock className="w-5 h-5" />
+                    </div>
+                    <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Business Hours / Orari</h4>
+                    <p className="text-slate-950 font-black">{listing.businessHours || "Open for inquiries"}</p>
+                 </div>
+               )}
+               
+               {(listing.priceFrom || listing.price || listing.category === "akomodim" || listing.category === "sherbime-turistike" || listing.category === "produkte-lokale" || listing.category === "transport" || listing.category === "atraksione") && (
+                 <div className="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100">
+                    <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-brand-600 mb-6">
+                      <Euro className="w-5 h-5" />
+                    </div>
+                    <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">
+                      {listing.category === "akomodim" || listing.category === "restorante"
+                        ? "Price (per person) / Çmimi (për person)"
+                        : "Price / Çmimi"}
+                    </h4>
+                    <p className="text-slate-950 font-black">
+                      {(() => {
+                        const symbol = listing.currency === "ALL" || listing.currency === "LEK" ? "L" : (listing.currency || "€");
+                        if (listing.priceFrom && listing.price) {
+                          return `${symbol}${listing.priceFrom} - ${symbol}${listing.price}`;
+                        }
+                        if (listing.priceFrom) {
+                          return `${symbol}${listing.priceFrom}`;
+                        }
+                        if (listing.price) {
+                          return `${symbol}${listing.price}`;
+                        }
+                        return "Contact for price / Kontakto për çmimin";
+                      })()}
+                    </p>
+                 </div>
+               )}
+
                <div className="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100">
                   <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-brand-600 mb-6">
                     <Navigation className="w-5 h-5" />
@@ -192,13 +198,116 @@ export default async function ListingDetailPage({ params }: { params: { slug: st
                     )}
                   </p>
                </div>
-                <div className="hidden sm:block bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100">
-                   <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-brand-600 mb-6">
-                     <Phone className="w-5 h-5" />
-                   </div>
-                   <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Contact Number</h4>
-                   <p className="text-slate-950 font-black">{phone || "Not public"}</p>
-                </div>
+
+               {phone && (
+                 <div className="hidden sm:block bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100">
+                    <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-brand-600 mb-6">
+                      <Phone className="w-5 h-5" />
+                    </div>
+                    <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Contact Number</h4>
+                    <p className="text-slate-950 font-black">{phone}</p>
+                 </div>
+               )}
+
+               {listing.whatsapp && (
+                 <div className="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100">
+                    <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-brand-600 mb-6">
+                      <MessageCircle className="w-5 h-5" />
+                    </div>
+                    <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">WhatsApp</h4>
+                    <p className="text-slate-950 font-black">
+                      <a href={`https://wa.me/${listing.whatsapp.replace(/\D/g, "")}`} target="_blank" rel="noreferrer" className="text-brand-600 hover:underline">
+                        {listing.whatsapp}
+                      </a>
+                    </p>
+                 </div>
+               )}
+
+               {listing.website && (
+                 <div className="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100">
+                    <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-brand-600 mb-6">
+                      <Globe className="w-5 h-5" />
+                    </div>
+                    <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Website</h4>
+                    <p className="text-slate-950 font-black truncate">
+                      <a href={listing.website.startsWith("http") ? listing.website : `https://${listing.website}`} target="_blank" rel="noreferrer" className="text-brand-600 hover:underline">
+                        {listing.website}
+                      </a>
+                    </p>
+                 </div>
+               )}
+
+               {(listing.checkIn || listing.checkOut) && (
+                 <div className="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100">
+                    <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-brand-600 mb-6">
+                      <Clock className="w-5 h-5" />
+                    </div>
+                    <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Check-In / Check-Out</h4>
+                    <p className="text-slate-950 font-black">
+                      {listing.checkIn ? `In: ${listing.checkIn}` : ""} {listing.checkOut ? ` • Out: ${listing.checkOut}` : ""}
+                    </p>
+                 </div>
+               )}
+
+               {listing.menuLink && (
+                 <div className="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100">
+                    <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-brand-600 mb-6">
+                      <Tag className="w-5 h-5" />
+                    </div>
+                    <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Menu</h4>
+                    <p className="text-slate-950 font-black">
+                      <a href={listing.menuLink} target="_blank" rel="noreferrer" className="text-brand-600 hover:underline">
+                        View Menu / Shiko Menunë
+                      </a>
+                    </p>
+                 </div>
+               )}
+
+               {(listing.eventDate || listing.eventTime) && (
+                 <div className="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100">
+                    <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-brand-600 mb-6">
+                      <CalendarDays className="w-5 h-5" />
+                    </div>
+                    <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Event Schedule / Data & Ora</h4>
+                    <p className="text-slate-950 font-black">
+                      {listing.eventDate ? listing.eventDate : ""} {listing.eventTime ? ` at ${listing.eventTime}` : ""}
+                    </p>
+                 </div>
+               )}
+
+               {listing.bookingLink && (
+                 <div className="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100">
+                    <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-brand-600 mb-6">
+                      <Sparkles className="w-5 h-5" />
+                    </div>
+                    <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Booking Link / Rezervimi</h4>
+                    <p className="text-slate-950 font-black">
+                      <a href={listing.bookingLink} target="_blank" rel="noreferrer" className="text-brand-600 hover:underline">
+                        Book / Rezervo <ArrowRight className="inline-block w-4 h-4 ml-1" />
+                      </a>
+                    </p>
+                 </div>
+               )}
+
+               {listing.transportType && (
+                 <div className="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100">
+                    <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-brand-600 mb-6">
+                      <Tag className="w-5 h-5" />
+                    </div>
+                    <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Transport Type / Lloji</h4>
+                    <p className="text-slate-950 font-black">{listing.transportType}</p>
+                 </div>
+               )}
+
+               {listing.tips && (
+                 <div className="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100 sm:col-span-2">
+                    <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-brand-600 mb-6">
+                      <Sparkles className="w-5 h-5" />
+                    </div>
+                    <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Tips & Additional Information / Këshilla</h4>
+                    <p className="text-slate-600 leading-relaxed font-medium whitespace-pre-line">{listing.tips}</p>
+                 </div>
+               )}
             </div>
 
           </div>
