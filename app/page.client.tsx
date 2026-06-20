@@ -167,13 +167,13 @@ function HomePageClient() {
             <div className="mb-12 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <p className="text-sm uppercase tracking-[0.35em] text-brand-600 font-black mb-2">
-                  {searchResults.length} {searchResults.length === 1 ? (language === 'en' ? 'result' : 'rezultat') : (language === 'en' ? 'results' : 'rezultate')}
+                  {searchResults.length} {searchResults.length === 1 ? t.common.result : t.common.results}
                 </p>
                 <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black text-slate-950">
                   {category && categories.find(c => c.value === category)?.label}
                   {subcategory && ` > ${subcategory}`}
                   {city && dynamicCities.find(c => c.value === city)?.label && ` • ${dynamicCities.find(c => c.value === city)?.label}`}
-                  {query && `${language === 'en' ? 'Search: ' : 'Kërkimi: '}"${query}"`}
+                  {query && `${t.common.searchPrefix}"${query}"`}
                 </h2>
               </div>
             </div>
@@ -187,10 +187,10 @@ function HomePageClient() {
             ) : (
               <div className="rounded-[2.5rem] border border-dashed border-slate-300 bg-white p-16 text-center">
                 <p className="text-2xl font-black text-slate-900 mb-4">
-                  {language === 'en' ? 'No listings found.' : 'Nuk u gjet asnjë listim.'}
+                  {t.common.noListingsFound}
                 </p>
                 <p className="text-slate-500">
-                  {language === 'en' ? 'Try adjusting your search criteria.' : 'Përpiquni të ndryshoni kriteret e kërkimit.'}
+                  {t.common.tryAdjustSearch}
                 </p>
               </div>
             )}
@@ -220,7 +220,7 @@ function HomePageClient() {
                 <Image src={city.image || "https://images.unsplash.com/photo-1512917774080-9991f1c4c750"} alt={city.label} fill className="object-cover transition duration-700 group-hover:scale-110" />
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/20 to-transparent" />
                 <div className="absolute inset-0 flex flex-col justify-end p-6">
-                    <p className="text-xs font-black uppercase tracking-widest text-emerald-200 drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)] mb-2">{language === 'en' ? 'City' : 'Qytet'}</p>
+                    <p className="text-xs font-black uppercase tracking-widest text-emerald-200 drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)] mb-2">{t.common.city}</p>
                     <h3 className="text-2xl font-black text-white drop-shadow-[0_4px_16px_rgba(0,0,0,0.9)]">{city.label}</h3>
                 </div>
               </div>
@@ -237,7 +237,7 @@ function HomePageClient() {
             description: t.home.whereToSleepDesc,
             accent: 'bg-blue-50 text-blue-700',
             fallbackImage: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80',
-            buttonLabel: language === 'en' ? 'Add Accommodation' : 'Shto Akomodim'
+            buttonLabel: t.home.addAccommodation
           },
           {
             id: "restorante",
@@ -247,7 +247,7 @@ function HomePageClient() {
             description: t.home.whereToEatDesc,
             accent: 'bg-orange-50 text-orange-700',
             fallbackImage: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=600&q=80',
-            buttonLabel: language === 'en' ? 'Add Place to Eat' : 'Shto Restorant'
+            buttonLabel: t.home.addPlaceToEat
           },
           {
             id: "evente",
@@ -257,7 +257,7 @@ function HomePageClient() {
             description: t.home.eventsDesc,
             accent: 'bg-brand-50 text-brand-700',
             fallbackImage: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=600&q=80',
-            buttonLabel: language === 'en' ? 'Add Event' : 'Shto Event'
+            buttonLabel: t.home.addEvent
           },
           {
             id: "transport",
@@ -267,7 +267,7 @@ function HomePageClient() {
             description: t.home.transportDesc,
             accent: 'bg-brand-50 text-brand-700',
             fallbackImage: 'https://images.unsplash.com/photo-1504215680853-026ed2a45def?auto=format&fit=crop&w=600&q=80',
-            buttonLabel: language === 'en' ? 'Add Transport' : 'Shto Transport'
+            buttonLabel: t.home.addTransport
           },
           {
             id: "sherbime-turistike",
@@ -279,7 +279,7 @@ function HomePageClient() {
               : 'Shfletoni shërbimet turistike lokale me stil të njëjtë si pjesët e tjera.',
             accent: 'bg-emerald-50 text-emerald-700',
             fallbackImage: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=600&q=80',
-            buttonLabel: language === 'en' ? 'Add Service' : 'Shto Shërbim'
+            buttonLabel: t.home.addService
           },
           {
             id: "produkte-lokale",
@@ -291,7 +291,7 @@ function HomePageClient() {
               : 'Zbuloni produkte artizanale, suvenire dhe specialitete lokale.',
             accent: 'bg-cyan-50 text-cyan-700',
             fallbackImage: 'https://images.unsplash.com/photo-1498654896293-37aacf113fd9?auto=format&fit=crop&w=600&q=80',
-            buttonLabel: language === 'en' ? 'Add Product' : 'Shto Produkt'
+            buttonLabel: t.home.addProduct
           },
           {
             id: "atraksione",
@@ -303,7 +303,7 @@ function HomePageClient() {
               : 'Gjeni vendet kryesore, muzeun dhe aktivitete jashtë.',
             accent: 'bg-violet-50 text-violet-700',
             fallbackImage: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=600&q=80',
-            buttonLabel: language === 'en' ? 'Add Attraction' : 'Shto Atraksion'
+            buttonLabel: t.home.addAttraction
           }
         ].map((section) => {
           const categoryListings = getCategoryListings(section.category);
