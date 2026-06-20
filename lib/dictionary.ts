@@ -31,6 +31,10 @@ export const translations = {
       terms: "Terms and Conditions",
       privacy: "Privacy Policy"
     },
+    legal: {
+      intro: "These terms define how users, service providers, and administrators interact on the tourism platform.",
+      lastUpdated: "Last updated: May 17, 2026"
+    },
     common: {
         readMore: "Read More",
         keyword: "Keyword",
@@ -142,6 +146,11 @@ export const translations = {
         heroTitle: "Stories that Inspire",
         heroSubtitle: "Journeys that Matter",
         heroDesc: "Discover curated guides, insider tips, and breathtaking stories from the heart of Albania.",
+        allStories: "All Stories",
+        journalEntry: "Journal Entry",
+        inspiredTitle: "Inspired by this story?",
+        inspiredDesc: "Discover verified services and start planning your own Albanian adventure today.",
+        exploreServices: "Explore Marketplace",
         archiveTitle: "The Archive",
         latestPub: "Latest Publications",
       readStory: "Read Story",
@@ -271,7 +280,69 @@ export const translations = {
       removedFromFavorites: "Removed from favorites",
       updateFavoritesFailed: "Failed to update favorites",
       showAllPhotos: "Show all photos"
-    }
+    },
+    terms: [
+        {
+          title: "1. Acceptance of Terms",
+          body:
+            "By accessing or using this platform, you agree to these Terms and to all applicable laws. If you do not agree, please do not use the platform."
+        },
+        {
+          title: "2. Platform Role",
+          body:
+            "The platform helps users discover tourism-related services, contact providers, and submit listings. We do not own, operate, or guarantee third-party services listed by users."
+        },
+        {
+          title: "3. Accounts and Eligibility",
+          body:
+            "You are responsible for account activity under your credentials and for keeping your login details secure. You must provide accurate profile and listing information."
+        },
+        {
+          title: "4. Listings, Content, and Moderation",
+          body:
+            "Users are responsible for listing content, media, claims, prices, and contact details they publish. Listings may be reviewed by administrators and can be approved, rejected, edited for clarity, or removed if they violate law, intellectual property rights, safety expectations, or platform rules."
+        },
+        {
+          title: "5. Prohibited Conduct",
+          body:
+            "You agree not to publish misleading information, unlawful offers, harmful content, spam, malware, or abusive communications. Attempts to bypass moderation or impersonate other people are not allowed."
+        },
+        {
+          title: "6. Reviews and User Interactions",
+          body:
+            "Reviews must reflect real experiences and follow respectful conduct standards. We may remove reviews or comments that are fraudulent, abusive, discriminatory, or unrelated to the service experience."
+        },
+        {
+          title: "7. Payments and Packages",
+          body:
+            "If paid features or packages are offered, billing terms are shown at checkout. Unless explicitly stated otherwise, fees are non-refundable after activation of the purchased feature."
+        },
+        {
+          title: "8. Intellectual Property",
+          body:
+            "Platform design, code, branding, and original content are protected by applicable intellectual property laws. You keep ownership of content you upload, and grant us a limited license to display and process it for platform operation."
+        },
+        {
+          title: "9. Disclaimer and Limitation of Liability",
+          body:
+            "The platform is provided \"as is\" and \"as available.\" We are not liable for losses resulting from third-party listings, provider actions, availability issues, booking outcomes, or user-to-user transactions."
+        },
+        {
+          title: "10. Suspension and Termination",
+          body:
+            "We may suspend or terminate accounts or listings that violate these Terms, create legal or security risk, or harm platform integrity."
+        },
+        {
+          title: "11. Changes to These Terms",
+          body:
+            "We may update these Terms periodically. Continued use of the platform after updates means you accept the revised version."
+        },
+        {
+          title: "12. Contact",
+          body:
+            "For questions about these Terms, contact platform administration through the official support or admin communication channels provided in the platform."
+        }
+      ]
   },
   al: {
     hero: {
@@ -302,6 +373,10 @@ export const translations = {
       faq: "Pyetje të Shpeshta",
       terms: "Kushtet",
       privacy: "Privatesia"
+    },
+    legal: {
+      intro: "Këto kushte përshkruajnë mënyrën se si përdoruesit, ofruesit e shërbimeve dhe administratorët ndërveprojnë në platformën turistike.",
+      lastUpdated: "Përditësuar më: 17 Maj 2026"
     },
     common: {
         readMore: "Lexo më shumë",
@@ -411,9 +486,14 @@ export const translations = {
         reset: "Pastro Filtrat"
     },
     blog: {
-        heroTitle: "Histori që Inspirojnë",
-        heroSubtitle: "Udhëtime që Kanë Rëndësi",
-        heroDesc: "Zbuloni udhëzues të kuruar, këshilla të brendshme dhe histori mahnitëse nga zemra e Shqipërisë.",
+      heroTitle: "Historitë që Frymëzojnë",
+      heroSubtitle: "Udhëtime që Lënë Gjurmë",
+      heroDesc: "Zbuloni udhëzues të kuruar, këshilla lokale dhe histori që ju nxisin të eksploroni Shqipërinë.",
+      allStories: "Të gjitha historitë",
+      journalEntry: "Hyrje në revistë",
+      inspiredTitle: "E frymëzuar nga kjo histori?",
+      inspiredDesc: "Zbuloni shërbime të verifikuara dhe filloni të planifikoni aventurën tuaj shqiptare sot.",
+      exploreServices: "Eksploro Shërbimet",
         archiveTitle: "Arkiva",
         latestPub: "Publikimet e Fundit",
         readStory: "Lexo Historinë",
@@ -543,5 +623,68 @@ export const translations = {
       updateFavoritesFailed: "Dështoi përditësimi",
       showAllPhotos: "Shiko të gjitha fotot"
     }
+      ,
+      terms: [
+        {
+          title: "1. Pranimi i Kushteve",
+          body:
+            "Duke hyrë ose përdorur këtë platformë, ju pranoni këto Kushte dhe të gjitha ligjet në fuqi. Nëse nuk pranoni, ju lutemi mos përdorni platformën."
+        },
+        {
+          title: "2. Roli i Platformës",
+          body:
+            "Platforma ndihmon përdoruesit të gjejnë shërbime turistike, të kontaktojnë ofruesit dhe të publikojnë listime. Ne nuk zotërojmë, drejtojmë, ose garantojmë shërbimet e palëve të treta të listuara."
+        },
+        {
+          title: "3. Llogaritë dhe Përshtatshmëria",
+          body:
+            "Jeni përgjegjës për aktivitetin e llogarisë suaj dhe për ruajtjen e sigurisë së kredencialeve. Duhet të siguroni informacion të saktë për profilin dhe listimet tuaja."
+        },
+        {
+          title: "4. Listimet, Përmbajtja dhe Moderimi",
+          body:
+            "Përdoruesit janë përgjegjës për përmbajtjen e listimeve, mediat, pretendimet, çmimet dhe detajet e kontaktit që publikojnë. Listimet mund të shqyrtohen nga administratorët dhe mund të miratohen, refuzohen, redaktohen për qartësi, ose hiqen nëse shkelin ligjet, të drejtat e pronësisë intelektuale, ose rregullat e platformës."
+        },
+        {
+          title: "5. Sjellje e Ndaluar",
+          body:
+            "Ju pranoni që të mos publikoni informacione mashtruese, oferta të paligjshme, përmbajtje të dëmshme, spam, malware ose komunikime abuzuese. Përpjekjet për të shmangur moderimin ose për t'u impersonuar janë të ndaluara."
+        },
+        {
+          title: "6. Vlerësimet dhe Ndërveprimet e Përdoruesve",
+          body:
+            "Vlerësimet duhet të reflektojnë përvoja reale dhe të respektojnë standardet e sjelljes. Ne mund të heqim vlerësime ose komente që janë mashtruese, abuzuese, diskriminuese, ose të papërshtatshme."
+        },
+        {
+          title: "7. Pagesat dhe Paketat",
+          body:
+            "Nëse ofrohen funksione të paguara ose paketa, kushtet e faturimit shfaqen në procesin e pagesës. Përveç nëse theksohet ndryshe, tarifat nuk janë të rimbursueshme pas aktivizimit të shërbimit."
+        },
+        {
+          title: "8. Pronësia Intelektuale",
+          body:
+            "Dizajni i platformës, kodi, marka dhe përmbajtja origjinale mbrohen nga ligjet përkatëse të pronësisë intelektuale. Ju mbani pronësinë e përmbajtjes që ngarkoni dhe na jepni një licencë të kufizuar për ta shfaqur dhe përpunuar për funksionimin e platformës."
+        },
+        {
+          title: "9. Përjashtim dhe Kufizim i Përgjegjësisë",
+          body:
+            "Platforma ofrohet \"as is\" dhe \"as available\". Ne nuk jemi përgjegjës për humbjet që rrjedhin nga listimet e palëve të treta, veprimet e ofruesve, probleme të disponueshmërisë, rezultate rezervimesh, ose transaksione midis përdoruesve."
+        },
+        {
+          title: "10. Ndalim dhe Përfundim",
+          body:
+            "Ne mund të pezullrojmë ose të përfundojmë llogari ose listime që shkelin këto Kushte, krijojnë rrezik ligjor ose sigurie, ose dëmtojnë integritetin e platformës."
+        },
+        {
+          title: "11. Ndryshimet në Këto Kushte",
+          body:
+            "Ne mund të përditësojmë këto Kushte periodikisht. Përdorimi i mëtejshëm i platformës pas përditësimeve do të nënkuptojë pranimin e versionit të rishikuar."
+        },
+        {
+          title: "12. Kontakt",
+          body:
+            "Për pyetje rreth këtyre Kushteve, kontaktoni administratën e platformës përmes kanaleve zyrtare të mbështetjes ose komunikimit që gjenden në platformë."
+        }
+      ]
   }
 };

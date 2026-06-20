@@ -15,10 +15,15 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
   const [language, setLanguageState] = useState<Language>("al");
 
   useEffect(() => {
-    // Ensure localStorage has a default of Albanian on first load
+    // Initialize language from localStorage if present
     try {
       if (typeof localStorage !== "undefined") {
-        localStorage.setItem("language", "al");
+        const saved = localStorage.getItem("language") as Language | null;
+        if (saved === "en" || saved === "al") {
+          setLanguageState(saved);
+        } else {
+          localStorage.setItem("language", "al");
+        }
       }
     } catch (e) {
       // noop

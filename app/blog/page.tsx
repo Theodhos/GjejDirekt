@@ -64,8 +64,7 @@ export default function BlogPage() {
                         </div>
 
                         <h1 className="display-font text-6xl font-black leading-[1.05] tracking-tighter sm:text-8xl lg:text-9xl animate-in fade-in slide-in-from-bottom-8 duration-1000 text-white drop-shadow-[0_15px_30px_rgba(0,0,0,0.35)]">
-                            {t.blog.heroTitle} <br />
-                            <span className="italic font-light text-white/90">{t.blog.heroSubtitle}</span>
+                            {t.blog.heroTitle}
                         </h1>
 
                         <p className="mx-auto mt-12 max-w-2xl text-lg text-slate-200 sm:text-2xl font-medium leading-relaxed animate-in fade-in slide-in-from-bottom-12 duration-1200">
