@@ -34,7 +34,6 @@ export const categories: CategoryDefinition[] = [
     label: "Restorante",
     aliases: ["restaurants", "restaurant", "food", "dining", "cafe", "bar"],
     image: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1200&q=80",
-    tags: ["Wifi", "Outdoor Seating", "Vegan Options", "Rezervime", "Parking", "Live Music"],
     tags: ["Wi-Fi", "Ulje jashtë", "Opsione vegane", "Rezervime", "Parkim", "Muzikë live"],
     subcategories: [
       { value: "tradicional", label: "Tradicional" },
@@ -49,7 +48,6 @@ export const categories: CategoryDefinition[] = [
     label: "Atraksione",
     aliases: ["attractions", "attraction", "things to do", "things-to-do", "experience", "experiences", "tour", "tours"],
     image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80",
-    tags: ["Entry Fee", "Family Friendly", "Guide Available", "Parking"],
     tags: ["Biletë hyrjeje", "Përshtatshëm për familje", "Udhëzues i disponueshëm", "Parkim"],
     subcategories: [
       { value: "natyre", label: "Natyrë", aliases: ["nature"] },
@@ -64,8 +62,7 @@ export const categories: CategoryDefinition[] = [
     label: "Evente",
     aliases: ["events", "event", "festival", "concerts", "concert"],
     image: "https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&w=1200&q=80",
-    tags: ["Tickets Needed", "Outdoor", "Indoor", "Parking"],
-      tags: ["Nevojiten bileta", "Në natyrë", "Brenda", "Parkim"],
+    tags: ["Nevojiten bileta", "Në natyrë", "Brenda", "Parkim"],
     subcategories: [
       { value: "koncerte", label: "Koncerte", aliases: ["concerts"] },
       { value: "festivale", label: "Festivale", aliases: ["festivals"] },
@@ -79,7 +76,7 @@ export const categories: CategoryDefinition[] = [
     label: "Shërbime Turistike",
     aliases: ["tourism services", "services", "tour services", "travel services", "travel agencies", "guide"],
     image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1200&q=80",
-    tags: ["English Speaking", "Licensed Guide", "Group Discount"],
+    tags: ["Flet anglisht", "Udhëzues i licencuar", "Zbritje për grupe"],
     subcategories: [
       { value: "guida", label: "Guida", aliases: ["guides"] },
       { value: "agjenci", label: "Agjenci", aliases: ["agency", "agencies"] },
@@ -93,8 +90,7 @@ export const categories: CategoryDefinition[] = [
     label: "Produkte Lokale",
     aliases: ["local products", "products", "souvenirs", "artisan", "handmade"],
     image: "https://images.unsplash.com/photo-1516685018646-549d9f3a1f7f?auto=format&fit=crop&w=1200&q=80",
-    tags: ["Handmade", "Organic", "Shipping Available"],
-      tags: ["Artizanal", "Organik", "Transport i disponueshëm"],
+    tags: ["Artizanal", "Organik", "Transport i disponueshëm"],
     subcategories: [
       { value: "artizanat", label: "Artizanat", aliases: ["handmade"] },
       { value: "ushqimore", label: "Ushqimore", aliases: ["groceries"] },
@@ -108,8 +104,7 @@ export const categories: CategoryDefinition[] = [
     label: "Transport",
     aliases: ["transportation", "transfers", "car rental", "transfer", "taxi", "boat"],
     image: "https://images.unsplash.com/photo-1504215680853-026ed2a45def?auto=format&fit=crop&w=1200&q=80",
-    tags: ["AC", "English Speaking Driver", "Airport Pickup"],
-      tags: ["AC", "Shofer që flet anglisht", "Marrje në aeroport"],
+    tags: ["AC", "Shofer që flet anglisht", "Marrje në aeroport"],
     subcategories: [
       { value: "aeroport", label: "Aeroport", aliases: ["airport transfer", "airport"] },
       { value: "makine-me-qira", label: "Makina me Qira", aliases: ["car rental"] },
