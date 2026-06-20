@@ -31,11 +31,7 @@ export default function BlogPage() {
 
     const heroPost = posts[0];
 
-    const blogFallbacks = [
-        { slug: "sample-1", title: "Discover the Hidden Gems of the Albanian Riviera", excerpt: "From secret beaches to ancient ruins, explore the best kept secrets of the coast.", createdAt: new Date().toISOString() },
-        { slug: "sample-2", title: "A Culinary Journey Through Tirana's Best Eateries", excerpt: "Taste the evolution of Albanian cuisine in the heart of the capital.", createdAt: new Date().toISOString() },
-        { slug: "sample-3", title: "Hiking the Accursed Mountains: A Practical Guide", excerpt: "Everything you need to know for a safe and breathtaking mountain adventure.", createdAt: new Date().toISOString() }
-    ];
+    const blogFallbacks = t.blog.fallbacks || [];
 
     return (
         <main className="bg-white">
@@ -64,14 +60,12 @@ export default function BlogPage() {
                     <div className="max-w-5xl">
                        <div className="mb-8 inline-flex items-center gap-2 rounded-full bg-brand-500/20 border border-brand-500/30 backdrop-blur-md px-6 py-2 text-xs font-black uppercase tracking-[0.4em] text-whitew   animate-in fade-in slide-in-from-bottom-4 duration-700">
                             <Sparkles className="w-4 h-4" />
-                            {language === 'en' ? 'The Journal' : 'Revista'}
+                            {t.blog.journalLabel}
                         </div>
 
                         <h1 className="display-font text-6xl font-black leading-[1.05] tracking-tighter sm:text-8xl lg:text-9xl animate-in fade-in slide-in-from-bottom-8 duration-1000 text-white drop-shadow-[0_15px_30px_rgba(0,0,0,0.35)]">
-                            {language === 'en' ? 'Stories that' : 'Histori që'} <br />
-                            <span className="italic font-light text-white/90">
-                                {language === 'en' ? 'Inspire' : 'Inspirojnë'}
-                            </span>
+                            {t.blog.heroTitle} <br />
+                            <span className="italic font-light text-white/90">{t.blog.heroSubtitle}</span>
                         </h1>
 
                         <p className="mx-auto mt-12 max-w-2xl text-lg text-slate-200 sm:text-2xl font-medium leading-relaxed animate-in fade-in slide-in-from-bottom-12 duration-1200">
@@ -138,11 +132,11 @@ export default function BlogPage() {
                                             <div className="flex items-center gap-4 text-[11px] font-black text-slate-400 uppercase tracking-widest mb-6">
                                                 <span className="flex items-center gap-2">
                                                     <Calendar className="w-3.5 h-3.5 text-brand-600" />
-                                                    {post.createdAt ? new Date(post.createdAt).toLocaleDateString(language === 'en' ? 'en-US' : 'sq-AL', { month: 'short', day: 'numeric', year: 'numeric' }) : "Recently"}
+                                                    {post.createdAt ? new Date(post.createdAt).toLocaleDateString(language === 'en' ? 'en-US' : 'sq-AL', { month: 'short', day: 'numeric', year: 'numeric' }) : t.blog.recently}
                                                 </span>
                                                 <span className="flex items-center gap-2">
                                                     <User className="w-3.5 h-3.5 text-brand-600" />
-                                                    {post.author?.name || "Editor"}
+                                                    {post.author?.name || t.blog.authorEditor}
                                                 </span>
                                             </div>
                                             <h3 className="text-3xl font-black text-slate-950 mb-6 line-clamp-2 leading-tight group-hover:text-brand-700 transition duration-300">
@@ -153,7 +147,7 @@ export default function BlogPage() {
                                             </p>
                                             <div className="mt-auto pt-8 border-t border-slate-100">
                                                 <Link href={`/blog/${post.slug}`} className="inline-flex items-center gap-3 text-sm font-black text-slate-950 transition-all hover:gap-6 group-hover:text-brand-700">
-                                                    {language === 'en' ? 'Explore Story' : 'Eksploro Historinë'}
+                                                    {t.blog.readStory}
                                                     <ArrowRight className="w-5 h-5" />
                                                 </Link>
                                             </div>

@@ -144,8 +144,40 @@ export const translations = {
         heroDesc: "Discover curated guides, insider tips, and breathtaking stories from the heart of Albania.",
         archiveTitle: "The Archive",
         latestPub: "Latest Publications",
-        readStory: "Read Story",
-        loadMore: "Load More Stories"
+      readStory: "Read Story",
+      loadMore: "Load More Stories",
+      journalLabel: "The Journal",
+      fallbacks: [
+        {
+          slug: "sample-1",
+          title: "Discover the Hidden Gems of the Albanian Riviera",
+          excerpt: "From secret beaches to ancient ruins, explore the best kept secrets of the coast.",
+          createdAt: new Date().toISOString()
+        },
+        {
+          slug: "sample-2",
+          title: "A Culinary Journey Through Tirana's Best Eateries",
+          excerpt: "Taste the evolution of Albanian cuisine in the heart of the capital.",
+          createdAt: new Date().toISOString()
+        },
+        {
+          slug: "sample-3",
+          title: "Hiking the Accursed Mountains: A Practical Guide",
+          excerpt: "Everything you need to know for a safe and breathtaking mountain adventure.",
+          createdAt: new Date().toISOString()
+        }
+      ],
+      recently: "Recently",
+      authorEditor: "Editor"
+    },
+    listings: {
+      title: "Browse all listings",
+      subtitle: "All services and categories",
+      description: "Explore the latest approved offerings with city, service, guest count and contact details all in one place.",
+      latestTitle: "Latest approved listings",
+      noApprovedFound: "No approved listings found.",
+      noApprovedFoundSub: "If you have added a listing recently, it may still be waiting for approval.",
+      verifiedBadge: "Verified and reviewed content"
     },
     addListing: {
         title: "Submit your Service",
@@ -385,7 +417,39 @@ export const translations = {
         archiveTitle: "Arkiva",
         latestPub: "Publikimet e Fundit",
         readStory: "Lexo Historinë",
-        loadMore: "Ngarko më shumë histori"
+        loadMore: "Ngarko më shumë histori",
+      journalLabel: "Revista",
+      fallbacks: [
+        {
+          slug: "sample-1",
+          title: "Zbuloni Thesarët e Fshehtë të Rivierës Shqiptare",
+          excerpt: "Nga plazhet e fshehta te rrënojat e lashta, eksploroni sekretet më të mira të bregdetit.",
+          createdAt: new Date().toISOString()
+        },
+        {
+          slug: "sample-2",
+          title: "Një Udhëtim Kulinar nëpër Restorantet më të Mira të Tiranës",
+          excerpt: "Shijoni evolucionin e kuzhinës shqiptare në zemër të kryeqytetit.",
+          createdAt: new Date().toISOString()
+        },
+        {
+          slug: "sample-3",
+          title: "Ngjitja e Bjeshkëve të Nemuna: Një Udhëzues Praktik",
+          excerpt: "Gjithçka që duhet të dini për një aventurë malore të sigurt dhe mbresëlënëse.",
+          createdAt: new Date().toISOString()
+        }
+      ],
+      recently: "Së fundmi",
+      authorEditor: "Redaktor"
+    },
+    listings: {
+      title: "Shfleto të gjitha listimet",
+      subtitle: "Të gjitha shërbimet dhe kategoritë",
+      description: "Zbuloni ofertat e fundit të miratuara me qytet, shërbim, numër të mysafirëve dhe detaje kontakti të gjitha në një vend.",
+      latestTitle: "Listimet e fundit të miratuara",
+      noApprovedFound: "Nuk u gjet asnjë listim i miratuar.",
+      noApprovedFoundSub: "Nëse keni shtuar një listim së fundmi, ai mund të jetë ende duke pritur miratimin.",
+      verifiedBadge: "Përmbajtje e verifikuar dhe e shqyrtuar"
     },
     addListing: {
         title: "Dorëzoni Shërbimin tuaj",
