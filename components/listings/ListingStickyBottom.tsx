@@ -1,6 +1,7 @@
 "use client";
 
 import { useLanguage } from "@/context/LanguageContext";
+import { translations } from "@/lib/dictionary";
 import { Phone, MessageCircle } from "lucide-react";
 
 interface ListingStickyBottomProps {
@@ -19,6 +20,7 @@ export default function ListingStickyBottom({
   categoryLabel
 }: ListingStickyBottomProps) {
   const { language } = useLanguage();
+  const t = translations[language];
 
   if (!phone && !whatsappHref) return null;
 
@@ -42,7 +44,7 @@ export default function ListingStickyBottom({
             className="flex items-center justify-center gap-2 h-12 w-full bg-brand-500 text-slate-950 rounded-2xl font-black text-xs hover:scale-102 active:scale-98 transition-all shadow-md"
           >
             <Phone className="w-4 h-4" />
-            <span>{language === 'en' ? 'Call' : 'Telefono'}</span>
+            <span>{t.listing.call}</span>
           </a>
         )}
       </div>

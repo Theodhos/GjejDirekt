@@ -5,6 +5,7 @@ import Image from "next/image";
 import Lightbox from "@/components/ui/Lightbox";
 import { Maximize2, Heart, ArrowLeft, Share2, LayoutGrid, ChevronLeft, ChevronRight } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
+import { translations } from "@/lib/dictionary";
 import toast from "react-hot-toast";
 
 interface ListingGalleryProps {
@@ -68,11 +69,11 @@ export default function ListingGallery({ images, listing }: ListingGalleryProps)
       setFavorited(Boolean(data.favorited));
       toast.success(
         data.favorited 
-          ? (language === 'en' ? "Saved to favorites" : "U ruajt te të preferuarat") 
-          : (language === 'en' ? "Removed from favorites" : "U hoq nga të preferuarat")
+          ? translations[language].listing.savedToFavorites
+          : translations[language].listing.removedFromFavorites
       );
     } catch (err) {
-      toast.error(language === 'en' ? "Failed to update favorites" : "Dështoi përditësimi");
+      toast.error(translations[language].listing.updateFavoritesFailed);
     }
   };
 
@@ -107,9 +108,9 @@ export default function ListingGallery({ images, listing }: ListingGalleryProps)
           document.execCommand("copy");
           document.body.removeChild(textarea);
         }
-        toast.success(language === 'en' ? 'Link copied to clipboard!' : 'Linku u kopjua!');
+        toast.success(translations[language].listing.linkCopied);
       } catch (err) {
-        toast.error(language === 'en' ? 'Failed to copy link' : 'Dështoi kopjimi i linkut');
+        toast.error(translations[language].listing.linkCopyFailed);
       }
     }
   };
@@ -227,7 +228,7 @@ export default function ListingGallery({ images, listing }: ListingGalleryProps)
             className="absolute bottom-6 right-6 px-4 py-2.5 bg-white text-slate-900 rounded-xl shadow-lg border border-slate-200 font-bold text-xs flex items-center gap-2 hover:bg-slate-50 transition-all duration-200 active:scale-95 z-20"
           >
             <LayoutGrid className="w-4 h-4 text-slate-700" />
-            <span>{language === 'en' ? 'Show all photos' : 'Shiko të gjitha fotot'}</span>
+            <span>{translations[language].listing.showAllPhotos}</span>
           </button>
         )}
       </div>

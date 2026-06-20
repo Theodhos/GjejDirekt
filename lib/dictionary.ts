@@ -123,6 +123,12 @@ export const translations = {
         formTitle: "Service Details",
         formDesc: "Provide the essential information about your listing."
     },
+    auth: {
+      signedInSuccess: "Signed in successfully!",
+      googleAuthFailed: "Google authentication failed",
+      googleUnauthorizedDomain: "Google sign-in failed because this domain is not authorized in Firebase. Add your Vercel domain to Firebase Auth authorized domains.",
+      continueWithGoogle: "Continue with Google"
+    },
     host: {
         spotlight: "Host Spotlight",
         title: "Become a host and share the beauty of Albania.",
@@ -141,7 +147,11 @@ export const translations = {
       linkCopyFailed: "Failed to copy link",
       verified: "VERIFIED",
       nightSuffix: "night",
-      personSuffix: "person"
+      personSuffix: "person",
+      savedToFavorites: "Saved to favorites",
+      removedFromFavorites: "Removed from favorites",
+      updateFavoritesFailed: "Failed to update favorites",
+      showAllPhotos: "Show all photos"
     }
   },
   al: {
@@ -266,6 +276,12 @@ export const translations = {
         formTitle: "Detajet e Shërbimit",
         formDesc: "Jepni informacionin thelbësor për listimin tuaj."
     },
+    auth: {
+      signedInSuccess: "Hyrja u krye me sukses!",
+      googleAuthFailed: "Autentikimi me Google dështoi",
+      googleUnauthorizedDomain: "Hyrja me Google dështoi sepse ky domen nuk është i autorizuar në Firebase. Shtoni domenin e Vercel tek domenet e autorizuara të Firebase Auth.",
+      continueWithGoogle: "Vazhdoni me Google"
+    },
     host: {
         spotlight: "Fokus te Host-i",
         title: "Bëhu host dhe ndaj bukurinë e Shqipërisë.",
@@ -284,7 +300,11 @@ export const translations = {
       linkCopyFailed: "Dështoi kopjimi i linkut",
       verified: "VERIFIKUAR",
       nightSuffix: "natë",
-      personSuffix: "person"
+      personSuffix: "person",
+      savedToFavorites: "U ruajt te të preferuarat",
+      removedFromFavorites: "U hoq nga të preferuarat",
+      updateFavoritesFailed: "Dështoi përditësimi",
+      showAllPhotos: "Shiko të gjitha fotot"
     }
   }
 };

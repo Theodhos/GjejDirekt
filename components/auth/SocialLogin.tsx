@@ -7,6 +7,7 @@ import toast from "react-hot-toast";
 import { auth, firebaseEnabled } from "@/lib/firebase";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { useLanguage } from "@/context/LanguageContext";
+import { translations } from "@/lib/dictionary";
 
 export default function SocialLogin() {
   const { language } = useLanguage();
@@ -42,7 +43,7 @@ export default function SocialLogin() {
         throw new Error(data.error || "Failed to sync with server");
       }
 
-      toast.success(language === 'en' ? "Signed in successfully!" : "Hyrja u krye me sukses!");
+      toast.success(translations[language].auth.signedInSuccess);
       window.dispatchEvent(new Event("auth-changed"));
       
       // Redirect based on role
@@ -52,10 +53,8 @@ export default function SocialLogin() {
     } catch (error: any) {
       console.error("Google Auth Error:", error);
       const message = error?.code === "auth/unauthorized-domain"
-        ? language === 'en'
-          ? "Google sign-in failed because this domain is not authorized in Firebase. Add your Vercel domain to Firebase Auth authorized domains."
-          : "Hyrja me Google dështoi sepse ky domen nuk është i autorizuar në Firebase. Shtoni domenin e Vercel tek domenet e autorizuara të Firebase Auth."
-        : error.message || (language === 'en' ? "Google authentication failed" : "Autentikimi me Google dështoi");
+        ? translations[language].auth.googleUnauthorizedDomain
+        : error.message || translations[language].auth.googleAuthFailed;
       toast.error(message);
     } finally {
       setLoading(false);
@@ -73,7 +72,7 @@ export default function SocialLogin() {
       ) : (
         <Image src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" width={20} height={20} />
       )}
-      {language === 'en' ? 'Continue with Google' : 'Vazhdoni me Google'}
+      {translations[language].auth.continueWithGoogle}
     </button>
   );
 }
