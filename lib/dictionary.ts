@@ -26,6 +26,11 @@ export const translations = {
     },
     common: {
         readMore: "Read More",
+        keyword: "Keyword",
+        anyCity: "Any city...",
+        priceRange: "Price Range",
+        minRating: "Minimum Rating",
+        showResults: "Show results",
         viewAll: "View All",
         explore: "Explore",
         loading: "Loading...",
@@ -151,6 +156,11 @@ export const translations = {
     },
     common: {
         readMore: "Lexo më shumë",
+        keyword: "Fjala kyçe",
+        anyCity: "Çdo qytet...",
+        priceRange: "Gama e Çmimit",
+        minRating: "Vlerësimi Minimal",
+        showResults: "Shfaq rezultatet",
         viewAll: "Shiko të gjitha",
         explore: "Eksploro",
         loading: "Duke u ngarkuar...",

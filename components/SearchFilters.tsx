@@ -82,7 +82,7 @@ export default function SearchFilters() {
           className="h-11 px-4 rounded-2xl bg-slate-950 text-white text-xs font-black uppercase tracking-widest inline-flex items-center gap-2"
         >
           <SlidersHorizontal className="w-4 h-4" />
-          {language === "en" ? "Filters" : "Filtra"}
+          {t.services.filters}
         </button>
       </div>
     </div>
@@ -91,14 +91,14 @@ export default function SearchFilters() {
       <div className="flex items-center justify-between">
         <h3 className="text-xl font-black text-slate-950 flex items-center gap-2">
           <SlidersHorizontal className="w-5 h-5 text-brand-600" />
-          {language === 'en' ? 'Filters' : 'Filtrat'}
+          {t.services.filters}
         </h3>
         <button 
           onClick={handleReset}
           className="text-[10px] font-black uppercase tracking-widest text-slate-600 hover:text-brand-600 transition flex items-center gap-1"
         >
           <RotateCcw className="w-3 h-3" />
-          {language === 'en' ? 'Clear all filters' : 'Pastro te gjithe filtrat'}
+          {t.services.reset}
         </button>
       </div>
 
@@ -107,7 +107,7 @@ export default function SearchFilters() {
         <div className="space-y-3">
           <label className="text-[10px] font-black uppercase tracking-widest text-slate-900 ml-2 flex items-center gap-2">
             <Search className="w-3 h-3" />
-            {language === 'en' ? 'Keyword' : 'Fjala kyçe'}
+            {t.common.keyword}
           </label>
           <input 
             type="text"
@@ -128,7 +128,7 @@ export default function SearchFilters() {
             type="text"
             value={location}
             onChange={(e) => setLocation(e.target.value)}
-            placeholder={language === 'en' ? 'Any city...' : 'Çdo qytet...'}
+            placeholder={t.common.anyCity}
             className="w-full h-14 px-5 rounded-2xl bg-slate-50 border-2 border-transparent focus:border-brand-500 focus:bg-white transition-all font-bold text-slate-950 text-sm shadow-inner"
           />
         </div>
@@ -137,7 +137,7 @@ export default function SearchFilters() {
         <div className="space-y-3">
           <label className="text-[10px] font-black uppercase tracking-widest text-slate-900 ml-2 flex items-center gap-2">
             <Tag className="w-3 h-3" />
-            {language === 'en' ? 'Category' : 'Kategoria'}
+            {t.common.category}
           </label>
           <select 
             value={selectedCategory}
@@ -160,7 +160,7 @@ export default function SearchFilters() {
         {selectedCategory && (
           <div className="space-y-3 animate-in slide-in-from-top-2 duration-300">
             <label className="text-[10px] font-black uppercase tracking-widest text-slate-900 ml-2">
-              {language === 'en' ? 'Subcategory' : 'Nënkategoria'}
+              {t.common.subcategory}
             </label>
             <div className="flex flex-col gap-2">
               <button 
@@ -192,7 +192,7 @@ export default function SearchFilters() {
         <div className="space-y-3">
           <label className="text-[10px] font-black uppercase tracking-widest text-slate-900 ml-2 flex items-center gap-2">
             <Euro className="w-3 h-3" />
-            {language === 'en' ? 'Price Range' : 'Gama e Çmimit'}
+            {t.common.priceRange}
           </label>
           <div className="flex items-center gap-3">
             <input 
@@ -219,7 +219,7 @@ export default function SearchFilters() {
         <div className="space-y-3">
           <label className="text-[10px] font-black uppercase tracking-widest text-slate-900 ml-2 flex items-center gap-2">
             <Star className="w-3 h-3" />
-            {language === 'en' ? 'Minimum Rating' : 'Vlerësimi Minimal'}
+            {t.common.minRating}
           </label>
           <div className="flex gap-2">
             {[1, 2, 3, 4, 5].map((star) => (
@@ -248,7 +248,7 @@ export default function SearchFilters() {
       {isPending && (
         <div className="flex items-center justify-center py-4 gap-2 text-brand-600 animate-pulse">
           <Loader2 className="w-4 h-4 animate-spin" />
-          <span className="text-[10px] font-black uppercase tracking-widest">Updating...</span>
+          <span className="text-[10px] font-black uppercase tracking-widest">{t.common.loading}</span>
         </div>
       )}
     </div>
@@ -262,7 +262,7 @@ export default function SearchFilters() {
           <div className="mb-5 flex items-center justify-between">
             <h3 className="text-lg font-black text-slate-950 flex items-center gap-2">
               <SlidersHorizontal className="w-5 h-5 text-brand-600" />
-              {language === "en" ? "Filters" : "Filtrat"}
+              {t.services.filters}
             </h3>
             <button onClick={() => setMobileFiltersOpen(false)} className="p-2 rounded-xl bg-slate-100 text-slate-700">
               <X className="w-4 h-4" />
@@ -271,25 +271,25 @@ export default function SearchFilters() {
 
           <div className="space-y-6">
             <div className="space-y-2">
-              <label className="text-[10px] font-black uppercase tracking-widest text-slate-900 ml-1">{language === 'en' ? 'Location' : 'Vendndodhja'}</label>
-              <input type="text" value={location} onChange={(e) => setLocation(e.target.value)} placeholder={language === 'en' ? 'Any city...' : 'Cdo qytet...'} className="w-full h-12 px-4 rounded-xl bg-slate-50 border border-slate-200 focus:border-brand-500 outline-none text-sm font-semibold" />
+              <label className="text-[10px] font-black uppercase tracking-widest text-slate-900 ml-1">{t.common.location}</label>
+              <input type="text" value={location} onChange={(e) => setLocation(e.target.value)} placeholder={t.common.anyCity} className="w-full h-12 px-4 rounded-xl bg-slate-50 border border-slate-200 focus:border-brand-500 outline-none text-sm font-semibold" />
             </div>
             <div className="space-y-2">
-              <label className="text-[10px] font-black uppercase tracking-widest text-slate-900 ml-1">{language === 'en' ? 'Category' : 'Kategoria'}</label>
+              <label className="text-[10px] font-black uppercase tracking-widest text-slate-900 ml-1">{t.common.category}</label>
               <select value={selectedCategory} onChange={(e) => { const val = e.target.value; setSelectedCategory(val); setSelectedSubcategory(""); applyFilters({ category: val, subcategory: "" }); }} className="w-full h-12 px-4 rounded-xl bg-slate-50 border border-slate-200 focus:border-brand-500 outline-none text-sm font-semibold">
                 <option value="">{t.services.allCategories}</option>
                 {categories.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}
               </select>
             </div>
             <div className="space-y-2">
-              <label className="text-[10px] font-black uppercase tracking-widest text-slate-900 ml-1">{language === 'en' ? 'Price range' : 'Gama e cmimit'}</label>
+              <label className="text-[10px] font-black uppercase tracking-widest text-slate-900 ml-1">{t.common.priceRange}</label>
               <div className="flex items-center gap-2">
-                <input type="number" value={minPrice} onChange={(e) => setMinPrice(e.target.value)} onBlur={() => applyFilters({ minPrice })} placeholder={language === 'en' ? 'Min price' : 'Cmimi min'} className="w-full h-12 px-4 rounded-xl bg-slate-50 border border-slate-200 focus:border-brand-500 outline-none text-sm font-semibold" />
-                <input type="number" value={maxPrice} onChange={(e) => setMaxPrice(e.target.value)} onBlur={() => applyFilters({ maxPrice })} placeholder={language === 'en' ? 'Max price' : 'Cmimi max'} className="w-full h-12 px-4 rounded-xl bg-slate-50 border border-slate-200 focus:border-brand-500 outline-none text-sm font-semibold" />
+                <input type="number" value={minPrice} onChange={(e) => setMinPrice(e.target.value)} onBlur={() => applyFilters({ minPrice })} placeholder={t.services.allRegions} className="w-full h-12 px-4 rounded-xl bg-slate-50 border border-slate-200 focus:border-brand-500 outline-none text-sm font-semibold" />
+                <input type="number" value={maxPrice} onChange={(e) => setMaxPrice(e.target.value)} onBlur={() => applyFilters({ maxPrice })} placeholder={t.common.priceRange} className="w-full h-12 px-4 rounded-xl bg-slate-50 border border-slate-200 focus:border-brand-500 outline-none text-sm font-semibold" />
               </div>
             </div>
             <div className="space-y-2">
-              <label className="text-[10px] font-black uppercase tracking-widest text-slate-900 ml-1">{language === 'en' ? 'Minimum rating' : 'Vleresimi minimal'}</label>
+              <label className="text-[10px] font-black uppercase tracking-widest text-slate-900 ml-1">{t.common.minRating}</label>
               <div className="flex gap-2">
                 {[1, 2, 3, 4, 5].map((star) => (
                   <button key={star} onClick={() => { const val = String(star); setMinRating(val); applyFilters({ minRating: val }); }} className={`flex-1 h-10 rounded-xl flex items-center justify-center transition-all ${Number(minRating) === star ? 'bg-amber-500 text-white shadow-lg' : 'bg-slate-100 text-slate-500'}`}>
@@ -302,8 +302,8 @@ export default function SearchFilters() {
           </div>
 
           <div className="mt-6 grid grid-cols-2 gap-3">
-            <button onClick={handleReset} className="h-11 rounded-xl bg-slate-100 text-slate-700 text-[10px] font-black uppercase tracking-widest">{language === 'en' ? 'Clear all' : 'Pastro te gjitha'}</button>
-            <button onClick={() => setMobileFiltersOpen(false)} className="h-11 rounded-xl bg-slate-950 text-white text-xs font-black uppercase tracking-widest">{language === 'en' ? 'Show results' : 'Shfaq rezultatet'}</button>
+            <button onClick={handleReset} className="h-11 rounded-xl bg-slate-100 text-slate-700 text-[10px] font-black uppercase tracking-widest">{t.services.reset}</button>
+            <button onClick={() => setMobileFiltersOpen(false)} className="h-11 rounded-xl bg-slate-950 text-white text-xs font-black uppercase tracking-widest">{t.common.showResults}</button>
           </div>
         </div>
       </div>
