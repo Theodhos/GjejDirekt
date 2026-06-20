@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import { Compass, Menu, X, PlusCircle } from "lucide-react";
 import Button from "@/components/ui/Button";
@@ -88,10 +89,13 @@ export default function Header() {
     <header className="sticky top-0 z-50 border-b border-slate-900/5 bg-white/80 backdrop-blur-2xl">
       <div className="page-shell flex items-center justify-between gap-4 py-4">
         <Link href="/" className="flex items-center" onClick={() => setMobileOpen(false)}>
-          <img 
-            src="/uploads/Logo-black.png" 
-            alt="TripShqip Logo" 
+          <Image
+            src="/uploads/Logo-black.png"
+            alt="TripShqip Logo"
+            width={160}
+            height={48}
             className="h-10 md:h-12 w-auto object-contain"
+            priority
           />
         </Link>
 
