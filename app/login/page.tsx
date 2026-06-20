@@ -24,27 +24,25 @@ export default function LoginPage() {
           />
           <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent" />
           <div className="relative z-10 h-full flex flex-col justify-end">
-            <p className="text-xs font-black uppercase tracking-[0.3em] text-brand-400 mb-6">{language === 'en' ? 'Welcome back' : 'Mirë se vini përsëri'}</p>
+            <p className="text-xs font-black uppercase tracking-[0.3em] text-brand-400 mb-6">{t.login.welcome}</p>
             <h1 className="display-font text-4xl lg:text-6xl font-black leading-tight tracking-tighter text-white">
-                {language === 'en' ? <>Sign in to <br /> Explore Albania.</> : <>Hyni për të <br /> Eksploruar Shqipërinë.</>}
+                {t.login.signInTitle.split('\n').map((line, i) => (
+                  <span key={i}>
+                    {line}
+                    <br />
+                  </span>
+                ))}
             </h1>
             <p className="mt-6 text-lg text-slate-300 leading-relaxed max-w-sm">
-                {language === 'en' 
-                    ? 'Access your personalized dashboard to manage listings, save favorites, and share your experiences.' 
-                    : 'Aksesoni panelin tuaj të personalizuar për të menaxhuar listimet, ruajtur të preferuarat dhe ndarë përvojat tuaja.'}
+                {t.login.description}
             </p>
             <div className="mt-10 grid gap-3 sm:grid-cols-2">
-                {[
-                    language === 'en' ? 'Saved trips' : 'Udhëtime të ruajtura', 
-                    language === 'en' ? 'Moderation tools' : 'Mjetet e moderimit', 
-                    language === 'en' ? 'Reviews' : 'Vlerësimet', 
-                    language === 'en' ? 'Listing management' : 'Menaxhimi i listimeve'
-                ].map((item) => (
-                <div key={item} className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-md p-4">
-                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">{language === 'en' ? 'Feature' : 'Funksioni'}</p>
-                    <p className="text-xs font-bold text-white">{item}</p>
-                </div>
-                ))}
+              {t.login.features.map((item) => (
+              <div key={item} className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-md p-4">
+                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">{t.login.featureLabel}</p>
+                <p className="text-xs font-bold text-white">{item}</p>
+              </div>
+              ))}
             </div>
           </div>
         </div>
@@ -65,10 +63,10 @@ export default function LoginPage() {
             </div>
             
             <p className="mt-8 text-center text-sm text-slate-500 font-medium">
-                {language === 'en' ? "New to the platform?" : "I ri në platformë?"}{" "}
-                <Link href="/register" className="font-black text-brand-700 hover:underline">
-                    {t.nav.register}
-                </Link>
+              {t.login.newToPlatform} {" "}
+              <Link href="/register" className="font-black text-brand-700 hover:underline">
+                {t.nav.register}
+              </Link>
             </p>
           </div>
         </div>

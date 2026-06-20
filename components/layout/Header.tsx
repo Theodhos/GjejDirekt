@@ -62,7 +62,7 @@ export default function Header() {
 
   const publicLinks = [
     { href: "/", label: t.nav.home },
-    { href: "/packet", label: language === 'en' ? 'Packet' : 'Paketat' },
+    { href: "/packet", label: t.nav.packet || (language === 'en' ? 'Packet' : 'Paketat') },
     { href: "/blog", label: t.nav.blog },
     { href: "/create-listing", label: t.nav.addListing }
   ];

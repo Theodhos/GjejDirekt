@@ -22,7 +22,14 @@ export const translations = {
         login: "Login",
         register: "Register",
         logout: "Logout",
-        dashboard: "Dashboard"
+      dashboard: "Dashboard",
+      packet: "Packet",
+      explore: "Explore",
+      cities: "Cities",
+      aboutUs: "About Us",
+      faq: "FAQ",
+      terms: "Terms and Conditions",
+      privacy: "Privacy Policy"
     },
     common: {
         readMore: "Read More",
@@ -182,6 +189,22 @@ export const translations = {
       googleUnauthorizedDomain: "Google sign-in failed because this domain is not authorized in Firebase. Add your Vercel domain to Firebase Auth authorized domains.",
       continueWithGoogle: "Continue with Google"
     },
+    login: {
+      welcome: "Welcome back",
+      signInTitle: "Sign in to Explore Albania.",
+      description: "Access your personalized dashboard to manage listings, save favorites, and share your experiences.",
+      featureLabel: "Feature",
+      features: ["Saved trips", "Moderation tools", "Reviews", "Listing management"],
+      newToPlatform: "New to the platform?"
+    },
+    register: {
+      start: "Start your journey",
+      joinTitle: "Join the Community.",
+      description: "Create an account to list your services, interact with travelers, and help grow the Albanian tourism industry.",
+      benefitLabel: "Benefit",
+      benefits: ["Quick approval", "Free listing", "Direct contact", "Global reach"],
+      alreadyAccount: "Already have an account?"
+    },
     host: {
         spotlight: "Host Spotlight",
         title: "Become a host and share the beauty of Albania.",
@@ -190,6 +213,17 @@ export const translations = {
         joined: "Join 500+ local hosts",
         feature1: "Quality Trust",
         feature2: "Fast Growth"
+    },
+    footer: {
+      platformName: "Tourism Platform",
+      tagline: "Plan, review, and book the kind of trip people remember.",
+      description: "Built for travelers, hosts, and editors. A single platform for discovery, trust, and high-quality tourism listings.",
+      exploreServices: "Explore services",
+      addListing: "Add a listing",
+      getStarted: "Get started",
+      contactTitle: "Contact Us",
+      follow: "Follow",
+      rightsReserved: "All rights reserved."
     },
     listing: {
       request: "Request",
@@ -228,7 +262,14 @@ export const translations = {
         login: "Hyr",
         register: "Regjistrohu",
         logout: "Dil",
-        dashboard: "Paneli"
+      dashboard: "Paneli",
+      packet: "Paketat",
+      explore: "Eksploro",
+      cities: "Qytetet",
+      aboutUs: "Rreth Nesh",
+      faq: "Pyetje të Shpeshta",
+      terms: "Kushtet",
+      privacy: "Privatesia"
     },
     common: {
         readMore: "Lexo më shumë",
@@ -387,6 +428,22 @@ export const translations = {
       googleUnauthorizedDomain: "Hyrja me Google dështoi sepse ky domen nuk është i autorizuar në Firebase. Shtoni domenin e Vercel tek domenet e autorizuara të Firebase Auth.",
       continueWithGoogle: "Vazhdoni me Google"
     },
+    login: {
+      welcome: "Mirë se vini përsëri",
+      signInTitle: "Hyni për të Eksploruar Shqipërinë.",
+      description: "Aksesoni panelin tuaj të personalizuar për të menaxhuar listimet, ruajtur të preferuarat dhe ndarë përvojat tuaja.",
+      featureLabel: "Funksioni",
+      features: ["Udhëtime të ruajtura", "Mjetet e moderimit", "Vlerësimet", "Menaxhimi i listimeve"],
+      newToPlatform: "I ri në platformë?"
+    },
+    register: {
+      start: "Filloni udhëtimin tuaj",
+      joinTitle: "Bashkohuni me Komunitetin.",
+      description: "Krijoni një llogari për të listuar shërbimet tuaja, ndërvepruar me udhëtarët dhe ndihmuar në rritjen e industrisë së turizmit shqiptar.",
+      benefitLabel: "Përfitimi",
+      benefits: ["Miratim i shpejtë", "Listim falas", "Kontakt direkt", "Arritje globale"],
+      alreadyAccount: "Keni një llogari?"
+    },
     host: {
         spotlight: "Fokus te Host-i",
         title: "Bëhu host dhe ndaj bukurinë e Shqipërisë.",
@@ -395,6 +452,17 @@ export const translations = {
         joined: "Bashkohu me 500+ hostë lokalë",
         feature1: "Besim Cilësor",
         feature2: "Rritje e Shpejtë"
+    },
+    footer: {
+      platformName: "Platforma Turistike",
+      tagline: "Planifikoni, rishikoni dhe rezervoni llojin e udhëtimit që mbahet mend.",
+      description: "Ndertuar per udhetaret, hostet dhe editoret. Nje platforme e vetme per zbulim, besim dhe listime turistike cilesore.",
+      exploreServices: "Eksploro sherbimet",
+      addListing: "Shto nje listim",
+      getStarted: "Fillo tani",
+      contactTitle: "Na Kontaktoni",
+      follow: "Na ndiqni",
+      rightsReserved: "Te gjitha te drejtat e rezervuara."
     },
     listing: {
       request: "Kërkesë",

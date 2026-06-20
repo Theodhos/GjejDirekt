@@ -24,27 +24,25 @@ export default function RegisterPage() {
           />
           <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent" />
           <div className="relative z-10 h-full flex flex-col justify-end">
-            <p className="text-xs font-black uppercase tracking-[0.3em] text-brand-400 mb-6">{language === 'en' ? 'Start your journey' : 'Filloni udhëtimin tuaj'}</p>
+            <p className="text-xs font-black uppercase tracking-[0.3em] text-brand-400 mb-6">{t.register.start}</p>
             <h1 className="display-font text-4xl lg:text-6xl font-black leading-tight tracking-tighter text-white">
-                {language === 'en' ? <>Join the <br /> Community.</> : <>Bashkohuni me <br /> Komunitetin.</>}
+                {t.register.joinTitle.split('\n').map((line, i) => (
+                  <span key={i}>
+                    {line}
+                    <br />
+                  </span>
+                ))}
             </h1>
             <p className="mt-6 text-lg text-slate-300 leading-relaxed max-w-sm">
-                {language === 'en' 
-                    ? 'Create an account to list your services, interact with travelers, and help grow the Albanian tourism industry.' 
-                    : 'Krijoni një llogari për të listuar shërbimet tuaja, ndërvepruar me udhëtarët dhe ndihmuar në rritjen e industrisë së turizmit shqiptar.'}
+                {t.register.description}
             </p>
             <div className="mt-10 grid gap-3 sm:grid-cols-2">
-                {[
-                    language === 'en' ? 'Quick approval' : 'Miratim i shpejtë', 
-                    language === 'en' ? 'Free listing' : 'Listim falas', 
-                    language === 'en' ? 'Direct contact' : 'Kontakt direkt', 
-                    language === 'en' ? 'Global reach' : 'Arritje globale'
-                ].map((item) => (
-                <div key={item} className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-md p-4">
-                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">{language === 'en' ? 'Benefit' : 'Përfitimi'}</p>
-                    <p className="text-xs font-bold text-white">{item}</p>
-                </div>
-                ))}
+              {t.register.benefits.map((item) => (
+              <div key={item} className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-md p-4">
+                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">{t.register.benefitLabel}</p>
+                <p className="text-xs font-bold text-white">{item}</p>
+              </div>
+              ))}
             </div>
           </div>
         </div>
@@ -66,10 +64,10 @@ export default function RegisterPage() {
 
             
             <p className="mt-8 text-center text-sm text-slate-500 font-medium">
-                {language === 'en' ? "Already have an account?" : "Keni një llogari?"}{" "}
-                <Link href="/login" className="font-black text-brand-700 hover:underline">
-                    {t.nav.login}
-                </Link>
+              {t.register.alreadyAccount} {" "}
+              <Link href="/login" className="font-black text-brand-700 hover:underline">
+                {t.nav.login}
+              </Link>
             </p>
           </div>
         </div>
