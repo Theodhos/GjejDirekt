@@ -5,6 +5,7 @@ import Link from "next/link";
 import { MessageCircle, Phone, Share2, MapPin, CheckCircle, ChevronLeft, ChevronRight, Tag } from "lucide-react";
 import Card from "@/components/ui/Card";
 import { getCategoryLabel, getSubcategoryLabel } from "@/lib/constants";
+import { translations } from "@/lib/dictionary";
 import { useLanguage } from "@/context/LanguageContext";
 import { useState } from "react";
 import toast from "react-hot-toast";
@@ -71,15 +72,16 @@ export default function ListingCard({ listing }: { listing: any }) {
           document.execCommand("copy");
           document.body.removeChild(textarea);
         }
-        toast.success(language === 'en' ? 'Link copied to clipboard!' : 'Linku u kopjua!');
+        toast.success(translations[language].listing.linkCopied);
       } catch (err) {
-        toast.error(language === 'en' ? 'Failed to copy link' : 'Dështoi kopjimi i linkut');
+        toast.error(translations[language].listing.linkCopyFailed);
       }
     }
   };
 
 
   const isVerified = listing.verified !== false; // Assuming true by default if not set, or you can check a specific property
+  const t = translations[language];
 
   return (
     <Card className="group relative flex h-full flex-col overflow-hidden rounded-3xl bg-white shadow-sm transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl hover:shadow-brand-500/10 border border-slate-200">
@@ -94,11 +96,11 @@ export default function ListingCard({ listing }: { listing: any }) {
         />
         
         {/* Verified Badge - Top Left */}
-        {isVerified && (
+              {isVerified && (
           <div className="absolute left-3 top-3 z-10">
             <div className="flex items-center gap-1 rounded-lg bg-[#22c55e] px-2.5 py-1 text-xs font-black uppercase tracking-wider text-white shadow-sm">
               <CheckCircle className="h-3.5 w-3.5" />
-              VERIFIED
+              {t.listing.verified}
             </div>
           </div>
         )}
@@ -109,8 +111,8 @@ export default function ListingCard({ listing }: { listing: any }) {
             {(() => {
               const symbol = listing.currency === "ALL" || listing.currency === "LEK" ? "L" : (listing.currency || "€");
               const suffix = listing.category === "akomodim" 
-                ? `/${language === 'en' ? 'night' : 'natë'}`
-                : (listing.category === "restorante" ? `/${language === 'en' ? 'person' : 'person'}` : "");
+                ? `/${t.listing.nightSuffix}`
+                : (listing.category === "restorante" ? `/${t.listing.personSuffix}` : "");
 
               if (listing.priceFrom && listing.price) {
                 if (listing.priceFrom === listing.price) {
@@ -145,7 +147,7 @@ export default function ListingCard({ listing }: { listing: any }) {
                 );
               }
               return (
-                <span className="text-sm font-bold">{language === 'en' ? 'Request' : 'Kërkesë'}</span>
+                <span className="text-sm font-bold">{t.listing.request}</span>
               );
             })()}
           </div>
@@ -236,7 +238,7 @@ export default function ListingCard({ listing }: { listing: any }) {
             <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#3b82f6] text-white shadow-sm transition-transform hover:scale-105">
               <Phone className="h-3.5 w-3.5 fill-current" />
             </div>
-            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-600">{language === 'en' ? 'Call' : 'Telefon'}</span>
+            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-600">{t.listing.call}</span>
           </a>
           
           {/* WhatsApp */}
@@ -250,7 +252,7 @@ export default function ListingCard({ listing }: { listing: any }) {
             <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#25D366] text-white shadow-sm transition-transform hover:scale-105">
               <MessageCircle className="h-4.5 w-4.5 fill-current" />
             </div>
-            <span className="text-[10px] font-bold uppercase tracking-wider text-[#16a34a]">{language === 'en' ? 'WhatsApp' : 'WhatsApp'}</span>
+            <span className="text-[10px] font-bold uppercase tracking-wider text-[#16a34a]">{t.listing.whatsapp}</span>
           </a>
 
           {/* Share */}
@@ -261,7 +263,7 @@ export default function ListingCard({ listing }: { listing: any }) {
             <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#ef4444] text-white shadow-sm transition-transform hover:scale-105">
               <Share2 className="h-3.5 w-3.5" />
             </div>
-            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-600">{language === 'en' ? 'Share' : 'Shpërnda'}</span>
+            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-600">{t.listing.share}</span>
           </button>
         </div>
       </div>

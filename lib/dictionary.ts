@@ -48,7 +48,9 @@ export const translations = {
         travelersChoice: "Travelers choice",
         inspiration: "Inspiration to get you going",
         journal: "Journal",
-        latestStories: "Latest travel stories"
+        latestStories: "Latest travel stories",
+        nightSuffix: "night",
+        personSuffix: "person"
     },
     home: {
         editorialTitle: "Find things to do for everything you are into",
@@ -129,6 +131,17 @@ export const translations = {
         joined: "Join 500+ local hosts",
         feature1: "Quality Trust",
         feature2: "Fast Growth"
+    },
+    listing: {
+      request: "Request",
+      call: "Call",
+      whatsapp: "WhatsApp",
+      share: "Share",
+      linkCopied: "Link copied to clipboard!",
+      linkCopyFailed: "Failed to copy link",
+      verified: "VERIFIED",
+      nightSuffix: "night",
+      personSuffix: "person"
     }
   },
   al: {
@@ -178,7 +191,9 @@ export const translations = {
         travelersChoice: "Zgjedhja e udhëtarëve",
         inspiration: "Inspirim për të filluar",
         journal: "Revista",
-        latestStories: "Historitë e fundit të udhëtimit"
+        latestStories: "Historitë e fundit të udhëtimit",
+        nightSuffix: "natë",
+        personSuffix: "person"
     },
     home: {
         editorialTitle: "Gjeni aktivitete për gjithçka që ju pëlqen",
@@ -259,6 +274,17 @@ export const translations = {
         joined: "Bashkohu me 500+ hostë lokalë",
         feature1: "Besim Cilësor",
         feature2: "Rritje e Shpejtë"
+    },
+    listing: {
+      request: "Kërkesë",
+      call: "Telefon",
+      whatsapp: "WhatsApp",
+      share: "Shpërnda",
+      linkCopied: "Linku u kopjua!",
+      linkCopyFailed: "Dështoi kopjimi i linkut",
+      verified: "VERIFIKUAR",
+      nightSuffix: "natë",
+      personSuffix: "person"
     }
   }
 };
