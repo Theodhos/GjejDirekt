@@ -212,7 +212,7 @@ export default function ListingForm() {
       const galleryFiles = Array.from(formData.getAll("galleryImages")).filter((item): item is File => item instanceof File && item.size > 0).slice(0, 5);
 
       if (!bannerFile || bannerFile.size === 0) {
-        throw new Error(language === 'en' ? 'Banner image is required.' : 'Foto e banerit është e detyrueshme.');
+        throw new Error(t.forms.listing.bannerRequired);
       }
 
       const bannerUrl = await uploadImage(bannerFile);
@@ -238,7 +238,7 @@ export default function ListingForm() {
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || "Failed to create listing");
 
-      toast.success(language === 'en' ? "Listing submitted for approval" : "Listimi u dërgua për miratim");
+      toast.success(t.forms.listing.submittedForApproval);
       router.push("/dashboard");
       router.refresh();
     } catch (error) {
@@ -253,14 +253,14 @@ export default function ListingForm() {
       <div className="grid gap-4 lg:grid-cols-2">
         <Input
           name="title"
-          label={language === 'en' ? 'Title' : 'Titulli'}
-          placeholder={language === 'en' ? 'Mountain Escape Villa' : 'Villa e bukur në mal'}
+          label={t.common.title || (language === 'en' ? 'Title' : 'Titulli')}
+          placeholder={t.forms.listing.titlePlaceholder}
           required
         />
         <Input
           name="location"
-          label={language === 'en' ? 'City' : 'Qyteti'}
-          placeholder={language === 'en' ? 'Tirana' : 'Tiranë'}
+          label={t.common.city || (language === 'en' ? 'City' : 'Qyteti')}
+          placeholder={t.forms.listing.locationPlaceholder}
           value={location}
           onChange={(event) => setLocation(event.target.value)}
           list="city-list"
@@ -270,8 +270,8 @@ export default function ListingForm() {
 
       <Textarea
         name="description"
-        label={language === 'en' ? 'Description' : 'Përshkrimi'}
-        placeholder={language === 'en' ? 'Describe the experience, highlights and what makes this listing special.' : 'Përshkruani përvojën, pikat kryesore dhe çfarë e bën këtë vend unik.'}
+        label={t.common.description || (language === 'en' ? 'Description' : 'Përshkrimi')}
+        placeholder={t.common.descriptionPlaceholder || (language === 'en' ? 'Describe the experience, highlights and what makes this listing special.' : 'Përshkruani përvojën, pikat kryesore dhe çfarë e bën këtë vend unik.')}
         required
       />
 
@@ -284,9 +284,9 @@ export default function ListingForm() {
       {villages.length > 0 && (
         <Select
           name="village"
-          label={language === "en" ? "Village / Area" : "Fshati / Zona"}
+          label={t.forms.listing.villageLabel}
           options={[
-            { label: language === "en" ? "Select village" : "Zgjidh fshatin", value: "" },
+            { label: t.forms.listing.villageSelectPlaceholder, value: "" },
             ...villages.map((v) => ({ label: v, value: v }))
           ]}
           value={selectedVillage}
@@ -299,7 +299,7 @@ export default function ListingForm() {
           name="category"
           label={t.common.category}
           options={[
-            { label: language === 'en' ? 'Select a category' : 'Zgjidhni një kategori', value: '' },
+            { label: t.common.selectCategory || (language === 'en' ? 'Select a category' : 'Zgjidhni një kategori'), value: '' },
             ...categories.map((item) => ({ label: item.label, value: item.value }))
           ]}
           value={selectedCategory}
@@ -314,7 +314,7 @@ export default function ListingForm() {
           name="subcategory"
           label={t.common.subcategory}
           options={[
-            { label: language === 'en' ? 'Select a subcategory' : 'Zgjidhni një nënkategori', value: '' },
+            { label: t.common.selectSubcategory || (language === 'en' ? 'Select a subcategory' : 'Zgjidhni një nënkategori'), value: '' },
             ...subcategories.map((item) => ({ label: item.label, value: item.value }))
           ]}
           value={selectedSubcategory}
@@ -326,7 +326,7 @@ export default function ListingForm() {
       {/* Tags Section */}
       <div className="space-y-4">
         <label className="text-xs font-black uppercase tracking-widest text-slate-400 ml-4">
-          {language === 'en' ? 'Features & Amenities' : 'Karakteristikat & Pajisjet'}
+          {t.forms.listing.featuresAmenities}
         </label>
         <div className="p-8 rounded-[2.5rem] bg-slate-50 border border-slate-200">
           <div className="flex flex-wrap gap-2 mb-6">
@@ -373,7 +373,7 @@ export default function ListingForm() {
               value={customTag}
               onChange={(e) => setCustomTag(e.target.value)}
               onKeyDown={addCustomTag}
-              placeholder={language === 'en' ? 'Add custom tag... (Press Enter)' : 'Shto tag të personalizuar... (Shtyp Enter)'}
+              placeholder={t.forms.listing.addCustomTagPlaceholder}
               className="w-full h-12 pl-12 pr-6 rounded-2xl bg-white border border-slate-200 focus:border-brand-500 outline-none text-xs font-bold text-slate-950 shadow-soft"
             />
           </div>
@@ -572,7 +572,7 @@ export default function ListingForm() {
       <div className="space-y-6">
         <label className="block space-y-3 rounded-[2.5rem] border border-slate-200 bg-white p-8 shadow-sm group hover:border-brand-500 transition-all">
           <div className="flex items-center justify-between">
-            <span className="text-sm font-black uppercase tracking-widest text-slate-950">{language === 'en' ? 'Main Banner Photo' : 'Foto Kryesore (Banner)'}</span>
+            <span className="text-sm font-black uppercase tracking-widest text-slate-950">{t.forms.listing.mainBannerPhoto}</span>
             <Camera className="w-5 h-5 text-slate-400 group-hover:text-brand-500 transition-colors" />
           </div>
           <input
@@ -582,12 +582,12 @@ export default function ListingForm() {
             className="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-black file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100"
             required
           />
-          <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">{language === 'en' ? 'This is the large photo shown at the top.' : 'Kjo është fotoja e madhe që shfaqet në krye.'}</p>
+          <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">{t.forms.listing.mainBannerNote}</p>
         </label>
 
         <label className="block space-y-3 rounded-[2.5rem] border border-slate-200 bg-white p-8 shadow-sm group hover:border-brand-500 transition-all">
           <div className="flex items-center justify-between">
-            <span className="text-sm font-black uppercase tracking-widest text-slate-950">{language === 'en' ? 'Gallery (5 Photos)' : 'Galeria (5 Foto)'}</span>
+            <span className="text-sm font-black uppercase tracking-widest text-slate-950">{t.forms.listing.galleryLabel}</span>
             <Sparkles className="w-5 h-5 text-slate-400 group-hover:text-brand-500 transition-colors" />
           </div>
           <input
@@ -598,7 +598,7 @@ export default function ListingForm() {
             className="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-black file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100"
             required
           />
-          <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">{language === 'en' ? 'Please select exactly 5 photos for the best display.' : 'Ju lutem zgjidhni saktësisht 5 foto për paraqitjen më të mirë.'}</p>
+          <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">{t.forms.listing.galleryNote}</p>
         </label>
       </div>
 
@@ -610,7 +610,7 @@ export default function ListingForm() {
           disabled={loading} 
           className="w-full h-20 text-lg font-black tracking-widest uppercase shadow-2xl shadow-brand-500/20"
         >
-          {loading ? (language === 'en' ? 'Creating Service...' : 'Duke krijuar shërbimin...') : (language === 'en' ? 'Launch Listing' : 'Publiko Listimin')}
+          {loading ? t.forms.listing.creatingService : t.forms.listing.launchListing}
         </Button>
       </div>
     </form>

@@ -31,6 +31,12 @@ export const translations = {
         priceRange: "Price Range",
         minRating: "Minimum Rating",
         showResults: "Show results",
+        title: "Title",
+        city: "City",
+        description: "Description",
+        descriptionPlaceholder: "Describe the experience, highlights and what makes this listing special.",
+        selectCategory: "Select a category",
+        selectSubcategory: "Select a subcategory",
         viewAll: "View All",
         explore: "Explore",
         loading: "Loading...",
@@ -123,6 +129,29 @@ export const translations = {
         formTitle: "Service Details",
         formDesc: "Provide the essential information about your listing."
     },
+    
+    forms: {
+      listing: {
+        bannerRequired: "Banner image is required.",
+        submittedForApproval: "Listing submitted for approval",
+        titlePlaceholder: "Mountain Escape Villa",
+        locationPlaceholder: "Tirana",
+        villageLabel: "Village / Area",
+        selectVillage: "Select village",
+        featuresAmenities: "Features & Amenities",
+        addCustomTagPlaceholder: "Add custom tag... (Press Enter)",
+        contactPhone: "Contact Phone",
+        exactAddress: "Exact Address",
+        exactAddressPlaceholder: "Street name, Building nr.",
+        mainBannerPhoto: "Main Banner Photo",
+        mainBannerNote: "This is the large photo shown at the top.",
+        galleryLabel: "Gallery (5 Photos)",
+        galleryNote: "Please select exactly 5 photos for the best display.",
+        creatingService: "Creating Service...",
+        launchListing: "Launch Listing",
+        villageSelectPlaceholder: "Select village"
+      }
+    },
     auth: {
       signedInSuccess: "Signed in successfully!",
       googleAuthFailed: "Google authentication failed",
@@ -184,6 +213,12 @@ export const translations = {
         priceRange: "Gama e Çmimit",
         minRating: "Vlerësimi Minimal",
         showResults: "Shfaq rezultatet",
+        title: "Titulli",
+        city: "Qyteti",
+        description: "Përshkrimi",
+        descriptionPlaceholder: "Përshkruani përvojën, pikat kryesore dhe çfarë e bën këtë vend unik.",
+        selectCategory: "Zgjidhni një kategori",
+        selectSubcategory: "Zgjidhni një nënkategori",
         viewAll: "Shiko të gjitha",
         explore: "Eksploro",
         loading: "Duke u ngarkuar...",
@@ -275,6 +310,28 @@ export const translations = {
         tip3Desc: "Sigurohuni që udhëtarët t'ju gjejnë lehtësisht në hartë.",
         formTitle: "Detajet e Shërbimit",
         formDesc: "Jepni informacionin thelbësor për listimin tuaj."
+    },
+    forms: {
+      listing: {
+        bannerRequired: "Foto e banerit është e detyrueshme.",
+        submittedForApproval: "Listimi u dërgua për miratim",
+        titlePlaceholder: "Villa e bukur në mal",
+        locationPlaceholder: "Tiranë",
+        villageLabel: "Fshati / Zona",
+        selectVillage: "Zgjidh fshatin",
+        featuresAmenities: "Karakteristikat & Pajisjet",
+        addCustomTagPlaceholder: "Shto tag të personalizuar... (Shtyp Enter)",
+        contactPhone: "Telefoni i Kontaktit",
+        exactAddress: "Adresa e saktë",
+        exactAddressPlaceholder: "Emri i rrugës, Nr. i ndërtesës",
+        mainBannerPhoto: "Foto Kryesore (Banner)",
+        mainBannerNote: "Kjo është fotoja e madhe që shfaqet në krye.",
+        galleryLabel: "Galeria (5 Foto)",
+        galleryNote: "Ju lutem zgjidhni saktësisht 5 foto për paraqitjen më të mirë.",
+        creatingService: "Duke krijuar shërbimin...",
+        launchListing: "Publiko Listimin",
+        villageSelectPlaceholder: "Zgjidh fshatin"
+      }
     },
     auth: {
       signedInSuccess: "Hyrja u krye me sukses!",
