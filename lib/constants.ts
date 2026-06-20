@@ -35,6 +35,7 @@ export const categories: CategoryDefinition[] = [
     aliases: ["restaurants", "restaurant", "food", "dining", "cafe", "bar"],
     image: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1200&q=80",
     tags: ["Wifi", "Outdoor Seating", "Vegan Options", "Rezervime", "Parking", "Live Music"],
+    tags: ["Wi-Fi", "Ulje jashtë", "Opsione vegane", "Rezervime", "Parkim", "Muzikë live"],
     subcategories: [
       { value: "tradicional", label: "Tradicional" },
       { value: "internacional", label: "Internacional" },
@@ -49,6 +50,7 @@ export const categories: CategoryDefinition[] = [
     aliases: ["attractions", "attraction", "things to do", "things-to-do", "experience", "experiences", "tour", "tours"],
     image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80",
     tags: ["Entry Fee", "Family Friendly", "Guide Available", "Parking"],
+    tags: ["Biletë hyrjeje", "Përshtatshëm për familje", "Udhëzues i disponueshëm", "Parkim"],
     subcategories: [
       { value: "natyre", label: "Natyrë", aliases: ["nature"] },
       { value: "historike", label: "Historike", aliases: ["historical"] },
@@ -63,6 +65,7 @@ export const categories: CategoryDefinition[] = [
     aliases: ["events", "event", "festival", "concerts", "concert"],
     image: "https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&w=1200&q=80",
     tags: ["Tickets Needed", "Outdoor", "Indoor", "Parking"],
+      tags: ["Nevojiten bileta", "Në natyrë", "Brenda", "Parkim"],
     subcategories: [
       { value: "koncerte", label: "Koncerte", aliases: ["concerts"] },
       { value: "festivale", label: "Festivale", aliases: ["festivals"] },
@@ -91,6 +94,7 @@ export const categories: CategoryDefinition[] = [
     aliases: ["local products", "products", "souvenirs", "artisan", "handmade"],
     image: "https://images.unsplash.com/photo-1516685018646-549d9f3a1f7f?auto=format&fit=crop&w=1200&q=80",
     tags: ["Handmade", "Organic", "Shipping Available"],
+      tags: ["Artizanal", "Organik", "Transport i disponueshëm"],
     subcategories: [
       { value: "artizanat", label: "Artizanat", aliases: ["handmade"] },
       { value: "ushqimore", label: "Ushqimore", aliases: ["groceries"] },
@@ -105,6 +109,7 @@ export const categories: CategoryDefinition[] = [
     aliases: ["transportation", "transfers", "car rental", "transfer", "taxi", "boat"],
     image: "https://images.unsplash.com/photo-1504215680853-026ed2a45def?auto=format&fit=crop&w=1200&q=80",
     tags: ["AC", "English Speaking Driver", "Airport Pickup"],
+      tags: ["AC", "Shofer që flet anglisht", "Marrje në aeroport"],
     subcategories: [
       { value: "aeroport", label: "Aeroport", aliases: ["airport transfer", "airport"] },
       { value: "makine-me-qira", label: "Makina me Qira", aliases: ["car rental"] },
@@ -116,9 +121,9 @@ export const categories: CategoryDefinition[] = [
 ];
 
 export const statusLabels = {
-  pending: "Pending",
-  approved: "Approved",
-  rejected: "Rejected"
+  pending: "Në pritje",
+  approved: "Miratuar",
+  rejected: "Refuzuar"
 } as const;
 
 export const allSubcategories = categories.flatMap((category) => category.subcategories);

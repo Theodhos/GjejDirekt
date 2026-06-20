@@ -120,9 +120,9 @@ function HomePageClient() {
   const attractionCategory = categories.find(c => c.value === "atraksione");
 
   const blogFallbacks = [
-    { slug: "sample-guide-1", title: "How to choose the right city first", excerpt: "Start with location, then move into the right service category." },
-    { slug: "sample-guide-2", title: "What to look for in a trusted listing", excerpt: "Quality, clarity, and trust signals make booking easier." },
-    { slug: "sample-guide-3", title: "Planning food, stays, and transport together", excerpt: "A practical flow for travelers who want better structure." }
+    { slug: "sample-guide-1", title: "Si të zgjidhni qytetin e duhur fillimisht", excerpt: "Filloni me vendndodhjen, pastaj kaloni te kategoria e duhur e shërbimit." },
+    { slug: "sample-guide-2", title: "Çfarë të kërkoni te një listim i besueshëm", excerpt: "Cilësia, qartësia dhe sinjalet e besimit e lehtësojnë rezervimin." },
+    { slug: "sample-guide-3", title: "Planifikimi i ushqimit, qëndrimeve dhe transportit së bashku", excerpt: "Një rrjedhë praktike për udhëtarët që duan strukturë më të mirë." }
   ];
 
   const railsRef = useRef<Record<string, HTMLDivElement | null>>({});
