@@ -15,6 +15,9 @@ export default function SubcategoryCarousel({ category }: { category: CategoryDe
   const shuffledSubcategories = useMemo(() => shuffle(category.subcategories), [category.subcategories]);
   const { t } = useLanguage();
   const categoryLabel = t.categories.names[category.value as keyof typeof t.categories.names] || category.label;
+  const subcategoryLabels = t.categories.subnames?.[
+    category.value as keyof typeof t.categories.subnames
+  ] as Record<string, string> | undefined;
 
   const scroll = (direction: -1 | 1) => {
     railRef.current?.scrollBy({ left: direction * 320, behavior: "smooth" });
@@ -60,7 +63,7 @@ export default function SubcategoryCarousel({ category }: { category: CategoryDe
               <div className="flex h-full w-full items-end justify-start p-5">
                 <div className="rounded-3xl bg-slate-950/90 px-4 py-3 text-white backdrop-blur">
                   <p className="text-sm uppercase tracking-[0.3em] text-slate-300">{categoryLabel}</p>
-                  <h3 className="mt-2 text-2xl font-black">{t.categories.subnames?.[category.value as keyof typeof t.categories.subnames]?.[sub.value] || sub.label}</h3>
+                  <h3 className="mt-2 text-2xl font-black">{subcategoryLabels?.[sub.value] || sub.label}</h3>
                 </div>
               </div>
             </div>

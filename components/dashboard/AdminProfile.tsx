@@ -8,6 +8,8 @@ import { useLanguage } from "@/context/LanguageContext";
 
 export default function AdminProfile({ displayName, authEmail }: { displayName: string; authEmail: string }) {
   const { t } = useLanguage();
+  const adminText = t.admin as Record<string, string>;
+  const commonText = t.common as Record<string, string>;
   const [name, setName] = useState(displayName || "");
   const [email, setEmail] = useState(authEmail || "");
   const [loading, setLoading] = useState(false);
@@ -29,7 +31,7 @@ export default function AdminProfile({ displayName, authEmail }: { displayName: 
       toast.success(t.admin.profileSaved || "Profile saved");
       window.dispatchEvent(new Event("auth-changed"));
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : (t.common.error || "Something went wrong"));
+      toast.error(err instanceof Error ? err.message : (commonText.error || "Something went wrong"));
     } finally {
       setLoading(false);
     }
@@ -69,7 +71,7 @@ export default function AdminProfile({ displayName, authEmail }: { displayName: 
       if (!res.ok) throw new Error(data.error || "Failed to send reset link");
       toast.success(t.admin.resetSent || "Reset link sent to your email");
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : (t.common.error || "Something went wrong"));
+      toast.error(err instanceof Error ? err.message : (commonText.error || "Something went wrong"));
     } finally {
       setLoading(false);
     }
@@ -96,20 +98,20 @@ export default function AdminProfile({ displayName, authEmail }: { displayName: 
             <div>
               {isEmailVerified === true ? (
                 <span className="inline-flex items-center gap-2 rounded-full bg-emerald-50 text-emerald-700 px-3 py-1 text-xs font-semibold">
-                  ✓ {t.admin.verifiedLabel || 'Verified'}
+                  ✓ {adminText.verifiedLabel || 'Verified'}
                 </span>
               ) : isEmailVerified === false ? (
                 <span className="inline-flex items-center gap-2 rounded-full bg-rose-50 text-rose-700 px-3 py-1 text-xs font-semibold">
-                  {t.admin.unverifiedLabel || 'Unverified'}
+                  {adminText.unverifiedLabel || 'Unverified'}
                 </span>
               ) : null}
             </div>
           </div>
-          {!emailValid && <p className="text-xs text-rose-600 mt-1">{t.admin.invalidEmail || 'Please enter a valid email address.'}</p>}
+          {!emailValid && <p className="text-xs text-rose-600 mt-1">{adminText.invalidEmail || 'Please enter a valid email address.'}</p>}
 
           <div className="flex items-center gap-4 mt-2">
             <Button type="submit" disabled={loading}>{t.admin.saveProfileBtn || 'Save Profile'}</Button>
-            <button type="button" onClick={() => { setName(displayName); setEmail(authEmail); }} className="text-sm font-medium text-slate-600">{t.common.discard || 'Discard'}</button>
+            <button type="button" onClick={() => { setName(displayName); setEmail(authEmail); }} className="text-sm font-medium text-slate-600">{commonText.discard || 'Discard'}</button>
           </div>
         </div>
       </form>
@@ -129,10 +131,10 @@ export default function AdminProfile({ displayName, authEmail }: { displayName: 
       {confirmResetOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
           <div className="bg-white rounded-2xl p-6 w-11/12 max-w-md">
-            <h3 className="text-lg font-bold">{t.admin.resetConfirmTitle || 'Confirm password reset'}</h3>
-            <p className="mt-2 text-sm text-slate-600">{t.admin.resetConfirmDesc || 'We will send a password reset link to your email. Continue?'}</p>
+            <h3 className="text-lg font-bold">{adminText.resetConfirmTitle || 'Confirm password reset'}</h3>
+            <p className="mt-2 text-sm text-slate-600">{adminText.resetConfirmDesc || 'We will send a password reset link to your email. Continue?'}</p>
             <div className="mt-4 flex justify-end gap-3">
-              <button type="button" onClick={() => setConfirmResetOpen(false)} className="px-4 py-2 rounded-lg border">{t.common.cancel || 'Cancel'}</button>
+              <button type="button" onClick={() => setConfirmResetOpen(false)} className="px-4 py-2 rounded-lg border">{commonText.cancel || 'Cancel'}</button>
               <Button type="button" onClick={sendResetConfirmed} disabled={loading}>{t.admin.resetPasswordBtn || 'Send'}</Button>
             </div>
           </div>

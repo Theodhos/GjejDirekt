@@ -9,6 +9,7 @@ import { useLanguage } from "@/context/LanguageContext";
 
 export default function AdminCityManager() {
   const { t } = useLanguage();
+  const commonText = t.common as Record<string, string>;
   const [loading, setLoading] = useState(false);
   const [deletingValue, setDeletingValue] = useState("");
   const [cities, setCities] = useState<any[]>([]);
@@ -35,7 +36,7 @@ export default function AdminCityManager() {
       toast.success((t.admin.cityDeleted || "City deleted.") + ` ${(data.deletedListings || 0)} ${t.admin.deletedListingsSuffix || 'listings.'}`);
       await loadCities();
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : (t.common.error || "Something went wrong"));
+      toast.error(error instanceof Error ? error.message : (commonText.error || "Something went wrong"));
     } finally {
       setDeletingValue("");
     }
@@ -63,7 +64,7 @@ export default function AdminCityManager() {
       setDescription("");
       await loadCities();
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : (t.common.error || "Something went wrong"));
+      toast.error(error instanceof Error ? error.message : (commonText.error || "Something went wrong"));
     } finally {
       setLoading(false);
     }
@@ -105,4 +106,3 @@ export default function AdminCityManager() {
     </section>
   );
 }
-

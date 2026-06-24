@@ -24,25 +24,29 @@ export default function CityCategorySlider({
   }
 
   return (
-    <section className="space-y-10">
+    <section className="space-y-5">
       {/* Category Header */}
-      <div className="border-b border-slate-200 pb-8">
-        <h2 className="text-4xl sm:text-6xl font-black text-slate-950 tracking-tighter leading-none">
-          {categoryLabel}
-        </h2>
-        <p className="mt-4 text-lg text-slate-500 font-medium max-w-3xl leading-relaxed">
-          {description}
-        </p>
-      </div>
-
-      {/* Slider */}
-      <div>
-        {/* Navigation Arrows */}
-        <div className="flex items-center justify-end gap-3 mb-6">
+      <div className="flex flex-col gap-5 border-b pb-6 sm:flex-row sm:items-end sm:justify-between" style={{ borderColor: "var(--border-soft)" }}>
+        <div>
+          <p className="eyebrow mb-3">{cityName}</p>
+          <h2 className="font-bold tracking-tight" style={{ color: "var(--text-primary)", fontSize: "clamp(1.55rem, 3vw, 2.25rem)", lineHeight: 1.14 }}>
+            {categoryLabel}
+          </h2>
+          <p className="mt-3 max-w-2xl text-sm leading-relaxed" style={{ color: "var(--text-secondary)" }}>
+            {description}
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
           <button
             type="button"
             onClick={() => scroll(-1)}
-            className="group inline-flex h-12 w-12 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-700 shadow-sm transition-all hover:bg-slate-950 hover:text-white hover:shadow-xl active:scale-95"
+            className="group inline-flex h-10 w-10 items-center justify-center rounded-full border transition-all hover:-translate-y-0.5 active:scale-95"
+            style={{
+              background: "var(--surface-white)",
+              borderColor: "var(--border-soft)",
+              color: "var(--text-secondary)",
+              boxShadow: "none"
+            }}
             aria-label={`Scroll ${categoryLabel} left`}
           >
             <ChevronLeft className="h-5 w-5 transition-transform group-hover:-translate-x-0.5" />
@@ -50,52 +54,47 @@ export default function CityCategorySlider({
           <button
             type="button"
             onClick={() => scroll(1)}
-            className="group inline-flex h-12 w-12 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-700 shadow-sm transition-all hover:bg-slate-950 hover:text-white hover:shadow-xl active:scale-95"
+            className="group inline-flex h-10 w-10 items-center justify-center rounded-full border transition-all hover:-translate-y-0.5 active:scale-95"
+            style={{
+              background: "var(--surface-white)",
+              borderColor: "var(--border-soft)",
+              color: "var(--text-secondary)",
+              boxShadow: "none"
+            }}
             aria-label={`Scroll ${categoryLabel} right`}
           >
             <ChevronRight className="h-5 w-5 transition-transform group-hover:translate-x-0.5" />
           </button>
         </div>
+      </div>
 
+      {/* Slider */}
+      <div>
         {/* Cards Rail */}
         <div
           ref={railRef}
-          className="flex gap-6 overflow-x-auto no-scrollbar scroll-smooth snap-x snap-mandatory py-4 px-1 -mx-1"
+          className="-mx-1 flex snap-x snap-mandatory gap-5 overflow-x-auto px-1 py-3 scroll-smooth no-scrollbar"
         >
           {listings.map((listing: any) => (
             <div
               key={listing._id?.toString()}
-              className="w-[340px] sm:w-[380px] shrink-0 snap-start"
+              className="w-[300px] shrink-0 snap-start sm:w-[340px]"
             >
               <ListingCard listing={listing} />
             </div>
           ))}
 
           {listings.length === 0 && (
-            <div className="w-full flex items-center justify-center py-16 bg-slate-100/50 rounded-[2.5rem] border-2 border-dashed border-slate-200">
-              <p className="text-sm font-bold text-slate-400 uppercase tracking-widest">
+            <div
+              className="flex w-full items-center justify-center rounded-2xl border-2 border-dashed py-16"
+              style={{ background: "var(--surface-cream)", borderColor: "var(--border-soft)" }}
+            >
+              <p className="eyebrow">
                 Nuk ka shërbime të disponueshme për momentin
               </p>
             </div>
           )}
         </div>
-
-        {/* Dots Indicator */}
-        {listings.length > 1 && (
-          <div className="flex items-center justify-center gap-1.5 mt-6">
-            {Array.from({ length: Math.min(listings.length, 8) }).map((_, i) => (
-              <div
-                key={i}
-                className="h-1.5 w-6 rounded-full bg-slate-200 first:bg-slate-950"
-              />
-            ))}
-            {listings.length > 8 && (
-              <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2">
-                +{listings.length - 8} më shumë
-              </span>
-            )}
-          </div>
-        )}
       </div>
     </section>
   );

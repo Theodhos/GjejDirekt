@@ -65,32 +65,62 @@ export default async function CityPage({ params }: { params: { city: string } })
     .filter((s) => s.listings.length > 0);
 
   return (
-    <main className="min-h-screen bg-slate-50">
-      <section className="relative h-[65vh] flex items-center justify-center bg-slate-950 overflow-hidden">
+    <main className="min-h-screen" style={{ background: "var(--surface-page)" }}>
+      <section className="relative flex min-h-[calc(62vh-var(--header-height))] items-center overflow-hidden bg-slate-950 py-16 sm:min-h-[calc(72vh-var(--header-height))] sm:py-20">
         <div className="absolute inset-0">
-          <Image src={cityImage} alt={cityLabel} fill className="object-cover animate-slow-zoom" unoptimized />
+          <Image src={cityImage} alt={cityLabel} fill className="object-cover opacity-90" unoptimized priority />
+          <div
+            className="absolute inset-0"
+            style={{
+              background:
+                "linear-gradient(90deg, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.48) 46%, rgba(0,0,0,0.18) 100%)"
+            }}
+          />
         </div>
 
-        <div className="page-shell relative z-10 text-center">
-          <div className="inline-flex items-center gap-3 rounded-full bg-brand-500/10 border border-brand-500/20 backdrop-blur-md px-6 py-2 text-[10px] font-black uppercase tracking-[0.4em] text-brand-400 mb-8 animate-fade-in">
+        <div className="page-shell relative z-10">
+          <div
+            className="mb-5 inline-flex items-center gap-2 text-[11px] font-semibold uppercase"
+            style={{
+              color: "rgba(255,255,255,0.82)",
+              letterSpacing: "0.18em",
+              textShadow: "0 2px 8px rgba(0,0,0,0.45)"
+            }}
+          >
             <MapPin className="w-4 h-4" />
             {cityLabel} Albania
           </div>
-          <h1 className="text-7xl sm:text-9xl font-black text-white tracking-tighter mb-6 capitalize animate-slide-up">{cityLabel}</h1>
-          <p className="text-xl sm:text-2xl text-white/70 font-medium max-w-2xl mx-auto animate-slide-up delay-100">
+          <h1
+            className="mb-5 max-w-3xl font-bold capitalize text-white"
+            style={{
+              fontSize: "clamp(2.25rem, 6vw, 4rem)",
+              lineHeight: 1.08,
+              letterSpacing: "-0.025em",
+              textShadow: "0 3px 24px rgba(0,0,0,0.72)"
+            }}
+          >
+            {cityLabel}
+          </h1>
+          <p
+            className="max-w-xl text-base font-semibold leading-relaxed sm:text-lg"
+            style={{ color: "rgba(255,255,255,0.96)", textShadow: "0 2px 12px rgba(0,0,0,0.86)" }}
+          >
             Eksploroni akomodimet, shijet lokale dhe aventurat me te mira ne {cityLabel}.
           </p>
         </div>
       </section>
 
-      <div className="page-shell py-20 space-y-24">
+      <div className="page-shell space-y-12 py-12 sm:space-y-16 sm:py-16">
         {categorySections.length === 0 ? (
           <div className="text-center py-20">
-            <div className="inline-flex h-20 w-20 items-center justify-center rounded-[2.5rem] bg-slate-100 text-slate-400 mb-6">
+            <div
+              className="mb-6 inline-flex h-20 w-20 items-center justify-center rounded-2xl"
+              style={{ background: "var(--brand-light)", color: "var(--brand-accent)" }}
+            >
               <Sparkles className="w-10 h-10" />
             </div>
-            <h2 className="text-3xl font-black text-slate-950 mb-4">Asnje sherbim nuk u gjet</h2>
-            <p className="text-slate-500 max-w-md mx-auto">
+            <h2 className="section-heading mb-4">Asnje sherbim nuk u gjet</h2>
+            <p className="mx-auto max-w-md text-sm leading-relaxed" style={{ color: "var(--text-secondary)" }}>
               Nuk u gjet asnje sherbim per &quot;{cityLabel}&quot; per momentin. Provoni nje qytet tjeter.
             </p>
           </div>

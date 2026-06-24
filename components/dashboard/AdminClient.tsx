@@ -30,6 +30,7 @@ export default function AdminClient({
   authEmail: string;
 }) {
   const { t } = useLanguage();
+  const adminText = t.admin as Record<string, string>;
 
   const stats = [
     { icon: Users, label: t.admin.users, value: totalUsers, accent: "bg-blue-50 text-blue-700", href: "/admin/users" },
@@ -54,13 +55,13 @@ export default function AdminClient({
         <div className="flex items-center gap-2">
           <Link href="/create-listing" className="inline-flex items-center gap-2 rounded-full bg-slate-900 px-4 py-2 text-sm font-semibold text-white">
             <PlusCircle className="h-4 w-4" />
-            <span>{t.admin.addListingShort || t.admin.addListing}</span>
+            <span>{adminText.addListingShort || t.admin.addListing}</span>
           </Link>
           <Link href="#blog-studio" className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-900">
-            {t.admin.blogStudio || 'Shto Blog'}
+            {adminText.blogStudio || 'Shto Blog'}
           </Link>
           <Link href="#city-admin" className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-900">
-            {t.admin.addCity || 'Shto Qytet'}
+            {adminText.addCity || 'Shto Qytet'}
           </Link>
         </div>
       </div>

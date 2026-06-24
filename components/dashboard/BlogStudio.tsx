@@ -20,6 +20,8 @@ type BlogPreview = {
 
 export default function BlogStudio({ recentPosts }: { recentPosts: BlogPreview[] }) {
   const { t } = useLanguage();
+  const blogText = t.blog as unknown as Record<string, string>;
+  const commonText = t.common as Record<string, string>;
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [published, setPublished] = useState(true);
@@ -30,11 +32,11 @@ export default function BlogStudio({ recentPosts }: { recentPosts: BlogPreview[]
 
   const stats = useMemo(
     () => [
-      { label: t.admin.draftMode || "Draft mode", value: published ? (t.common.off || "Off") : (t.common.on || "On") },
+      { label: t.admin.draftMode || "Draft mode", value: published ? (commonText.off || "Off") : (commonText.on || "On") },
       { label: t.admin.chars || "Chars", value: content.length.toString() },
       { label: t.admin.posts || "Posts", value: recentPosts.length.toString() }
     ],
-    [content.length, published, recentPosts.length, t]
+    [commonText.off, commonText.on, content.length, published, recentPosts.length, t]
   );
 
   async function submit(event: React.FormEvent<HTMLFormElement>) {
@@ -93,7 +95,7 @@ export default function BlogStudio({ recentPosts }: { recentPosts: BlogPreview[]
       <div className="mt-6">
         <form onSubmit={submit} className="space-y-4">
           <div className="grid gap-4 md:grid-cols-2">
-            <Input label={t.common.title || 'Title'} value={title} onChange={(event) => setTitle(event.target.value)} placeholder={t.blog.titlePlaceholder || 'The best coastal escapes...'} required />
+            <Input label={t.common.title || 'Title'} value={title} onChange={(event) => setTitle(event.target.value)} placeholder={blogText.titlePlaceholder || 'The best coastal escapes...'} required />
             <Input
               label={t.admin.coverImage || 'Cover image URL'}
               value={coverImage}
@@ -102,17 +104,17 @@ export default function BlogStudio({ recentPosts }: { recentPosts: BlogPreview[]
             />
           </div>
           <Textarea
-            label={t.blog.excerptLabel || 'Excerpt'}
+            label={blogText.excerptLabel || 'Excerpt'}
             value={excerpt}
             onChange={(event) => setExcerpt(event.target.value)}
-            placeholder={t.blog.excerptPlaceholder || 'Short summary for cards and previews...'}
+            placeholder={blogText.excerptPlaceholder || 'Short summary for cards and previews...'}
             required
           />
           <Textarea
-            label={t.blog.contentLabel || 'Content'}
+            label={blogText.contentLabel || 'Content'}
             value={content}
             onChange={(event) => setContent(event.target.value)}
-            placeholder={t.blog.contentPlaceholder || 'Write the full article here...'}
+            placeholder={blogText.contentPlaceholder || 'Write the full article here...'}
             className="min-h-64"
             required
           />
