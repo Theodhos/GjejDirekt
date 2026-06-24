@@ -154,17 +154,20 @@ export default function HomeSearchHero() {
       setShowSuggestions(false);
       return;
     }
-    const params = new URLSearchParams();
     if (suggestion.type === "category") {
-      params.set("category", suggestion.value);
+      router.push(`/categories/${suggestion.value}`);
+      setShowSuggestions(false);
+      return;
     } else if (suggestion.type === "subcategory") {
-      params.set("category", suggestion.categoryValue);
-      params.set("subcategory", suggestion.value);
+      router.push(`/categories/${suggestion.categoryValue}?subcategory=${suggestion.value}`);
+      setShowSuggestions(false);
+      return;
     } else if (suggestion.type === "city") {
       router.push(`/city/${suggestion.value}`);
       setShowSuggestions(false);
       return;
     }
+    const params = new URLSearchParams();
     router.push(`/?${params.toString()}`);
     setShowSuggestions(false);
   }
@@ -353,7 +356,7 @@ export default function HomeSearchHero() {
                           key={name}
                           onClick={() => {
                             setCity(name);
-                            router.push(`/?q=${encodeURIComponent(name.toLowerCase())}`);
+                            router.push(`/city/${encodeURIComponent(name.toLowerCase())}`);
                             setShowSuggestions(false);
                           }}
                           className="rounded-full px-3 py-1.5 text-sm font-medium transition-colors"

@@ -1,14 +1,30 @@
 import { notFound } from "next/navigation";
-import { getCategoryByValue } from "@/lib/constants";
-import { categories } from "@/lib/constants";
-import SubcategoryCarousel from "@/components/categories/SubcategoryCarousel";
+import { getCategoryByValue, categories } from "@/lib/constants";
 import CategoryClient from "@/components/categories/CategoryClient";
-import Link from "next/link";
-import Image from "next/image";
+import { connectDB } from "@/lib/db";
+import Listing from "@/models/Listing";
 
-export default function CategoryPage({ params }: { params: { category: string } }) {
+export const dynamic = "force-dynamic";
+
+async function getListingsByCategory(categoryValue: string) {
+  await connectDB();
+  return Listing.find({
+    category: categoryValue,
+    status: "approved"
+  })
+    .sort({ createdAt: -1 })
+    .lean<any[]>();
+}
+
+export default async function CategoryPage({ params }: { params: { category: string } }) {
   const category = getCategoryByValue(params.category);
   if (!category) notFound();
 
-  return <CategoryClient category={category} categories={categories} />;
+  const listings = await getListingsByCategory(category.value);
+  const serializedListings = listings.map((l) => ({
+    ...l,
+    _id: l._id.toString(),
+  }));
+
+  return <CategoryClient category={category} categories={categories} initialListings={serializedListings} />;
 }

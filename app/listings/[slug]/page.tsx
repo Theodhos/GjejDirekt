@@ -101,8 +101,13 @@ export default async function ListingDetailPage({ params }: { params: { slug: st
 
   const tags = [...(listing.tags || []), ...(listing.amenities || [])].filter((v, i, self) => self.indexOf(v) === i);
 
+  const hasStickyBar = Boolean(phone || whatsappHref);
+
   return (
-    <main style={{ background: "var(--surface-page)", minHeight: "100vh", paddingBottom: "7rem" }}>
+    <main
+      style={{ background: "var(--surface-page)", minHeight: "100vh" }}
+      className="pb-4 lg:pb-8"
+    >
 
       {/* ── GALLERY ── */}
       <section className="page-shell pt-6 pb-0">
@@ -384,7 +389,7 @@ export default async function ListingDetailPage({ params }: { params: { slug: st
 
             {/* Contact / CTA Card — "Book directly with the host" style */}
             <div
-              className="overflow-hidden"
+              className="hidden lg:block overflow-hidden"
               style={{
                 background: "var(--surface-white)",
                 border: "1px solid var(--border-soft)",
@@ -505,7 +510,7 @@ export default async function ListingDetailPage({ params }: { params: { slug: st
 
       {/* ── RELATED LISTINGS ── */}
       {relatedListings.length > 0 && (
-        <section className="page-shell mt-16">
+        <section className="page-shell mt-8 lg:mt-16">
           <div className="flex items-end justify-between mb-8">
             <div>
               <p className="eyebrow mb-2">More like this</p>

@@ -1,9 +1,9 @@
-﻿import { connectDB } from "@/lib/db";
+import { connectDB } from "@/lib/db";
 import Listing from "@/models/Listing";
 import { categories } from "@/lib/constants";
 import Image from "next/image";
 import { MapPin, Sparkles } from "lucide-react";
-import CityCategorySlider from "@/components/city/CityCategorySlider";
+import ListingCard from "@/components/ListingCard";
 import City from "@/models/City";
 import { seedCities } from "@/lib/cities-catalog";
 
@@ -128,13 +128,22 @@ export default async function CityPage({ params }: { params: { city: string } })
           </div>
         ) : (
           categorySections.map(({ category, listings: catListings, description }) => (
-            <CityCategorySlider
-              key={category.value}
-              categoryLabel={category.label}
-              description={description}
-              listings={catListings}
-              cityName={cityLabel}
-            />
+            <section key={category.value} className="space-y-6">
+              <div className="flex flex-col gap-2 border-b pb-4" style={{ borderColor: "var(--border-soft)" }}>
+                <p className="eyebrow">{cityLabel}</p>
+                <h2 className="text-2xl font-bold tracking-tight" style={{ color: "var(--text-primary)" }}>
+                  {category.label}
+                </h2>
+                <p className="text-sm text-slate-500">
+                  {description}
+                </p>
+              </div>
+              <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+                {catListings.map((listing: any) => (
+                  <ListingCard key={listing._id.toString()} listing={listing} />
+                ))}
+              </div>
+            </section>
           ))
         )}
       </div>
