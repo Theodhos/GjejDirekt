@@ -3,9 +3,8 @@
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
-import { CalendarDays, KeyRound, Mail, ShieldCheck, User2 } from "lucide-react";
-import Button from "@/components/ui/Button";
-import Input from "@/components/ui/Input";
+import { CalendarDays, KeyRound, ShieldCheck, User2 } from "lucide-react";
+import { useLanguage } from "@/context/LanguageContext";
 
 type Props = {
   user: {
@@ -18,15 +17,17 @@ type Props = {
 
 export default function ProfilePanel({ user }: Props) {
   const router = useRouter();
+  const { language } = useLanguage();
+  const en = language === "en";
   const [saving, setSaving] = useState(false);
   const [sendingReset, setSendingReset] = useState(false);
   const [name, setName] = useState(user.name);
   const [email, setEmail] = useState(user.email);
 
   const memberSince = useMemo(() => {
-    if (!user.createdAt) return "Now";
+    if (!user.createdAt) return en ? "Now" : "Tani";
     return new Date(user.createdAt).toLocaleDateString();
-  }, [user.createdAt]);
+  }, [en, user.createdAt]);
 
   async function submit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -42,13 +43,15 @@ export default function ProfilePanel({ user }: Props) {
       });
 
       const data = await response.json();
-      if (!response.ok) throw new Error(data.error || "Profile update failed");
+      if (!response.ok) throw new Error(data.error || (en ? "Profile update failed" : "Përditësimi i profilit dështoi"));
 
-      toast.success(data.passwordChanged ? "Profile and password updated" : "Profile updated");
+      toast.success(data.passwordChanged
+        ? en ? "Profile and password updated" : "Profili dhe fjalëkalimi u përditësuan"
+        : en ? "Profile updated" : "Profili u përditësua");
       router.refresh();
       window.location.reload();
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Something went wrong");
+      toast.error(error instanceof Error ? error.message : en ? "Something went wrong" : "Diçka shkoi keq");
     } finally {
       setSaving(false);
     }
@@ -73,10 +76,10 @@ export default function ProfilePanel({ user }: Props) {
           </div>
           <div>
             <p className="text-[11px] font-bold uppercase tracking-[0.2em] mb-1.5" style={{ color: "var(--brand-accent)" }}>
-              Profile & Security
+              {en ? "Profile & Security" : "Profili & Siguria"}
             </p>
             <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-950">
-              Personal Info
+              {en ? "Personal Info" : "Të dhënat personale"}
             </h2>
           </div>
         </div>
@@ -84,8 +87,8 @@ export default function ProfilePanel({ user }: Props) {
         {/* Quick Stats/Info */}
         <div className="grid grid-cols-2 gap-4 mb-8">
           {[
-            { label: "Role", value: user.role, icon: ShieldCheck },
-            { label: "Member Since", value: memberSince, icon: CalendarDays }
+            { label: en ? "Role" : "Roli", value: user.role === "admin" ? "Administrator" : en ? "User" : "Përdorues", icon: ShieldCheck },
+            { label: en ? "Member Since" : "Anëtar që prej", value: memberSince, icon: CalendarDays }
           ].map((item) => (
             <div 
               key={item.label} 
@@ -106,7 +109,7 @@ export default function ProfilePanel({ user }: Props) {
         <form onSubmit={submit} className="space-y-6">
           <div className="grid gap-5 sm:grid-cols-2">
             <div className="space-y-2">
-              <label className="text-[11px] font-bold uppercase tracking-[0.1em] text-slate-500">Full Name</label>
+              <label className="text-[11px] font-bold uppercase tracking-[0.1em] text-slate-500">{en ? "Full Name" : "Emri i plotë"}</label>
               <input 
                 type="text" 
                 value={name} 
@@ -116,7 +119,7 @@ export default function ProfilePanel({ user }: Props) {
               />
             </div>
             <div className="space-y-2">
-              <label className="text-[11px] font-bold uppercase tracking-[0.1em] text-slate-500">Email Address</label>
+              <label className="text-[11px] font-bold uppercase tracking-[0.1em] text-slate-500">{en ? "Email Address" : "Adresa e email-it"}</label>
               <input 
                 type="email" 
                 value={email} 
@@ -132,10 +135,10 @@ export default function ProfilePanel({ user }: Props) {
               <div>
                 <div className="flex items-center gap-2 mb-1.5">
                   <KeyRound className="h-4.5 w-4.5" style={{ color: "var(--brand-accent)" }} />
-                  <p className="text-xs font-black uppercase tracking-[0.15em] text-slate-900">Password</p>
+                  <p className="text-xs font-black uppercase tracking-[0.15em] text-slate-900">{en ? "Password" : "Fjalëkalimi"}</p>
                 </div>
                 <p className="text-xs font-medium text-slate-500">
-                  Send a secure reset link to your email.
+                  {en ? "Send a secure reset link to your email." : "Dërgo një link të sigurt për rivendosje në email."}
                 </p>
               </div>
               <button
@@ -150,10 +153,12 @@ export default function ProfilePanel({ user }: Props) {
                       body: JSON.stringify({ email: normalizedEmail })
                     });
                     const data = await response.json();
-                    if (!response.ok) throw new Error(data.error || "Could not send reset link.");
-                    toast.success(`Reset link u dergua te: ${normalizedEmail}. Kontrollo Inbox dhe Spam.`);
+                    if (!response.ok) throw new Error(data.error || (en ? "Could not send reset link." : "Linku i rivendosjes nuk mund të dërgohej."));
+                    toast.success(en
+                      ? `Reset link sent to: ${normalizedEmail}. Check Inbox and Spam.`
+                      : `Linku i rivendosjes u dërgua te: ${normalizedEmail}. Kontrollo kutinë hyrëse dhe spam-in.`);
                   } catch (error) {
-                    toast.error(error instanceof Error ? error.message : "Could not send reset link.");
+                    toast.error(error instanceof Error ? error.message : en ? "Could not send reset link." : "Linku i rivendosjes nuk mund të dërgohej.");
                   } finally {
                     setSendingReset(false);
                   }
@@ -161,7 +166,7 @@ export default function ProfilePanel({ user }: Props) {
                 className="shrink-0 rounded-xl px-5 py-3 text-xs font-black text-white transition-all active:scale-95 shadow-md hover:shadow-lg"
                 style={{ background: "var(--slate-950)", backgroundColor: "#0f172a" }}
               >
-                {sendingReset ? "Sending..." : "Reset Password"}
+                {sendingReset ? en ? "Sending..." : "Duke dërguar..." : en ? "Reset Password" : "Rivendos Fjalëkalimin"}
               </button>
             </div>
           </div>
@@ -173,14 +178,14 @@ export default function ProfilePanel({ user }: Props) {
               className="w-full sm:w-auto rounded-xl px-7 py-3.5 text-sm font-black text-white transition-all active:scale-95 shadow-md hover:shadow-lg"
               style={{ background: "var(--brand-accent)" }}
             >
-              {saving ? "Saving..." : "Save Profile"}
+              {saving ? en ? "Saving..." : "Duke ruajtur..." : en ? "Save Profile" : "Ruaj Profilin"}
             </button>
             <button 
               type="button" 
               onClick={() => { setName(user.name); setEmail(user.email); }}
               className="w-full sm:w-auto rounded-xl px-7 py-3.5 text-sm font-bold text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition-all"
             >
-              Discard
+              {en ? "Discard" : "Anulo"}
             </button>
           </div>
         </form>

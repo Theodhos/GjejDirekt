@@ -7,6 +7,8 @@ import CityCategorySlider from "@/components/city/CityCategorySlider";
 import City from "@/models/City";
 import { seedCities } from "@/lib/cities-catalog";
 
+export const dynamic = "force-dynamic";
+
 async function getListingsByCity(city: string) {
   await connectDB();
   return Listing.find({

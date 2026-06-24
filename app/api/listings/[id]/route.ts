@@ -78,6 +78,8 @@ export async function PATCH(request: Request, { params }: { params: { id: string
     listing.country = parseMaybeString(body.country) || "";
     listing.address = parseMaybeString(body.address) || "";
     listing.images = Array.isArray(body.images) ? body.images.map((item: unknown) => String(item)).filter(Boolean) : listing.images;
+    listing.bannerImage = parseMaybeString(body.bannerImage) || listing.images?.[0] || listing.bannerImage;
+    listing.photos = Array.isArray(body.photos) ? body.photos.map((item: unknown) => String(item)).filter(Boolean) : listing.images?.slice(1) || listing.photos;
     listing.price = parseMaybeNumber(body.price);
     listing.priceFrom = parseMaybeNumber(body.priceFrom);
     listing.currency = parseMaybeString(body.currency) || listing.currency;
@@ -94,11 +96,23 @@ export async function PATCH(request: Request, { params }: { params: { id: string
       website: parseMaybeString(body.website) || ""
     };
     listing.socialLinks = {
-      instagram: parseMaybeString(body.instagram) || "",
-      facebook: parseMaybeString(body.facebook) || "",
+      instagram: parseMaybeString(body.instagram) || parseMaybeString(body.instagramLink) || "",
+      facebook: parseMaybeString(body.facebook) || parseMaybeString(body.facebookLink) || "",
       tiktok: parseMaybeString(body.tiktok) || "",
       x: parseMaybeString(body.x) || ""
     };
+    listing.whatsapp = parseMaybeString(body.whatsapp);
+    listing.website = parseMaybeString(body.website);
+    listing.googleMapsLink = parseMaybeString(body.googleMapsLink);
+    listing.businessHours = parseMaybeString(body.businessHours);
+    listing.checkIn = parseMaybeString(body.checkIn);
+    listing.checkOut = parseMaybeString(body.checkOut);
+    listing.menuLink = parseMaybeString(body.menuLink);
+    listing.tips = parseMaybeString(body.tips);
+    listing.eventDate = parseMaybeString(body.eventDate);
+    listing.eventTime = parseMaybeString(body.eventTime);
+    listing.bookingLink = parseMaybeString(body.bookingLink);
+    listing.transportType = parseMaybeString(body.transportType);
 
     if (typeof body.featured === "boolean" && auth.role === "admin") {
       listing.featured = body.featured;

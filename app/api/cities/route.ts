@@ -76,6 +76,59 @@ export async function POST(request: Request) {
   }
 }
 
+export async function PUT(request: Request) {
+  try {
+    const admin = await requireAdmin();
+    if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+    await connectDB();
+    const body = await request.json();
+
+    const value = String(body.value || "").trim().toLowerCase();
+    if (!value) return NextResponse.json({ error: "City value is required" }, { status: 400 });
+
+    const currentCity = await City.findOne({ value }).lean<any>();
+    const seedCity = seedCities.find((c) => c.value.toLowerCase() === value);
+    if (!currentCity && !seedCity) return NextResponse.json({ error: "City not found." }, { status: 404 });
+
+    const label = String(body.label || currentCity?.label || seedCity?.label || "").trim();
+    const region = String(body.region ?? currentCity?.region ?? seedCity?.region ?? "Albania").trim();
+    const description = String(body.description ?? currentCity?.description ?? seedCity?.description ?? "").trim();
+    const image = String(body.image ?? currentCity?.image ?? seedCity?.image ?? "").trim();
+
+    if (!label) return NextResponse.json({ error: "City name is required" }, { status: 400 });
+
+    const duplicate = await City.findOne({
+      value: { $ne: value },
+      label: new RegExp(`^${label}$`, "i")
+    });
+    if (duplicate) return NextResponse.json({ error: "Another city already uses this name." }, { status: 409 });
+
+    const city = await City.findOneAndUpdate(
+      { value },
+      {
+        $set: {
+          value,
+          label,
+          region: region || "Albania",
+          description: description || `Services and experiences in ${label}.`,
+          image: image || "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80",
+          country: "Albania",
+          villages: currentCity?.villages?.length
+            ? currentCity.villages
+            : seedCity?.villages || getVillagesForCity(label, "Albania"),
+          source: "admin"
+        }
+      },
+      { new: true, upsert: true, runValidators: true }
+    ).lean<any>();
+
+    return NextResponse.json({ city });
+  } catch (error) {
+    return NextResponse.json({ error: error instanceof Error ? error.message : "Failed to update city" }, { status: 500 });
+  }
+}
+
 export async function DELETE(request: Request) {
   try {
     const admin = await requireAdmin();

@@ -11,25 +11,27 @@ export default function AdminListingsClient({ groupedListings, categories, categ
   const { t } = useLanguage();
 
   return (
-    <section className="page-shell py-10">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
-        <div className="flex items-center gap-4">
-              <Link href="/admin" className="w-10 h-10 rounded-full border border-slate-200 flex items-center justify-center hover:bg-slate-50 transition">
-                <ArrowLeft className="w-5 h-5 text-slate-600" />
-              </Link>
-              <div>
-                  <h1 className="text-3xl font-black text-slate-950">{t.admin.listings}</h1>
-                  <p className="text-sm text-slate-500 mt-1">{t.admin.viewListings}</p>
+    <section className="page-shell py-6 sm:py-8">
+      <div className="surface overflow-hidden border-none shadow-xl rounded-[2rem] bg-white flex flex-col">
+        <div className="p-6 sm:p-8 border-b border-slate-100 shrink-0">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-6">
+            <div className="flex items-center gap-4">
+                  <Link href="/admin" className="w-10 h-10 rounded-full border border-slate-200 flex items-center justify-center hover:bg-slate-50 transition">
+                    <ArrowLeft className="w-5 h-5 text-slate-600" />
+                  </Link>
+                  <div>
+                      <h1 className="text-3xl font-black text-slate-950">{t.admin.listings}</h1>
+                      <p className="text-sm text-slate-500 mt-1">{t.admin.viewListings}</p>
+                  </div>
               </div>
+            <div className="flex flex-wrap gap-2">
+                <Link href="/listings/add" className="inline-flex items-center gap-2 rounded-full bg-slate-950 px-6 py-3 text-sm font-black text-white hover:bg-brand-600 transition shadow-lg">
+                    {t.common.explore}
+                </Link>
+            </div>
           </div>
-        <div className="flex flex-wrap gap-2">
-            <Link href="/listings/add" className="inline-flex items-center gap-2 rounded-full bg-slate-950 px-6 py-3 text-sm font-black text-white hover:bg-brand-600 transition shadow-lg">
-                {t.common.explore}
-            </Link>
-        </div>
-      </div>
 
-      <div className="mb-10 flex items-center gap-3 flex-wrap">
+          <div className="flex items-center gap-3 flex-wrap">
         <Link
           href="/admin/listings"
           className={`px-4 py-2 rounded-full text-xs font-black uppercase tracking-wider transition-all ${!categoryFilter ? 'bg-slate-950 text-white shadow-md' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}`}
@@ -45,9 +47,11 @@ export default function AdminListingsClient({ groupedListings, categories, categ
             {c.label}
           </Link>
         ))}
-      </div>
+          </div>
+        </div>
 
-      <div className="grid gap-10">
+        <div className="p-6 sm:p-8 overflow-y-auto max-h-[60vh] no-scrollbar">
+          <div className="grid gap-10">
         {Object.entries(groupedListings).length ? (
           Object.entries(groupedListings).map(([category, catListings]) => (
             <div key={category}>
@@ -57,7 +61,7 @@ export default function AdminListingsClient({ groupedListings, categories, categ
               </div>
 
               <div className="rounded-2xl border border-slate-100 overflow-hidden bg-white shadow-sm">
-                <div className="max-h-[360px] overflow-y-auto no-scrollbar">
+                <div className="no-scrollbar">
                   {catListings.map((listing: any, idx: number) => (
                     <div
                       key={listing._id}
@@ -99,6 +103,8 @@ export default function AdminListingsClient({ groupedListings, categories, categ
             <Link href="/admin/listings" className="mt-6 text-sm font-black text-brand-600 hover:underline">{t.common.viewAll}</Link>
           </div>
         )}
+          </div>
+        </div>
       </div>
     </section>
   );

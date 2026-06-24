@@ -28,6 +28,15 @@ export default function SearchFilters() {
     return categories.find((item) => item.value === selectedCategory)?.subcategories || [];
   }, [selectedCategory]);
 
+  const getCategoryLabel = (value: string, fallback: string) => {
+    return t.categories.names[value as keyof typeof t.categories.names] || fallback;
+  };
+
+  const getSubcategoryLabel = (categoryValue: string, value: string, fallback: string) => {
+    const categoryNames = t.categories.subnames[categoryValue as keyof typeof t.categories.subnames];
+    return categoryNames?.[value as keyof typeof categoryNames] || fallback;
+  };
+
   const debouncedKeyword = useDebounce(keyword, 500);
   const debouncedLocation = useDebounce(location, 500);
 
@@ -151,7 +160,7 @@ export default function SearchFilters() {
           >
             <option value="">{t.services.allCategories}</option>
             {categories.map((item) => (
-              <option key={item.value} value={item.value}>{item.label}</option>
+              <option key={item.value} value={item.value}>{getCategoryLabel(item.value, item.label)}</option>
             ))}
           </select>
         </div>
@@ -170,7 +179,11 @@ export default function SearchFilters() {
                 }}
                 className={`text-left px-4 py-3 rounded-xl text-xs font-bold transition-all ${!selectedSubcategory ? 'bg-slate-950 text-white shadow-lg' : 'bg-slate-50 text-slate-500 hover:bg-slate-100'}`}
               >
-                All {selectedCategory}
+                {language === "en" ? "All" : "Te gjitha"}{" "}
+                {getCategoryLabel(
+                  selectedCategory,
+                  categories.find((item) => item.value === selectedCategory)?.label || selectedCategory
+                )}
               </button>
               {subcategories.map((sub) => (
                 <button 
@@ -181,7 +194,7 @@ export default function SearchFilters() {
                   }}
                   className={`text-left px-4 py-3 rounded-xl text-xs font-bold transition-all ${selectedSubcategory === sub.value ? 'bg-slate-950 text-white shadow-lg' : 'bg-slate-50 text-slate-500 hover:bg-slate-100'}`}
                 >
-                  {sub.label}
+                  {getSubcategoryLabel(selectedCategory, sub.value, sub.label)}
                 </button>
               ))}
             </div>
@@ -200,7 +213,7 @@ export default function SearchFilters() {
               value={minPrice}
               onChange={(e) => setMinPrice(e.target.value)}
               onBlur={() => applyFilters({ minPrice })}
-              placeholder="Min"
+              placeholder={language === "en" ? "Min" : "Min."}
               className="w-full h-12 px-4 rounded-xl bg-slate-50 border-2 border-transparent focus:border-brand-500 focus:bg-white transition-all font-bold text-slate-950 text-sm shadow-inner"
             />
             <span className="text-slate-300">-</span>
@@ -209,7 +222,7 @@ export default function SearchFilters() {
               value={maxPrice}
               onChange={(e) => setMaxPrice(e.target.value)}
               onBlur={() => applyFilters({ maxPrice })}
-              placeholder="Max"
+              placeholder={language === "en" ? "Max" : "Maks."}
               className="w-full h-12 px-4 rounded-xl bg-slate-50 border-2 border-transparent focus:border-brand-500 focus:bg-white transition-all font-bold text-slate-950 text-sm shadow-inner"
             />
           </div>
@@ -278,14 +291,14 @@ export default function SearchFilters() {
               <label className="text-[10px] font-black uppercase tracking-widest text-slate-900 ml-1">{t.common.category}</label>
               <select value={selectedCategory} onChange={(e) => { const val = e.target.value; setSelectedCategory(val); setSelectedSubcategory(""); applyFilters({ category: val, subcategory: "" }); }} className="w-full h-12 px-4 rounded-xl bg-slate-50 border border-slate-200 focus:border-brand-500 outline-none text-sm font-semibold">
                 <option value="">{t.services.allCategories}</option>
-                {categories.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}
+                {categories.map((item) => <option key={item.value} value={item.value}>{getCategoryLabel(item.value, item.label)}</option>)}
               </select>
             </div>
             <div className="space-y-2">
               <label className="text-[10px] font-black uppercase tracking-widest text-slate-900 ml-1">{t.common.priceRange}</label>
               <div className="flex items-center gap-2">
-                <input type="number" value={minPrice} onChange={(e) => setMinPrice(e.target.value)} onBlur={() => applyFilters({ minPrice })} placeholder={t.services.allRegions} className="w-full h-12 px-4 rounded-xl bg-slate-50 border border-slate-200 focus:border-brand-500 outline-none text-sm font-semibold" />
-                <input type="number" value={maxPrice} onChange={(e) => setMaxPrice(e.target.value)} onBlur={() => applyFilters({ maxPrice })} placeholder={t.common.priceRange} className="w-full h-12 px-4 rounded-xl bg-slate-50 border border-slate-200 focus:border-brand-500 outline-none text-sm font-semibold" />
+                <input type="number" value={minPrice} onChange={(e) => setMinPrice(e.target.value)} onBlur={() => applyFilters({ minPrice })} placeholder={language === "en" ? "Min" : "Min."} className="w-full h-12 px-4 rounded-xl bg-slate-50 border border-slate-200 focus:border-brand-500 outline-none text-sm font-semibold" />
+                <input type="number" value={maxPrice} onChange={(e) => setMaxPrice(e.target.value)} onBlur={() => applyFilters({ maxPrice })} placeholder={language === "en" ? "Max" : "Maks."} className="w-full h-12 px-4 rounded-xl bg-slate-50 border border-slate-200 focus:border-brand-500 outline-none text-sm font-semibold" />
               </div>
             </div>
             <div className="space-y-2">

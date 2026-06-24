@@ -187,7 +187,7 @@ export default function HomeSearchHero() {
   }
 
   return (
-    <section className="relative min-h-[calc(100vh-var(--header-height))] flex items-center justify-center overflow-visible py-8 sm:py-0" style={{ background: "#0d1117" }}>
+    <section className="relative flex min-h-[76svh] items-center justify-center overflow-visible py-10 sm:min-h-[calc(100vh-var(--header-height))] sm:py-0" style={{ background: "#0d1117" }}>
       {/* Background Image */}
       <div className="absolute inset-0 overflow-hidden">
         <Image
@@ -202,16 +202,16 @@ export default function HomeSearchHero() {
       </div>
 
       {/* Content */}
-      <div className="page-shell relative z-10 w-full flex flex-col items-center pt-4 sm:pt-0">
+      <div className="page-shell relative z-10 w-full flex flex-col items-center pt-2 sm:pt-0">
         {/* Heading */}
-        <div className="text-center max-w-4xl mb-10 sm:mb-12">
-          <p className="text-xs sm:text-sm font-bold uppercase tracking-[0.25em] text-white/80 mb-5" style={{ textShadow: "0 2px 4px rgba(0,0,0,0.8)" }}>
+        <div className="text-center max-w-4xl mb-7 sm:mb-12">
+          <p className="text-[11px] sm:text-sm font-bold uppercase tracking-[0.22em] sm:tracking-[0.25em] text-white/80 mb-4 sm:mb-5" style={{ textShadow: "0 2px 4px rgba(0,0,0,0.8)" }}>
             {language === "en" ? "Albania's Tourism Marketplace" : "Platforma e Turizmit Shqiptar"}
           </p>
           <h1
-            className="font-bold text-white mb-6 px-2"
+            className="font-bold text-white mb-4 px-1 sm:mb-6 sm:px-2"
             style={{
-              fontSize: "clamp(2.5rem, 7vw, 4.5rem)",
+              fontSize: "clamp(2rem, 12vw, 4.5rem)",
               lineHeight: 1.05,
               letterSpacing: "-0.025em",
               textShadow: "0 4px 32px rgba(0,0,0,0.8), 0 2px 8px rgba(0,0,0,0.9)"
@@ -220,7 +220,7 @@ export default function HomeSearchHero() {
             {language === "en" ? "Find easily. Contact directly. Enjoy holidays." : "Gjej lehtë. Kontakto direkt. Shijo pushimet."}
           </h1>
           <p
-            className="text-base sm:text-lg text-white/90 font-medium leading-relaxed max-w-2xl mx-auto px-4"
+            className="text-sm sm:text-lg text-white/90 font-medium leading-relaxed max-w-2xl mx-auto px-2 sm:px-4"
             style={{ textShadow: "0 2px 12px rgba(0,0,0,0.9)" }}
           >
             {language === "en"

@@ -48,7 +48,7 @@ export default function BlogPage() {
           <p className="eyebrow mb-4">{t.blog.journalLabel}</p>
           <h1
             className="font-bold tracking-tight mb-5"
-            style={{ fontSize: "clamp(2.25rem, 7vw, 4rem)", color: "var(--text-primary)", lineHeight: 1.08 }}
+            style={{ fontSize: "clamp(2rem, 5vw, 3rem)", color: "var(--text-primary)", lineHeight: 1.08 }}
           >
             {t.blog.heroTitle}
           </h1>

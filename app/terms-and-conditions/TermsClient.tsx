@@ -44,7 +44,7 @@ export default function TermsClient() {
             <FileText className="w-6 h-6" />
           </div>
           <p className="eyebrow mb-3">{language === "en" ? "Legal" : "Ligjor"}</p>
-          <h1 className="font-bold tracking-tight mb-4" style={{ fontSize: "clamp(1.875rem, 4vw, 2.5rem)", color: "var(--text-primary)", lineHeight: 1.1 }}>
+          <h1 className="font-bold tracking-tight mb-4" style={{ fontSize: "clamp(2rem, 5vw, 3rem)", color: "var(--text-primary)", lineHeight: 1.1 }}>
             {t.nav.terms}
           </h1>
           <p className="text-sm leading-relaxed" style={{ color: "var(--text-secondary)" }}>{t.legal.intro}</p>

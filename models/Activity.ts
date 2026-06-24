@@ -9,7 +9,8 @@ export type ActivityType =
   | "listing_rejected"
   | "listing_deleted"
   | "review_created"
-  | "blog_created";
+  | "blog_created"
+  | "blog_updated";
 
 export interface IActivity extends Document {
   type: ActivityType;
@@ -37,7 +38,8 @@ const ActivitySchema = new Schema<IActivity>(
         "listing_rejected",
         "listing_deleted",
         "review_created",
-        "blog_created"
+        "blog_created",
+        "blog_updated"
       ],
       required: true,
       index: true

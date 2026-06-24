@@ -4,7 +4,6 @@ import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { Menu, X, PlusCircle } from "lucide-react";
-import Button from "@/components/ui/Button";
 import { useLanguage } from "@/context/LanguageContext";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 
@@ -18,7 +17,7 @@ export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [hideForSearchOverlay, setHideForSearchOverlay] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const { language, setLanguage, t } = useLanguage();
+  const { language, t } = useLanguage();
 
   useEffect(() => {
     const loadMe = () => {
@@ -71,23 +70,13 @@ export default function Header() {
     ? me.role === "admin"
       ? [
           { href: "/admin", label: t.admin.navAdminLabel || "Admin" },
-          { label: "Dil", onClick: logout }
+          { label: t.nav.logout, onClick: logout }
         ]
       : [
-          { label: "Dil", onClick: logout }
+          { href: "/dashboard", label: language === "en" ? "My Dashboard" : "Paneli im" },
+          { label: t.nav.logout, onClick: logout }
         ]
     : [];
-
-  const [adminStats, setAdminStats] = useState<{ users?: number; pendingListings?: number; totalListings?: number; reports?: number } | null>(null);
-
-  useEffect(() => {
-    if (me?.role === 'admin') {
-      fetch('/api/admin/stats')
-        .then((res) => res.json())
-        .then((data) => setAdminStats(data))
-        .catch(() => null);
-    }
-  }, [me]);
 
   if (hideForSearchOverlay) return null;
 

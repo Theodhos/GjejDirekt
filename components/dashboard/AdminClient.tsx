@@ -2,9 +2,8 @@
 
 import React from "react";
 import Link from "next/link";
-import { CheckCircle2, Clock3, LayoutDashboard, PlusCircle, ShieldCheck, Users, AlertTriangle } from "lucide-react";
+import { Clock3, LayoutDashboard, MapPinned, PlusCircle, ShieldCheck, Users, AlertTriangle } from "lucide-react";
 import BlogStudio from "@/components/dashboard/BlogStudio";
-import AdminCityManager from "@/components/dashboard/AdminCityManager";
 import AdminProfile from "@/components/dashboard/AdminProfile";
 import { useLanguage } from "@/context/LanguageContext";
 
@@ -16,6 +15,7 @@ export default function AdminClient({
   pendingListings,
   totalReports,
   totalBlogs,
+  totalCities,
   serializedBlogs,
   displayName,
   authEmail
@@ -25,6 +25,7 @@ export default function AdminClient({
   pendingListings: number;
   totalReports: number;
   totalBlogs: number;
+  totalCities: number;
   serializedBlogs: ListingAny[];
   displayName: string;
   authEmail: string;
@@ -37,7 +38,8 @@ export default function AdminClient({
     { icon: ShieldCheck, label: t.admin.listings, value: totalListings, accent: "bg-brand-50 text-brand-700", href: "/admin/listings" },
     { icon: Clock3, label: t.admin.pending, value: pendingListings, accent: "bg-amber-50 text-amber-700", href: "/admin/listings?status=pending" },
     { icon: AlertTriangle, label: t.admin.reports, value: totalReports, accent: "bg-red-50 text-red-700", href: "/admin/reports" },
-    { icon: LayoutDashboard, label: t.admin.blogs, value: totalBlogs, accent: "bg-violet-50 text-violet-700", href: "/admin/blogs" }
+    { icon: LayoutDashboard, label: t.admin.blogs, value: totalBlogs, accent: "bg-violet-50 text-violet-700", href: "/admin/blogs" },
+    { icon: MapPinned, label: adminText.cities || "Qytete", value: totalCities, accent: "bg-teal-50 text-teal-700", href: "/admin/cities" }
   ];
 
   return (
@@ -60,7 +62,7 @@ export default function AdminClient({
           <Link href="#blog-studio" className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-900">
             {adminText.blogStudio || 'Shto Blog'}
           </Link>
-          <Link href="#city-admin" className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-900">
+          <Link href="/admin/cities" className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-900">
             {adminText.addCity || 'Shto Qytet'}
           </Link>
         </div>
@@ -85,10 +87,6 @@ export default function AdminClient({
 
       <div className="mt-12" id="blog-studio">
         <BlogStudio recentPosts={serializedBlogs as any[]} />
-      </div>
-
-      <div className="mt-8" id="city-admin">
-        <AdminCityManager />
       </div>
 
     </section>

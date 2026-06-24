@@ -109,7 +109,7 @@ export default function FAQPage() {
           <p className="eyebrow mb-4">{language === "en" ? "Help Center" : "Qendra e Ndihmës"}</p>
           <h1
             className="font-bold tracking-tight mb-4"
-            style={{ fontSize: "clamp(1.875rem, 5vw, 2.75rem)", color: "var(--text-primary)", lineHeight: 1.1 }}
+            style={{ fontSize: "clamp(2rem, 5vw, 3rem)", color: "var(--text-primary)", lineHeight: 1.1 }}
           >
             {language === "en" ? "Frequently Asked Questions" : "Pyetje të Shpeshta"}
           </h1>

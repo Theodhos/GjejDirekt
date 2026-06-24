@@ -4,6 +4,8 @@ import User from '@/models/User';
 import Listing from '@/models/Listing';
 import Report from '@/models/Report';
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   try {
     await connectDB();
