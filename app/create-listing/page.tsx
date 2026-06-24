@@ -12,6 +12,7 @@ import {
   UtensilsCrossed,
   Compass
 } from 'lucide-react';
+import { useLanguage } from '@/context/LanguageContext';
 
 // Icon mapping for categories
 const categoryIcons: Record<string, React.ReactNode> = {
@@ -37,6 +38,7 @@ const categoryColors: Record<string, { bg: string; icon: string; border: string 
 
 export default function CreateListingPage() {
   const router = useRouter();
+  const { language } = useLanguage();
 
   const handleCategoryClick = (categoryValue: string) => {
     // Navigate to /listings/add with the selected category as a query parameter
@@ -49,10 +51,10 @@ export default function CreateListingPage() {
         {/* Header */}
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-gray-900 mb-3">
-            Create a listing
+            {language === "en" ? "Create a listing" : "Shto një shërbim"}
           </h1>
           <p className="text-lg text-gray-500">
-            What type of listing would you like to add?
+            {language === "en" ? "What type of listing would you like to add?" : "Çfarë lloj shërbimi dëshironi të shtoni?"}
           </p>
         </div>
 
@@ -94,7 +96,7 @@ export default function CreateListingPage() {
             onClick={() => router.back()}
             className="text-gray-600 hover:text-gray-900 font-medium"
           >
-            ← Go back
+            ← {language === "en" ? "Go back" : "Kthehu prapa"}
           </button>
         </div>
       </div>

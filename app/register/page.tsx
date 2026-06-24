@@ -13,73 +13,45 @@ export default function RegisterPage() {
 
   return (
     <section
-      className="page-shell flex min-h-[80vh] items-center py-12 sm:py-20"
-      style={{ background: "var(--surface-page)" }}
+      className="page-shell flex items-center justify-center h-[calc(100vh-5rem)] py-4"
+      style={{ background: "var(--surface-page)", minHeight: "600px" }}
     >
       <div
-        className="mx-auto w-full max-w-5xl overflow-hidden"
+        className="w-full max-w-5xl overflow-hidden h-full max-h-[650px]"
         style={{
-          borderRadius: "20px",
+          borderRadius: "1.5rem",
           border: "1px solid var(--border-soft)",
-          boxShadow: "var(--shadow-panel)"
+          boxShadow: "0 24px 64px rgba(0,0,0,0.04), 0 8px 24px rgba(0,0,0,0.02)",
+          display: "grid",
         }}
       >
         <div className="grid lg:grid-cols-2">
 
-          {/* Left — Image Panel */}
-          <div
-            className="relative overflow-hidden min-h-[320px] lg:min-h-full"
-            style={{ borderRadius: "20px 0 0 20px" }}
-          >
+          {/* Left — Simplified Image Panel */}
+          <div className="relative hidden lg:block overflow-hidden min-h-full">
             <Image
               src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80"
               alt="Travel registration"
               fill
               className="object-cover"
             />
+            {/* Very subtle, smooth gradient */}
             <div
               className="absolute inset-0"
-              style={{ background: "linear-gradient(to top, rgba(10,12,16,0.9) 0%, rgba(10,12,16,0.35) 55%, rgba(10,12,16,0.1) 100%)" }}
+              style={{ background: "linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.2) 40%, transparent 100%)" }}
             />
-            <div className="absolute inset-0 flex flex-col justify-end p-8 sm:p-12">
-              <p className="eyebrow mb-4" style={{ color: "rgba(255,255,255,0.55)" }}>
-                {t.register.start}
-              </p>
+            <div className="absolute inset-0 flex flex-col justify-end p-12">
               <h1
-                className="display-font font-bold text-white mb-4 leading-tight"
-                style={{ fontSize: "clamp(1.75rem, 4vw, 2.75rem)", textShadow: "0 2px 16px rgba(0,0,0,0.4)" }}
+                className="text-3xl font-bold text-white mb-3 leading-snug"
+                style={{ textShadow: "0 4px 12px rgba(0,0,0,0.3)" }}
               >
                 {t.register.joinTitle}
               </h1>
               <p
-                className="text-sm leading-relaxed mb-8 max-w-xs"
-                style={{ color: "rgba(255,255,255,0.65)" }}
+                className="text-base text-white/80"
               >
-                {t.register.description}
+                {language === "en" ? "Create an account to start exploring." : "Krijoni një llogari për të filluar eksplorimin."}
               </p>
-
-              {/* Benefit badges */}
-              <div className="grid grid-cols-2 gap-2.5">
-                {t.register.benefits.map((item: string) => (
-                  <div
-                    key={item}
-                    className="rounded-xl p-3"
-                    style={{
-                      background: "rgba(255,255,255,0.08)",
-                      border: "1px solid rgba(255,255,255,0.12)",
-                      backdropFilter: "blur(8px)"
-                    }}
-                  >
-                    <p
-                      className="text-[9px] font-semibold uppercase tracking-[0.18em] mb-1"
-                      style={{ color: "rgba(255,255,255,0.45)" }}
-                    >
-                      {t.register.benefitLabel}
-                    </p>
-                    <p className="text-xs font-semibold text-white leading-snug">{item}</p>
-                  </div>
-                ))}
-              </div>
             </div>
           </div>
 

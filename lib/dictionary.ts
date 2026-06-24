@@ -281,6 +281,134 @@ export const translations = {
       updateFavoritesFailed: "Failed to update favorites",
       showAllPhotos: "Show all photos"
     },
+    admin: {
+      consoleTitle: "Admin Console",
+      heroTitle: "Control the tourism platform from one place.",
+      addListing: "Add listing",
+      viewServices: "View services",
+      blogStudio: "Blog Studio",
+      blogPublishTitle: "Publish blog content directly from admin",
+      blogPublishDesc: "Add destination guides, travel stories, and editorial content without leaving the control panel.",
+      draftMode: "Draft mode",
+      chars: "Chars",
+      posts: "Posts",
+      coverImage: "Cover image URL",
+      coverImagePlaceholder: "Cover image URL",
+      publishImmediately: "Publish immediately",
+      publishPost: "Publish post",
+      saveDraft: "Save draft",
+      addCityTitle: "Add Albania City (Admin)",
+      addCityDesc: "Only admin can add new Albania cities. They appear automatically on home and city pages.",
+      cityNameLabel: "City name",
+      cityNamePlaceholder: "e.g. Himare",
+      regionLabel: "Region",
+      regionPlaceholder: "South coast",
+      imageLabel: "Image URL",
+      descriptionLabel: "Description",
+      descriptionPlaceholder: "Short city description",
+      addCityBtn: "Add city",
+      availableCitiesLabel: "Available cities",
+      deleteBtn: "Delete",
+      confirmDeleteCity: "Are you sure you want to delete {label}?",
+      deleteCityFailed: "Failed to delete city",
+      cityDeleted: "City deleted.",
+      deletedListingsSuffix: "listings.",
+      cityAddedMessage: "City added. Home and city page will update automatically.",
+      addCityFailed: "Failed to add city",
+      profileSaved: "Profile saved",
+      resetSent: "Reset link sent to your email",
+      fullNameLabel: "Full name",
+      emailLabel: "Email address",
+      passwordLabel: "Password",
+      passwordResetDesc: "Send a secure reset link to your email.",
+      resetPasswordBtn: "Reset Password",
+      saveProfileBtn: "Save Profile",
+      navAdminLabel: "Admin",
+      profileDataTitle: "Profile data",
+      forgotPasswordTitle: "Password",
+      forgotPasswordDesc: "Send a secure reset link to your email.",
+      identifiedAs: "Identified as",
+      pendingModeration: "Pending moderation",
+      pendingCountText: "There are {count} listings waiting for your approval.",
+      approvalRateLabel: "Approval rate",
+      users: "Users",
+      listings: "Listings",
+      pending: "Pending",
+      approved: "Approved",
+      reports: "Reports",
+      blogs: "Blogs",
+      viewListings: "View listings"
+    },
+    approveButton: "Approve",
+    rejectButton: "Reject",
+    listingApproved: "Listing approved",
+    listingRejected: "Listing rejected",
+    categories: {
+      header: "Category",
+      description: "Explore the full range of services and experiences under {category}. Find the best local providers and book with confidence."
+      ,
+      names: {
+        akomodim: "Accommodation",
+        restorante: "Restaurants",
+        atraksione: "Attractions",
+        evente: "Events",
+        "sherbime-turistike": "Tourism Services",
+        "produkte-lokale": "Local Products",
+        transport: "Transport"
+      },
+      subnames: {
+        akomodim: {
+          hotel: "Hotel",
+          resort: "Resort",
+          vila: "Villa",
+          apartament: "Apartment",
+          guesthouse: "Guesthouse",
+          "te-tjera": "Other"
+        },
+        restorante: {
+          tradicional: "Traditional",
+          internacional: "International",
+          "fast-food": "Fast Food",
+          "kafe-bar": "Cafe & Bar",
+          "te-tjera": "Other"
+        },
+        atraksione: {
+          natyre: "Nature",
+          historike: "Historical",
+          muze: "Museum",
+          plazh: "Beach",
+          "te-tjera": "Other"
+        },
+        evente: {
+          koncerte: "Concerts",
+          festivale: "Festivals",
+          panaire: "Fairs",
+          dasma: "Weddings",
+          "te-tjera": "Other"
+        },
+        "sherbime-turistike": {
+          guida: "Guides",
+          agjenci: "Agency",
+          ekskursione: "Excursions",
+          rezervime: "Bookings",
+          "te-tjera": "Other"
+        },
+        "produkte-lokale": {
+          artizanat: "Handmade",
+          ushqimore: "Food",
+          suvenire: "Souvenirs",
+          agro: "Agro Products",
+          "te-tjera": "Other"
+        },
+        transport: {
+          aeroport: "Airport",
+          "makine-me-qira": "Car Rental",
+          varka: "Boat",
+          taksi: "Taxi",
+          "te-tjera": "Other"
+        }
+      }
+    },
     terms: [
         {
           title: "1. Acceptance of Terms",
@@ -622,6 +750,137 @@ export const translations = {
       removedFromFavorites: "U hoq nga të preferuarat",
       updateFavoritesFailed: "Dështoi përditësimi",
       showAllPhotos: "Shiko të gjitha fotot"
+    }
+    ,
+    admin: {
+      consoleTitle: "Konsola e Administratorit",
+      heroTitle: "Kontrollo platformën turistike nga një vend.",
+      addListing: "Shto listim",
+      viewServices: "Shiko shërbimet",
+      blogStudio: "Blog Studio",
+      blogPublishTitle: "Publikoni përmbajtje blogu direkt nga admin",
+      blogPublishDesc: "Shtoni udhëzues destinacioni, histori udhëtimi dhe përmbajtje editoriale pa u larguar nga paneli i kontrollit.",
+      draftMode: "Mënyra Draft",
+      chars: "Karaktere",
+      posts: "Postime",
+      coverImage: "URL e fotos së kopertinës",
+      coverImagePlaceholder: "URL e fotos së kopertinës",
+      publishImmediately: "Publiko menjëherë",
+      publishPost: "Publiko postimin",
+      saveDraft: "Ruaj draftin",
+      addCityTitle: "Shto Qytet në Shqipëri (Admin)",
+      addCityDesc: "Vetëm administratori mund të shtojë qytete të reja në Shqipëri. Ato shfaqen automatikisht në faqen kryesore dhe faqet e qyteteve.",
+      cityNameLabel: "Emri i qytetit",
+      cityNamePlaceholder: "p.sh. Himarë",
+      regionLabel: "Rajoni",
+      regionPlaceholder: "Bregdeti i Jugut",
+      imageLabel: "URL e imazhit",
+      descriptionLabel: "Përshkrimi",
+      descriptionPlaceholder: "Përshkrim i shkurtër i qytetit",
+      addCityBtn: "Shto qytetin",
+      availableCitiesLabel: "Qytetet e disponueshme",
+      deleteBtn: "Fshij",
+      confirmDeleteCity: "A jeni i sigurt që dëshironi të fshini {label}?",
+      deleteCityFailed: "Dështoi fshirja e qytetit",
+      cityDeleted: "Qyteti u fshi.",
+      deletedListingsSuffix: "listime.",
+      cityAddedMessage: "Qyteti u shtua. Faqja kryesore dhe faqja e qytetit do të përditësohen automatikisht.",
+      addCityFailed: "Dështoi shtimi i qytetit",
+      profileSaved: "Profili u ruajt",
+      resetSent: "Linku për ndryshim fjalëkalimi u dërgua në emailin tuaj",
+      fullNameLabel: "Emri i plotë",
+      emailLabel: "Adresa e email-it",
+      passwordLabel: "Fjalëkalimi",
+      passwordResetDesc: "Dërgo një link të sigurt për rivendosje në emailin tuaj.",
+      resetPasswordBtn: "Rivendos Fjalëkalimin",
+      saveProfileBtn: "Ruaj Profilin",
+      navAdminLabel: "Admin",
+      profileDataTitle: "Të dhënat",
+      forgotPasswordTitle: "Fjalëkalimi",
+      forgotPasswordDesc: "Dërgo një link të sigurt për rivendosje në emailin tuaj.",
+      identifiedAs: "I identifikuar si",
+      pendingModeration: "Në pritje të moderimit",
+      pendingCountText: "Ka {count} listime që presin miratimin tuaj.",
+      approvalRateLabel: "Shkalla e miratimit",
+      users: "Përdorues",
+      listings: "Listingje",
+      pending: "Në pritje",
+      approved: "Të miratuara",
+      reports: "Raporte",
+      blogs: "Blogje",
+      viewListings: "Shiko listimet"
+    }
+    ,
+    approveButton: "Prano",
+    rejectButton: "Refuzo",
+    listingApproved: "Listimi u pranua",
+    listingRejected: "Listimi u refuzua"
+    ,
+    categories: {
+      header: "Kategoria",
+      description: "Zbuloni gamën e plotë të shërbimeve dhe përvojave nën {category}. Gjeni ofruesit më të mirë lokalë dhe rezervoni me besim."
+      ,
+      names: {
+        akomodim: "Akomodim",
+        restorante: "Restorante",
+        atraksione: "Atraksione",
+        evente: "Evente",
+        "sherbime-turistike": "Shërbime Turistike",
+        "produkte-lokale": "Produkte Lokale",
+        transport: "Transport"
+      },
+      subnames: {
+        akomodim: {
+          hotel: "Hotel",
+          resort: "Resort",
+          vila: "Vila",
+          apartament: "Apartament",
+          guesthouse: "Guesthouse",
+          "te-tjera": "Të tjera"
+        },
+        restorante: {
+          tradicional: "Tradicional",
+          internacional: "Internacional",
+          "fast-food": "Fast Food",
+          "kafe-bar": "Kafe & Bar",
+          "te-tjera": "Të tjera"
+        },
+        atraksione: {
+          natyre: "Natyrë",
+          historike: "Historike",
+          muze: "Muze",
+          plazh: "Plazh",
+          "te-tjera": "Të tjera"
+        },
+        evente: {
+          koncerte: "Koncerte",
+          festivale: "Festivale",
+          panaire: "Panaire",
+          dasma: "Dasma",
+          "te-tjera": "Të tjera"
+        },
+        "sherbime-turistike": {
+          guida: "Guida",
+          agjenci: "Agjenci",
+          ekskursione: "Ekskursione",
+          rezervime: "Rezervime",
+          "te-tjera": "Të tjera"
+        },
+        "produkte-lokale": {
+          artizanat: "Artizanat",
+          ushqimore: "Ushqimore",
+          suvenire: "Suvenire",
+          agro: "Agro-Produkte",
+          "te-tjera": "Të tjera"
+        },
+        transport: {
+          aeroport: "Aeroport",
+          "makine-me-qira": "Makina me Qira",
+          varka: "Varka",
+          taksi: "Taksi",
+          "te-tjera": "Të tjera"
+        }
+      }
     }
       ,
       terms: [

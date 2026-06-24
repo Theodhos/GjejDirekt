@@ -63,17 +63,28 @@ export default function UserListingTable({
   return (
     <div className="space-y-4">
       {/* Mobile Card Layout */}
-      <div className="sm:hidden space-y-4 max-h-[60vh] overflow-y-auto pr-1">
+      <div className="sm:hidden space-y-4 max-h-[600px] overflow-y-auto custom-scrollbar pr-1">
         {listings.map((listing) => (
-          <div key={listing._id} className="surface rounded-[1.75rem] border border-slate-200 p-5 bg-white">
-            <div className="flex flex-col gap-2">
+          <div 
+            key={listing._id} 
+            className="rounded-2xl p-5"
+            style={{
+              background: "var(--surface-white)",
+              border: "1px solid var(--border-soft)",
+              boxShadow: "var(--shadow-card)"
+            }}
+          >
+            <div className="flex flex-col gap-3">
               <div className="flex items-start justify-between gap-4">
                 <div>
-                  <p className="text-base font-black text-slate-950">{listing.title}</p>
-                  <p className="text-xs font-semibold text-slate-400 mt-1 uppercase tracking-widest">{listing.location}</p>
+                  <p className="text-base font-bold mb-1" style={{ color: "var(--text-primary)" }}>{listing.title}</p>
+                  <p className="text-xs font-semibold uppercase tracking-[0.15em]" style={{ color: "var(--text-secondary)" }}>{listing.location}</p>
                   {isAdmin && listing.owner && (
-                    <div className="flex items-center gap-1 mt-2 text-xs font-semibold text-slate-500 bg-slate-50 border border-slate-100 rounded-full px-2 py-0.5 w-fit">
-                      <User className="w-3 h-3 text-slate-400" />
+                    <div 
+                      className="flex items-center gap-1.5 mt-3 text-[11px] font-semibold uppercase tracking-wider rounded-lg px-2.5 py-1 w-fit"
+                      style={{ background: "var(--surface-cream)", color: "var(--text-tertiary)", border: "1px solid var(--border-soft)" }}
+                    >
+                      <User className="w-3.5 h-3.5" />
                       <span>{listing.owner.name || listing.owner.email}</span>
                     </div>
                   )}
@@ -91,17 +102,19 @@ export default function UserListingTable({
                 </Badge>
               </div>
               
-              <div className="flex flex-wrap gap-2 pt-4 border-t border-slate-100 mt-2">
+              <div className="flex flex-wrap items-center gap-2 pt-4 mt-1" style={{ borderTop: "1px solid var(--border-soft)" }}>
                 <Link
                   href={`/listings/${listing.slug}/edit`}
-                  className="rounded-full border border-slate-200 bg-slate-50 hover:bg-slate-100 hover:border-slate-300 px-4 py-2 text-xs font-black uppercase tracking-wider text-brand-700 flex items-center gap-1.5 transition-all"
+                  className="rounded-xl px-4 py-2.5 text-[11px] font-bold uppercase tracking-[0.15em] flex items-center justify-center gap-2 flex-1 transition-colors"
+                  style={{ background: "var(--surface-cream)", color: "var(--text-secondary)", border: "1px solid var(--border-soft)" }}
                 >
-                  <Edit className="w-3 h-3" />
+                  <Edit className="w-3.5 h-3.5" />
                   {language === "en" ? "Edit" : "Modifiko"}
                 </Link>
                 <Link
                   href={`/listings/${listing.slug}`}
-                  className="rounded-full border border-slate-200 bg-slate-50 hover:bg-slate-100 hover:border-slate-300 px-4 py-2 text-xs font-black uppercase tracking-wider text-slate-700 flex items-center gap-1.5 transition-all"
+                  className="rounded-xl px-4 py-2.5 text-[11px] font-bold uppercase tracking-[0.15em] flex items-center justify-center gap-2 flex-1 transition-colors"
+                  style={{ background: "var(--surface-cream)", color: "var(--text-secondary)", border: "1px solid var(--border-soft)" }}
                 >
                   <Eye className="w-3.5 h-3.5" />
                   {language === "en" ? "View" : "Shiko"}
@@ -109,14 +122,14 @@ export default function UserListingTable({
                 <button
                   disabled={deletingId === listing._id}
                   onClick={() => handleDelete(listing._id, listing.title)}
-                  className="rounded-full border border-red-200 bg-red-50 hover:bg-red-100 px-4 py-2 text-xs font-black uppercase tracking-wider text-red-700 flex items-center gap-1.5 transition-all disabled:opacity-50 ml-auto"
+                  className="rounded-xl px-4 py-2.5 text-[11px] font-bold uppercase tracking-[0.15em] flex items-center justify-center gap-2 shrink-0 transition-colors disabled:opacity-50"
+                  style={{ background: "#FEE2E2", color: "#DC2626", border: "1px solid #FECACA" }}
                 >
                   {deletingId === listing._id ? (
-                    <Loader2 className="w-3 h-3 animate-spin" />
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
                   ) : (
-                    <Trash2 className="w-3 h-3" />
+                    <Trash2 className="w-3.5 h-3.5" />
                   )}
-                  {language === "en" ? "Delete" : "Fshi"}
                 </button>
               </div>
             </div>
@@ -124,79 +137,111 @@ export default function UserListingTable({
         ))}
       </div>
 
-      {/* Desktop Table Layout */}
-      <div className="hidden sm:block surface overflow-hidden bg-white border border-slate-150 rounded-[2rem]">
-        <div className="max-h-[520px] overflow-y-auto overflow-x-auto">
-          <table className="min-w-[760px] w-full divide-y divide-slate-100">
-            <thead className="bg-slate-50/75 text-left text-xs uppercase tracking-widest font-black text-slate-500">
-              <tr>
-                <th className="px-6 py-4 font-black">{language === "en" ? "Title" : "Titulli"}</th>
-                {isAdmin && <th className="px-6 py-4 font-black">{language === "en" ? "Owner" : "Pronari"}</th>}
-                <th className="px-6 py-4 font-black">{language === "en" ? "Status" : "Statusi"}</th>
-                <th className="px-6 py-4 font-black">{language === "en" ? "Location" : "Vendndodhja"}</th>
-                <th className="px-6 py-4 font-black text-center">{language === "en" ? "Actions" : "Veprimet"}</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100 text-sm font-medium">
-              {listings.map((listing) => (
-                <tr key={listing._id} className="hover:bg-slate-50/50 transition">
-                  <td className="px-6 py-4 font-bold text-slate-900">{listing.title}</td>
-                  {isAdmin && (
-                    <td className="px-6 py-4">
-                      <div className="flex flex-col">
-                        <span className="font-bold text-slate-800">{listing.owner?.name || "N/A"}</span>
-                        <span className="text-xs text-slate-400 font-semibold">{listing.owner?.email || ""}</span>
-                      </div>
-                    </td>
-                  )}
-                  <td className="px-6 py-4">
-                    <Badge
-                      tone={
-                        listing.status === "approved"
-                          ? "success"
-                          : listing.status === "rejected"
-                          ? "danger"
-                          : "warning"
-                      }
-                    >
-                      {listing.status}
-                    </Badge>
-                  </td>
-                  <td className="px-6 py-4 text-slate-500 font-semibold uppercase tracking-wider text-xs">{listing.location}</td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center justify-center gap-2">
-                      <Link 
-                        href={`/listings/${listing.slug}/edit`} 
-                        className="p-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-brand-600 transition shadow-sm hover:scale-105"
-                        title={language === "en" ? "Edit Listing" : "Modifiko Shërbimin"}
-                      >
-                        <Edit className="w-4 h-4" />
-                      </Link>
-                      <Link 
-                        href={`/listings/${listing.slug}`} 
-                        className="p-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 transition shadow-sm hover:scale-105"
-                        title={language === "en" ? "View Listing" : "Shiko Shërbimin"}
-                      >
-                        <Eye className="w-4 h-4" />
-                      </Link>
-                      <button
-                        disabled={deletingId === listing._id}
-                        onClick={() => handleDelete(listing._id, listing.title)}
-                        className="p-2 rounded-xl border border-red-150 bg-red-50 hover:bg-red-100 text-red-600 transition shadow-sm hover:scale-105 disabled:opacity-50"
-                        title={language === "en" ? "Delete Listing" : "Fshi Shërbimin"}
-                      >
-                        {deletingId === listing._id ? (
-                          <Loader2 className="w-4 h-4 animate-spin" />
-                        ) : (
-                          <Trash2 className="w-4 h-4" />
-                        )}
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+      {/* Desktop List Layout */}
+      <div 
+        className="hidden sm:block overflow-hidden rounded-2xl"
+        style={{
+          background: "var(--surface-white)",
+          border: "1px solid var(--border-soft)",
+          boxShadow: "var(--shadow-card)"
+        }}
+      >
+        <div className="max-h-[600px] overflow-y-auto custom-scrollbar">
+          <ul className="divide-y" style={{ borderColor: "var(--border-soft)" }}>
+            {/* Header Row */}
+            <li 
+              className="sticky top-0 z-10 px-6 py-4 flex items-center justify-between text-xs uppercase tracking-[0.15em] font-bold"
+              style={{ background: "var(--surface-cream)", color: "var(--text-tertiary)", borderBottom: "1px solid var(--border-soft)" }}
+            >
+              <div className="flex-1 min-w-[200px]">{language === "en" ? "Title" : "Titulli"}</div>
+              {isAdmin && <div className="w-[180px]">{language === "en" ? "Owner" : "Pronari"}</div>}
+              <div className="w-[120px]">{language === "en" ? "Status" : "Statusi"}</div>
+              <div className="w-[140px]">{language === "en" ? "Location" : "Vendndodhja"}</div>
+              <div className="w-[140px] text-right">{language === "en" ? "Actions" : "Veprimet"}</div>
+            </li>
+
+            {/* List Items */}
+            {listings.map((listing) => (
+              <li 
+                key={listing._id} 
+                className="px-6 py-4 flex items-center justify-between gap-4 transition-colors hover:bg-neutral-50/50"
+              >
+                {/* Title */}
+                <div className="flex-1 min-w-[200px]">
+                  <p className="font-bold text-base truncate pr-4" style={{ color: "var(--text-primary)" }}>
+                    {listing.title}
+                  </p>
+                </div>
+
+                {/* Owner (Admin only) */}
+                {isAdmin && (
+                  <div className="w-[180px] flex flex-col truncate pr-2">
+                    <span className="font-semibold text-sm truncate" style={{ color: "var(--text-primary)" }}>
+                      {listing.owner?.name || "N/A"}
+                    </span>
+                    <span className="text-xs truncate" style={{ color: "var(--text-secondary)" }}>
+                      {listing.owner?.email || ""}
+                    </span>
+                  </div>
+                )}
+
+                {/* Status */}
+                <div className="w-[120px]">
+                  <Badge
+                    tone={
+                      listing.status === "approved"
+                        ? "success"
+                        : listing.status === "rejected"
+                        ? "danger"
+                        : "warning"
+                    }
+                  >
+                    {listing.status}
+                  </Badge>
+                </div>
+
+                {/* Location */}
+                <div className="w-[140px]">
+                  <span className="text-xs font-semibold uppercase tracking-wider truncate block" style={{ color: "var(--text-secondary)" }}>
+                    {listing.location}
+                  </span>
+                </div>
+
+                {/* Actions */}
+                <div className="w-[140px] flex items-center justify-end gap-2">
+                  <Link 
+                    href={`/listings/${listing.slug}/edit`} 
+                    className="flex items-center justify-center h-9 w-9 rounded-xl transition-colors hover:bg-neutral-100"
+                    style={{ border: "1px solid var(--border-medium)", color: "var(--text-secondary)" }}
+                    title={language === "en" ? "Edit Listing" : "Modifiko Shërbimin"}
+                  >
+                    <Edit className="w-4 h-4" />
+                  </Link>
+                  <Link 
+                    href={`/listings/${listing.slug}`} 
+                    className="flex items-center justify-center h-9 w-9 rounded-xl transition-colors hover:bg-neutral-100"
+                    style={{ border: "1px solid var(--border-medium)", color: "var(--text-secondary)" }}
+                    title={language === "en" ? "View Listing" : "Shiko Shërbimin"}
+                  >
+                    <Eye className="w-4 h-4" />
+                  </Link>
+                  <button
+                    disabled={deletingId === listing._id}
+                    onClick={() => handleDelete(listing._id, listing.title)}
+                    className="flex items-center justify-center h-9 w-9 rounded-xl transition-colors disabled:opacity-50"
+                    style={{ background: "#FEE2E2", color: "#DC2626", border: "1px solid #FECACA" }}
+                    title={language === "en" ? "Delete Listing" : "Fshi Shërbimin"}
+                  >
+                    {deletingId === listing._id ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <Trash2 className="w-4 h-4" />
+                    )}
+                  </button>
+                </div>
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
     </div>

@@ -44,29 +44,31 @@ export default async function DashboardPage() {
 
   return (
     <main style={{ background: "var(--surface-page)" }}>
-      {/* Page Header */}
-      <div style={{ borderBottom: "1px solid var(--border-soft)", background: "var(--surface-white)" }}>
-        <div className="page-shell py-10 sm:py-14">
-          <div className="grid gap-8 xl:grid-cols-[1fr_0.9fr] xl:items-start">
-            <div>
+      {/* Page Header (Hero) */}
+      <div style={{ borderBottom: "1px solid var(--border-soft)", background: "var(--surface-cream)" }}>
+        <div className="page-shell py-12 sm:py-16">
+          <div className="grid gap-10 lg:grid-cols-[1fr_400px] xl:grid-cols-[1fr_480px] lg:items-center">
+            <div className="max-w-2xl">
               <p className="eyebrow mb-4">Your area</p>
               <h1
-                className="font-bold tracking-tight mb-3"
-                style={{ fontSize: "clamp(1.75rem, 4vw, 2.5rem)", color: "var(--text-primary)" }}
+                className="font-bold tracking-tight mb-4"
+                style={{ fontSize: "clamp(2rem, 5vw, 3rem)", color: "var(--text-primary)", lineHeight: 1.1 }}
               >
                 Personal Dashboard
               </h1>
-              <p className="text-sm leading-relaxed mb-6 max-w-lg" style={{ color: "var(--text-secondary)" }}>
-                Your listings, favorites, reviews, and platform activity in one place. Everything you do on the platform is surfaced here clearly.
+              <p className="text-base sm:text-lg leading-relaxed mb-8" style={{ color: "var(--text-secondary)" }}>
+                Your listings, favorites, reviews, and platform activity all in one place. Everything you do on the platform is cleanly surfaced here.
               </p>
-              <div className="flex flex-wrap gap-3">
+              <div className="flex flex-wrap items-center gap-4">
                 <Button href="/create-listing">Add Listing</Button>
-                <Button href="/packet">Buy Package</Button>
+                <Button href="/packet" variant="ghost" className="hidden sm:inline-flex">Buy Package</Button>
                 <Button href="/services" variant="ghost">Explore services</Button>
               </div>
             </div>
 
-            <ProfilePanel user={profileUser} />
+            <div className="w-full">
+              <ProfilePanel user={profileUser} />
+            </div>
           </div>
         </div>
       </div>
@@ -103,45 +105,8 @@ export default async function DashboardPage() {
         </div>
       </div>
 
-      {/* Member Info Cards */}
+      {/* Main Content Grid */}
       <div className="page-shell py-8">
-        <div className="grid gap-3 sm:grid-cols-3 mb-10">
-          {[
-            { label: "Member since", value: joinedAt || "Now", icon: CalendarDays },
-            { label: "Role", value: auth.role, icon: ShieldCheck },
-            { label: "Total listings", value: String(listings.length), icon: MessageSquareText }
-          ].map((item) => (
-            <div
-              key={item.label}
-              className="flex items-center gap-4 rounded-xl p-4"
-              style={{
-                background: "var(--surface-white)",
-                border: "1px solid var(--border-soft)",
-                boxShadow: "var(--shadow-card)"
-              }}
-            >
-              <div
-                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl"
-                style={{ background: "var(--brand-light)", color: "var(--brand-accent)" }}
-              >
-                <item.icon className="h-4.5 w-4.5" />
-              </div>
-              <div>
-                <p
-                  className="text-[11px] font-semibold uppercase tracking-[0.18em] mb-0.5"
-                  style={{ color: "var(--text-tertiary)" }}
-                >
-                  {item.label}
-                </p>
-                <p className="text-sm font-semibold capitalize" style={{ color: "var(--text-primary)" }}>
-                  {item.value}
-                </p>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Main Content Grid */}
         <div className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
           {/* Listings Table */}
           <div

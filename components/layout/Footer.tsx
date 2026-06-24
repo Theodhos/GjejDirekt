@@ -91,7 +91,6 @@ export default function Footer() {
             {[
               { href: "/", label: t.nav.home },
               { href: "/services", label: t.nav.services },
-              { href: "/cities", label: t.nav.cities || (language === "en" ? "Cities" : "Qytetet") },
               { href: "/blog", label: t.nav.blog },
               { href: "/about-us", label: t.nav.aboutUs || (language === "en" ? "About Us" : "Rreth Nesh") },
               { href: "/faq", label: t.nav.faq || (language === "en" ? "FAQ" : "Pyetje të Shpeshta") }
@@ -120,8 +119,7 @@ export default function Footer() {
             {[
               { href: "/create-listing", label: t.nav.addListing },
               { href: "/register", label: t.nav.register },
-              { href: "/login", label: t.nav.login },
-              { href: "/dashboard", label: t.nav.dashboard }
+              { href: "/login", label: t.nav.login }
             ].map((link) => (
               <Link
                 key={link.href}
@@ -146,7 +144,7 @@ export default function Footer() {
             </p>
             <a
               href="mailto:infoturizemalbania@gmail.com"
-              className="block text-sm font-medium break-all transition-colors"
+              className="inline-block text-sm font-medium whitespace-nowrap transition-colors"
               style={{ color: "var(--brand-accent)" }}
               onMouseEnter={e => ((e.currentTarget as HTMLElement).style.color = "var(--brand-hover)")}
               onMouseLeave={e => ((e.currentTarget as HTMLElement).style.color = "var(--brand-accent)")}

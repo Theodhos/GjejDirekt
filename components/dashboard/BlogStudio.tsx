@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useLanguage } from "@/context/LanguageContext";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import Button from "@/components/ui/Button";
@@ -18,6 +19,7 @@ type BlogPreview = {
 };
 
 export default function BlogStudio({ recentPosts }: { recentPosts: BlogPreview[] }) {
+  const { t } = useLanguage();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [published, setPublished] = useState(true);
@@ -28,11 +30,11 @@ export default function BlogStudio({ recentPosts }: { recentPosts: BlogPreview[]
 
   const stats = useMemo(
     () => [
-      { label: "Draft mode", value: published ? "Off" : "On" },
-      { label: "Chars", value: content.length.toString() },
-      { label: "Posts", value: recentPosts.length.toString() }
+      { label: t.admin.draftMode || "Draft mode", value: published ? (t.common.off || "Off") : (t.common.on || "On") },
+      { label: t.admin.chars || "Chars", value: content.length.toString() },
+      { label: t.admin.posts || "Posts", value: recentPosts.length.toString() }
     ],
-    [content.length, published, recentPosts.length]
+    [content.length, published, recentPosts.length, t]
   );
 
   async function submit(event: React.FormEvent<HTMLFormElement>) {
@@ -74,13 +76,11 @@ export default function BlogStudio({ recentPosts }: { recentPosts: BlogPreview[]
     <section id="blog-studio" className="surface p-5 sm:p-6">
       <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
         <div className="max-w-2xl">
-          <p className="eyebrow">Content studio</p>
-          <h2 className="mt-2 text-2xl font-black text-slate-950 sm:text-3xl">Publish blog content directly from admin</h2>
-          <p className="mt-3 text-sm text-slate-600">
-            Add destination guides, travel stories, and editorial content without leaving the control panel.
-          </p>
+          <p className="eyebrow">{t.admin.blogStudio}</p>
+          <h2 className="mt-2 text-2xl font-black text-slate-950 sm:text-3xl">{t.admin.blogPublishTitle || 'Publish blog content directly from admin'}</h2>
+          <p className="mt-3 text-sm text-slate-600">{t.admin.blogPublishDesc || 'Add destination guides, travel stories, and editorial content without leaving the control panel.'}</p>
         </div>
-        <div className="grid gap-3 sm:grid-cols-3 lg:min-w-[340px]">
+        <div className="grid gap-3 grid-cols-1 sm:grid-cols-3 lg:min-w-[340px]">
           {stats.map((item) => (
             <div key={item.label} className="rounded-[1.4rem] border border-slate-200 bg-slate-50 p-4 text-center">
               <p className="text-xs uppercase tracking-[0.18em] text-slate-500">{item.label}</p>
@@ -93,26 +93,26 @@ export default function BlogStudio({ recentPosts }: { recentPosts: BlogPreview[]
       <div className="mt-6">
         <form onSubmit={submit} className="space-y-4">
           <div className="grid gap-4 md:grid-cols-2">
-            <Input label="Title" value={title} onChange={(event) => setTitle(event.target.value)} placeholder="The best coastal escapes..." required />
+            <Input label={t.common.title || 'Title'} value={title} onChange={(event) => setTitle(event.target.value)} placeholder={t.blog.titlePlaceholder || 'The best coastal escapes...'} required />
             <Input
-              label="Cover image URL"
+              label={t.admin.coverImage || 'Cover image URL'}
               value={coverImage}
               onChange={(event) => setCoverImage(event.target.value)}
-              placeholder="https://images.unsplash.com/..."
+              placeholder={t.admin.coverImagePlaceholder || 'https://images.unsplash.com/...'}
             />
           </div>
           <Textarea
-            label="Excerpt"
+            label={t.blog.excerptLabel || 'Excerpt'}
             value={excerpt}
             onChange={(event) => setExcerpt(event.target.value)}
-            placeholder="Short summary for cards and previews..."
+            placeholder={t.blog.excerptPlaceholder || 'Short summary for cards and previews...'}
             required
           />
           <Textarea
-            label="Content"
+            label={t.blog.contentLabel || 'Content'}
             value={content}
             onChange={(event) => setContent(event.target.value)}
-            placeholder="Write the full article here..."
+            placeholder={t.blog.contentPlaceholder || 'Write the full article here...'}
             className="min-h-64"
             required
           />
@@ -123,10 +123,10 @@ export default function BlogStudio({ recentPosts }: { recentPosts: BlogPreview[]
               onChange={(event) => setPublished(event.target.checked)}
               className="h-4 w-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500"
             />
-            <span className="text-sm font-medium text-slate-700">Publish immediately</span>
+            <span className="text-sm font-medium text-slate-700">{t.admin.publishImmediately || 'Publish immediately'}</span>
           </label>
           <Button type="submit" disabled={loading}>
-            {loading ? "Saving..." : published ? "Publish post" : "Save draft"}
+            {loading ? (t.common.loading || 'Saving...') : published ? (t.admin.publishPost || 'Publish post') : (t.admin.saveDraft || 'Save draft')}
           </Button>
         </form>
       </div>

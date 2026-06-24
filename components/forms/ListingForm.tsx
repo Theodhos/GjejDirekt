@@ -249,8 +249,8 @@ export default function ListingForm() {
   }
 
   return (
-    <form onSubmit={submit} className="space-y-6">
-      <div className="grid gap-4 lg:grid-cols-2">
+    <form onSubmit={submit} className="space-y-4 text-sm">
+      <div className="grid gap-3 lg:grid-cols-2">
         <Input
           name="title"
           label={t.common.title || (language === 'en' ? 'Title' : 'Titulli')}
@@ -324,12 +324,12 @@ export default function ListingForm() {
       </div>
 
       {/* Tags Section */}
-      <div className="space-y-4">
-        <label className="text-xs font-black uppercase tracking-widest text-slate-400 ml-4">
+      <div className="space-y-2">
+        <label className="text-xs font-black uppercase tracking-widest text-slate-400 ml-1">
           {t.forms.listing.featuresAmenities}
         </label>
-        <div className="p-8 rounded-[2.5rem] bg-slate-50 border border-slate-200">
-          <div className="flex flex-wrap gap-2 mb-6">
+        <div className="p-4 rounded-md bg-slate-50 border border-slate-200">
+          <div className="flex flex-wrap gap-2 mb-3">
             {suggestedTags.map(tag => {
               const isActive = activeTags.includes(tag);
               return (
@@ -337,7 +337,7 @@ export default function ListingForm() {
                   key={tag}
                   type="button"
                   onClick={() => toggleTag(tag)}
-                  className={`px-4 py-2 rounded-full text-xs font-bold transition-all flex items-center gap-1.5 ${
+                  className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all flex items-center gap-1 ${
                     isActive 
                       ? 'bg-brand-500 text-white shadow-lg shadow-brand-500/30' 
                       : 'bg-white text-slate-600 border border-slate-200 hover:border-brand-300'
@@ -357,7 +357,7 @@ export default function ListingForm() {
                 key={tag}
                 type="button"
                 onClick={() => toggleTag(tag)}
-                className="px-4 py-2 rounded-full text-xs font-bold bg-slate-900 text-white shadow-lg flex items-center gap-1.5"
+                className="px-3 py-1.5 rounded-full text-xs font-semibold bg-slate-900 text-white shadow flex items-center gap-1"
               >
                 <span>{tag}</span>
                 <span className="w-3.5 h-3.5 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center text-[10px] leading-none transition-colors font-black">
@@ -367,14 +367,14 @@ export default function ListingForm() {
             ))}
           </div>
           <div className="relative">
-            <Sparkles className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-brand-400" />
+            <Sparkles className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-brand-400" />
             <input
               type="text"
               value={customTag}
               onChange={(e) => setCustomTag(e.target.value)}
               onKeyDown={addCustomTag}
               placeholder={t.forms.listing.addCustomTagPlaceholder}
-              className="w-full h-12 pl-12 pr-6 rounded-2xl bg-white border border-slate-200 focus:border-brand-500 outline-none text-xs font-bold text-slate-950 shadow-soft"
+              className="w-full h-10 pl-10 pr-3 rounded-md bg-white border border-slate-200 focus:border-brand-500 outline-none text-xs font-medium text-slate-950"
             />
           </div>
         </div>
@@ -508,7 +508,7 @@ export default function ListingForm() {
             selectedCategory === "produkte-lokale" ||
             selectedCategory === "transport" ||
             selectedCategory === "atraksione") ? (
-            <div className="grid grid-cols-[1fr_1fr_100px] gap-2">
+            <div className="grid grid-cols-[1fr_1fr_160px] gap-2">
               <Input
                 name="priceFrom"
                 type="number"
@@ -545,7 +545,7 @@ export default function ListingForm() {
         </div>
       )}
 
-      <div className="grid gap-4 lg:grid-cols-3">
+      <div className="grid gap-3 lg:grid-cols-2">
         <Input
           name="instagramLink"
           label="Instagram Link"
@@ -570,45 +570,45 @@ export default function ListingForm() {
       </div>
 
       <div className="space-y-6">
-        <label className="block space-y-3 rounded-[2.5rem] border border-slate-200 bg-white p-8 shadow-sm group hover:border-brand-500 transition-all">
+        <label className="block space-y-2 rounded-md border border-slate-200 bg-white p-4 group hover:border-brand-500 transition-all">
           <div className="flex items-center justify-between">
-            <span className="text-sm font-black uppercase tracking-widest text-slate-950">{t.forms.listing.mainBannerPhoto}</span>
-            <Camera className="w-5 h-5 text-slate-400 group-hover:text-brand-500 transition-colors" />
+            <span className="text-sm font-semibold text-slate-900">{t.forms.listing.mainBannerPhoto}</span>
+            <Camera className="w-4 h-4 text-slate-400 group-hover:text-brand-500 transition-colors" />
           </div>
           <input
             name="bannerImage"
             type="file"
             accept="image/*"
-            className="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-black file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100"
+            className="w-full text-xs text-slate-500"
             required
           />
-          <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">{t.forms.listing.mainBannerNote}</p>
+          <p className="text-[11px] text-slate-400">{t.forms.listing.mainBannerNote}</p>
         </label>
 
-        <label className="block space-y-3 rounded-[2.5rem] border border-slate-200 bg-white p-8 shadow-sm group hover:border-brand-500 transition-all">
+        <label className="block space-y-2 rounded-md border border-slate-200 bg-white p-4 group hover:border-brand-500 transition-all">
           <div className="flex items-center justify-between">
-            <span className="text-sm font-black uppercase tracking-widest text-slate-950">{t.forms.listing.galleryLabel}</span>
-            <Sparkles className="w-5 h-5 text-slate-400 group-hover:text-brand-500 transition-colors" />
+            <span className="text-sm font-semibold text-slate-900">{t.forms.listing.galleryLabel}</span>
+            <Sparkles className="w-4 h-4 text-slate-400 group-hover:text-brand-500 transition-colors" />
           </div>
           <input
             name="galleryImages"
             type="file"
             accept="image/*"
             multiple
-            className="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-black file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100"
+            className="w-full text-xs text-slate-500"
             required
           />
-          <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">{t.forms.listing.galleryNote}</p>
+          <p className="text-[11px] text-slate-400">{t.forms.listing.galleryNote}</p>
         </label>
       </div>
 
       <input type="hidden" name="country" value="Albania" />
 
-      <div className="pt-8">
+      <div className="pt-4">
         <Button 
           type="submit" 
           disabled={loading} 
-          className="w-full h-20 text-lg font-black tracking-widest uppercase shadow-2xl shadow-brand-500/20"
+          className="w-full h-14 text-base font-bold uppercase shadow-md"
         >
           {loading ? t.forms.listing.creatingService : t.forms.listing.launchListing}
         </Button>

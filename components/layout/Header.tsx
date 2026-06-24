@@ -70,15 +70,24 @@ export default function Header() {
   const authenticatedLinks: NavItem[] = me
     ? me.role === "admin"
       ? [
-          { href: "/admin", label: "Dashboard Admin" },
-          { href: "/admin#statistics", label: "Statistics" },
-          { label: "Logout", onClick: logout }
+          { href: "/admin", label: t.admin.navAdminLabel || "Admin" },
+          { label: "Dil", onClick: logout }
         ]
       : [
-          { href: "/dashboard", label: "My Dashboard" },
-          { label: "Logout", onClick: logout }
+          { label: "Dil", onClick: logout }
         ]
     : [];
+
+  const [adminStats, setAdminStats] = useState<{ users?: number; pendingListings?: number; totalListings?: number; reports?: number } | null>(null);
+
+  useEffect(() => {
+    if (me?.role === 'admin') {
+      fetch('/api/admin/stats')
+        .then((res) => res.json())
+        .then((data) => setAdminStats(data))
+        .catch(() => null);
+    }
+  }, [me]);
 
   if (hideForSearchOverlay) return null;
 
@@ -165,6 +174,7 @@ export default function Header() {
                   </button>
                 )
               )}
+              {/* Admin stat chips removed from header per request */}
             </>
           ) : (
             <>

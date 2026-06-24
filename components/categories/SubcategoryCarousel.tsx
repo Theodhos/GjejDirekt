@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useMemo, useRef } from "react";
+import { useLanguage } from "@/context/LanguageContext";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { CategoryDefinition } from "@/lib/constants";
 
@@ -12,6 +13,8 @@ function shuffle<T>(array: T[]) {
 export default function SubcategoryCarousel({ category }: { category: CategoryDefinition }) {
   const railRef = useRef<HTMLDivElement>(null);
   const shuffledSubcategories = useMemo(() => shuffle(category.subcategories), [category.subcategories]);
+  const { t } = useLanguage();
+  const categoryLabel = t.categories.names[category.value as keyof typeof t.categories.names] || category.label;
 
   const scroll = (direction: -1 | 1) => {
     railRef.current?.scrollBy({ left: direction * 320, behavior: "smooth" });
@@ -22,8 +25,8 @@ export default function SubcategoryCarousel({ category }: { category: CategoryDe
       <div className="mb-8 flex items-center justify-between gap-4">
         <div>
           <p className="eyebrow">{category.label}</p>
-          <h2 className="mt-2 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">Explore {category.label}</h2>
-          <p className="mt-2 max-w-2xl text-sm leading-7 text-slate-600 sm:text-base">Browse services across the most popular subcategories in {category.label}.</p>
+          <h2 className="mt-2 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">{t.common.explore} {categoryLabel}</h2>
+          <p className="mt-2 max-w-2xl text-sm leading-7 text-slate-600 sm:text-base">{t.common.explore} {categoryLabel}</p>
         </div>
         <div className="flex items-center gap-2">
           <button
@@ -56,16 +59,19 @@ export default function SubcategoryCarousel({ category }: { category: CategoryDe
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(15,23,42,0.05),_transparent_45%)]" />
               <div className="flex h-full w-full items-end justify-start p-5">
                 <div className="rounded-3xl bg-slate-950/90 px-4 py-3 text-white backdrop-blur">
-                  <p className="text-sm uppercase tracking-[0.3em] text-slate-300">{category.label}</p>
-                  <h3 className="mt-2 text-2xl font-black">{sub.label}</h3>
+                  <p className="text-sm uppercase tracking-[0.3em] text-slate-300">{categoryLabel}</p>
+                  <h3 className="mt-2 text-2xl font-black">{t.categories.subnames?.[category.value as keyof typeof t.categories.subnames]?.[sub.value] || sub.label}</h3>
                 </div>
               </div>
             </div>
             <div className="px-5 py-6">
-              <p className="text-sm text-slate-500">Explore curated listings for this category.</p>
+              <p className="text-sm text-slate-500">{t.common.viewAll}</p>
               <div className="mt-4 flex items-center justify-between gap-4 text-sm font-semibold text-brand-600">
-                <span>View listings</span>
-                <span aria-hidden="true">→</span>
+                <span>{t.common.viewAll}</span>
+                <div className="flex items-center gap-3">
+                  <Link href={`/listings/add?category=${category.value}&subcategory=${sub.value}`} className="text-xs font-black uppercase tracking-wider text-slate-500 hover:text-brand-600">{t.nav.addListing}</Link>
+                  <span aria-hidden="true">→</span>
+                </div>
               </div>
             </div>
           </Link>
