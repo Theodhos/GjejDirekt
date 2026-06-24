@@ -15,7 +15,7 @@ const privacySections = {
     { title: "7. Siguria e të Dhënave", body: "Ne përpiqemi të mbrojmë informacionin e përdoruesve përmes masave të arsyeshme teknike dhe organizative. Megjithatë, asnjë platformë online nuk mund të garantojë siguri absolute." },
     { title: "8. Të Drejtat e Përdoruesve", body: "Përdoruesit mund të: kërkojnë përditësimin e të dhënave, kërkojnë fshirjen e profilit ose listing-ut, ose të kontaktojnë TripShqip për çdo pyetje lidhur me privatësinë." },
     { title: "9. Ndryshimet në Politikën e Privatësisë", body: "TripShqip rezervon të drejtën të përditësojë këtë politikë në çdo kohë. Ndryshimet hyjnë në fuqi pas publikimit në platformë." },
-    { title: "10. Kontakt", body: "Për pyetje ose kërkesa lidhur me privatësinë dhe të dhënat personale, mund të na kontaktoni përmes faqes \"Kontakt\"." }
+    { title: "10. Kontakt", body: "Për pyetje ose kërkesa lidhur me privatësinë dhe të dhënat personale, mund të na kontaktoni përmes faqes së Kontaktit." }
   ],
   en: [
     { title: "1. Information We Collect", body: "We may collect information such as: first name and last name, email, phone number, business information, photos and listing content, as well as technical and analytical data on platform usage." },
