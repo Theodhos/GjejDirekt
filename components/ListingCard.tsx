@@ -91,7 +91,7 @@ export default function ListingCard({ listing }: { listing: any }) {
       : listing.currency || "€";
 
   return (
-    <Card className="group relative flex h-full flex-col overflow-hidden border transition-all duration-250" style={{ borderColor: "var(--border-soft)", borderRadius: "16px", boxShadow: "var(--shadow-card)" }}>
+    <Card className="travel-card group relative flex h-full flex-col">
       {/* Image */}
       <Link
         href={`/listings/${listing.slug}`}
@@ -259,7 +259,7 @@ export default function ListingCard({ listing }: { listing: any }) {
 
         {/* Contact Actions */}
         <div
-          className="grid grid-cols-3 gap-1 rounded-xl p-1.5"
+          className="grid grid-cols-3 gap-1.5 rounded-xl p-2 sm:p-1.5"
           style={{
             background: "var(--surface-cream)",
             border: "1px solid var(--border-soft)"
@@ -269,9 +269,7 @@ export default function ListingCard({ listing }: { listing: any }) {
           <a
             href={phone ? `tel:${phone}` : "#"}
             onClick={(e) => { e.stopPropagation(); if (!phone) e.preventDefault(); }}
-            className={`flex flex-col items-center justify-center gap-1 rounded-lg py-2 transition-colors ${phone ? "" : "opacity-40 cursor-not-allowed"}`}
-            onMouseEnter={e => phone && ((e.currentTarget as HTMLElement).style.background = "var(--surface-white)")}
-            onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = "transparent")}
+            className={`flex flex-col items-center justify-center gap-1 rounded-lg py-2 transition-colors hover:bg-[var(--surface-white)] ${phone ? "" : "opacity-40 cursor-not-allowed"}`}
           >
             <div
               className="flex h-8 w-8 items-center justify-center rounded-full text-white shadow-sm transition-transform hover:scale-105"
@@ -288,9 +286,7 @@ export default function ListingCard({ listing }: { listing: any }) {
             target={whatsappHref ? "_blank" : undefined}
             rel="noreferrer"
             onClick={(e) => { e.stopPropagation(); if (!whatsappHref) e.preventDefault(); }}
-            className={`flex flex-col items-center justify-center gap-1 rounded-lg py-2 transition-colors ${whatsappHref ? "" : "opacity-40 cursor-not-allowed"}`}
-            onMouseEnter={e => whatsappHref && ((e.currentTarget as HTMLElement).style.background = "var(--surface-white)")}
-            onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = "transparent")}
+            className={`flex flex-col items-center justify-center gap-1 rounded-lg py-2 transition-colors hover:bg-[var(--surface-white)] ${whatsappHref ? "" : "opacity-40 cursor-not-allowed"}`}
           >
             <div
               className="flex h-8 w-8 items-center justify-center rounded-full text-white shadow-sm transition-transform hover:scale-105"
@@ -304,9 +300,7 @@ export default function ListingCard({ listing }: { listing: any }) {
           {/* Share */}
           <button
             onClick={handleShare}
-            className="flex flex-col items-center justify-center gap-1 rounded-lg py-2 transition-colors"
-            onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = "var(--surface-white)")}
-            onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = "transparent")}
+            className="flex flex-col items-center justify-center gap-1 rounded-lg py-2 transition-colors hover:bg-[var(--surface-white)]"
           >
             <div
               className="flex h-8 w-8 items-center justify-center rounded-full text-white shadow-sm transition-transform hover:scale-105"

@@ -217,10 +217,7 @@ function HomePageClient() {
             <Link
               key={city.value}
               href={`/city/${city.value}`}
-              className="group min-w-[260px] overflow-hidden transition-all duration-250 hover:-translate-y-1"
-            style={{ borderRadius: "16px", border: "1px solid var(--border-soft)", background: "var(--surface-white)", boxShadow: "var(--shadow-card)" }}
-            onMouseEnter={e => ((e.currentTarget as HTMLElement).style.boxShadow = "var(--shadow-hover)")}
-            onMouseLeave={e => ((e.currentTarget as HTMLElement).style.boxShadow = "var(--shadow-card)")} 
+              className="travel-card group min-w-[260px] overflow-hidden transition-all duration-250 hover:-translate-y-1" 
             >
               <div className="relative aspect-[16/10] overflow-hidden" style={{ borderRadius: "16px 16px 0 0" }}>
                 <Image src={city.image || "https://images.unsplash.com/photo-1512917774080-9991f1c4c750"} alt={city.label} fill className="object-cover transition duration-500 group-hover:scale-105" />
@@ -325,10 +322,7 @@ function HomePageClient() {
               actionButton={
                 <Link 
                   href={`/create-listing?category=${section.id}`} 
-                  className="group inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-medium transition-all duration-200 active:scale-95 border"
-                  style={{ background: "var(--surface-white)", color: "var(--text-secondary)", borderColor: "var(--border-medium)", boxShadow: "var(--shadow-card)" }}
-                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = "var(--brand-accent)"; (e.currentTarget as HTMLElement).style.borderColor = "var(--brand-accent)"; }}
-                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = "var(--text-secondary)"; (e.currentTarget as HTMLElement).style.borderColor = "var(--border-medium)"; }}
+                  className="group inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-medium transition-all duration-200 active:scale-95 border border-[var(--border-medium)] bg-[var(--surface-white)] text-[var(--text-secondary)] hover:border-[var(--brand-accent)] hover:text-[var(--brand-accent)] shadow-sm"
                 >
                   <svg className="w-3.5 h-3.5 transition-transform duration-200 group-hover:rotate-90" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
@@ -342,8 +336,7 @@ function HomePageClient() {
                   <Link
                     key={sub.value}
                     href={`/categories/${section.category?.value}/${sub.value}`}
-                    className="min-w-[300px] max-w-[300px] shrink-0 snap-start group relative overflow-hidden transition hover:-translate-y-1"
-                    style={{ borderRadius: "16px", boxShadow: "var(--shadow-card)" }}
+                    className="travel-card min-w-[300px] max-w-[300px] shrink-0 snap-start group relative overflow-hidden transition hover:-translate-y-1"
                   >
                     <Image
                       src={section.fallbackImage}

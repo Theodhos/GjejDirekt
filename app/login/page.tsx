@@ -17,13 +17,7 @@ export default function LoginPage() {
       style={{ background: "var(--surface-page)", minHeight: "600px" }}
     >
       <div
-        className="w-full max-w-5xl overflow-hidden h-full max-h-[650px]"
-        style={{
-          borderRadius: "1.5rem",
-          border: "1px solid var(--border-soft)",
-          boxShadow: "0 24px 64px rgba(0,0,0,0.04), 0 8px 24px rgba(0,0,0,0.02)",
-          display: "grid",
-        }}
+        className="surface w-full max-w-5xl overflow-hidden h-full max-h-[650px] grid"
       >
         <div className="grid lg:grid-cols-2">
 

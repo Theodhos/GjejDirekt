@@ -64,7 +64,7 @@ export default function ServicesContent() {
                             className="min-w-[320px] sm:min-w-[400px] snap-start group"
                         >
                             <div className="relative aspect-[16/10] rounded-[2.5rem] overflow-hidden mb-4 shadow-xl">
-                                <Image src={listing.images?.[0] || ""} alt={listing.title} fill className="object-cover transition duration-700 group-hover:scale-110" />
+                                <Image src={listing.images?.[0] || "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80"} alt={listing.title} fill className="object-cover transition duration-700 group-hover:scale-110" />
                                 <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent" />
                                 <div className="absolute bottom-5 left-5 text-white">
                                     <p className="text-[10px] font-black uppercase tracking-widest text-brand-400 mb-1">{listing.location}</p>

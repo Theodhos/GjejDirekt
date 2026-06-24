@@ -310,20 +310,14 @@ export default function HomeSearchHero() {
                         }
                       }}
                       placeholder={language === "en" ? "Search hotels, restaurants, beaches, tours..." : "Kërko hotele, restorante, plazhe, ture..."}
-                      className="w-full bg-transparent py-3 sm:py-3.5 text-base outline-none font-medium"
+                      className="w-full bg-transparent py-4 sm:py-3.5 text-lg sm:text-base outline-none font-medium"
                       style={{ color: "var(--text-primary)" }}
                     />
                   </div>
                   <div className="flex items-center w-full sm:w-auto shrink-0 pr-1">
                     <button
                       type="submit"
-                      className="w-full sm:w-auto px-8 py-3 rounded-xl font-semibold text-sm text-white transition-all active:scale-95 flex items-center justify-center gap-2.5"
-                      style={{
-                        background: "var(--brand-accent)",
-                        boxShadow: "0 2px 12px rgba(34,153,120,0.28)"
-                      }}
-                      onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = "var(--brand-hover)")}
-                      onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = "var(--brand-accent)")}
+                      className="btn-primary w-full sm:w-auto px-8 py-3 rounded-xl flex items-center justify-center gap-2.5"
                     >
                       {language === "en" ? "Explore Albania" : "Eksploro Shqipërinë"}
                       <ArrowRight className="w-4 h-4" />
@@ -337,7 +331,7 @@ export default function HomeSearchHero() {
           {/* Suggestions Dropdown */}
           {showSuggestions && suggestions.length > 0 && (
             <div
-              className="sm:absolute sm:top-full sm:left-0 sm:right-0 sm:mt-3 flex-grow sm:flex-grow-0 bg-white sm:rounded-2xl sm:border overflow-hidden z-[9999]"
+              className="absolute top-full left-0 right-0 mt-2 sm:mt-3 flex-grow sm:flex-grow-0 bg-white rounded-2xl border overflow-hidden z-[9999]"
               style={{
                 borderColor: "var(--border-soft)",
                 boxShadow: "var(--shadow-float)"
@@ -377,7 +371,7 @@ export default function HomeSearchHero() {
                   <div className="flex items-center gap-2 px-4 py-2.5 mb-1 rounded-xl" style={{ background: "var(--surface-cream)" }}>
                     <div className="w-1.5 h-1.5 rounded-full animate-ping" style={{ background: "var(--brand-accent)" }} />
                     <span className="text-[11px] font-semibold uppercase tracking-[0.18em]" style={{ color: "var(--text-tertiary)" }}>
-                      Searching...
+                      {language === "en" ? "Searching..." : "Duke kërkuar..."}
                     </span>
                   </div>
                 )}

@@ -43,10 +43,7 @@ export default function Footer() {
           <div className="flex flex-wrap gap-3 shrink-0">
             <Link
               href="/services"
-              className="inline-flex items-center justify-center rounded-full px-5 py-2.5 text-sm font-semibold text-white transition-all active:scale-95"
-              style={{ background: "var(--brand-accent)", boxShadow: "0 2px 12px rgba(34,153,120,0.3)" }}
-              onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = "var(--brand-hover)")}
-              onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = "var(--brand-accent)")}
+              className="btn-primary"
             >
               {t.footer.exploreServices}
             </Link>
@@ -63,7 +60,7 @@ export default function Footer() {
 
       {/* Footer Grid */}
       <div className="page-shell py-10">
-        <div className="grid gap-8 md:grid-cols-5">
+        <div className="grid gap-10 md:gap-8 md:grid-cols-5 text-left md:text-left">
           {/* Brand */}
           <div className="md:col-span-1 md:pr-4">
             <p
@@ -81,7 +78,7 @@ export default function Footer() {
           </div>
 
           {/* Explore */}
-          <div className="space-y-2">
+          <div className="space-y-3 md:space-y-2">
             <p
               className="text-xs font-semibold uppercase tracking-[0.18em] mb-3"
               style={{ color: "var(--text-primary)" }}
@@ -98,10 +95,7 @@ export default function Footer() {
               <Link
                 key={link.href}
                 href={link.href}
-                className="block text-sm transition-colors"
-                style={{ color: "var(--text-secondary)" }}
-                onMouseEnter={e => ((e.currentTarget as HTMLElement).style.color = "var(--brand-accent)")}
-                onMouseLeave={e => ((e.currentTarget as HTMLElement).style.color = "var(--text-secondary)")}
+                className="block text-sm text-[var(--text-secondary)] hover:text-[var(--brand-accent)] transition-colors"
               >
                 {link.label}
               </Link>
@@ -124,10 +118,7 @@ export default function Footer() {
               <Link
                 key={link.href}
                 href={link.href}
-                className="block text-sm transition-colors"
-                style={{ color: "var(--text-secondary)" }}
-                onMouseEnter={e => ((e.currentTarget as HTMLElement).style.color = "var(--brand-accent)")}
-                onMouseLeave={e => ((e.currentTarget as HTMLElement).style.color = "var(--text-secondary)")}
+                className="block text-sm text-[var(--text-secondary)] hover:text-[var(--brand-accent)] transition-colors"
               >
                 {link.label}
               </Link>
@@ -144,10 +135,7 @@ export default function Footer() {
             </p>
             <a
               href="mailto:infoturizemalbania@gmail.com"
-              className="inline-block text-sm font-medium whitespace-nowrap transition-colors"
-              style={{ color: "var(--brand-accent)" }}
-              onMouseEnter={e => ((e.currentTarget as HTMLElement).style.color = "var(--brand-hover)")}
-              onMouseLeave={e => ((e.currentTarget as HTMLElement).style.color = "var(--brand-accent)")}
+              className="inline-block text-sm font-medium whitespace-nowrap text-[var(--brand-accent)] hover:text-[var(--brand-hover)] transition-colors"
             >
               infoturizemalbania@gmail.com
             </a>
@@ -157,7 +145,7 @@ export default function Footer() {
           </div>
 
           {/* Social */}
-          <div className="space-y-3">
+          <div className="space-y-3 flex flex-col items-left md:items-start">
             <p
               className="text-xs font-semibold uppercase tracking-[0.18em] mb-3"
               style={{ color: "var(--text-primary)" }}
@@ -174,22 +162,7 @@ export default function Footer() {
                 <Link
                   key={i}
                   href={href}
-                  className="flex h-9 w-9 items-center justify-center rounded-xl border transition-all"
-                  style={{
-                    borderColor: "var(--border-medium)",
-                    background: "var(--surface-white)",
-                    color: "var(--text-secondary)"
-                  }}
-                  onMouseEnter={e => {
-                    (e.currentTarget as HTMLElement).style.color = "var(--brand-accent)";
-                    (e.currentTarget as HTMLElement).style.borderColor = "var(--brand-accent)";
-                    (e.currentTarget as HTMLElement).style.background = "var(--brand-light)";
-                  }}
-                  onMouseLeave={e => {
-                    (e.currentTarget as HTMLElement).style.color = "var(--text-secondary)";
-                    (e.currentTarget as HTMLElement).style.borderColor = "var(--border-medium)";
-                    (e.currentTarget as HTMLElement).style.background = "var(--surface-white)";
-                  }}
+                  className="flex h-9 w-9 items-center justify-center rounded-xl border border-[var(--border-medium)] bg-[var(--surface-white)] text-[var(--text-secondary)] hover:text-[var(--brand-accent)] hover:border-[var(--brand-accent)] hover:bg-[var(--brand-light)] transition-all"
                 >
                   <Icon className="h-3.5 w-3.5" />
                 </Link>
@@ -200,28 +173,22 @@ export default function Footer() {
 
         {/* Bottom Bar */}
         <div
-          className="mt-8 pt-5 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between"
+          className="mt-8 pt-5 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between text-left"
           style={{ borderTop: "1px solid var(--border-soft)" }}
         >
           <p className="text-xs" style={{ color: "var(--text-tertiary)" }}>
             © {year} Gjej Direkt. {t.footer.rightsReserved}
           </p>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center justify-left gap-4">
             <Link
               href="/terms-and-conditions"
-              className="text-xs transition-colors"
-              style={{ color: "var(--text-tertiary)" }}
-              onMouseEnter={e => ((e.currentTarget as HTMLElement).style.color = "var(--text-primary)")}
-              onMouseLeave={e => ((e.currentTarget as HTMLElement).style.color = "var(--text-tertiary)")}
+              className="text-xs text-[var(--text-tertiary)] hover:text-[var(--text-primary)] transition-colors"
             >
               {t.nav.terms || (language === "en" ? "Terms and Conditions" : "Kushtet")}
             </Link>
             <Link
               href="/privacy-policy"
-              className="text-xs transition-colors"
-              style={{ color: "var(--text-tertiary)" }}
-              onMouseEnter={e => ((e.currentTarget as HTMLElement).style.color = "var(--text-primary)")}
-              onMouseLeave={e => ((e.currentTarget as HTMLElement).style.color = "var(--text-tertiary)")}
+              className="text-xs text-[var(--text-tertiary)] hover:text-[var(--text-primary)] transition-colors"
             >
               {t.nav.privacy || (language === "en" ? "Privacy Policy" : "Privatesia")}
             </Link>

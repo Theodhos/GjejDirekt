@@ -120,10 +120,7 @@ export default function Header() {
               <Link
                 key={item.href}
                 href={item.href}
-                className="px-3.5 py-2 rounded-lg text-sm font-medium transition-colors"
-                style={{ color: "var(--text-secondary)" }}
-                onMouseEnter={e => (e.currentTarget.style.color = "var(--text-primary)")}
-                onMouseLeave={e => (e.currentTarget.style.color = "var(--text-secondary)")}
+                className="px-3.5 py-2 rounded-lg text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
               >
                 {item.label}
               </Link>
@@ -142,10 +139,7 @@ export default function Header() {
                   <Link
                     key={item.href}
                     href={item.href}
-                    className="px-3.5 py-2 rounded-lg text-sm font-medium transition-colors"
-                    style={{ color: "var(--text-secondary)" }}
-                    onMouseEnter={e => (e.currentTarget.style.color = "var(--text-primary)")}
-                    onMouseLeave={e => (e.currentTarget.style.color = "var(--text-secondary)")}
+                    className="px-3.5 py-2 rounded-lg text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
                   >
                     {item.label}
                   </Link>
@@ -154,10 +148,7 @@ export default function Header() {
                     key={item.label}
                     type="button"
                     onClick={item.onClick}
-                    className="px-3.5 py-2 rounded-lg text-sm font-medium transition-colors"
-                    style={{ color: "var(--text-secondary)" }}
-                    onMouseEnter={e => (e.currentTarget.style.color = "var(--text-primary)")}
-                    onMouseLeave={e => (e.currentTarget.style.color = "var(--text-secondary)")}
+                    className="px-3.5 py-2 rounded-lg text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
                   >
                     {item.label}
                   </button>
@@ -169,19 +160,13 @@ export default function Header() {
             <>
               <Link
                 href="/login"
-                className="px-3.5 py-2 rounded-lg text-sm font-medium transition-colors"
-                style={{ color: "var(--text-secondary)" }}
-                onMouseEnter={e => (e.currentTarget.style.color = "var(--text-primary)")}
-                onMouseLeave={e => (e.currentTarget.style.color = "var(--text-secondary)")}
+                className="px-3.5 py-2 rounded-lg text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
               >
                 {t.nav.login}
               </Link>
               <Link
                 href="/register"
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold text-white transition-all active:scale-95"
-                style={{ background: "var(--brand-accent)", boxShadow: "0 2px 8px rgba(34,153,120,0.22)" }}
-                onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = "var(--brand-hover)")}
-                onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = "var(--brand-accent)")}
+                className="btn-primary"
               >
                 {t.nav.register}
               </Link>
@@ -199,8 +184,7 @@ export default function Header() {
 
           <Link
             href="/create-listing"
-            className="inline-flex items-center gap-1.5 rounded-full px-3.5 py-2 text-[11px] font-semibold text-white transition-all active:scale-95"
-            style={{ background: "var(--brand-accent)" }}
+            className="btn-primary hidden sm:inline-flex px-3.5 py-2 text-[11px]"
           >
             <PlusCircle className="h-3.5 w-3.5" />
             <span>{t.nav.addListing}</span>
@@ -245,17 +229,8 @@ export default function Header() {
                 <Link
                   key={item.href}
                   href={item.href}
-                  className="block rounded-lg px-4 py-2.5 text-sm font-medium transition-colors"
-                  style={{ color: "var(--text-secondary)" }}
+                  className="block rounded-xl px-5 py-3.5 text-base font-semibold text-[var(--text-secondary)] hover:bg-[var(--surface-white)] hover:text-[var(--text-primary)] transition-colors"
                   onClick={() => setMobileOpen(false)}
-                  onMouseEnter={e => {
-                    (e.currentTarget as HTMLElement).style.color = "var(--text-primary)";
-                    (e.currentTarget as HTMLElement).style.background = "var(--surface-white)";
-                  }}
-                  onMouseLeave={e => {
-                    (e.currentTarget as HTMLElement).style.color = "var(--text-secondary)";
-                    (e.currentTarget as HTMLElement).style.background = "transparent";
-                  }}
                 >
                   {item.label}
                 </Link>
@@ -266,7 +241,7 @@ export default function Header() {
                     <Link
                       key={item.href}
                       href={item.href}
-                      className="block rounded-lg px-4 py-2.5 text-sm font-medium"
+                      className="block rounded-xl px-5 py-3.5 text-base font-semibold"
                       style={{ color: "var(--text-secondary)" }}
                       onClick={() => setMobileOpen(false)}
                     >
@@ -277,7 +252,7 @@ export default function Header() {
                       key={item.label}
                       type="button"
                       onClick={item.onClick}
-                      className="block w-full rounded-lg px-4 py-2.5 text-left text-sm font-medium"
+                      className="block w-full rounded-xl px-5 py-3.5 text-left text-base font-semibold"
                       style={{ color: "var(--text-secondary)" }}
                     >
                       {item.label}
@@ -309,8 +284,7 @@ export default function Header() {
                 <Link
                   href="/register"
                   onClick={() => setMobileOpen(false)}
-                  className="flex items-center justify-center rounded-xl py-2.5 text-sm font-semibold text-white transition-all"
-                  style={{ background: "var(--brand-accent)" }}
+                  className="btn-primary w-full"
                 >
                   {t.nav.register}
                 </Link>

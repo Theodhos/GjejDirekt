@@ -83,12 +83,9 @@ export default function PostClient({ post }: { post: any }) {
           </div>
 
           <div
-            className="relative mt-10 overflow-hidden sm:mt-12"
+            className="relative mt-10 overflow-hidden sm:mt-12 aspect-[16/10] sm:aspect-video rounded-3xl border shadow-xl"
             style={{
-              aspectRatio: "21/9",
-              border: "1px solid var(--border-soft)",
-              borderRadius: "22px",
-              boxShadow: "0 20px 70px rgba(15,20,25,0.14)"
+              borderColor: "var(--border-soft)",
             }}
           >
             <Image

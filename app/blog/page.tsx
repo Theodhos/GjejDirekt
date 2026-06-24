@@ -82,21 +82,7 @@ export default function BlogPage() {
             (post: any, idx) => (
               <article
                 key={idx}
-                className="group flex flex-col overflow-hidden transition-all duration-300 hover:-translate-y-1"
-                style={{
-                  background: "var(--surface-white)",
-                  border: "1px solid var(--border-soft)",
-                  borderRadius: "16px",
-                  boxShadow: "var(--shadow-card)"
-                }}
-                onMouseEnter={e => {
-                  (e.currentTarget as HTMLElement).style.boxShadow = "0 12px 40px rgba(47,41,38,0.08)";
-                  (e.currentTarget as HTMLElement).style.borderColor = "var(--border-medium)";
-                }}
-                onMouseLeave={e => {
-                  (e.currentTarget as HTMLElement).style.boxShadow = "var(--shadow-card)";
-                  (e.currentTarget as HTMLElement).style.borderColor = "var(--border-soft)";
-                }}
+                className="travel-card group flex flex-col overflow-hidden transition-all duration-300 hover:-translate-y-1"
               >
                 {/* Image */}
                 {loading ? (
@@ -157,9 +143,7 @@ export default function BlogPage() {
                       >
                         <Link
                           href={`/blog/${post.slug}`}
-                          className="transition-colors"
-                          onMouseEnter={e => ((e.currentTarget as HTMLElement).style.color = "var(--brand-accent)")}
-                          onMouseLeave={e => ((e.currentTarget as HTMLElement).style.color = "var(--text-primary)")}
+                          className="transition-colors text-[var(--text-primary)] hover:text-[var(--brand-accent)]"
                         >
                           {post.title}
                         </Link>
@@ -177,16 +161,7 @@ export default function BlogPage() {
                       <div className="mt-auto pt-4" style={{ borderTop: "1px solid var(--border-soft)" }}>
                         <Link
                           href={`/blog/${post.slug}`}
-                          className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.15em] transition-all"
-                          style={{ color: "var(--brand-accent)" }}
-                          onMouseEnter={e => {
-                            (e.currentTarget as HTMLElement).style.color = "var(--brand-hover)";
-                            (e.currentTarget as HTMLElement).style.gap = "10px";
-                          }}
-                          onMouseLeave={e => {
-                            (e.currentTarget as HTMLElement).style.color = "var(--brand-accent)";
-                            (e.currentTarget as HTMLElement).style.gap = "";
-                          }}
+                          className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.15em] transition-all text-[var(--brand-accent)] hover:text-[var(--brand-hover)] hover:gap-[10px]"
                         >
                           {t.blog.readStory}
                           <ArrowRight className="w-3.5 h-3.5" />
@@ -203,10 +178,7 @@ export default function BlogPage() {
         {/* Load More */}
         <div className="mt-14 flex justify-center">
           <button
-            className="inline-flex items-center gap-2.5 rounded-full px-8 py-3 text-sm font-semibold text-white transition-all active:scale-95"
-            style={{ background: "var(--brand-accent)", boxShadow: "0 2px 12px rgba(34,153,120,0.22)" }}
-            onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = "var(--brand-hover)")}
-            onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = "var(--brand-accent)")}
+            className="btn-primary inline-flex items-center gap-2.5 rounded-full px-8 py-3"
           >
             {t.blog.loadMore}
             <ArrowRight className="w-4 h-4" />

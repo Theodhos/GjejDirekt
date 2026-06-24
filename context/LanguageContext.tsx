@@ -15,14 +15,14 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
   const [language, setLanguageState] = useState<Language>("al");
 
   useEffect(() => {
-    // Initialize language from localStorage if present
+    // Initialize language from sessionStorage if present
     try {
-      if (typeof localStorage !== "undefined") {
-        const saved = localStorage.getItem("language") as Language | null;
+      if (typeof sessionStorage !== "undefined") {
+        const saved = sessionStorage.getItem("language") as Language | null;
         if (saved === "en" || saved === "al") {
           setLanguageState(saved);
         } else {
-          localStorage.setItem("language", "al");
+          sessionStorage.setItem("language", "al");
         }
       }
     } catch (e) {
@@ -43,7 +43,9 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
 
   const setLanguage = (lang: Language) => {
     setLanguageState(lang);
-    localStorage.setItem("language", lang);
+    if (typeof sessionStorage !== "undefined") {
+      sessionStorage.setItem("language", lang);
+    }
   };
 
   const t = translations[language];
