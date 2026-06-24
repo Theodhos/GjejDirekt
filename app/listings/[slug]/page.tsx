@@ -334,7 +334,7 @@ export default async function ListingDetailPage({ params }: { params: { slug: st
             {tags.length > 0 && (
               <div style={{ borderTop: "1px solid var(--border-soft)", paddingTop: "1.5rem" }}>
                 <h2 className="text-lg font-semibold mb-4" style={{ color: "var(--text-primary)" }}>
-                  What's included
+                  What&apos;s included
                 </h2>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                   {tags.map((tag: string, i: number) => (
