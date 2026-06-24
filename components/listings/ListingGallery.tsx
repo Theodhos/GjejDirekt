@@ -234,7 +234,7 @@ export default function ListingGallery({ images, listing }: ListingGalleryProps)
       </div>
 
       {/* ==================== MOBILE LAYOUT (Swipeable Slider) ==================== */}
-      <div className="relative md:hidden aspect-[4/3] w-full overflow-hidden rounded-[2rem] bg-slate-950 shadow-lg">
+      <div className="relative md:hidden aspect-[660/375] w-full overflow-hidden rounded-[2rem] bg-slate-950 shadow-lg">
         {/* Floating Share Action (Mobile Overlay) */}
         <div className="absolute top-4 right-4 z-10">
           <button 
@@ -266,7 +266,7 @@ export default function ListingGallery({ images, listing }: ListingGalleryProps)
         {/* Horizontal scroll container with scroll snap */}
         <div 
           ref={scrollRef}
-          className="flex overflow-x-auto snap-x snap-mandatory scrollbar-none h-full w-full"
+          className="flex overflow-x-auto snap-x snap-mandatory no-scrollbar h-full w-full"
           onScroll={handleScroll}
         >
           {images.map((img, idx) => (

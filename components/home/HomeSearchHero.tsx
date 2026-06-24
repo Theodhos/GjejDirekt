@@ -331,21 +331,17 @@ export default function HomeSearchHero() {
           {/* Suggestions Dropdown */}
           {showSuggestions && suggestions.length > 0 && (
             <div
-              className="absolute top-full left-0 right-0 mt-2 sm:mt-3 flex-grow sm:flex-grow-0 bg-white rounded-2xl border overflow-hidden z-[9999]"
+              className="flex-1 w-full bg-white overflow-hidden sm:absolute sm:top-full sm:left-0 sm:right-0 sm:mt-3 sm:flex-none sm:rounded-2xl sm:border sm:z-[9999] shadow-none sm:shadow-[var(--shadow-float)]"
               style={{
-                borderColor: "var(--border-soft)",
-                boxShadow: "var(--shadow-float)"
+                borderColor: "var(--border-soft)"
               }}
             >
-              <div className="p-2 h-full sm:max-h-[calc(100vh-200px)] overflow-y-auto custom-scrollbar">
-                {/* Mobile: popular cities */}
+              <div className="h-full p-2 overflow-y-auto custom-scrollbar sm:max-h-[calc(100vh-200px)]">
+                {/* Mobile & Desktop: popular cities as tags */}
                 {!city.trim() && (
-                  <div className="sm:hidden px-2 pb-3">
-                    <h3 className="text-base font-semibold mb-3" style={{ color: "var(--text-secondary)" }}>
-                      {language === "en" ? "Popular destinations" : "Destinacione popullore"}
-                    </h3>
-                    <div className="flex flex-wrap gap-2 mb-3">
-                      {popularCities.map((name) => (
+                  <div className="px-4 pt-3 pb-3 border-b mb-1" style={{ borderColor: "rgba(15,20,25,0.06)" }}>
+                    <div className="flex flex-wrap gap-2">
+                      {popularCities.slice(0, 6).map((name) => (
                         <button
                           key={name}
                           onClick={() => {
@@ -353,7 +349,7 @@ export default function HomeSearchHero() {
                             router.push(`/city/${encodeURIComponent(name.toLowerCase())}`);
                             setShowSuggestions(false);
                           }}
-                          className="rounded-full px-3 py-1.5 text-sm font-medium transition-colors"
+                          className="rounded-lg px-3 py-1.5 text-[13px] font-medium transition-all hover:bg-[var(--surface-subtle)] active:scale-95"
                           style={{
                             background: "var(--surface-cream)",
                             color: "var(--text-secondary)",
@@ -366,7 +362,6 @@ export default function HomeSearchHero() {
                     </div>
                   </div>
                 )}
-
                 {isLoadingListings && (
                   <div className="flex items-center gap-2 px-4 py-2.5 mb-1 rounded-xl" style={{ background: "var(--surface-cream)" }}>
                     <div className="w-1.5 h-1.5 rounded-full animate-ping" style={{ background: "var(--brand-accent)" }} />
@@ -376,46 +371,46 @@ export default function HomeSearchHero() {
                   </div>
                 )}
 
-                <div className="grid grid-cols-1 gap-0.5">
+                <div className="grid grid-cols-1">
                   {suggestions.map((suggestion, index) => (
                     <button
                       key={index}
                       onClick={() => handleSuggestionClick(suggestion)}
-                      className="w-full flex items-center gap-4 px-4 sm:px-5 py-3 sm:py-3.5 text-left rounded-xl transition-colors group"
-                      style={{ borderBottom: index < suggestions.length - 1 ? "1px solid var(--border-soft)" : "none" }}
+                      className="w-full flex items-center gap-4 px-4 sm:px-5 py-3.5 text-left transition-colors group relative"
+                      style={{ borderBottom: index < suggestions.length - 1 ? "1px solid rgba(15,20,25,0.06)" : "none" }}
                       onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = "var(--surface-cream)")}
                       onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = "transparent")}
                     >
                       {suggestion.type === "listing" && suggestion.image ? (
-                        <div className="relative w-11 h-11 overflow-hidden rounded-xl border shrink-0" style={{ borderColor: "var(--border-soft)" }}>
-                          <Image src={suggestion.image} alt={suggestion.label} fill className="object-cover" sizes="44px" />
+                        <div className="relative w-12 h-12 overflow-hidden rounded-2xl border shrink-0 shadow-sm" style={{ borderColor: "rgba(15,20,25,0.08)" }}>
+                          <Image src={suggestion.image} alt={suggestion.label} fill className="object-cover" sizes="48px" />
                         </div>
                       ) : (
                         <div
-                          className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0 transition-colors"
+                          className="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 transition-colors shadow-sm"
                           style={{
-                            background: "var(--brand-light)",
+                            background: "rgba(34,153,120,0.08)",
                             color: "var(--brand-accent)",
-                            border: "1px solid rgba(34,153,120,0.15)"
+                            border: "1px solid rgba(34,153,120,0.12)"
                           }}
                         >
-                          <suggestion.icon className="w-5 h-5" />
+                          <suggestion.icon className="w-5 h-5" strokeWidth={2.5} />
                         </div>
                       )}
-                      <div className="flex-grow min-w-0">
+                      <div className="flex-grow min-w-0 pr-2">
                         <p
-                          className="text-sm font-semibold truncate transition-colors"
-                          style={{ color: "var(--text-primary)" }}
+                          className="text-[15px] font-semibold truncate transition-colors leading-tight"
+                          style={{ color: "var(--text-primary)", letterSpacing: "-0.01em" }}
                         >
                           {suggestion.label}
                         </p>
                         <span
-                          className="mt-1 inline-block text-[10px] font-semibold uppercase tracking-[0.15em] px-2 py-0.5 rounded-md"
+                          className="mt-1 inline-flex items-center text-[10px] font-bold uppercase tracking-[0.12em] px-2 py-0.5 rounded-lg"
                           style={{
                             background: suggestion.type === "category"
-                              ? "rgba(34,153,120,0.1)"
+                              ? "rgba(34,153,120,0.12)"
                               : suggestion.type === "city"
-                              ? "rgba(245,158,11,0.1)"
+                              ? "rgba(245,158,11,0.12)"
                               : "var(--surface-cream)",
                             color: suggestion.type === "category"
                               ? "var(--brand-accent)"
@@ -427,7 +422,10 @@ export default function HomeSearchHero() {
                           {suggestion.type === "listing" ? suggestion.category : suggestion.type}
                         </span>
                       </div>
-                      <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity shrink-0 hidden sm:block" style={{ color: "var(--brand-accent)" }} />
+                      <ArrowRight 
+                        className="w-4 h-4 opacity-50 group-hover:opacity-100 group-hover:translate-x-1 transition-all shrink-0" 
+                        style={{ color: "var(--brand-accent)" }} 
+                      />
                     </button>
                   ))}
                 </div>

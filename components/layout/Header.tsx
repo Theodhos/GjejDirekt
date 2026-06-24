@@ -96,7 +96,7 @@ export default function Header() {
       }}
     >
       {/* Desktop Header */}
-      <div className="page-shell flex items-center justify-between gap-6 py-3.5">
+      <div className="page-shell flex items-center justify-between gap-3 py-3.5 sm:gap-6">
         {/* Logo */}
         <Link
           href="/"
@@ -108,7 +108,7 @@ export default function Header() {
             alt="TripShqip Logo"
             width={140}
             height={40}
-            className="h-9 md:h-10 w-auto object-contain"
+            className="h-7 w-auto object-contain min-[360px]:h-8 sm:h-9 md:h-10"
             priority
           />
         </Link>
@@ -175,7 +175,7 @@ export default function Header() {
         </div>
 
         {/* Mobile Right */}
-        <div className="flex items-center gap-2.5 lg:hidden">
+        <div className="flex min-w-0 items-center gap-2 lg:hidden sm:gap-2.5">
           {me ? (
             <span className="hidden text-sm font-medium text-warm-700 md:inline" style={{ color: "var(--text-secondary)" }}>
               {language === "en" ? `Hi, ${me.name}` : `Përshëndetje, ${me.name}`}
@@ -184,10 +184,11 @@ export default function Header() {
 
           <Link
             href="/create-listing"
-            className="btn-primary hidden sm:inline-flex px-3.5 py-2 text-[11px]"
+            className="btn-primary inline-flex items-center shrink-0 whitespace-nowrap transition-all duration-200 !gap-1 !px-2.5 !py-1.5 !text-[10px] !leading-none min-[360px]:!gap-1.5 min-[360px]:!px-3 min-[360px]:!py-2 min-[360px]:!text-[11px] sm:!gap-2 sm:!px-4 sm:!text-sm"
+            onClick={() => setMobileOpen(false)}
           >
-            <PlusCircle className="h-3.5 w-3.5" />
-            <span>{t.nav.addListing}</span>
+            <PlusCircle className="h-3 w-3 shrink-0 min-[360px]:h-3.5 min-[360px]:w-3.5 sm:h-4 sm:w-4" />
+            <span className="font-semibold tracking-wide">{t.nav.addListing}</span>
           </Link>
 
           <button

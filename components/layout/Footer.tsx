@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Facebook, Instagram, Linkedin, Youtube } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { translations } from "@/lib/dictionary";
@@ -8,10 +9,14 @@ import { translations } from "@/lib/dictionary";
 export default function Footer() {
   const { language, t } = useLanguage();
   const year = new Date().getFullYear();
+  const pathname = usePathname();
+  
+  // Add extra padding on mobile for listing pages because of the sticky contact bar
+  const isListingPage = pathname?.startsWith("/listings/");
 
   return (
     <footer
-      className="mt-0"
+      className={`mt-0 ${isListingPage ? 'pb-20 sm:pb-0' : ''}`}
       style={{
         borderTop: "1px solid var(--border-soft)",
         background: "var(--surface-cream)"
