@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import { Compass, Menu, X, PlusCircle } from "lucide-react";
+import { Menu, X, PlusCircle } from "lucide-react";
 import Button from "@/components/ui/Button";
 import { useLanguage } from "@/context/LanguageContext";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
@@ -17,6 +17,7 @@ export default function Header() {
   const [me, setMe] = useState<Me>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [hideForSearchOverlay, setHideForSearchOverlay] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const { language, setLanguage, t } = useLanguage();
 
   useEffect(() => {
@@ -29,10 +30,7 @@ export default function Header() {
 
     loadMe();
 
-    const handleAuthChange = () => {
-      loadMe();
-    };
-
+    const handleAuthChange = () => { loadMe(); };
     window.addEventListener("auth-changed", handleAuthChange);
     return () => window.removeEventListener("auth-changed", handleAuthChange);
   }, []);
@@ -48,6 +46,12 @@ export default function Header() {
     return () => window.removeEventListener("mobile-search-overlay", handleSearchOverlay as EventListener);
   }, []);
 
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 10);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
   async function logout() {
     await fetch("/api/auth/logout", { method: "POST" });
     setMe(null);
@@ -56,13 +60,9 @@ export default function Header() {
     window.location.href = "/";
   }
 
-  const navLinkClass =
-    "text-sm font-semibold text-slate-700 transition hover:text-brand-700";
-  const buttonLinkClass = navLinkClass;
-
   const publicLinks = [
     { href: "/", label: t.nav.home },
-    { href: "/packet", label: t.nav.packet || (language === 'en' ? 'Packet' : 'Paketat') },
+    { href: "/packet", label: t.nav.packet || (language === "en" ? "Packets" : "Paketat") },
     { href: "/blog", label: t.nav.blog },
     { href: "/create-listing", label: t.nav.addListing }
   ];
@@ -70,106 +70,193 @@ export default function Header() {
   const authenticatedLinks: NavItem[] = me
     ? me.role === "admin"
       ? [
-        { href: "/admin", label: "Dashboard Admin" },
-        { href: "/admin#statistics", label: "Statistics" },
-        { label: "Logout", onClick: logout }
-      ]
+          { href: "/admin", label: "Dashboard Admin" },
+          { href: "/admin#statistics", label: "Statistics" },
+          { label: "Logout", onClick: logout }
+        ]
       : [
-        { href: "/dashboard", label: "My Dashboard" },
-        { label: "Logout", onClick: logout }
-      ]
+          { href: "/dashboard", label: "My Dashboard" },
+          { label: "Logout", onClick: logout }
+        ]
     : [];
 
-
-  if (hideForSearchOverlay) {
-    return null;
-  }
+  if (hideForSearchOverlay) return null;
 
   return (
-    <header className="sticky top-0 z-50 border-b border-slate-900/5 bg-white/80 backdrop-blur-2xl">
-      <div className="page-shell flex items-center justify-between gap-4 py-4">
-        <Link href="/" className="flex items-center" onClick={() => setMobileOpen(false)}>
+    <header
+      className="sticky top-0 z-50 transition-all duration-200"
+      style={{
+        background: scrolled
+          ? "rgba(253, 252, 250, 0.92)"
+          : "rgba(253, 252, 250, 0.85)",
+        backdropFilter: "blur(14px)",
+        WebkitBackdropFilter: "blur(14px)",
+        borderBottom: scrolled
+          ? "1px solid rgba(15,20,25,0.10)"
+          : "1px solid rgba(15,20,25,0.07)",
+        boxShadow: scrolled ? "0 1px 0 rgba(15,20,25,0.06)" : "none"
+      }}
+    >
+      {/* Desktop Header */}
+      <div className="page-shell flex items-center justify-between gap-6 py-3.5">
+        {/* Logo */}
+        <Link
+          href="/"
+          className="flex items-center shrink-0"
+          onClick={() => setMobileOpen(false)}
+        >
           <Image
             src="/uploads/Logo-black.png"
             alt="TripShqip Logo"
-            width={160}
-            height={48}
-            className="h-10 md:h-12 w-auto object-contain"
+            width={140}
+            height={40}
+            className="h-9 md:h-10 w-auto object-contain"
             priority
           />
         </Link>
 
-        <div className="hidden items-center gap-4 lg:flex">
-          <nav className="flex items-center gap-4">
+        {/* Desktop Nav */}
+        <div className="hidden items-center gap-1 lg:flex">
+          <nav className="flex items-center gap-1">
             {publicLinks.map((item) => (
-              <Link key={item.href} href={item.href} className={navLinkClass}>
+              <Link
+                key={item.href}
+                href={item.href}
+                className="px-3.5 py-2 rounded-lg text-sm font-medium transition-colors"
+                style={{ color: "var(--text-secondary)" }}
+                onMouseEnter={e => (e.currentTarget.style.color = "var(--text-primary)")}
+                onMouseLeave={e => (e.currentTarget.style.color = "var(--text-secondary)")}
+              >
                 {item.label}
               </Link>
             ))}
           </nav>
-
-          <LanguageSwitcher />
-
-          <div className="flex items-center gap-3">
-            {me ? (
-              <>
-                {authenticatedLinks.map((item) =>
-                  "href" in item ? (
-                    <Link key={item.href} href={item.href} className={navLinkClass}>
-                      {item.label}
-                    </Link>
-                  ) : (
-                    <button key={item.label} type="button" onClick={item.onClick} className={buttonLinkClass}>
-                      {item.label}
-                    </button>
-                  )
-                )}
-              </>
-            ) : (
-              <>
-                <Button href="/login" variant="ghost">
-                  {t.nav.login}
-                </Button>
-                <Button href="/register">{t.nav.register}</Button>
-              </>
-            )}
-          </div>
         </div>
 
-        <div className="flex items-center gap-2 lg:hidden">
+        {/* Desktop Right */}
+        <div className="hidden items-center gap-3 lg:flex">
+          <LanguageSwitcher />
+
           {me ? (
-            <span className="hidden text-sm text-slate-600 md:inline">{language === 'en' ? `Hi, ${me.name}` : `Përshëndetje, ${me.name}`}</span>
+            <>
+              {authenticatedLinks.map((item) =>
+                "href" in item ? (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className="px-3.5 py-2 rounded-lg text-sm font-medium transition-colors"
+                    style={{ color: "var(--text-secondary)" }}
+                    onMouseEnter={e => (e.currentTarget.style.color = "var(--text-primary)")}
+                    onMouseLeave={e => (e.currentTarget.style.color = "var(--text-secondary)")}
+                  >
+                    {item.label}
+                  </Link>
+                ) : (
+                  <button
+                    key={item.label}
+                    type="button"
+                    onClick={item.onClick}
+                    className="px-3.5 py-2 rounded-lg text-sm font-medium transition-colors"
+                    style={{ color: "var(--text-secondary)" }}
+                    onMouseEnter={e => (e.currentTarget.style.color = "var(--text-primary)")}
+                    onMouseLeave={e => (e.currentTarget.style.color = "var(--text-secondary)")}
+                  >
+                    {item.label}
+                  </button>
+                )
+              )}
+            </>
+          ) : (
+            <>
+              <Link
+                href="/login"
+                className="px-3.5 py-2 rounded-lg text-sm font-medium transition-colors"
+                style={{ color: "var(--text-secondary)" }}
+                onMouseEnter={e => (e.currentTarget.style.color = "var(--text-primary)")}
+                onMouseLeave={e => (e.currentTarget.style.color = "var(--text-secondary)")}
+              >
+                {t.nav.login}
+              </Link>
+              <Link
+                href="/register"
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold text-white transition-all active:scale-95"
+                style={{ background: "var(--brand-accent)", boxShadow: "0 2px 8px rgba(34,153,120,0.22)" }}
+                onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = "var(--brand-hover)")}
+                onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = "var(--brand-accent)")}
+              >
+                {t.nav.register}
+              </Link>
+            </>
+          )}
+        </div>
+
+        {/* Mobile Right */}
+        <div className="flex items-center gap-2.5 lg:hidden">
+          {me ? (
+            <span className="hidden text-sm font-medium text-warm-700 md:inline" style={{ color: "var(--text-secondary)" }}>
+              {language === "en" ? `Hi, ${me.name}` : `Përshëndetje, ${me.name}`}
+            </span>
           ) : null}
-          {/* Add Listing button — visible on mobile next to hamburger */}
+
           <Link
             href="/create-listing"
-            className="inline-flex items-center gap-1.5 rounded-full bg-brand-600 px-3 py-2 text-[10px] font-black uppercase tracking-widest text-white shadow-md hover:bg-brand-700 transition-all active:scale-95"
+            className="inline-flex items-center gap-1.5 rounded-full px-3.5 py-2 text-[11px] font-semibold text-white transition-all active:scale-95"
+            style={{ background: "var(--brand-accent)" }}
           >
             <PlusCircle className="h-3.5 w-3.5" />
             <span>{t.nav.addListing}</span>
           </Link>
+
           <button
             type="button"
-            onClick={() => setMobileOpen((value) => !value)}
-            className="inline-flex rounded-full border border-slate-200 p-2 text-slate-700 lg:hidden"
+            onClick={() => setMobileOpen((v) => !v)}
+            className="inline-flex h-9 w-9 items-center justify-center rounded-xl border transition-colors lg:hidden"
+            style={{
+              borderColor: "var(--border-soft)",
+              background: mobileOpen ? "var(--surface-subtle)" : "transparent",
+              color: "var(--text-secondary)"
+            }}
             aria-label="Toggle navigation"
             aria-expanded={mobileOpen}
           >
-            {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            {mobileOpen ? <X className="h-4.5 w-4.5" /> : <Menu className="h-4.5 w-4.5" />}
           </button>
         </div>
       </div>
 
-      {mobileOpen ? (
-        <div className="border-t border-slate-200 bg-white lg:hidden">
-          <div className="page-shell space-y-4 py-4">
-            <div className="grid gap-2 rounded-[1.5rem] border border-slate-200 bg-slate-50 p-3">
+      {/* Mobile Menu */}
+      {mobileOpen && (
+        <div
+          className="border-t lg:hidden"
+          style={{
+            borderColor: "var(--border-soft)",
+            background: "var(--surface-page)"
+          }}
+        >
+          <div className="page-shell py-4 space-y-1">
+            {/* Nav Links */}
+            <div
+              className="rounded-xl border p-2 space-y-0.5"
+              style={{
+                borderColor: "var(--border-soft)",
+                background: "var(--surface-cream)"
+              }}
+            >
               {publicLinks.map((item) => (
                 <Link
                   key={item.href}
                   href={item.href}
-                  className="rounded-2xl px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-white"
+                  className="block rounded-lg px-4 py-2.5 text-sm font-medium transition-colors"
+                  style={{ color: "var(--text-secondary)" }}
                   onClick={() => setMobileOpen(false)}
+                  onMouseEnter={e => {
+                    (e.currentTarget as HTMLElement).style.color = "var(--text-primary)";
+                    (e.currentTarget as HTMLElement).style.background = "var(--surface-white)";
+                  }}
+                  onMouseLeave={e => {
+                    (e.currentTarget as HTMLElement).style.color = "var(--text-secondary)";
+                    (e.currentTarget as HTMLElement).style.background = "transparent";
+                  }}
                 >
                   {item.label}
                 </Link>
@@ -180,7 +267,8 @@ export default function Header() {
                     <Link
                       key={item.href}
                       href={item.href}
-                      className="rounded-2xl px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-white"
+                      className="block rounded-lg px-4 py-2.5 text-sm font-medium"
+                      style={{ color: "var(--text-secondary)" }}
                       onClick={() => setMobileOpen(false)}
                     >
                       {item.label}
@@ -190,7 +278,8 @@ export default function Header() {
                       key={item.label}
                       type="button"
                       onClick={item.onClick}
-                      className="rounded-2xl px-4 py-3 text-left text-sm font-semibold text-slate-700 hover:bg-white"
+                      className="block w-full rounded-lg px-4 py-2.5 text-left text-sm font-medium"
+                      style={{ color: "var(--text-secondary)" }}
                     >
                       {item.label}
                     </button>
@@ -198,29 +287,45 @@ export default function Header() {
                 )}
             </div>
 
-            <div className="flex justify-center">
+            {/* Language */}
+            <div className="flex justify-center py-2">
               <LanguageSwitcher />
             </div>
 
-            {!me ? (
-              <div className="grid gap-3 sm:grid-cols-2">
-                <Button href="/login" variant="ghost" onClick={() => setMobileOpen(false)}>
+            {/* Auth */}
+            {!me && (
+              <div className="grid grid-cols-2 gap-2.5 pt-1">
+                <Link
+                  href="/login"
+                  onClick={() => setMobileOpen(false)}
+                  className="flex items-center justify-center rounded-xl border py-2.5 text-sm font-semibold transition-colors"
+                  style={{
+                    borderColor: "var(--border-medium)",
+                    color: "var(--text-primary)",
+                    background: "var(--surface-white)"
+                  }}
+                >
                   {t.nav.login}
-                </Button>
-                <Button href="/register" onClick={() => setMobileOpen(false)}>
+                </Link>
+                <Link
+                  href="/register"
+                  onClick={() => setMobileOpen(false)}
+                  className="flex items-center justify-center rounded-xl py-2.5 text-sm font-semibold text-white transition-all"
+                  style={{ background: "var(--brand-accent)" }}
+                >
                   {t.nav.register}
-                </Button>
+                </Link>
               </div>
-            ) : null}
+            )}
 
-            {me ? (
-              <p className="text-sm font-semibold text-slate-600">
-                {language === 'en' ? `Hi, ${me.name}` : `Përshëndetje, ${me.name}`}
+            {me && (
+              <p className="px-1 text-sm font-medium" style={{ color: "var(--text-secondary)" }}>
+                {language === "en" ? `Hi, ${me.name}` : `Përshëndetje, ${me.name}`}
               </p>
-            ) : null}
+            )}
           </div>
         </div>
-      ) : null}
+      )}
     </header>
   );
 }

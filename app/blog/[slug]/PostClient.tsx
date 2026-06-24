@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowLeft, ArrowRight, CalendarDays, UserRound, Share2, Bookmark } from "lucide-react";
+import { ArrowLeft, CalendarDays, UserRound, Share2, Bookmark, ArrowRight } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { translations } from "@/lib/dictionary";
 import { useEffect, useState } from "react";
@@ -19,78 +19,230 @@ export default function PostClient({ post }: { post: any }) {
       const locale = language === "en" ? "en-US" : "sq-AL";
       const d = new Date(post.createdAt);
       setFormattedDate(d.toLocaleDateString(locale, { month: "short", day: "numeric", year: "numeric" }));
-    } catch (e) {
+    } catch {
       setFormattedDate("");
     }
   }, [language, post.createdAt]);
 
   return (
-    <main className="bg-white min-h-screen">
-      <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-100 py-6">
-        <div className="page-shell max-w-5xl mx-auto flex items-center justify-between">
-          <Link href="/blog" className="inline-flex items-center gap-3 text-slate-900 hover:text-brand-600 transition font-black text-xs uppercase tracking-widest">
-            <ArrowLeft className="w-5 h-5" /> {t.blog.allStories}
+    <main style={{ background: "var(--surface-page)", minHeight: "100vh" }}>
+
+      {/* ── Slim breadcrumb nav ── */}
+      <div style={{ borderBottom: "1px solid var(--border-soft)", background: "var(--surface-white)" }}>
+        <div className="page-shell flex items-center justify-between py-4">
+          <Link
+            href="/blog"
+            className="inline-flex items-center gap-2 text-sm font-medium transition-colors hover:text-brand-600"
+            style={{ color: "var(--text-secondary)" }}
+          >
+            <ArrowLeft className="w-4 h-4" />
+            {t.blog.allStories}
           </Link>
-          <div className="flex gap-4">
-            <button className="p-3 rounded-full hover:bg-slate-50 transition text-slate-400 hover:text-slate-950">
-              <Share2 className="w-5 h-5" />
+          <div className="flex items-center gap-1">
+            <button
+              className="flex h-9 w-9 items-center justify-center rounded-xl transition-colors hover:bg-neutral-100"
+              style={{ color: "var(--text-tertiary)" }}
+            >
+              <Share2 className="w-4 h-4" />
             </button>
-            <button className="p-3 rounded-full hover:bg-slate-50 transition text-slate-400 hover:text-slate-950">
-              <Bookmark className="w-5 h-5" />
+            <button
+              className="flex h-9 w-9 items-center justify-center rounded-xl transition-colors hover:bg-neutral-100"
+              style={{ color: "var(--text-tertiary)" }}
+            >
+              <Bookmark className="w-4 h-4" />
             </button>
           </div>
         </div>
-      </nav>
+      </div>
 
-      <article className="pb-32">
-        <header className="page-shell max-w-4xl mx-auto pt-20 pb-16 text-center">
-          <div className="inline-flex items-center gap-2 rounded-full bg-slate-900 px-4 py-1.5 text-[10px] font-black uppercase tracking-[0.4em] text-white mb-10">
-            {t.blog.journalEntry}
-          </div>
-          <h1 className="display-font text-5xl sm:text-7xl lg:text-8xl font-black text-slate-950 leading-[0.95] tracking-tighter mb-10">
-            {post.title}
-          </h1>
-          <div className="flex flex-wrap items-center justify-center gap-8 text-slate-400">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-900 border border-slate-100">
-                <UserRound className="w-5 h-5" />
-              </div>
-              <span className="text-sm font-bold text-slate-900">{post.author?.name || t.blog.authorEditor}</span>
+      <article className="pb-20">
+
+        {/* ── Article Header ── */}
+        <header
+          className="relative overflow-hidden"
+          style={{ background: "var(--surface-cream)", borderBottom: "1px solid var(--border-soft)" }}
+        >
+          {/* Subtle ambient blob */}
+          <div
+            className="pointer-events-none absolute -top-20 -right-20 w-[360px] h-[360px] rounded-full"
+            style={{ background: "rgba(34,153,120,0.05)", filter: "blur(90px)" }}
+          />
+
+          <div className="page-shell relative z-10 max-w-3xl mx-auto pt-14 pb-14 text-center">
+            {/* Label */}
+            <div className="mb-5 inline-flex">
+              <span
+                className="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold"
+                style={{
+                  background: "var(--surface-white)",
+                  border: "1px solid var(--border-medium)",
+                  color: "var(--text-secondary)"
+                }}
+              >
+                {t.blog.journalEntry}
+              </span>
             </div>
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-900 border border-slate-100">
-                <CalendarDays className="w-5 h-5" />
+
+            {/* Title */}
+            <h1
+              className="font-bold tracking-tight mb-6"
+              style={{
+                fontSize: "clamp(1.75rem, 5vw, 3rem)",
+                color: "var(--text-primary)",
+                lineHeight: 1.1
+              }}
+            >
+              {post.title}
+            </h1>
+
+            {/* Meta — author + date */}
+            <div className="flex flex-wrap items-center justify-center gap-5">
+              <div className="flex items-center gap-2.5">
+                <div
+                  className="flex h-8 w-8 items-center justify-center rounded-full"
+                  style={{ background: "var(--surface-white)", border: "1px solid var(--border-soft)" }}
+                >
+                  <UserRound className="w-4 h-4" style={{ color: "var(--text-secondary)" }} />
+                </div>
+                <span className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>
+                  {post.author?.name || t.blog.authorEditor}
+                </span>
               </div>
-              <span className="text-sm font-bold text-slate-900">{formattedDate}</span>
+              {formattedDate && (
+                <div className="flex items-center gap-2.5">
+                  <div
+                    className="flex h-8 w-8 items-center justify-center rounded-full"
+                    style={{ background: "var(--surface-white)", border: "1px solid var(--border-soft)" }}
+                  >
+                    <CalendarDays className="w-4 h-4" style={{ color: "var(--text-secondary)" }} />
+                  </div>
+                  <span className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>
+                    {formattedDate}
+                  </span>
+                </div>
+              )}
             </div>
           </div>
         </header>
 
-        <div className="page-shell max-w-6xl mx-auto mb-20 px-4 sm:px-6 lg:px-8">
-          <div className="relative aspect-[16/10] sm:aspect-[21/9] rounded-[2rem] sm:rounded-[4rem] overflow-hidden shadow-[0_50px_100px_-20px_rgba(0,0,0,0.15)]">
-            <Image src={image} alt={post.title} fill className="object-cover" priority />
+        {/* ── Cover Image ── */}
+        <div className="page-shell mt-8">
+          <div
+            className="relative overflow-hidden"
+            style={{
+              borderRadius: "16px",
+              aspectRatio: "16/7",
+              border: "1px solid var(--border-soft)",
+              boxShadow: "var(--shadow-panel)"
+            }}
+          >
+            <Image
+              src={image}
+              alt={post.title}
+              fill
+              className="object-cover"
+              priority
+            />
           </div>
         </div>
 
-        <div className="page-shell max-w-3xl mx-auto">
-          <div className="mb-16">
-            <p className="text-2xl sm:text-3xl font-medium text-slate-600 leading-relaxed italic border-l-8 border-brand-500 pl-10 py-2">
-              {post.excerpt}
-            </p>
+        {/* ── Article Body ── */}
+        <div className="page-shell max-w-2xl mx-auto mt-10">
+
+          {/* Excerpt / Pull quote */}
+          {post.excerpt && (
+            <div
+              className="mb-8 pl-5 py-1"
+              style={{ borderLeft: "3px solid var(--brand-accent)" }}
+            >
+              <p
+                className="text-base sm:text-lg leading-relaxed font-medium italic"
+                style={{ color: "var(--text-secondary)" }}
+              >
+                {post.excerpt}
+              </p>
+            </div>
+          )}
+
+          {/* Content */}
+          <div
+            className="text-base leading-relaxed whitespace-pre-line"
+            style={{ color: "var(--text-secondary)" }}
+          >
+            {post.content}
           </div>
 
-          <div className="prose prose-slate prose-xl max-w-none">
-            <div className="whitespace-pre-line text-xl leading-relaxed text-slate-800 font-medium">
-              {post.content}
+          {/* ── Share / Explore More ── */}
+          <div
+            className="mt-16 rounded-2xl p-7"
+            style={{
+              background: "var(--surface-white)",
+              border: "1px solid var(--border-soft)",
+              boxShadow: "var(--shadow-card)"
+            }}
+          >
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-5">
+              {/* Left: author block */}
+              <div className="flex items-center gap-3">
+                <div
+                  className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-lg font-bold text-white"
+                  style={{ background: "var(--brand-accent)" }}
+                >
+                  {(post.author?.name || "E")[0].toUpperCase()}
+                </div>
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.15em] mb-0.5" style={{ color: "var(--text-tertiary)" }}>
+                    {t.blog.authorEditor}
+                  </p>
+                  <p className="text-sm font-semibold" style={{ color: "var(--text-primary)" }}>
+                    {post.author?.name || t.blog.authorEditor}
+                  </p>
+                </div>
+              </div>
+
+              {/* Right: share buttons */}
+              <div className="flex items-center gap-2.5">
+                <span className="text-xs font-semibold uppercase tracking-[0.15em] mr-1" style={{ color: "var(--text-tertiary)" }}>
+                  Share
+                </span>
+                <a
+                  href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(typeof window !== "undefined" ? window.location.href : "")}`}
+                  target="_blank" rel="noreferrer"
+                  className="flex h-9 w-9 items-center justify-center rounded-xl text-sm transition-colors hover:bg-neutral-100"
+                  style={{ border: "1px solid var(--border-medium)", color: "var(--text-secondary)" }}
+                >
+                  f
+                </a>
+                <a
+                  href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(typeof window !== "undefined" ? window.location.href : "")}&text=${encodeURIComponent(post.title)}`}
+                  target="_blank" rel="noreferrer"
+                  className="flex h-9 w-9 items-center justify-center rounded-xl text-sm font-bold transition-colors hover:bg-neutral-100"
+                  style={{ border: "1px solid var(--border-medium)", color: "var(--text-secondary)" }}
+                >
+                  𝕏
+                </a>
+                <a
+                  href={`https://wa.me/?text=${encodeURIComponent(post.title + " " + (typeof window !== "undefined" ? window.location.href : ""))}`}
+                  target="_blank" rel="noreferrer"
+                  className="flex h-9 w-9 items-center justify-center rounded-xl text-sm transition-colors hover:bg-neutral-100"
+                  style={{ border: "1px solid var(--border-medium)", color: "var(--text-secondary)" }}
+                >
+                  <Share2 className="w-4 h-4" />
+                </a>
+              </div>
             </div>
           </div>
 
-          <div className="mt-32 p-12 rounded-[3rem] bg-slate-50 border border-slate-100 text-center relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-brand-500/5 rounded-full -mr-16 -mt-16 blur-3xl" />
-            <h4 className="text-3xl font-black text-slate-950 mb-6 relative z-10">{t.blog.inspiredTitle}</h4>
-            <p className="text-slate-500 text-lg mb-10 max-w-md mx-auto font-medium relative z-10">{t.blog.inspiredDesc}</p>
-            <Link href="/services" className="inline-flex items-center gap-4 px-12 py-5 bg-slate-950 text-white rounded-full font-black text-sm hover:bg-brand-600 transition shadow-2xl relative z-10">
-              {t.blog.exploreServices} <ArrowRight className="w-5 h-5" />
+
+          {/* Back link */}
+          <div className="mt-10 flex justify-center">
+            <Link
+              href="/blog"
+              className="inline-flex items-center gap-2 text-sm font-medium transition-colors hover:text-brand-600"
+              style={{ color: "var(--text-secondary)" }}
+            >
+              <ArrowLeft className="w-4 h-4" />
+              {t.blog.allStories}
             </Link>
           </div>
         </div>

@@ -20,43 +20,93 @@ export default function HorizontalRail({ id, eyebrow, title, description, action
   }
 
   return (
-    <section id={id} className="py-4 sm:py-6">
+    <section id={id} className="py-5 sm:py-8">
+      {/* Header */}
       <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-        <div className="max-w-2xl">
-          {eyebrow ? <p className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-600 mb-2">{eyebrow}</p> : null}
-          <h2 className="text-3xl sm:text-5xl font-black tracking-tight text-slate-950">{title}</h2>
-          {description ? <p className="mt-4 text-lg font-medium text-slate-500 leading-relaxed">{description}</p> : null}
+        <div className="max-w-xl">
+          {eyebrow && (
+            <p className="eyebrow mb-2">{eyebrow}</p>
+          )}
+          <h2
+            className="font-bold tracking-tight"
+            style={{
+              color: "var(--text-primary)",
+              fontSize: "clamp(1.5rem, 3.5vw, 2rem)",
+              lineHeight: 1.15
+            }}
+          >
+            {title}
+          </h2>
+          {description && (
+            <p
+              className="mt-2.5 text-sm leading-relaxed"
+              style={{ color: "var(--text-secondary)" }}
+            >
+              {description}
+            </p>
+          )}
         </div>
-        <div className="flex flex-col items-start md:items-end gap-3 mt-4 md:mt-0">
+
+        <div className="flex flex-col items-start md:items-end gap-3 mt-3 md:mt-0">
           {actionButton}
-          <div className="flex items-center gap-3">
-          <button
-            type="button"
-            onClick={() => scroll(-1)}
-            className="group inline-flex h-14 w-14 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-700 shadow-soft transition-all hover:bg-slate-950 hover:text-white hover:shadow-xl active:scale-95"
-            aria-label={`Scroll ${title} left`}
-          >
-            <ChevronLeft className="h-6 w-6 transition-transform group-hover:-translate-x-1" />
-          </button>
-          <button
-            type="button"
-            onClick={() => scroll(1)}
-            className="group inline-flex h-14 w-14 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-700 shadow-soft transition-all hover:bg-slate-950 hover:text-white hover:shadow-xl active:scale-95"
-            aria-label={`Scroll ${title} right`}
-          >
-            <ChevronRight className="h-6 w-6 transition-transform group-hover:translate-x-1" />
-          </button>
-        </div>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => scroll(-1)}
+              className="group inline-flex h-10 w-10 items-center justify-center rounded-xl border transition-all active:scale-95"
+              style={{
+                borderColor: "var(--border-medium)",
+                background: "var(--surface-white)",
+                color: "var(--text-secondary)"
+              }}
+              onMouseEnter={e => {
+                (e.currentTarget as HTMLElement).style.background = "var(--text-primary)";
+                (e.currentTarget as HTMLElement).style.color = "#fff";
+                (e.currentTarget as HTMLElement).style.borderColor = "var(--text-primary)";
+              }}
+              onMouseLeave={e => {
+                (e.currentTarget as HTMLElement).style.background = "var(--surface-white)";
+                (e.currentTarget as HTMLElement).style.color = "var(--text-secondary)";
+                (e.currentTarget as HTMLElement).style.borderColor = "var(--border-medium)";
+              }}
+              aria-label={`Scroll ${title} left`}
+            >
+              <ChevronLeft className="h-4.5 w-4.5 transition-transform group-hover:-translate-x-0.5" />
+            </button>
+            <button
+              type="button"
+              onClick={() => scroll(1)}
+              className="group inline-flex h-10 w-10 items-center justify-center rounded-xl border transition-all active:scale-95"
+              style={{
+                borderColor: "var(--border-medium)",
+                background: "var(--surface-white)",
+                color: "var(--text-secondary)"
+              }}
+              onMouseEnter={e => {
+                (e.currentTarget as HTMLElement).style.background = "var(--text-primary)";
+                (e.currentTarget as HTMLElement).style.color = "#fff";
+                (e.currentTarget as HTMLElement).style.borderColor = "var(--text-primary)";
+              }}
+              onMouseLeave={e => {
+                (e.currentTarget as HTMLElement).style.background = "var(--surface-white)";
+                (e.currentTarget as HTMLElement).style.color = "var(--text-secondary)";
+                (e.currentTarget as HTMLElement).style.borderColor = "var(--border-medium)";
+              }}
+              aria-label={`Scroll ${title} right`}
+            >
+              <ChevronRight className="h-4.5 w-4.5 transition-transform group-hover:translate-x-0.5" />
+            </button>
+          </div>
         </div>
       </div>
 
+      {/* Scroll Rail */}
       <div
         ref={railRef}
-        className="flex items-stretch gap-6 overflow-x-auto no-scrollbar scroll-smooth snap-x snap-mandatory py-6 px-1 -mx-1"
+        className="flex items-stretch gap-5 overflow-x-auto no-scrollbar scroll-smooth snap-x snap-mandatory py-4 px-0.5 -mx-0.5"
       >
         {children}
       </div>
     </section>
   );
 }
-

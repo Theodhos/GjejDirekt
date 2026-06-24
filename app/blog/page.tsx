@@ -2,169 +2,217 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { ChevronDown, ArrowRight, Calendar, User, Sparkles } from "lucide-react";
+import { ArrowRight, Calendar, User, Sparkles } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { translations } from "@/lib/dictionary";
 import { useEffect, useState } from "react";
 
 export default function BlogPage() {
-    const { language } = useLanguage();
-    const t = translations[language];
+  const { language } = useLanguage();
+  const t = translations[language];
 
-    const [posts, setPosts] = useState<any[]>([]);
-    const [loading, setLoading] = useState(true);
+  const [posts, setPosts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        const fetchPosts = async () => {
-            try {
-                const res = await fetch('/api/blog');
-                const data = await res.json();
-                setPosts(data.posts || []);
-            } catch (error) {
-                console.error("Error loading blog posts:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchPosts();
-    }, []);
+  useEffect(() => {
+    const fetchPosts = async () => {
+      try {
+        const res = await fetch("/api/blog");
+        const data = await res.json();
+        setPosts(data.posts || []);
+      } catch (error) {
+        console.error("Error loading blog posts:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchPosts();
+  }, []);
 
-    const heroPost = posts[0];
+  const heroPost = posts[0];
+  const blogFallbacks = t.blog.fallbacks || [];
 
-    const blogFallbacks = t.blog.fallbacks || [];
+  return (
+    <main style={{ background: "var(--surface-page)" }}>
 
-    return (
-        <main className="bg-white">
-            {/* SECTION 1: CINEMATIC FULL HERO (THE ONE THEY LIKED) */}
-            <section className="relative h-[85vh] min-h-[700px] w-full overflow-hidden">
-                <div className="absolute inset-0 z-0">
+      {/* ── HERO ── */}
+      <section
+        className="relative overflow-hidden"
+        style={{ borderBottom: "1px solid var(--border-soft)", background: "var(--surface-cream)" }}
+      >
+        {/* Subtle ambient blobs – exactly like Stay Directory */}
+        <div className="pointer-events-none absolute -top-24 -right-24 w-[480px] h-[480px] rounded-full" style={{ background: "rgba(34,153,120,0.05)", filter: "blur(100px)" }} />
+        <div className="pointer-events-none absolute -bottom-16 -left-16 w-[360px] h-[360px] rounded-full" style={{ background: "rgba(34,153,120,0.04)", filter: "blur(80px)" }} />
+
+        <div className="page-shell relative z-10 pt-20 pb-20 text-center">
+          <p className="eyebrow mb-4">{t.blog.journalLabel}</p>
+          <h1
+            className="font-bold tracking-tight mb-5"
+            style={{ fontSize: "clamp(2.25rem, 7vw, 4rem)", color: "var(--text-primary)", lineHeight: 1.08 }}
+          >
+            {t.blog.heroTitle}
+          </h1>
+          <p
+            className="text-base sm:text-lg leading-relaxed max-w-xl mx-auto"
+            style={{ color: "var(--text-secondary)" }}
+          >
+            {t.blog.heroDesc}
+          </p>
+        </div>
+      </section>
+
+      {/* ── ARTICLES GRID ── */}
+      <section className="page-shell py-16 sm:py-20">
+        {/* Section header */}
+        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6 mb-10">
+          <div>
+            <p className="eyebrow mb-3">{t.blog.archiveTitle}</p>
+            <h2
+              className="font-bold tracking-tight"
+              style={{ fontSize: "clamp(1.75rem, 4vw, 2.5rem)", color: "var(--text-primary)", lineHeight: 1.12 }}
+            >
+              {t.blog.latestPub}
+            </h2>
+          </div>
+        </div>
+
+        {/* Grid */}
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {(loading ? Array.from({ length: 6 }) : (posts.length > 0 ? posts : blogFallbacks)).map(
+            (post: any, idx) => (
+              <article
+                key={idx}
+                className="group flex flex-col overflow-hidden transition-all duration-300 hover:-translate-y-1"
+                style={{
+                  background: "var(--surface-white)",
+                  border: "1px solid var(--border-soft)",
+                  borderRadius: "16px",
+                  boxShadow: "var(--shadow-card)"
+                }}
+                onMouseEnter={e => {
+                  (e.currentTarget as HTMLElement).style.boxShadow = "0 12px 40px rgba(47,41,38,0.08)";
+                  (e.currentTarget as HTMLElement).style.borderColor = "var(--border-medium)";
+                }}
+                onMouseLeave={e => {
+                  (e.currentTarget as HTMLElement).style.boxShadow = "var(--shadow-card)";
+                  (e.currentTarget as HTMLElement).style.borderColor = "var(--border-soft)";
+                }}
+              >
+                {/* Image */}
+                {loading ? (
+                  <div className="aspect-[4/3] animate-pulse" style={{ background: "var(--surface-subtle)" }} />
+                ) : (
+                  <Link
+                    href={`/blog/${post.slug}`}
+                    className="relative aspect-[4/3] overflow-hidden block"
+                    style={{ borderRadius: "16px 16px 0 0" }}
+                  >
                     <Image
-                        src={
-                            heroPost?.coverImage ||
-                            "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=2000&q=90"
-                        }
-                        alt={heroPost?.title || "Travel stories"}
-                        fill
-                        priority
-                        className="object-cover transition-transform duration-[10000ms] ease-out scale-110 group-hover:scale-100"
-                        style={{
-                            animation: 'kenburns 40s infinite alternate'
-                        }}
+                      src={post.coverImage || "https://images.unsplash.com/photo-1501386761578-eac5c94b800a?auto=format&fit=crop&w=800&q=80"}
+                      alt={post.title}
+                      fill
+                      className="object-cover transition-transform duration-500 group-hover:scale-105"
                     />
+                  </Link>
+                )}
+
+                {/* Content */}
+                <div className="p-5 flex flex-col flex-grow">
+                  {loading ? (
+                    <div className="space-y-3">
+                      <div className="h-3 rounded animate-pulse w-1/3" style={{ background: "var(--surface-subtle)" }} />
+                      <div className="h-5 rounded animate-pulse w-full" style={{ background: "var(--surface-subtle)" }} />
+                      <div className="h-16 rounded animate-pulse w-full" style={{ background: "var(--surface-subtle)" }} />
+                    </div>
+                  ) : (
+                    <>
+                      {/* Meta */}
+                      <div className="flex items-center gap-3 mb-3">
+                        <span
+                          className="flex items-center gap-1.5 text-[11px] font-semibold"
+                          style={{ color: "var(--text-tertiary)" }}
+                        >
+                          <Calendar className="w-3 h-3" />
+                          {post.createdAt
+                            ? new Date(post.createdAt).toLocaleDateString(
+                                language === "en" ? "en-US" : "sq-AL",
+                                { month: "short", day: "numeric", year: "numeric" }
+                              )
+                            : t.blog.recently}
+                        </span>
+                        <span style={{ color: "var(--border-medium)" }}>·</span>
+                        <span
+                          className="flex items-center gap-1.5 text-[11px] font-semibold"
+                          style={{ color: "var(--text-tertiary)" }}
+                        >
+                          <User className="w-3 h-3" />
+                          {post.author?.name || t.blog.authorEditor}
+                        </span>
+                      </div>
+
+                      {/* Title */}
+                      <h3
+                        className="text-base font-semibold leading-snug mb-2 line-clamp-2 transition-colors duration-200"
+                        style={{ color: "var(--text-primary)" }}
+                      >
+                        <Link
+                          href={`/blog/${post.slug}`}
+                          className="transition-colors"
+                          onMouseEnter={e => ((e.currentTarget as HTMLElement).style.color = "var(--brand-accent)")}
+                          onMouseLeave={e => ((e.currentTarget as HTMLElement).style.color = "var(--text-primary)")}
+                        >
+                          {post.title}
+                        </Link>
+                      </h3>
+
+                      {/* Excerpt */}
+                      <p
+                        className="text-sm leading-relaxed line-clamp-2 mb-5"
+                        style={{ color: "var(--text-secondary)" }}
+                      >
+                        {post.excerpt}
+                      </p>
+
+                      {/* CTA */}
+                      <div className="mt-auto pt-4" style={{ borderTop: "1px solid var(--border-soft)" }}>
+                        <Link
+                          href={`/blog/${post.slug}`}
+                          className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.15em] transition-all"
+                          style={{ color: "var(--brand-accent)" }}
+                          onMouseEnter={e => {
+                            (e.currentTarget as HTMLElement).style.color = "var(--brand-hover)";
+                            (e.currentTarget as HTMLElement).style.gap = "10px";
+                          }}
+                          onMouseLeave={e => {
+                            (e.currentTarget as HTMLElement).style.color = "var(--brand-accent)";
+                            (e.currentTarget as HTMLElement).style.gap = "";
+                          }}
+                        >
+                          {t.blog.readStory}
+                          <ArrowRight className="w-3.5 h-3.5" />
+                        </Link>
+                      </div>
+                    </>
+                  )}
                 </div>
+              </article>
+            )
+          )}
+        </div>
 
-                {/* Dark overlay for readability */}
-                <div className="absolute inset-0 z-10 bg-gradient-to-b from-slate-950/90 via-slate-950/50 to-slate-950/95" />
-
-                <div className="absolute inset-0 z-20 flex flex-col items-center justify-center px-6 text-center text-white">
-                    <div className="max-w-5xl">
-                       <div className="mb-8 inline-flex items-center gap-2 rounded-full bg-brand-500/20 border border-brand-500/30 backdrop-blur-md px-6 py-2 text-xs font-black uppercase tracking-[0.4em] text-whitew   animate-in fade-in slide-in-from-bottom-4 duration-700">
-                            <Sparkles className="w-4 h-4" />
-                            {t.blog.journalLabel}
-                        </div>
-
-                        <h1 className="display-font text-6xl font-black leading-[1.05] tracking-tighter sm:text-8xl lg:text-9xl animate-in fade-in slide-in-from-bottom-8 duration-1000 text-white drop-shadow-[0_15px_30px_rgba(0,0,0,0.35)]">
-                            {t.blog.heroTitle}
-                        </h1>
-
-                        <p className="mx-auto mt-12 max-w-2xl text-lg text-slate-200 sm:text-2xl font-medium leading-relaxed animate-in fade-in slide-in-from-bottom-12 duration-1200">
-                            {t.blog.heroDesc}
-                        </p>
-
-                        <div className="mt-16 flex flex-wrap justify-center gap-6 animate-in fade-in slide-in-from-bottom-16 duration-1500">
-                            <button
-                                onClick={() => window.scrollTo({ top: window.innerHeight * 0.8, behavior: 'smooth' })}
-                                className="flex h-16 w-16 items-center justify-center rounded-full border border-white/20 bg-white/5 backdrop-blur-md text-white transition hover:bg-white/10 hover:border-white/40"
-                            >
-                                <ChevronDown className="h-6 w-6 animate-bounce" />
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                {/* CSS Animation for the background */}
-                <style jsx>{`
-            @keyframes kenburns {
-                from { transform: scale(1); }
-                to { transform: scale(1.15); }
-            }
-        `}</style>
-            </section>
-
-            {/* SECTION 2: ARTICLES GRID */}
-            <section className="bg-white py-24 sm:py-32">
-                <div className="page-shell">
-                    <div className="mb-16 flex flex-col items-start gap-6">
-                        <div className="text-left">
-                            <p className="text-xs uppercase tracking-[0.3em] font-black text-brand-700 mb-4">{t.blog.archiveTitle}</p>
-                            <h2 className="text-4xl sm:text-6xl font-black tracking-tight text-slate-950">
-                                {t.blog.latestPub}
-                            </h2>
-                        </div>
-                    </div>
-
-                    <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
-                        {(loading ? Array.from({ length: 3 }) : (posts.length > 0 ? posts : blogFallbacks)).map((post: any, idx) => (
-                            <article key={idx} className="group flex flex-col bg-white rounded-[3rem] overflow-hidden border border-slate-200 transition-all duration-500 hover:-translate-y-4 hover:shadow-[0_32px_64px_-12px_rgba(0,0,0,0.1)]">
-                                {loading ? (
-                                    <div className="aspect-[4/3] bg-slate-200 animate-pulse" />
-                                ) : (
-                                    <Link href={`/blog/${post.slug}`} className="relative aspect-[4/3] overflow-hidden">
-                                        <Image
-                                            src={post.coverImage || "https://images.unsplash.com/photo-1501386761578-eac5c94b800a?auto=format&fit=crop&w=800&q=80"}
-                                            alt={post.title}
-                                            fill
-                                            className="object-cover transition duration-700 group-hover:scale-110"
-                                        />
-                                        <div className="absolute inset-0 bg-slate-950/20 transition-opacity group-hover:opacity-0" />
-                                    </Link>
-                                )}
-                                <div className="p-10 flex flex-col flex-grow">
-                                    {loading ? (
-                                        <div className="space-y-4">
-                                            <div className="h-4 bg-slate-100 w-1/2 animate-pulse" />
-                                            <div className="h-8 bg-slate-100 w-full animate-pulse" />
-                                            <div className="h-24 bg-slate-100 w-full animate-pulse" />
-                                        </div>
-                                    ) : (
-                                        <>
-                                            <div className="flex items-center gap-4 text-[11px] font-black text-slate-400 uppercase tracking-widest mb-6">
-                                                <span className="flex items-center gap-2">
-                                                    <Calendar className="w-3.5 h-3.5 text-brand-600" />
-                                                    {post.createdAt ? new Date(post.createdAt).toLocaleDateString(language === 'en' ? 'en-US' : 'sq-AL', { month: 'short', day: 'numeric', year: 'numeric' }) : t.blog.recently}
-                                                </span>
-                                                <span className="flex items-center gap-2">
-                                                    <User className="w-3.5 h-3.5 text-brand-600" />
-                                                    {post.author?.name || t.blog.authorEditor}
-                                                </span>
-                                            </div>
-                                            <h3 className="text-3xl font-black text-slate-950 mb-6 line-clamp-2 leading-tight group-hover:text-brand-700 transition duration-300">
-                                                <Link href={`/blog/${post.slug}`}>{post.title}</Link>
-                                            </h3>
-                                            <p className="text-slate-500 text-base leading-relaxed line-clamp-3 mb-10">
-                                                {post.excerpt}
-                                            </p>
-                                            <div className="mt-auto pt-8 border-t border-slate-100">
-                                                <Link href={`/blog/${post.slug}`} className="inline-flex items-center gap-3 text-sm font-black text-slate-950 transition-all hover:gap-6 group-hover:text-brand-700">
-                                                    {t.blog.readStory}
-                                                    <ArrowRight className="w-5 h-5" />
-                                                </Link>
-                                            </div>
-                                        </>
-                                    )}
-                                </div>
-                            </article>
-                        ))}
-                    </div>
-
-                    <div className="mt-24 flex justify-center">
-                        <button className="inline-flex items-center gap-4 rounded-full bg-slate-950 px-16 py-6 text-sm font-black text-white transition hover:bg-brand-500 hover:scale-105 active:scale-95 shadow-2xl">
-                            {t.blog.loadMore}
-                            <ChevronDown className="w-5 h-5 animate-bounce" />
-                        </button>
-                    </div>
-                </div>
-            </section>
-        </main>
-    );
+        {/* Load More */}
+        <div className="mt-14 flex justify-center">
+          <button
+            className="inline-flex items-center gap-2.5 rounded-full px-8 py-3 text-sm font-semibold text-white transition-all active:scale-95"
+            style={{ background: "var(--brand-accent)", boxShadow: "0 2px 12px rgba(34,153,120,0.22)" }}
+            onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = "var(--brand-hover)")}
+            onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = "var(--brand-accent)")}
+          >
+            {t.blog.loadMore}
+            <ArrowRight className="w-4 h-4" />
+          </button>
+        </div>
+      </section>
+    </main>
+  );
 }

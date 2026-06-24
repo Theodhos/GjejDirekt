@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { CalendarDays, Clock3, MessageSquareText, ShieldCheck, Star } from "lucide-react";
+import { CalendarDays, MessageSquareText, ShieldCheck, Clock3 } from "lucide-react";
 import { getAuthUser } from "@/lib/auth";
 import { connectDB } from "@/lib/db";
 import Listing from "@/models/Listing";
@@ -27,8 +27,6 @@ export default async function DashboardPage() {
   const approved = listings.filter((listing: any) => listing.status === "approved").length;
   const pending = listings.filter((listing: any) => listing.status === "pending").length;
   const rejected = listings.filter((listing: any) => listing.status === "rejected").length;
-  const totalReviews = reviews.length;
-  const totalFavorites = favorites.length;
   const joinedAt = user?.createdAt ? new Date(user.createdAt).toLocaleDateString() : "";
   const profileUser = {
     name: user?.name || auth.name,
@@ -37,122 +35,226 @@ export default async function DashboardPage() {
     createdAt: user?.createdAt
   };
 
+  const stats = [
+    { label: "Total Listings", value: String(listings.length), accent: false },
+    { label: "Pending Approval", value: String(pending), accent: false },
+    { label: "Approved", value: String(approved), accent: true },
+    { label: "Rejected", value: String(rejected), accent: false }
+  ];
+
   return (
-    <section className="page-shell py-8 sm:py-10">
-      <div className="surface overflow-hidden p-6 sm:p-8">
-        <div className="grid gap-6 xl:grid-cols-[1fr_0.95fr] xl:items-start">
-          <div className="max-w-3xl">
-            <p className="eyebrow">Your area</p>
-            <h1 className="display-font mt-3 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl lg:text-5xl">
-              Personal dashboard
-            </h1>
-            <p className="mt-4 max-w-2xl text-slate-600">
-              Your listings, favorites, reviews, and platform activity in one place. Everything you do on the platform is surfaced here clearly.
-            </p>
-
-            <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-              <Button href="/create-listing">Add Listing</Button>
-              <Button href="/packet">Buy Package</Button>
-              <Button href="/services" variant="ghost">
-                Explore services
-              </Button>
-            </div>
-
-            <div className="mt-8 grid gap-3 sm:grid-cols-2">
-              {[
-                { label: "Member since", value: joinedAt || "Now", icon: CalendarDays },
-                { label: "Role", value: auth.role, icon: ShieldCheck },
-                { label: "Listings", value: String(listings.length), icon: MessageSquareText }
-              ].map((item) => (
-                <div key={item.label} className="rounded-[1.5rem] border border-slate-200 bg-slate-50 p-4">
-                  <item.icon className="h-5 w-5 text-brand-600" />
-                  <p className="mt-3 text-xs uppercase tracking-[0.18em] text-slate-500">{item.label}</p>
-                  <p className="mt-1 break-words text-sm font-bold text-slate-950">{item.value}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <ProfilePanel user={profileUser} />
-        </div>
-      </div>
-
-      <div className="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <div className="surface p-6">
-          <p className="text-sm text-slate-500">Total listings</p>
-          <p className="mt-2 text-3xl font-black">{listings.length}</p>
-        </div>
-        <div className="surface p-6">
-          <p className="text-sm text-slate-500">Pending approval</p>
-          <p className="mt-2 text-3xl font-black">{pending}</p>
-        </div>
-        <div className="surface p-6">
-          <p className="text-sm text-slate-500">Approved</p>
-          <p className="mt-2 text-3xl font-black">{approved}</p>
-        </div>
-        <div className="surface p-6">
-          <p className="text-sm text-slate-500">Rejected</p>
-          <p className="mt-2 text-3xl font-black">{rejected}</p>
-        </div>
-      </div>
-
-      <div className="mt-8 grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
-        <div className="surface p-6">
-          <div className="flex items-center justify-between gap-4">
+    <main style={{ background: "var(--surface-page)" }}>
+      {/* Page Header */}
+      <div style={{ borderBottom: "1px solid var(--border-soft)", background: "var(--surface-white)" }}>
+        <div className="page-shell py-10 sm:py-14">
+          <div className="grid gap-8 xl:grid-cols-[1fr_0.9fr] xl:items-start">
             <div>
-              <p className="eyebrow">Listings</p>
-              <h2 className="text-2xl font-black text-slate-950">Your services</h2>
+              <p className="eyebrow mb-4">Your area</p>
+              <h1
+                className="font-bold tracking-tight mb-3"
+                style={{ fontSize: "clamp(1.75rem, 4vw, 2.5rem)", color: "var(--text-primary)" }}
+              >
+                Personal Dashboard
+              </h1>
+              <p className="text-sm leading-relaxed mb-6 max-w-lg" style={{ color: "var(--text-secondary)" }}>
+                Your listings, favorites, reviews, and platform activity in one place. Everything you do on the platform is surfaced here clearly.
+              </p>
+              <div className="flex flex-wrap gap-3">
+                <Button href="/create-listing">Add Listing</Button>
+                <Button href="/packet">Buy Package</Button>
+                <Button href="/services" variant="ghost">Explore services</Button>
+              </div>
             </div>
-            <div className="rounded-full bg-brand-50 px-4 py-2 text-sm font-semibold text-brand-800">
-              {listings.length} total
-            </div>
-          </div>
-          <div className="mt-6">
-            <UserListingTable listings={listings} isAdmin={auth.role === "admin"} />
+
+            <ProfilePanel user={profileUser} />
           </div>
         </div>
+      </div>
 
-        <div className="space-y-6">
+      {/* Stats Row */}
+      <div style={{ borderBottom: "1px solid var(--border-soft)", background: "var(--surface-cream)" }}>
+        <div className="page-shell py-6">
+          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            {stats.map((stat) => (
+              <div
+                key={stat.label}
+                className="rounded-2xl p-5 transition-all"
+                style={{
+                  background: stat.accent ? "var(--brand-light)" : "var(--surface-white)",
+                  border: `1px solid ${stat.accent ? "var(--brand-border)" : "var(--border-soft)"}`,
+                  boxShadow: "var(--shadow-card)"
+                }}
+              >
+                <p
+                  className="text-xs font-semibold uppercase tracking-[0.15em] mb-2"
+                  style={{ color: stat.accent ? "var(--brand-accent)" : "var(--text-tertiary)" }}
+                >
+                  {stat.label}
+                </p>
+                <p
+                  className="text-3xl font-bold tracking-tight"
+                  style={{ color: stat.accent ? "var(--brand-accent)" : "var(--text-primary)" }}
+                >
+                  {stat.value}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
 
-          <div className="surface p-8 border-none shadow-[0_20px_50px_rgba(34,197,94,0.15)] overflow-hidden relative bg-white border border-slate-100 group hover:border-brand-500 transition-all duration-500">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-brand-500/5 rounded-full -mr-16 -mt-16 blur-3xl group-hover:bg-brand-500/10 transition" />
-            <div className="flex items-center gap-4 mb-8 relative z-10">
-              <div className="w-12 h-12 rounded-2xl bg-brand-500 flex items-center justify-center text-white shadow-lg shadow-brand-500/20">
-                <Clock3 className="h-6 w-6" />
+      {/* Member Info Cards */}
+      <div className="page-shell py-8">
+        <div className="grid gap-3 sm:grid-cols-3 mb-10">
+          {[
+            { label: "Member since", value: joinedAt || "Now", icon: CalendarDays },
+            { label: "Role", value: auth.role, icon: ShieldCheck },
+            { label: "Total listings", value: String(listings.length), icon: MessageSquareText }
+          ].map((item) => (
+            <div
+              key={item.label}
+              className="flex items-center gap-4 rounded-xl p-4"
+              style={{
+                background: "var(--surface-white)",
+                border: "1px solid var(--border-soft)",
+                boxShadow: "var(--shadow-card)"
+              }}
+            >
+              <div
+                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl"
+                style={{ background: "var(--brand-light)", color: "var(--brand-accent)" }}
+              >
+                <item.icon className="h-4.5 w-4.5" />
               </div>
               <div>
-                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-600">Active Session</p>
-                <h2 className="text-2xl font-black text-slate-950">Last activity</h2>
+                <p
+                  className="text-[11px] font-semibold uppercase tracking-[0.18em] mb-0.5"
+                  style={{ color: "var(--text-tertiary)" }}
+                >
+                  {item.label}
+                </p>
+                <p className="text-sm font-semibold capitalize" style={{ color: "var(--text-primary)" }}>
+                  {item.value}
+                </p>
               </div>
             </div>
-            
-            <div className="relative z-10 p-6 rounded-3xl bg-slate-50 border border-slate-100 group-hover:bg-white group-hover:shadow-xl transition-all duration-500">
+          ))}
+        </div>
+
+        {/* Main Content Grid */}
+        <div className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
+          {/* Listings Table */}
+          <div
+            className="rounded-2xl overflow-hidden"
+            style={{
+              background: "var(--surface-white)",
+              border: "1px solid var(--border-soft)",
+              boxShadow: "var(--shadow-card)"
+            }}
+          >
+            <div
+              className="flex items-center justify-between gap-4 px-6 py-5"
+              style={{ borderBottom: "1px solid var(--border-soft)" }}
+            >
+              <div>
+                <p className="eyebrow mb-1">Listings</p>
+                <h2 className="text-lg font-bold" style={{ color: "var(--text-primary)" }}>
+                  Your Services
+                </h2>
+              </div>
+              <span
+                className="rounded-full px-3.5 py-1 text-xs font-semibold"
+                style={{
+                  background: "var(--brand-light)",
+                  color: "var(--brand-accent)",
+                  border: "1px solid var(--brand-border)"
+                }}
+              >
+                {listings.length} total
+              </span>
+            </div>
+            <div className="p-6">
+              <UserListingTable listings={listings} isAdmin={auth.role === "admin"} />
+            </div>
+          </div>
+
+          {/* Activity Panel */}
+          <div
+            className="rounded-2xl overflow-hidden"
+            style={{
+              background: "var(--surface-white)",
+              border: "1px solid var(--border-soft)",
+              boxShadow: "var(--shadow-card)"
+            }}
+          >
+            <div
+              className="flex items-center gap-4 px-6 py-5"
+              style={{ borderBottom: "1px solid var(--border-soft)" }}
+            >
+              <div
+                className="flex h-9 w-9 items-center justify-center rounded-xl"
+                style={{ background: "var(--brand-light)", color: "var(--brand-accent)" }}
+              >
+                <Clock3 className="h-4 w-4" />
+              </div>
+              <div>
+                <p className="eyebrow mb-1">Active Session</p>
+                <h2 className="text-lg font-bold" style={{ color: "var(--text-primary)" }}>
+                  Last Activity
+                </h2>
+              </div>
+            </div>
+
+            <div className="p-6">
               {activities.length ? (
-                <div className="flex items-start gap-4">
-                  <div className="flex-grow">
-                    <p className="text-xl font-black leading-tight text-slate-950 mb-2">{activities[0].title}</p>
-                    <p className="text-slate-500 text-base font-medium mb-6 leading-relaxed">{activities[0].description}</p>
-                    <div className="flex items-center justify-between gap-4 pt-4 border-t border-slate-200/60">
-                        <div className="flex items-center gap-2">
-                            <span className="w-2.5 h-2.5 rounded-full bg-brand-500 animate-pulse" />
-                            <p className="text-xs font-bold text-slate-950">
-                                {new Date(activities[0].createdAt).toLocaleDateString()}
-                            </p>
-                        </div>
-                        <p className="text-xs font-black uppercase tracking-widest text-brand-600">
-                          {new Date(activities[0].createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                        </p>
+                <div
+                  className="rounded-xl p-4"
+                  style={{ background: "var(--surface-cream)", border: "1px solid var(--border-soft)" }}
+                >
+                  <p className="text-sm font-semibold mb-2" style={{ color: "var(--text-primary)" }}>
+                    {activities[0].title}
+                  </p>
+                  <p className="text-sm leading-relaxed mb-4" style={{ color: "var(--text-secondary)" }}>
+                    {activities[0].description}
+                  </p>
+                  <div
+                    className="flex items-center justify-between pt-3"
+                    style={{ borderTop: "1px solid var(--border-soft)" }}
+                  >
+                    <div className="flex items-center gap-2">
+                      <span
+                        className="w-2 h-2 rounded-full animate-pulse"
+                        style={{ background: "var(--brand-accent)" }}
+                      />
+                      <p className="text-xs font-medium" style={{ color: "var(--text-secondary)" }}>
+                        {new Date(activities[0].createdAt).toLocaleDateString()}
+                      </p>
                     </div>
+                    <p
+                      className="text-xs font-semibold"
+                      style={{ color: "var(--brand-accent)" }}
+                    >
+                      {new Date(activities[0].createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                    </p>
                   </div>
                 </div>
               ) : (
-                <p className="text-sm text-slate-500 font-medium italic text-center py-4">No recent activity detected.</p>
+                <div className="flex flex-col items-center justify-center py-12 text-center">
+                  <div
+                    className="flex h-12 w-12 items-center justify-center rounded-2xl mb-4"
+                    style={{ background: "var(--surface-subtle)" }}
+                  >
+                    <Clock3 className="h-5 w-5" style={{ color: "var(--text-tertiary)" }} />
+                  </div>
+                  <p className="text-sm font-medium" style={{ color: "var(--text-tertiary)" }}>
+                    No recent activity detected.
+                  </p>
+                </div>
               )}
             </div>
           </div>
         </div>
       </div>
-
-    </section>
+    </main>
   );
 }

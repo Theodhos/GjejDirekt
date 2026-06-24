@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { AlertTriangle, Loader2 } from "lucide-react";
+import { Flag, Loader2, X, AlertTriangle } from "lucide-react";
 import toast from "react-hot-toast";
 import { useLanguage } from "@/context/LanguageContext";
 
@@ -25,11 +25,11 @@ export default function ReportListing({ listingId }: { listingId: string }) {
 
       if (!response.ok) throw new Error("Failed to submit report");
 
-      toast.success(language === 'en' ? "Report submitted successfully" : "Raporti u dërgua me sukses");
+      toast.success(language === "en" ? "Report submitted successfully" : "Raporti u dërgua me sukses");
       setIsOpen(false);
       setReason("");
-    } catch (error) {
-      toast.error(language === 'en' ? "Error submitting report" : "Gabim gjatë dërgimit të raportit");
+    } catch {
+      toast.error(language === "en" ? "Error submitting report" : "Gabim gjatë dërgimit të raportit");
     } finally {
       setLoading(false);
     }
@@ -37,44 +37,90 @@ export default function ReportListing({ listingId }: { listingId: string }) {
 
   if (!isOpen) {
     return (
-      <button 
+      <button
         onClick={() => setIsOpen(true)}
-        className="w-full flex items-center justify-center gap-2 py-4 text-[10px] font-black uppercase tracking-widest text-red-500 hover:text-red-600 transition-colors"
+        className="group w-full flex items-center justify-center gap-2.5 rounded-xl py-3 px-4 text-sm font-semibold transition-all duration-200"
+        style={{
+          background: "rgba(239,68,68,0.06)",
+          border: "1px solid rgba(239,68,68,0.2)",
+          color: "#dc2626"
+        }}
+        onMouseEnter={e => {
+          (e.currentTarget as HTMLElement).style.background = "rgba(239,68,68,0.12)";
+          (e.currentTarget as HTMLElement).style.borderColor = "rgba(239,68,68,0.35)";
+        }}
+        onMouseLeave={e => {
+          (e.currentTarget as HTMLElement).style.background = "rgba(239,68,68,0.06)";
+          (e.currentTarget as HTMLElement).style.borderColor = "rgba(239,68,68,0.2)";
+        }}
       >
-        <AlertTriangle className="w-3.5 h-3.5" />
-        {language === 'en' ? 'Report this post' : 'Raporto këtë postim'}
+        <Flag className="w-4 h-4" />
+        {language === "en" ? "Report this listing" : "Raporto këtë postim"}
       </button>
     );
   }
 
   return (
-    <div className="bg-red-50 p-6 rounded-[2rem] border border-red-100 animate-in fade-in zoom-in duration-300">
-      <h4 className="text-xs font-black uppercase tracking-widest text-red-950 mb-4 flex items-center gap-2">
-        <AlertTriangle className="w-4 h-4" />
-        {language === 'en' ? 'Report Post' : 'Raporto Postimin'}
-      </h4>
-      <form onSubmit={handleSubmit} className="space-y-4">
+    <div
+      className="rounded-xl overflow-hidden"
+      style={{ border: "1px solid rgba(239,68,68,0.25)", background: "rgba(239,68,68,0.04)" }}
+    >
+      {/* Header */}
+      <div
+        className="flex items-center justify-between px-4 py-3"
+        style={{ borderBottom: "1px solid rgba(239,68,68,0.15)", background: "rgba(239,68,68,0.07)" }}
+      >
+        <div className="flex items-center gap-2">
+          <AlertTriangle className="w-4 h-4" style={{ color: "#dc2626" }} />
+          <span className="text-sm font-semibold" style={{ color: "#dc2626" }}>
+            {language === "en" ? "Report Listing" : "Raporto Postimin"}
+          </span>
+        </div>
+        <button
+          onClick={() => setIsOpen(false)}
+          className="flex h-7 w-7 items-center justify-center rounded-lg transition-colors hover:bg-red-100"
+          style={{ color: "#dc2626" }}
+        >
+          <X className="w-4 h-4" />
+        </button>
+      </div>
+
+      {/* Form */}
+      <form onSubmit={handleSubmit} className="p-4 space-y-3">
         <textarea
           required
           value={reason}
           onChange={(e) => setReason(e.target.value)}
-          placeholder={language === 'en' ? 'Why are you reporting this?' : 'Pse po e raportoni këtë?'}
-          className="w-full h-24 p-4 rounded-xl bg-white border border-red-200 focus:border-red-500 outline-none text-xs font-medium text-slate-900 resize-none"
+          placeholder={language === "en" ? "Describe the issue…" : "Përshkruani problemin…"}
+          className="w-full h-24 p-3 text-sm rounded-xl outline-none resize-none transition-all"
+          style={{
+            background: "var(--surface-white)",
+            border: "1px solid rgba(239,68,68,0.25)",
+            color: "var(--text-primary)"
+          }}
+          onFocus={e => (e.currentTarget.style.borderColor = "rgba(239,68,68,0.5)")}
+          onBlur={e => (e.currentTarget.style.borderColor = "rgba(239,68,68,0.25)")}
         />
         <div className="flex gap-2">
           <button
             type="submit"
             disabled={loading}
-            className="flex-grow h-10 bg-red-600 text-white rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-red-700 disabled:opacity-50 flex items-center justify-center"
+            className="flex flex-1 h-9 items-center justify-center gap-2 rounded-xl text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
+            style={{ background: "#dc2626" }}
           >
-            {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : (language === 'en' ? 'Submit' : 'Dërgo')}
+            {loading ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              language === "en" ? "Submit Report" : "Dërgo Raportin"
+            )}
           </button>
           <button
             type="button"
-            onClick={() => setIsOpen(false)}
-            className="h-10 px-4 bg-white text-slate-500 rounded-lg text-[10px] font-black uppercase tracking-widest border border-slate-200 hover:bg-slate-50"
+            onClick={() => { setIsOpen(false); setReason(""); }}
+            className="h-9 px-4 rounded-xl text-sm font-medium transition-colors hover:bg-neutral-100"
+            style={{ background: "var(--surface-white)", border: "1px solid var(--border-medium)", color: "var(--text-secondary)" }}
           >
-            {language === 'en' ? 'Cancel' : 'Anulo'}
+            {language === "en" ? "Cancel" : "Anulo"}
           </button>
         </div>
       </form>

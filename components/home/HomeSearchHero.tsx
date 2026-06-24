@@ -37,21 +37,17 @@ export default function HomeSearchHero() {
         setListingSuggestions([]);
         return;
       }
-
       setIsLoadingListings(true);
       try {
         const response = await fetch(`/api/listings?q=${encodeURIComponent(debouncedSearch)}`);
         const data = await response.json();
-        if (data.listings) {
-          setListingSuggestions(data.listings.slice(0, 12));
-        }
+        if (data.listings) setListingSuggestions(data.listings.slice(0, 12));
       } catch (error) {
         console.error("Error fetching listings:", error);
       } finally {
         setIsLoadingListings(false);
       }
     };
-
     fetchListings();
   }, [debouncedSearch]);
 
@@ -60,9 +56,7 @@ export default function HomeSearchHero() {
       try {
         const res = await fetch("/api/cities");
         const data = await res.json();
-        if (Array.isArray(data.cities) && data.cities.length) {
-          setAvailableCities(data.cities);
-        }
+        if (Array.isArray(data.cities) && data.cities.length) setAvailableCities(data.cities);
       } catch {}
     };
     loadCities();
@@ -104,7 +98,7 @@ export default function HomeSearchHero() {
         type: "category",
         label: cat.label,
         value: cat.value,
-        icon: Tag,
+        icon: Tag
       }));
     }
 
@@ -114,7 +108,6 @@ export default function HomeSearchHero() {
       if (cat.label.toLowerCase().includes(query) || cat.aliases.some((a) => a.includes(query))) {
         results.push({ type: "category", label: cat.label, value: cat.value, icon: Tag, score: scoreMatch(cat.label) });
       }
-
       cat.subcategories.forEach((sub) => {
         if (sub.label.toLowerCase().includes(query) || sub.aliases?.some((a) => a.includes(query))) {
           results.push({
@@ -123,7 +116,7 @@ export default function HomeSearchHero() {
             value: sub.value,
             categoryValue: cat.value,
             icon: Compass,
-            score: scoreMatch(sub.label),
+            score: scoreMatch(sub.label)
           });
         }
       });
@@ -148,7 +141,7 @@ export default function HomeSearchHero() {
         category: listingCategory,
         image: listing.coverImage || listing.image || listing.images?.[0] || listing.gallery?.[0] || null,
         icon: Sparkles,
-        score: Math.min(scoreMatch(listingLabel), scoreMatch(listingLocation), scoreMatch(listingCategory)),
+        score: Math.min(scoreMatch(listingLabel), scoreMatch(listingLocation), scoreMatch(listingCategory))
       });
     });
 
@@ -161,7 +154,6 @@ export default function HomeSearchHero() {
       setShowSuggestions(false);
       return;
     }
-
     const params = new URLSearchParams();
     if (suggestion.type === "category") {
       params.set("category", suggestion.value);
@@ -173,7 +165,6 @@ export default function HomeSearchHero() {
       setShowSuggestions(false);
       return;
     }
-
     router.push(`/?${params.toString()}`);
     setShowSuggestions(false);
   }
@@ -184,13 +175,11 @@ export default function HomeSearchHero() {
     const matchedCity = availableCities.find(
       (c) => String(c.label).toLowerCase() === query || String(c.value).toLowerCase() === query
     );
-
     if (matchedCity) {
       router.push(`/city/${matchedCity.value}`);
       setShowSuggestions(false);
       return;
     }
-
     const params = new URLSearchParams();
     if (query) params.set("q", query);
     router.push(`/${params.toString() ? `?${params.toString()}` : ""}`);
@@ -198,167 +187,250 @@ export default function HomeSearchHero() {
   }
 
   return (
-    <section className="relative min-h-hero flex items-center justify-center overflow-visible bg-slate-950 py-8 sm:py-0">
+    <section className="relative min-h-hero flex items-center justify-center overflow-visible py-8 sm:py-0" style={{ background: "#0d1117" }}>
+      {/* Background Image */}
       <div className="absolute inset-0 overflow-hidden">
         <Image
           src="https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=2000&q=80"
           alt="Albania Landscapes"
           fill
-          className="object-cover opacity-70 animate-slow-zoom"
+          className="object-cover opacity-60 animate-slow-zoom"
           priority
         />
-        <div className="absolute inset-0 bg-slate-950/40" />
-        <div className="absolute inset-0 bg-gradient-to-b from-slate-950/90 via-transparent to-slate-950" />
+        {/* Refined overlay — warm tone, less harsh */}
+        <div className="absolute inset-0" style={{ background: "linear-gradient(to bottom, rgba(10,12,16,0.72) 0%, rgba(10,12,16,0.3) 40%, rgba(10,12,16,0.75) 100%)" }} />
       </div>
 
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-[15%] left-[10%] w-96 h-96 bg-brand-500/20 rounded-full blur-[120px] animate-pulse" />
-        <div className="absolute bottom-[15%] right-[10%] w-80 h-80 bg-emerald-500/10 rounded-full blur-[150px] animate-pulse delay-1000" />
-      </div>
-
+      {/* Content */}
       <div className="page-shell relative z-10 w-full flex flex-col items-center pt-4 sm:pt-0">
-        <div className="text-center max-w-5xl mb-8 sm:mb-12">
-          <h1 className="text-[2.05rem] xs:text-[2.4rem] sm:text-6xl md:text-7xl lg:text-[5.25rem] font-black tracking-[-0.03em] text-white mb-4 sm:mb-6 leading-[1.1] sm:leading-[1.03] animate-slide-up drop-shadow-[0_10px_30px_rgba(0,0,0,0.6)] px-2">
+        {/* Heading */}
+        <div className="text-center max-w-3xl mb-8 sm:mb-10">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-white/50 mb-5">
+            {language === "en" ? "Albania's Tourism Marketplace" : "Platforma e Turizmit Shqiptar"}
+          </p>
+          <h1
+            className="font-bold text-white mb-5 px-2"
+            style={{
+              fontSize: "clamp(2rem, 6vw, 3.75rem)",
+              lineHeight: 1.08,
+              letterSpacing: "-0.025em",
+              textShadow: "0 2px 24px rgba(0,0,0,0.4)"
+            }}
+          >
             {language === "en" ? "Find easily. Contact directly. Enjoy holidays." : "Gjej lehtë. Kontakto direkt. Shijo pushimet."}
           </h1>
-          <p className="text-xs sm:text-base md:text-lg lg:text-xl text-slate-200/90 font-medium sm:font-semibold tracking-wide leading-relaxed sm:leading-loose animate-fade-in drop-shadow-md max-w-3xl mx-auto px-4">
+          <p
+            className="text-sm sm:text-base text-white/70 font-medium leading-relaxed max-w-xl mx-auto px-4"
+            style={{ textShadow: "0 1px 8px rgba(0,0,0,0.3)" }}
+          >
             {language === "en"
               ? "Discover hotels, restaurants, attractions, experiences, and authentic Albanian businesses in a single platform."
               : "Zbulo hotele, restorante, atraksione, eksperienca dhe biznese autentike shqiptare në një platformë të vetme."}
           </p>
         </div>
 
+        {/* Search Bar */}
         <div
-          className={`${showSuggestions ? "fixed inset-0 z-[11111111111] w-screen h-screen bg-slate-50 sm:relative sm:z-[100] sm:bg-transparent sm:w-full sm:h-auto sm:max-w-4xl flex flex-col" : "relative w-full max-w-4xl z-[100]"}`}
+          className={`${
+            showSuggestions
+              ? "fixed inset-0 z-[11111111111] w-screen h-screen bg-white sm:relative sm:z-[100] sm:bg-transparent sm:w-full sm:h-auto sm:max-w-3xl flex flex-col"
+              : "relative w-full max-w-3xl z-[100]"
+          }`}
           ref={searchRef}
         >
+          {/* Mobile overlay header */}
           {showSuggestions && (
-            <div className="sm:hidden px-4 pt-3 pb-3 border-b border-slate-200 bg-white">
+            <div className="sm:hidden px-4 pt-3 pb-3 border-b" style={{ borderColor: "var(--border-soft)", background: "#fff" }}>
               <div className="flex items-center justify-between gap-3">
-                <div className="flex items-center gap-3 flex-1 rounded-full border border-slate-400 bg-white px-4 py-2.5">
-                  <Search className="w-5 h-5 text-fuchsia-600 shrink-0" />
+                <div
+                  className="flex items-center gap-3 flex-1 rounded-xl border bg-white px-4 py-2.5"
+                  style={{ borderColor: "var(--border-medium)" }}
+                >
+                  <Search className="w-4 h-4 shrink-0" style={{ color: "var(--brand-accent)" }} />
                   <input
-                  value={city}
-                  onChange={(event) => setCity(event.target.value)}
-                  placeholder={language === "en" ? "Search hotels, restaurants, beaches, tours..." : "Kërko hotele, restorante, plazhe, ture..."}
-                  className="w-full bg-transparent text-lg text-slate-700 outline-none font-semibold placeholder:text-slate-500"
-                  autoFocus
-                />
+                    value={city}
+                    onChange={(event) => setCity(event.target.value)}
+                    placeholder={language === "en" ? "Search hotels, restaurants, beaches, tours..." : "Kërko hotele, restorante, plazhe, ture..."}
+                    className="w-full bg-transparent text-base outline-none font-medium"
+                    style={{ color: "var(--text-primary)" }}
+                    autoFocus
+                  />
                 </div>
-                <button onClick={() => setShowSuggestions(false)} className="p-1.5 text-fuchsia-600 hover:text-fuchsia-700 rounded-full transition-colors">
-                  <X className="w-7 h-7" />
+                <button
+                  onClick={() => setShowSuggestions(false)}
+                  className="p-2 rounded-xl transition-colors"
+                  style={{ color: "var(--text-secondary)" }}
+                >
+                  <X className="w-5 h-5" />
                 </button>
               </div>
             </div>
           )}
 
+          {/* Search form */}
           <div
-            className={`relative z-20 ${showSuggestions ? "hidden sm:block sm:glass sm:shadow-[0_32px_64px_-12px_rgba(0,0,0,0.5)] sm:rounded-[3.5rem] sm:p-5 sm:border-white/10 sm:backdrop-blur-3xl sm:bg-white/40 p-4" : "glass shadow-[0_32px_64px_-12px_rgba(0,0,0,0.5)] rounded-[2rem] sm:rounded-[3.5rem] p-2.5 sm:p-5 border-white/10 backdrop-blur-3xl bg-white/45"}`}
+            className={`relative z-20 ${
+              showSuggestions
+                ? "hidden sm:block"
+                : ""
+            }`}
           >
-            <form onSubmit={submit} className="relative">
-              <div className="flex flex-col sm:flex-row items-center gap-3 p-2.5 pl-4 sm:pl-8 bg-white rounded-[1.6rem] sm:rounded-[2.5rem] shadow-2xl transition-all duration-500 focus-within:ring-8 focus-within:ring-brand-500/20 border border-slate-100 sm:border-transparent">
-                <div className="flex items-center gap-3 sm:gap-5 w-full">
-                  <Search className="h-6 w-6 sm:h-7 sm:w-7 text-brand-600 shrink-0" />
-                  <input
-                    value={city}
-                    onChange={(event) => {
-                      setCity(event.target.value);
-                      setShowSuggestions(true);
-                    }}
-                    onFocus={() => {
-                      setShowSuggestions(true);
-                      if (window.innerWidth >= 640) {
-                        searchRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-                      }
-                    }}
-                    placeholder={language === "en" ? "Search hotels, restaurants, beaches, tours..." : "Kërko hotele, restorante, plazhe, ture..."}
-                    className="w-full bg-transparent py-3 sm:py-5 text-lg sm:text-xl text-slate-950 outline-none font-black placeholder:text-slate-400 placeholder:font-bold"
-                  />
-                </div>
-
-                <div className="flex items-center gap-3 w-full sm:w-auto shrink-0 pr-2">
-                  <button
-                    type="submit"
-                    className="w-full sm:w-auto px-12 py-5 rounded-2xl font-black text-xs uppercase tracking-widest bg-brand-600 text-white hover:bg-brand-700 transition-all shadow-2xl shadow-brand-600/30 active:scale-95 flex items-center justify-center gap-3"
-                  >
-                    {language === "en" ? "Explore Albania" : "Eksploro Shqipërinë"}
-                    <ArrowRight className="w-5 h-5" />
-                  </button>
-                </div>
-              </div>
-            </form>
-          </div>
-
-          {showSuggestions && suggestions.length > 0 && (
-            <div className="sm:absolute sm:top-full sm:left-0 sm:right-0 sm:mt-6 flex-grow sm:flex-grow-0 bg-white sm:rounded-[2.5rem] sm:shadow-[0_64px_128px_-32px_rgba(0,0,0,0.6)] sm:border border-slate-200 overflow-hidden z-[9999] animate-in fade-in sm:slide-in-from-top-6 duration-500">
-              <div className="p-3 sm:p-4 h-full sm:max-h-[calc(100vh-200px)] overflow-y-auto custom-scrollbar">
-                {!city.trim() && (
-                <div className="sm:hidden px-2 pb-3">
-                  <h3 className="text-slate-700 text-[1.75rem] font-medium mb-3">{language === "en" ? "Popular destinations" : "Destinacione popullore"}</h3>
-                  <div className="flex flex-wrap gap-2 mb-4">
-                    {popularCities.map((name) => (
-                      <button
-                        key={name}
-                        onClick={() => {
-                          setCity(name);
-                          router.push(`/?q=${encodeURIComponent(name.toLowerCase())}`);
-                          setShowSuggestions(false);
-                        }}
-                        className="rounded-full bg-slate-200 text-slate-800 px-3 py-1.5 text-[1rem] font-medium"
-                      >
-                        {name}
-                      </button>
-                    ))}
+            <div
+              className="rounded-2xl p-1.5"
+              style={{
+                background: "rgba(255,255,255,0.12)",
+                border: "1px solid rgba(255,255,255,0.18)",
+                backdropFilter: "blur(24px)",
+                WebkitBackdropFilter: "blur(24px)"
+              }}
+            >
+              <form onSubmit={submit}>
+                <div
+                  className="flex flex-col sm:flex-row items-center gap-2 p-2.5 pl-4 sm:pl-6 rounded-xl transition-all duration-300"
+                  style={{
+                    background: "var(--surface-white)",
+                    border: "1px solid var(--border-soft)"
+                  }}
+                >
+                  <div className="flex items-center gap-3 w-full">
+                    <Search className="h-5 w-5 shrink-0" style={{ color: "var(--brand-accent)" }} />
+                    <input
+                      value={city}
+                      onChange={(event) => {
+                        setCity(event.target.value);
+                        setShowSuggestions(true);
+                      }}
+                      onFocus={() => {
+                        setShowSuggestions(true);
+                        if (window.innerWidth >= 640) {
+                          searchRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+                        }
+                      }}
+                      placeholder={language === "en" ? "Search hotels, restaurants, beaches, tours..." : "Kërko hotele, restorante, plazhe, ture..."}
+                      className="w-full bg-transparent py-3 sm:py-3.5 text-base outline-none font-medium"
+                      style={{ color: "var(--text-primary)" }}
+                    />
+                  </div>
+                  <div className="flex items-center w-full sm:w-auto shrink-0 pr-1">
+                    <button
+                      type="submit"
+                      className="w-full sm:w-auto px-8 py-3 rounded-xl font-semibold text-sm text-white transition-all active:scale-95 flex items-center justify-center gap-2.5"
+                      style={{
+                        background: "var(--brand-accent)",
+                        boxShadow: "0 2px 12px rgba(34,153,120,0.28)"
+                      }}
+                      onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = "var(--brand-hover)")}
+                      onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = "var(--brand-accent)")}
+                    >
+                      {language === "en" ? "Explore Albania" : "Eksploro Shqipërinë"}
+                      <ArrowRight className="w-4 h-4" />
+                    </button>
                   </div>
                 </div>
+              </form>
+            </div>
+          </div>
+
+          {/* Suggestions Dropdown */}
+          {showSuggestions && suggestions.length > 0 && (
+            <div
+              className="sm:absolute sm:top-full sm:left-0 sm:right-0 sm:mt-3 flex-grow sm:flex-grow-0 bg-white sm:rounded-2xl sm:border overflow-hidden z-[9999]"
+              style={{
+                borderColor: "var(--border-soft)",
+                boxShadow: "var(--shadow-float)"
+              }}
+            >
+              <div className="p-2 h-full sm:max-h-[calc(100vh-200px)] overflow-y-auto custom-scrollbar">
+                {/* Mobile: popular cities */}
+                {!city.trim() && (
+                  <div className="sm:hidden px-2 pb-3">
+                    <h3 className="text-base font-semibold mb-3" style={{ color: "var(--text-secondary)" }}>
+                      {language === "en" ? "Popular destinations" : "Destinacione popullore"}
+                    </h3>
+                    <div className="flex flex-wrap gap-2 mb-3">
+                      {popularCities.map((name) => (
+                        <button
+                          key={name}
+                          onClick={() => {
+                            setCity(name);
+                            router.push(`/?q=${encodeURIComponent(name.toLowerCase())}`);
+                            setShowSuggestions(false);
+                          }}
+                          className="rounded-full px-3 py-1.5 text-sm font-medium transition-colors"
+                          style={{
+                            background: "var(--surface-cream)",
+                            color: "var(--text-secondary)",
+                            border: "1px solid var(--border-soft)"
+                          }}
+                        >
+                          {name}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
                 )}
 
                 {isLoadingListings && (
-                  <div className="flex items-center justify-center gap-3 px-4 py-3 mb-2 bg-slate-50 rounded-2xl border border-slate-100">
-                    <div className="w-2 h-2 bg-brand-500 rounded-full animate-ping" />
-                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Searching...</span>
+                  <div className="flex items-center gap-2 px-4 py-2.5 mb-1 rounded-xl" style={{ background: "var(--surface-cream)" }}>
+                    <div className="w-1.5 h-1.5 rounded-full animate-ping" style={{ background: "var(--brand-accent)" }} />
+                    <span className="text-[11px] font-semibold uppercase tracking-[0.18em]" style={{ color: "var(--text-tertiary)" }}>
+                      Searching...
+                    </span>
                   </div>
                 )}
 
-                <div className="grid grid-cols-1 gap-1 p-1 sm:gap-2 sm:p-2">
+                <div className="grid grid-cols-1 gap-0.5">
                   {suggestions.map((suggestion, index) => (
                     <button
                       key={index}
                       onClick={() => handleSuggestionClick(suggestion)}
-                      className="w-full flex items-center gap-3 sm:gap-6 px-3 sm:px-8 py-2.5 sm:py-5 hover:bg-slate-50 transition-all text-left group rounded-2xl sm:rounded-3xl border-b border-slate-100 last:border-b-0"
+                      className="w-full flex items-center gap-4 px-4 sm:px-5 py-3 sm:py-3.5 text-left rounded-xl transition-colors group"
+                      style={{ borderBottom: index < suggestions.length - 1 ? "1px solid var(--border-soft)" : "none" }}
+                      onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = "var(--surface-cream)")}
+                      onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = "transparent")}
                     >
                       {suggestion.type === "listing" && suggestion.image ? (
-                        <div className="relative w-14 h-14 overflow-hidden rounded-[1.25rem] border border-slate-200 shadow-sm">
-                          <Image src={suggestion.image} alt={suggestion.label} fill className="object-cover" sizes="56px" />
+                        <div className="relative w-11 h-11 overflow-hidden rounded-xl border shrink-0" style={{ borderColor: "var(--border-soft)" }}>
+                          <Image src={suggestion.image} alt={suggestion.label} fill className="object-cover" sizes="44px" />
                         </div>
                       ) : (
-                        <div className="w-14 h-14 rounded-[1.25rem] bg-brand-50 text-brand-700 flex items-center justify-center group-hover:bg-brand-600 group-hover:text-white transition-all shadow-sm border border-brand-200/70">
-                          <suggestion.icon className="w-6 h-6" />
+                        <div
+                          className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0 transition-colors"
+                          style={{
+                            background: "var(--brand-light)",
+                            color: "var(--brand-accent)",
+                            border: "1px solid rgba(34,153,120,0.15)"
+                          }}
+                        >
+                          <suggestion.icon className="w-5 h-5" />
                         </div>
                       )}
                       <div className="flex-grow min-w-0">
-                        <p className="text-base sm:text-lg font-semibold sm:font-black text-slate-950 group-hover:text-brand-700 transition truncate">{suggestion.label}</p>
-                        <div className="flex items-center gap-3 mt-1.5">
-                          <span
-                            className={`text-[10px] font-black uppercase tracking-[0.2em] px-3 py-1 rounded-lg ${
-                              suggestion.type === "category"
-                                ? "bg-emerald-100 text-emerald-700"
-                                : suggestion.type === "subcategory"
-                                  ? "bg-blue-100 text-blue-700"
-                                  : suggestion.type === "city"
-                                    ? "bg-amber-100 text-amber-700"
-                                    : "bg-slate-100 text-slate-600"
-                            }`}
-                          >
-                            {suggestion.type === "listing" ? suggestion.category : suggestion.type}
-                          </span>
-                        </div>
+                        <p
+                          className="text-sm font-semibold truncate transition-colors"
+                          style={{ color: "var(--text-primary)" }}
+                        >
+                          {suggestion.label}
+                        </p>
+                        <span
+                          className="mt-1 inline-block text-[10px] font-semibold uppercase tracking-[0.15em] px-2 py-0.5 rounded-md"
+                          style={{
+                            background: suggestion.type === "category"
+                              ? "rgba(34,153,120,0.1)"
+                              : suggestion.type === "city"
+                              ? "rgba(245,158,11,0.1)"
+                              : "var(--surface-cream)",
+                            color: suggestion.type === "category"
+                              ? "var(--brand-accent)"
+                              : suggestion.type === "city"
+                              ? "#b45309"
+                              : "var(--text-secondary)"
+                          }}
+                        >
+                          {suggestion.type === "listing" ? suggestion.category : suggestion.type}
+                        </span>
                       </div>
-                      <div className="opacity-0 group-hover:opacity-100 translate-x-4 group-hover:translate-x-0 transition-all hidden sm:block">
-                        <div className="w-10 h-10 rounded-full bg-brand-50 flex items-center justify-center text-brand-600 shadow-sm">
-                          <ArrowRight className="w-5 h-5" />
-                        </div>
-                      </div>
+                      <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity shrink-0 hidden sm:block" style={{ color: "var(--brand-accent)" }} />
                     </button>
                   ))}
                 </div>
@@ -366,10 +438,11 @@ export default function HomeSearchHero() {
             </div>
           )}
         </div>
-      </div>
 
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-30 animate-bounce pointer-events-none">
-        <div className="w-px h-12 bg-gradient-to-b from-white to-transparent" />
+        {/* Scroll indicator */}
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-25 animate-bounce pointer-events-none">
+          <div className="w-px h-10 bg-gradient-to-b from-white to-transparent" />
+        </div>
       </div>
     </section>
   );

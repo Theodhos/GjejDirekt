@@ -159,17 +159,17 @@ function HomePageClient() {
   }
 
   return (
-    <main className="pb-12 bg-slate-50/30">
+    <main className="pb-16" style={{ background: "var(--surface-page)" }}>
       {/* Search Results Section - Appears when search is active */}
       {showSearchResults && (
-        <section className="relative bg-slate-50 py-32 min-h-screen flex flex-col justify-center">
+        <section className="relative py-20 min-h-screen flex flex-col justify-center" style={{ background: "var(--surface-page)" }}>
           <div className="page-shell">
             <div className="mb-12 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <div>
-                <p className="text-sm uppercase tracking-[0.35em] text-brand-600 font-black mb-2">
+                <p className="eyebrow mb-2">
                   {searchResults.length} {searchResults.length === 1 ? t.common.result : t.common.results}
                 </p>
-                <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black text-slate-950">
+                <h2 className="font-bold tracking-tight" style={{ fontSize: "clamp(1.75rem, 4vw, 2.75rem)", color: "var(--text-primary)" }}>
                   {category && categories.find(c => c.value === category)?.label}
                   {subcategory && ` > ${subcategory}`}
                   {city && dynamicCities.find(c => c.value === city)?.label && ` • ${dynamicCities.find(c => c.value === city)?.label}`}
@@ -179,17 +179,20 @@ function HomePageClient() {
             </div>
 
             {searchResults.length ? (
-              <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+              <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
                 {searchResults.map((listing: any) => (
                   <ListingCard key={listing._id?.toString() || listing.id} listing={listing} />
                 ))}
               </div>
             ) : (
-              <div className="rounded-[2.5rem] border border-dashed border-slate-300 bg-white p-16 text-center">
-                <p className="text-2xl font-black text-slate-900 mb-4">
+              <div
+                className="rounded-2xl border-2 border-dashed p-16 text-center"
+                style={{ borderColor: "var(--border-soft)", background: "var(--surface-white)" }}
+              >
+                <p className="text-xl font-semibold mb-3" style={{ color: "var(--text-primary)" }}>
                   {t.common.noListingsFound}
                 </p>
-                <p className="text-slate-500">
+                <p className="text-sm" style={{ color: "var(--text-secondary)" }}>
                   {t.common.tryAdjustSearch}
                 </p>
               </div>
@@ -202,7 +205,7 @@ function HomePageClient() {
       {!showSearchResults && <HomeSearchHero />}
 
       {showSearchResults ? null : (
-      <div className="page-shell space-y-10 py-6 sm:space-y-12 sm:py-12">
+      <div className="page-shell space-y-8 py-8 sm:space-y-14 sm:py-14">
         
         {/* 1. POPULAR DESTINATIONS (CITIES) - Logical First Step */}
         <HorizontalRail
@@ -214,14 +217,17 @@ function HomePageClient() {
             <Link
               key={city.value}
               href={`/city/${city.value}`}
-              className="group min-w-[280px] overflow-hidden rounded-[2.5rem] border border-slate-200 bg-white transition-all duration-300 hover:-translate-y-1 hover:border-brand-300 hover:shadow-xl hover:shadow-brand-500/10"
+              className="group min-w-[260px] overflow-hidden transition-all duration-250 hover:-translate-y-1"
+            style={{ borderRadius: "16px", border: "1px solid var(--border-soft)", background: "var(--surface-white)", boxShadow: "var(--shadow-card)" }}
+            onMouseEnter={e => ((e.currentTarget as HTMLElement).style.boxShadow = "var(--shadow-hover)")}
+            onMouseLeave={e => ((e.currentTarget as HTMLElement).style.boxShadow = "var(--shadow-card)")} 
             >
-              <div className="relative aspect-[16/10]">
-                <Image src={city.image || "https://images.unsplash.com/photo-1512917774080-9991f1c4c750"} alt={city.label} fill className="object-cover transition duration-700 group-hover:scale-110" />
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/20 to-transparent" />
-                <div className="absolute inset-0 flex flex-col justify-end p-6">
-                    <p className="text-xs font-black uppercase tracking-widest text-emerald-200 drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)] mb-2">{t.common.city}</p>
-                    <h3 className="text-2xl font-black text-white drop-shadow-[0_4px_16px_rgba(0,0,0,0.9)]">{city.label}</h3>
+              <div className="relative aspect-[16/10] overflow-hidden" style={{ borderRadius: "16px 16px 0 0" }}>
+                <Image src={city.image || "https://images.unsplash.com/photo-1512917774080-9991f1c4c750"} alt={city.label} fill className="object-cover transition duration-500 group-hover:scale-105" />
+                <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(10,12,16,0.75) 0%, rgba(10,12,16,0.1) 60%, transparent 100%)" }} />
+                <div className="absolute inset-0 flex flex-col justify-end p-5">
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.2em] mb-1.5" style={{ color: "rgba(255,255,255,0.6)" }}>{t.common.city}</p>
+                    <h3 className="text-xl font-bold text-white" style={{ textShadow: "0 2px 8px rgba(0,0,0,0.4)" }}>{city.label}</h3>
                 </div>
               </div>
             </Link>
@@ -319,13 +325,14 @@ function HomePageClient() {
               actionButton={
                 <Link 
                   href={`/create-listing?category=${section.id}`} 
-                  className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full bg-white px-5 py-2.5 text-sm font-black text-slate-800 shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-slate-100 transition-all duration-300 hover:-translate-y-1 hover:border-brand-300 hover:text-brand-600 hover:shadow-[0_8px_30px_rgb(var(--brand-500)/0.12)] active:translate-y-0 active:scale-95"
+                  className="group inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-medium transition-all duration-200 active:scale-95 border"
+                  style={{ background: "var(--surface-white)", color: "var(--text-secondary)", borderColor: "var(--border-medium)", boxShadow: "var(--shadow-card)" }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = "var(--brand-accent)"; (e.currentTarget as HTMLElement).style.borderColor = "var(--brand-accent)"; }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = "var(--text-secondary)"; (e.currentTarget as HTMLElement).style.borderColor = "var(--border-medium)"; }}
                 >
-                  <span className="flex h-6 w-6 items-center justify-center rounded-full bg-slate-100 text-slate-600 transition-colors group-hover:bg-brand-100 group-hover:text-brand-600">
-                    <svg className="w-3.5 h-3.5 transition-transform duration-300 group-hover:rotate-90" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
-                    </svg>
-                  </span>
+                  <svg className="w-3.5 h-3.5 transition-transform duration-200 group-hover:rotate-90" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+                  </svg>
                   {section.buttonLabel}
                 </Link>
               }
@@ -335,7 +342,8 @@ function HomePageClient() {
                   <Link
                     key={sub.value}
                     href={`/categories/${section.category?.value}/${sub.value}`}
-                    className="min-w-[320px] max-w-[320px] shrink-0 snap-start group relative overflow-hidden rounded-[2.5rem] bg-slate-100 transition hover:-translate-y-2 hover:shadow-2xl"
+                    className="min-w-[300px] max-w-[300px] shrink-0 snap-start group relative overflow-hidden transition hover:-translate-y-1"
+                    style={{ borderRadius: "16px", boxShadow: "var(--shadow-card)" }}
                   >
                     <Image
                       src={section.fallbackImage}
@@ -343,12 +351,12 @@ function HomePageClient() {
                       fill
                       className="object-cover transition duration-700 group-hover:scale-110 opacity-80"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/20 to-transparent" />
-                    <div className="absolute inset-0 flex flex-col justify-end p-8">
-                      <h3 className="text-2xl font-black text-white">{sub.label}</h3>
-                      <p className="text-xs font-bold text-slate-300 uppercase tracking-widest mt-2 flex items-center gap-2 group-hover:gap-4 transition-all">
-                        {t.common.explore} <ArrowRight className="w-3.5 h-3.5" />
-                      </p>
+                     <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(10,12,16,0.85) 0%, rgba(10,12,16,0.15) 60%, transparent 100%)" }} />
+                     <div className="absolute inset-0 flex flex-col justify-end p-6">
+                       <h3 className="text-xl font-bold text-white" style={{ textShadow: "0 2px 8px rgba(0,0,0,0.4)" }}>{sub.label}</h3>
+                       <p className="text-[11px] font-semibold uppercase tracking-[0.18em] mt-2 flex items-center gap-2 group-hover:gap-3 transition-all" style={{ color: "rgba(255,255,255,0.65)" }}>
+                         {t.common.explore} <ArrowRight className="w-3 h-3" />
+                       </p>
                     </div>
                   </Link>
                 ))
@@ -364,37 +372,56 @@ function HomePageClient() {
         })}
 
         {/* 9. TRUST / WHY CHOOSE US */}
-        <section className="bg-white rounded-[4rem] p-8 sm:p-20 border border-slate-100 shadow-2xl overflow-hidden relative">
-            <div className="absolute top-0 left-0 w-96 h-96 bg-brand-500/5 rounded-full blur-[100px] -ml-48 -mt-48" />
-            <div className="relative z-10 grid gap-20 lg:grid-cols-3">
+        <section
+          className="rounded-2xl p-8 sm:p-14 overflow-hidden"
+          style={{ background: "var(--surface-cream)", border: "1px solid var(--border-soft)" }}
+        >
+            <div className="grid gap-12 lg:grid-cols-3">
                 <div className="lg:col-span-1">
-                    <p className="text-xs uppercase tracking-[0.4em] font-black text-brand-700 mb-6">{language === 'en' ? 'The Advantage' : 'Avantazhi'}</p>
-                    <h2 className="text-4xl sm:text-6xl font-black tracking-tight text-slate-950 mb-10 leading-[1.1]">
+                    <p className="eyebrow mb-4">{language === 'en' ? 'The Advantage' : 'Avantazhi'}</p>
+                    <h2
+                      className="font-bold tracking-tight mb-5"
+                      style={{ fontSize: "clamp(1.75rem, 3.5vw, 2.25rem)", color: "var(--text-primary)", lineHeight: 1.15 }}
+                    >
                         {language === 'en' ? 'Why choose our marketplace?' : 'Pse të zgjidhni tregun tonë?'}
                     </h2>
-                    <p className="text-xl text-slate-700 leading-relaxed font-medium mb-12">
+                    <p className="text-sm leading-relaxed mb-8" style={{ color: "var(--text-secondary)" }}>
                         {language === 'en' 
                             ? 'We connect you directly with verified local hosts to ensure authentic experiences and the best prices.' 
                             : 'Ne ju lidhim drejtpërdrejt me hostë lokalë të verifikuar për të siguruar përvoja autentike dhe çmimet më të mira.'}
                     </p>
-                    <Link href="/services" className="inline-flex items-center gap-4 px-10 py-5 bg-brand-600 text-white rounded-full font-black text-sm hover:bg-brand-700 transition-all duration-300 shadow-2xl hover:scale-105 active:scale-95">
-                        {language === 'en' ? 'Explore All Services' : 'Eksploro të gjitha shërbimet'} <ArrowRight className="w-5 h-5" />
+                    <Link
+                      href="/services"
+                      className="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-xl text-sm font-semibold text-white transition-all active:scale-95"
+                      style={{ background: "var(--brand-accent)", boxShadow: "0 2px 12px rgba(34,153,120,0.22)" }}
+                      onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = "var(--brand-hover)")}
+                      onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = "var(--brand-accent)")}>
+                        {language === 'en' ? 'Explore All Services' : 'Eksploro të gjitha shërbimet'} <ArrowRight className="w-4 h-4" />
                     </Link>
                 </div>
                 
-                <div className="lg:col-span-2 grid gap-8 sm:grid-cols-2">
+                <div className="lg:col-span-2 grid gap-4 sm:grid-cols-2">
                     {[
                         { title: language === 'en' ? 'Verified Quality' : 'Cilësi e Verifikuar', desc: language === 'en' ? 'Every listing is manually reviewed for accuracy.' : 'Çdo listim shqyrtohet manualisht për saktësi.', icon: CheckCircle },
                         { title: language === 'en' ? 'Direct Booking' : 'Rezervim Direkt', desc: language === 'en' ? 'Communicate directly with the hosts via phone or WhatsApp.' : 'Komunikoni drejtpërdrejt me hostët me telefon ose WhatsApp.', icon: Sparkles },
                         { title: language === 'en' ? 'Local Expertise' : 'Ekspertizë Lokale', desc: language === 'en' ? 'Get insider tips from people who live in the cities you visit.' : 'Merrni këshilla nga njerëzit që jetojnë në qytetet që vizitoni.', icon: Star },
                         { title: language === 'en' ? 'No Hidden Fees' : 'Pa Tarifa të Fshehura', desc: language === 'en' ? 'What you see is what you pay. Transparent pricing always.' : 'Ajo që shihni është ajo që paguani. Çmime transparente gjithmonë.', icon: Flame }
                     ].map((benefit, i) => (
-                        <div key={i} className="group p-10 rounded-[3rem] bg-slate-50 border border-slate-100 hover:border-brand-300 hover:bg-white transition-all duration-500 shadow-sm hover:shadow-2xl">
-                            <div className="w-14 h-14 rounded-2xl bg-white border border-slate-100 flex items-center justify-center text-brand-600 mb-8 group-hover:scale-110 group-hover:bg-brand-600 group-hover:text-white transition duration-500 shadow-sm">
-                                <benefit.icon className="w-7 h-7" />
+                        <div
+                          key={i}
+                          className="group p-7 rounded-2xl transition-all duration-250"
+                          style={{ background: "var(--surface-white)", border: "1px solid var(--border-soft)", boxShadow: "var(--shadow-card)" }}
+                          onMouseEnter={e => { (e.currentTarget as HTMLElement).style.boxShadow = "var(--shadow-hover)"; (e.currentTarget as HTMLElement).style.borderColor = "rgba(34,153,120,0.25)"; }}
+                          onMouseLeave={e => { (e.currentTarget as HTMLElement).style.boxShadow = "var(--shadow-card)"; (e.currentTarget as HTMLElement).style.borderColor = "var(--border-soft)"; }}
+                        >
+                            <div
+                              className="w-11 h-11 rounded-xl flex items-center justify-center mb-5 transition-all duration-250 group-hover:scale-105"
+                              style={{ background: "var(--brand-light)", color: "var(--brand-accent)", border: "1px solid rgba(34,153,120,0.15)" }}
+                            >
+                                <benefit.icon className="w-5 h-5" />
                             </div>
-                            <h3 className="text-2xl font-black text-slate-950 mb-4">{benefit.title}</h3>
-                            <p className="text-base text-slate-700 leading-relaxed font-medium">{benefit.desc}</p>
+                            <h3 className="text-base font-semibold mb-2" style={{ color: "var(--text-primary)" }}>{benefit.title}</h3>
+                            <p className="text-sm leading-relaxed" style={{ color: "var(--text-secondary)" }}>{benefit.desc}</p>
                         </div>
                     ))}
                 </div>
@@ -402,57 +429,80 @@ function HomePageClient() {
         </section>
 
         {/* 8. BLOG (RE-PRESENTED IN NEW FORM) - CLEAN VERSION */}
-        <section className="relative overflow-hidden">
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-20 relative z-10">
+        <section className="relative">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
             <div>
-                <p className="text-xs uppercase tracking-[0.4em] font-black text-brand-700 mb-4">{t.blog.archiveTitle}</p>
-                <h2 className="text-5xl sm:text-8xl font-black tracking-tight text-slate-950 leading-none">{t.blog.latestPub}</h2>
+                <p className="eyebrow mb-3">{t.blog.archiveTitle}</p>
+                <h2
+                  className="font-bold tracking-tight"
+                  style={{ fontSize: "clamp(1.75rem, 4vw, 2.5rem)", color: "var(--text-primary)", lineHeight: 1.15 }}
+                >{t.blog.latestPub}</h2>
             </div>
-            <Link href="/blog" className="inline-flex items-center gap-4 px-10 py-5 bg-brand-600 text-white rounded-full font-black text-sm hover:bg-brand-700 transition-all duration-300 shadow-2xl">
-                {language === 'en' ? 'Visit Journal' : 'Vizito Revistën'} <ArrowRight className="w-5 h-5" />
+            <Link
+              href="/blog"
+              className="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-xl text-sm font-semibold text-white transition-all active:scale-95 shrink-0"
+              style={{ background: "var(--brand-accent)", boxShadow: "0 2px 12px rgba(34,153,120,0.22)" }}
+              onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = "var(--brand-hover)")}
+              onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = "var(--brand-accent)")}>
+                {language === 'en' ? 'Visit Journal' : 'Vizito Revistën'} <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
           
-          <div className="grid gap-12 lg:grid-cols-12 relative z-10">
+          <div className="grid gap-8 lg:grid-cols-12">
             {/* Main Featured */}
             <div className="lg:col-span-12">
-                <Link href={`/blog/${blogPosts[0]?.slug || "sample"}`} className="group relative block h-[500px] sm:h-[650px] overflow-hidden rounded-[4rem] shadow-2xl">
-                    <Image src={blogPosts[0]?.coverImage || "https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=1200&q=80"} alt="Hero Blog" fill className="object-cover transition duration-1000 group-hover:scale-105" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/95 via-slate-950/30 to-transparent" />
-                    <div className="absolute inset-0 p-10 sm:p-20 flex flex-col justify-end text-white">
-                        <div className="inline-flex items-center gap-3 rounded-full bg-brand-500 px-6 py-2 text-[10px] font-black uppercase tracking-[0.4em] mb-8 w-fit shadow-lg shadow-brand-500/30">
+                <Link href={`/blog/${blogPosts[0]?.slug || "sample"}`} className="group relative block h-[420px] sm:h-[520px] overflow-hidden" style={{ borderRadius: "20px" }}>
+                    <Image src={blogPosts[0]?.coverImage || "https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=1200&q=80"} alt="Hero Blog" fill className="object-cover transition duration-700 group-hover:scale-103" />
+                    <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(10,12,16,0.9) 0%, rgba(10,12,16,0.2) 55%, transparent 100%)" }} />
+                    <div className="absolute inset-0 p-8 sm:p-12 flex flex-col justify-end text-white">
+                        <div
+                          className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-[10px] font-semibold uppercase tracking-[0.2em] mb-5 w-fit"
+                          style={{ background: "var(--brand-accent)", boxShadow: "0 2px 8px rgba(34,153,120,0.3)" }}
+                        >
                             {language === 'en' ? 'Featured Story' : 'Historia e rekomanduar'}
                         </div>
-                        <h3 className="text-4xl sm:text-7xl font-black mb-8 leading-[1] text-white group-hover:text-brand-100 transition duration-500">{blogPosts[0]?.title || blogFallbacks[0].title}</h3>
-                        <p className="text-slate-100 text-xl mb-10 line-clamp-2 max-w-3xl leading-relaxed font-medium">
+                        <h3
+                          className="font-bold mb-4 text-white leading-tight group-hover:opacity-90 transition-opacity"
+                          style={{ fontSize: "clamp(1.5rem, 4vw, 2.75rem)", textShadow: "0 2px 12px rgba(0,0,0,0.4)" }}
+                        >{blogPosts[0]?.title || blogFallbacks[0].title}</h3>
+                        <p className="text-sm mb-6 line-clamp-2 max-w-2xl leading-relaxed" style={{ color: "rgba(255,255,255,0.75)" }}>
                             {blogPosts[0]?.excerpt || blogFallbacks[0].excerpt}
                         </p>
-                        <span className="inline-flex items-center gap-4 text-sm font-black uppercase tracking-widest text-white border-b-2 border-brand-500 pb-2 w-fit">
-                            {t.blog.readStory} <ArrowRight className="w-5 h-5" />
+                        <span className="inline-flex items-center gap-2.5 text-xs font-semibold uppercase tracking-[0.18em] text-white">
+                            {t.blog.readStory} <ArrowRight className="w-3.5 h-3.5" />
                         </span>
                     </div>
                 </Link>
             </div>
             
             {/* Small Cards below */}
-            <div className="lg:col-span-12 grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="lg:col-span-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
                 {(blogPosts.length > 1 ? blogPosts.slice(1, 4) : blogFallbacks).map((post: any) => (
                     <Link
                         key={post._id?.toString?.() || post.slug}
                         href={`/blog/${post.slug}`}
-                        className="group flex flex-col gap-6 bg-white p-5 border border-slate-100 transition-all duration-300 rounded-[2.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-xl hover:-translate-y-1 hover:border-brand-200 hover:shadow-brand-500/10"
+                        className="group flex flex-col transition-all duration-250 hover:-translate-y-1"
+                        style={{ background: "var(--surface-white)", border: "1px solid var(--border-soft)", borderRadius: "16px", boxShadow: "var(--shadow-card)", overflow: "hidden" }}
+                        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.boxShadow = "var(--shadow-hover)"; (e.currentTarget as HTMLElement).style.borderColor = "rgba(34,153,120,0.2)"; }}
+                        onMouseLeave={e => { (e.currentTarget as HTMLElement).style.boxShadow = "var(--shadow-card)"; (e.currentTarget as HTMLElement).style.borderColor = "var(--border-soft)"; }}
                     >
-                        <div className="relative w-full aspect-[16/10] rounded-[2rem] overflow-hidden flex-shrink-0">
-                            <Image src={post.coverImage || "https://images.unsplash.com/photo-1507525428034-b723cf961d3e"} alt={post.title} fill className="object-cover transition duration-700 group-hover:scale-105" />
+                        <div className="relative w-full aspect-[16/9] overflow-hidden flex-shrink-0">
+                            <Image src={post.coverImage || "https://images.unsplash.com/photo-1507525428034-b723cf961d3e"} alt={post.title} fill className="object-cover transition duration-500 group-hover:scale-103" />
                         </div>
-                        <div className="flex flex-col min-w-0 px-2 pb-2">
-                            <p className="text-[10px] uppercase font-black text-brand-600 tracking-[0.3em] mb-3">
+                        <div className="flex flex-col flex-1 p-5">
+                            <p className="eyebrow mb-2">
                                 {post.createdAt ? new Date(post.createdAt).toLocaleDateString() : "Editorial"}
                             </p>
-                            <h4 className="text-xl font-black text-slate-950 line-clamp-2 group-hover:text-brand-600 transition duration-300 leading-tight mb-3">{post.title}</h4>
-                            <p className="text-sm text-slate-500 line-clamp-2 leading-relaxed font-medium mb-6">{post.excerpt}</p>
-                            <span className="mt-auto text-[11px] font-black uppercase tracking-widest text-slate-800 group-hover:text-brand-600 flex items-center gap-2 transition-colors">
-                                {language === 'en' ? 'Full Story' : 'Lexo të plotë'} <ArrowRight className="w-4 h-4" />
+                            <h4
+                              className="text-base font-semibold line-clamp-2 leading-snug mb-2 transition-colors"
+                              style={{ color: "var(--text-primary)" }}
+                            >{post.title}</h4>
+                            <p className="text-sm line-clamp-2 leading-relaxed mb-4" style={{ color: "var(--text-secondary)" }}>{post.excerpt}</p>
+                            <span
+                              className="mt-auto text-xs font-semibold uppercase tracking-[0.18em] flex items-center gap-2 transition-colors"
+                              style={{ color: "var(--brand-accent)" }}
+                            >
+                                {language === 'en' ? 'Full Story' : 'Lexo të plotë'} <ArrowRight className="w-3.5 h-3.5" />
                             </span>
                         </div>
                     </Link>

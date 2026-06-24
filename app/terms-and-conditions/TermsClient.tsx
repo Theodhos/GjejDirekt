@@ -3,48 +3,96 @@
 import React from "react";
 import { useLanguage } from "@/context/LanguageContext";
 import { translations } from "@/lib/dictionary";
+import Link from "next/link";
+import { FileText, CheckCircle } from "lucide-react";
 
 export default function TermsClient() {
   const { language } = useLanguage();
   const t = translations[language];
-
   const termsSections = t.terms || [];
 
-  return (
-    <main className="min-h-screen bg-slate-50 py-12 sm:py-16">
-      <div className="page-shell max-w-6xl">
-        <section className="relative overflow-hidden rounded-[2rem] border border-slate-200 bg-slate-950 px-6 py-10 sm:px-10 sm:py-14">
-          <div className="absolute -top-16 -right-16 h-56 w-56 rounded-full bg-emerald-400/20 blur-3xl" />
-          <div className="absolute -bottom-20 -left-20 h-64 w-64 rounded-full bg-cyan-400/10 blur-3xl" />
-          <div className="relative z-10 max-w-3xl">
-            <p className="text-xs font-black uppercase tracking-[0.28em] text-emerald-300">{language === 'en' ? 'Legal' : 'Ligjor'}</p>
-            <h1 className="mt-3 text-4xl font-black tracking-tight text-white sm:text-5xl">{t.nav.terms}</h1>
-            <p className="mt-4 text-sm text-slate-200 sm:text-base">{t.legal.intro}</p>
-            <p className="mt-5 inline-flex rounded-full border border-white/20 bg-white/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.2em] text-white">{t.legal.lastUpdated}</p>
-          </div>
-        </section>
+  const quickSummary = language === "en"
+    ? [
+        "Use the platform lawfully and provide accurate data.",
+        "Listings and reviews can be moderated by admins.",
+        "Users are responsible for their account security.",
+        "Third-party services are not guaranteed by the platform."
+      ]
+    : [
+        "Përdorni platformën në mënyrë të ligjshme dhe jepni të dhëna të sakta.",
+        "Listimet dhe vlerësimet mund të moderohen nga administratorët.",
+        "Përdoruesit janë përgjegjës për sigurinë e llogarive të tyre.",
+        "Shërbimet e palëve të treta nuk garantohen nga platforma."
+      ];
 
-        <section className="mt-6 grid gap-6 lg:grid-cols-[280px_1fr]">
-          <aside className="rounded-[1.5rem] border border-slate-200 bg-white p-5 h-fit lg:sticky lg:top-24">
-            <h2 className="text-sm font-black uppercase tracking-[0.2em] text-slate-900">{language === 'en' ? 'Quick Summary' : 'Përmbledhje e Shpejtë'}</h2>
-            <ul className="mt-4 space-y-3 text-sm text-slate-600">
-              <li>{language === 'en' ? 'Use the platform lawfully and provide accurate data.' : 'Përdorni platformën në mënyrë të ligjshme dhe jepni të dhëna të sakta.'}</li>
-              <li>{language === 'en' ? 'Listings and reviews can be moderated by admins.' : 'Listimet dhe vlerësimet mund të moderohen nga administratorët.'}</li>
-              <li>{language === 'en' ? 'Users are responsible for their account security.' : 'Përdoruesit janë përgjegjës për sigurinë e llogarive të tyre.'}</li>
-              <li>{language === 'en' ? 'Third-party services are not guaranteed by the platform.' : 'Shërbimet e palëve të treta nuk garantohen nga platforma.'}</li>
-            </ul>
+  return (
+    <main style={{ background: "var(--surface-page)", minHeight: "100vh" }}>
+
+      {/* ── HEADER ── */}
+      <section
+        className="relative overflow-hidden"
+        style={{ background: "var(--surface-cream)", borderBottom: "1px solid var(--border-soft)" }}
+      >
+        <div className="pointer-events-none absolute -top-20 -right-20 w-[400px] h-[400px] rounded-full" style={{ background: "rgba(34,153,120,0.05)", filter: "blur(100px)" }} />
+        <div className="page-shell relative z-10 pt-14 pb-14 max-w-3xl mx-auto">
+          <div className="flex items-center gap-2 mb-6 text-xs font-medium" style={{ color: "var(--text-tertiary)" }}>
+            <Link href="/" className="hover:text-brand-600 transition-colors">{language === "en" ? "Home" : "Kreu"}</Link>
+            <span>/</span>
+            <span style={{ color: "var(--text-secondary)" }}>{t.nav.terms}</span>
+          </div>
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl mb-5" style={{ background: "var(--brand-light)", color: "var(--brand-accent)" }}>
+            <FileText className="w-6 h-6" />
+          </div>
+          <p className="eyebrow mb-3">{language === "en" ? "Legal" : "Ligjor"}</p>
+          <h1 className="font-bold tracking-tight mb-4" style={{ fontSize: "clamp(1.875rem, 4vw, 2.5rem)", color: "var(--text-primary)", lineHeight: 1.1 }}>
+            {t.nav.terms}
+          </h1>
+          <p className="text-sm leading-relaxed" style={{ color: "var(--text-secondary)" }}>{t.legal.intro}</p>
+          <span
+            className="mt-4 inline-flex rounded-full px-4 py-1.5 text-xs font-medium"
+            style={{ background: "var(--surface-white)", border: "1px solid var(--border-medium)", color: "var(--text-tertiary)" }}
+          >
+            {t.legal.lastUpdated}
+          </span>
+        </div>
+      </section>
+
+      {/* ── CONTENT ── */}
+      <section className="page-shell py-10">
+        <div className="grid gap-8 lg:grid-cols-[260px_1fr]">
+
+          {/* Sidebar */}
+          <aside className="h-fit lg:sticky lg:top-24">
+            <div className="rounded-2xl p-5" style={{ background: "var(--surface-white)", border: "1px solid var(--border-soft)", boxShadow: "var(--shadow-card)" }}>
+              <h2 className="text-sm font-semibold uppercase tracking-[0.15em] mb-4" style={{ color: "var(--text-secondary)" }}>
+                {language === "en" ? "Quick Summary" : "Përmbledhje e Shpejtë"}
+              </h2>
+              <ul className="space-y-3">
+                {quickSummary.map((text, i) => (
+                  <li key={i} className="flex items-start gap-2.5 text-xs leading-relaxed" style={{ color: "var(--text-secondary)" }}>
+                    <CheckCircle className="w-4 h-4 shrink-0 mt-0.5" style={{ color: "var(--brand-accent)" }} />
+                    {text}
+                  </li>
+                ))}
+              </ul>
+            </div>
           </aside>
 
-          <div className="space-y-4">
+          {/* Sections */}
+          <div className="space-y-3">
             {termsSections.map((section: any) => (
-              <section key={section.title} className="rounded-[1.5rem] border border-slate-200 bg-white p-5 sm:p-6">
-                <h3 className="text-lg font-black text-slate-950">{section.title}</h3>
-                <p className="mt-2 text-sm leading-7 text-slate-700 sm:text-base">{section.body}</p>
-              </section>
+              <div
+                key={section.title}
+                className="rounded-2xl p-5 sm:p-6"
+                style={{ background: "var(--surface-white)", border: "1px solid var(--border-soft)", boxShadow: "var(--shadow-card)" }}
+              >
+                <h3 className="text-base font-semibold mb-3" style={{ color: "var(--text-primary)" }}>{section.title}</h3>
+                <p className="text-sm leading-relaxed" style={{ color: "var(--text-secondary)" }}>{section.body}</p>
+              </div>
             ))}
           </div>
-        </section>
-      </div>
+        </div>
+      </section>
     </main>
   );
 }
