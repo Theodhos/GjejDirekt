@@ -187,41 +187,41 @@ export default function HomeSearchHero() {
   }
 
   return (
-    <section className="relative min-h-hero flex items-center justify-center overflow-visible py-8 sm:py-0" style={{ background: "#0d1117" }}>
+    <section className="relative min-h-[calc(100vh-var(--header-height))] flex items-center justify-center overflow-visible py-8 sm:py-0" style={{ background: "#0d1117" }}>
       {/* Background Image */}
       <div className="absolute inset-0 overflow-hidden">
         <Image
           src="https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=2000&q=80"
           alt="Albania Landscapes"
           fill
-          className="object-cover opacity-60 animate-slow-zoom"
+          className="object-cover opacity-80 animate-slow-zoom"
           priority
         />
-        {/* Refined overlay — warm tone, less harsh */}
-        <div className="absolute inset-0" style={{ background: "linear-gradient(to bottom, rgba(10,12,16,0.72) 0%, rgba(10,12,16,0.3) 40%, rgba(10,12,16,0.75) 100%)" }} />
+        {/* Darker overlay to make text highly readable */}
+        <div className="absolute inset-0" style={{ background: "linear-gradient(to bottom, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.5) 50%, rgba(0,0,0,0.8) 100%)" }} />
       </div>
 
       {/* Content */}
       <div className="page-shell relative z-10 w-full flex flex-col items-center pt-4 sm:pt-0">
         {/* Heading */}
-        <div className="text-center max-w-3xl mb-8 sm:mb-10">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-white/50 mb-5">
+        <div className="text-center max-w-4xl mb-10 sm:mb-12">
+          <p className="text-xs sm:text-sm font-bold uppercase tracking-[0.25em] text-white/80 mb-5" style={{ textShadow: "0 2px 4px rgba(0,0,0,0.8)" }}>
             {language === "en" ? "Albania's Tourism Marketplace" : "Platforma e Turizmit Shqiptar"}
           </p>
           <h1
-            className="font-bold text-white mb-5 px-2"
+            className="font-bold text-white mb-6 px-2"
             style={{
-              fontSize: "clamp(2rem, 6vw, 3.75rem)",
-              lineHeight: 1.08,
+              fontSize: "clamp(2.5rem, 7vw, 4.5rem)",
+              lineHeight: 1.05,
               letterSpacing: "-0.025em",
-              textShadow: "0 2px 24px rgba(0,0,0,0.4)"
+              textShadow: "0 4px 32px rgba(0,0,0,0.8), 0 2px 8px rgba(0,0,0,0.9)"
             }}
           >
             {language === "en" ? "Find easily. Contact directly. Enjoy holidays." : "Gjej lehtë. Kontakto direkt. Shijo pushimet."}
           </h1>
           <p
-            className="text-sm sm:text-base text-white/70 font-medium leading-relaxed max-w-xl mx-auto px-4"
-            style={{ textShadow: "0 1px 8px rgba(0,0,0,0.3)" }}
+            className="text-base sm:text-lg text-white/90 font-medium leading-relaxed max-w-2xl mx-auto px-4"
+            style={{ textShadow: "0 2px 12px rgba(0,0,0,0.9)" }}
           >
             {language === "en"
               ? "Discover hotels, restaurants, attractions, experiences, and authentic Albanian businesses in a single platform."
