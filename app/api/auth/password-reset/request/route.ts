@@ -4,6 +4,8 @@ import { connectDB } from "@/lib/db";
 import User from "@/models/User";
 import { sendMail } from "@/lib/mailer";
 
+const PRODUCTION_APP_URL = "https://www.tripshqip.com";
+
 function resolveAppUrl(request: Request): string {
   const envUrl = process.env.NEXT_PUBLIC_APP_URL?.trim();
   if (envUrl) return envUrl.replace(/\/+$/, "");
@@ -14,7 +16,8 @@ function resolveAppUrl(request: Request): string {
     return `${proto}://${forwardedHost}`;
   }
 
-  return new URL(request.url).origin;
+  // Reset links must always land on the live site, never localhost.
+  return PRODUCTION_APP_URL;
 }
 
 export async function POST(request: Request) {

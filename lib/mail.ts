@@ -13,7 +13,7 @@ const transporter = nodemailer.createTransport({
 function getAppUrl() {
   if (process.env.NEXT_PUBLIC_APP_URL) return process.env.NEXT_PUBLIC_APP_URL;
   if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
-  return "http://localhost:3000";
+  return "https://www.tripshqip.com";
 }
 
 export async function sendReportEmail({
