@@ -7,6 +7,7 @@ import { slugify } from "@/lib/utils";
 import { categories, getCategorySearchValues, getSubcategorySearchValues } from "@/lib/constants";
 import Listing from "@/models/Listing";
 import User from "@/models/User";
+import { rankListings } from "@/lib/ranking";
 
 function parseList(value: unknown) {
   if (Array.isArray(value)) {
@@ -96,17 +97,8 @@ export async function GET(request: Request) {
     const { query, sortQuery } = buildQuery(url);
     const listings = await Listing.find(query).sort(sortQuery).populate("owner", "name email role").lean<any>();
 
-    // Sort by package tier for better visibility
-    const sorted = listings.sort((a: any, b: any) => {
-      const packageOrder = { features: 0, trading: 1, verify: 2, null: 3 };
-      const tierA = packageOrder[a.package as keyof typeof packageOrder] ?? 3;
-      const tierB = packageOrder[b.package as keyof typeof packageOrder] ?? 3;
-
-      if (tierA !== tierB) return tierA - tierB;
-
-      // Within same tier, sort by creation date (newest first)
-      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-    });
+    // Paid packages rank first, then WhatsApp engagement, then newest.
+    const sorted = rankListings(listings);
 
     return NextResponse.json({ listings: sorted });
   } catch (error) {

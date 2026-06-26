@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import Providers from "./providers";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+import ChatWidget from "@/components/ChatWidget";
 import { Manrope, Fraunces } from "next/font/google";
 
 const manrope = Manrope({
@@ -31,6 +32,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <Header />
           <main>{children}</main>
           <Footer />
+          <ChatWidget />
         </Providers>
       </body>
     </html>

@@ -285,7 +285,13 @@ export default function ListingCard({ listing }: { listing: any }) {
             href={whatsappHref || "#"}
             target={whatsappHref ? "_blank" : undefined}
             rel="noreferrer"
-            onClick={(e) => { e.stopPropagation(); if (!whatsappHref) e.preventDefault(); }}
+            onClick={(e) => {
+              e.stopPropagation();
+              if (!whatsappHref) { e.preventDefault(); return; }
+              if (listing._id) {
+                fetch(`/api/listings/${listing._id}/whatsapp-click`, { method: "POST", keepalive: true }).catch(() => {});
+              }
+            }}
             className={`flex flex-col items-center justify-center gap-1 rounded-lg py-2 transition-colors hover:bg-[var(--surface-white)] ${whatsappHref ? "" : "opacity-40 cursor-not-allowed"}`}
           >
             <div

@@ -39,15 +39,9 @@ export default function ListingGrid() {
         const query = searchParams?.toString() || "";
         const res = await fetch(`/api/listings?${query}`);
         const data = await res.json();
-        
-        let results = data.listings || [];
-        
-        // If no search query, shuffle results for "Random" effect
-        if (!query) {
-          results = [...results].sort(() => Math.random() - 0.5);
-        }
 
-        setListings(results);
+        // Keep the server's package-tier ranking intact (no shuffling).
+        setListings(data.listings || []);
       } catch (error) {
         console.error("Failed to fetch listings:", error);
       } finally {

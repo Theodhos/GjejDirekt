@@ -10,6 +10,7 @@ interface ListingStickyBottomProps {
   priceFrom?: number;
   currency?: string;
   categoryLabel?: string;
+  listingId?: string;
 }
 
 export default function ListingStickyBottom({
@@ -17,12 +18,19 @@ export default function ListingStickyBottom({
   whatsappHref,
   priceFrom,
   currency = "€",
-  categoryLabel
+  categoryLabel,
+  listingId
 }: ListingStickyBottomProps) {
   const { language } = useLanguage();
   const t = translations[language];
 
   if (!phone && !whatsappHref) return null;
+
+  const trackWhatsapp = () => {
+    if (listingId) {
+      fetch(`/api/listings/${listingId}/whatsapp-click`, { method: "POST", keepalive: true }).catch(() => {});
+    }
+  };
 
   return (
     <div className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-100 px-6 py-3.5 pb-[calc(14px+env(safe-area-inset-bottom,0px))] shadow-[0_-10px_40px_rgba(0,0,0,0.06)] md:hidden">
@@ -32,6 +40,7 @@ export default function ListingStickyBottom({
             href={whatsappHref}
             target="_blank"
             rel="noreferrer"
+            onClick={trackWhatsapp}
             className="flex items-center justify-center gap-2 h-12 w-full bg-[#25D366] text-white rounded-2xl font-black text-xs hover:scale-102 active:scale-98 transition-all shadow-md shadow-emerald-500/10"
           >
             <MessageCircle className="w-4.5 h-4.5 fill-current" />

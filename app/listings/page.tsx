@@ -3,12 +3,14 @@ import Listing from "@/models/Listing";
 import ListingCard from "@/components/ListingCard";
 import { Sparkles } from "lucide-react";
 import { translations } from "@/lib/dictionary";
+import { rankListings } from "@/lib/ranking";
 
 export const dynamic = "force-dynamic";
 
 export default async function ListingsPage() {
   await connectDB();
-  const listings = await Listing.find({ status: "approved" }).sort({ createdAt: -1 }).lean<any>();
+  const found = await Listing.find({ status: "approved" }).sort({ createdAt: -1 }).lean<any>();
+  const listings = rankListings(found);
 
   const t = translations["al"];
 

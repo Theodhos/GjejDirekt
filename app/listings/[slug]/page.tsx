@@ -541,6 +541,7 @@ export default async function ListingDetailPage({ params }: { params: { slug: st
         priceFrom={listing.priceFrom}
         currency={listing.currency}
         categoryLabel={categoryLabel}
+        listingId={listing._id.toString()}
       />
     </main>
   );

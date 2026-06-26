@@ -36,6 +36,7 @@ export interface IListing extends Document {
   googleMapsLink?: string;
   status: ListingStatus;
   views: number;
+  whatsappClicks: number;
   featured: boolean;
   ratingAverage: number;
   reviewCount: number;
@@ -96,6 +97,7 @@ const ListingSchema = new Schema<IListing>(
       index: true
     },
     views: { type: Number, default: 0 },
+    whatsappClicks: { type: Number, default: 0 },
     featured: { type: Boolean, default: false },
     ratingAverage: { type: Number, default: 0 },
     reviewCount: { type: Number, default: 0 },

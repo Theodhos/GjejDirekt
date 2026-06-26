@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getAuthUser } from "@/lib/auth";
 import { connectDB } from "@/lib/db";
 import Listing from "@/models/Listing";
+import { normalizePackage } from "@/lib/ranking";
 
 export async function POST(request: Request) {
   try {
@@ -14,6 +15,11 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Missing information" }, { status: 400 });
     }
 
+    const tier = normalizePackage(packet);
+    if (!tier) {
+      return NextResponse.json({ error: "Invalid package" }, { status: 400 });
+    }
+
     // In a real production app, you would verify the orderID with PayPal API here
     // using your PAYPAL_CLIENT_SECRET.
     
@@ -23,8 +29,8 @@ export async function POST(request: Request) {
     await Listing.updateOne(
       { _id: listingId, owner: auth.id },
       { 
-        $set: { 
-          package: packet,
+        $set: {
+          package: tier,
           packagePurchaseDate: new Date(),
           packageExpiryDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) // 30 days
         } 

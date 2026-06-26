@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx tsc *)",
+      "Bash(sed -n '1,60p' components/ListingCard.tsx)",
+      "Bash(sed -n '418,440p' app/listings/\\\\[slug\\\\]/page.tsx)"
+    ]
+  }
+}

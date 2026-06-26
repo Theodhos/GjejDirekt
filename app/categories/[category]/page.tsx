@@ -3,17 +3,19 @@ import { getCategoryByValue, categories } from "@/lib/constants";
 import CategoryClient from "@/components/categories/CategoryClient";
 import { connectDB } from "@/lib/db";
 import Listing from "@/models/Listing";
+import { rankListings } from "@/lib/ranking";
 
 export const dynamic = "force-dynamic";
 
 async function getListingsByCategory(categoryValue: string) {
   await connectDB();
-  return Listing.find({
+  const found = await Listing.find({
     category: categoryValue,
     status: "approved"
   })
     .sort({ createdAt: -1 })
     .lean<any[]>();
+  return rankListings(found);
 }
 
 export default async function CategoryPage({ params }: { params: { category: string } }) {
