@@ -13,11 +13,11 @@ export default function RegisterPage() {
 
   return (
     <section
-      className="page-shell flex items-center justify-center h-[calc(100vh-5rem)] py-4"
-      style={{ background: "var(--surface-page)", minHeight: "600px" }}
+      className="page-shell flex items-center justify-center min-h-[calc(100vh-5rem)] py-10"
+      style={{ background: "var(--surface-page)" }}
     >
       <div
-        className="surface w-full max-w-5xl overflow-hidden h-full max-h-[650px] grid"
+        className="surface w-full max-w-5xl overflow-hidden grid"
       >
         <div className="grid lg:grid-cols-2">
 
@@ -51,7 +51,7 @@ export default function RegisterPage() {
 
           {/* Right — Form Panel */}
           <div
-            className="flex flex-col justify-center p-8 sm:p-12"
+            className="flex flex-col justify-center p-10 sm:p-14"
             style={{ background: "var(--surface-white)" }}
           >
             <div className="max-w-sm mx-auto w-full">

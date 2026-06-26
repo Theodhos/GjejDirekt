@@ -4,6 +4,19 @@ import { connectDB } from "@/lib/db";
 import User from "@/models/User";
 import { sendMail } from "@/lib/mailer";
 
+function resolveAppUrl(request: Request): string {
+  const envUrl = process.env.NEXT_PUBLIC_APP_URL?.trim();
+  if (envUrl) return envUrl.replace(/\/+$/, "");
+
+  const forwardedHost = request.headers.get("x-forwarded-host") || request.headers.get("host");
+  if (forwardedHost && !forwardedHost.startsWith("localhost") && !forwardedHost.startsWith("127.0.0.1")) {
+    const proto = request.headers.get("x-forwarded-proto") || "https";
+    return `${proto}://${forwardedHost}`;
+  }
+
+  return new URL(request.url).origin;
+}
+
 export async function POST(request: Request) {
   try {
     const body = await request.json();
@@ -21,8 +34,7 @@ export async function POST(request: Request) {
     user.resetCodeExpires = new Date(Date.now() + 1000 * 60 * 30);
     await user.save();
 
-    const requestUrl = new URL(request.url);
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || requestUrl.origin || "http://localhost:3000";
+    const appUrl = resolveAppUrl(request);
     const resetUrl = `${appUrl}/reset-password?token=${rawToken}`;
 
     await sendMail({

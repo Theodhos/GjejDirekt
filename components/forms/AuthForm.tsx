@@ -100,6 +100,17 @@ export default function AuthForm({ mode = "login" }: { mode?: "login" | "registe
         onChange={(event) => setEmailForMagic(event.target.value)}
       />
 
+      {mode === "register" && (
+        <Input
+          name="password"
+          type="password"
+          label={language === "en" ? "Password" : "Fjalëkalimi"}
+          placeholder={language === "en" ? "At least 6 characters" : "Të paktën 6 karaktere"}
+          required
+          minLength={6}
+        />
+      )}
+
       {mode === "login" && !isMagicMode && (
         <>
           <Input name="password" type="password" label={language === "en" ? "Password" : "Fjalëkalimi"} placeholder="********" required />

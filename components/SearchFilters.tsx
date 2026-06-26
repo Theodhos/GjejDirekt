@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Search, MapPin, Tag, SlidersHorizontal, RotateCcw, Loader2, Star, Euro, X } from "lucide-react";
+import { Search, MapPin, Tag, SlidersHorizontal, RotateCcw, Loader2, Euro, X } from "lucide-react";
 import { categories } from "@/lib/constants";
 import { useLanguage } from "@/context/LanguageContext";
 import { translations } from "@/lib/dictionary";
@@ -21,7 +21,7 @@ export default function SearchFilters() {
   const [selectedSubcategory, setSelectedSubcategory] = useState(params?.get("subcategory") || "");
   const [minPrice, setMinPrice] = useState(params?.get("minPrice") || "");
   const [maxPrice, setMaxPrice] = useState(params?.get("maxPrice") || "");
-  const [minRating, setMinRating] = useState(params?.get("minRating") || "");
+  const [priceError, setPriceError] = useState("");
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
   const subcategories = useMemo(() => {
@@ -68,9 +68,32 @@ export default function SearchFilters() {
     setSelectedSubcategory("");
     setMinPrice("");
     setMaxPrice("");
-    setMinRating("");
+    setPriceError("");
     router.push('/services');
   };
+
+  const handleSearch = useCallback(() => {
+    const min = minPrice.trim();
+    const max = maxPrice.trim();
+
+    if ((min && Number(min) < 0) || (max && Number(max) < 0)) {
+      setPriceError(language === "en" ? "Price cannot be negative." : "Çmimi nuk mund të jetë negativ.");
+      return false;
+    }
+    if (min && max && Number(min) > Number(max)) {
+      setPriceError(language === "en" ? "Min price cannot exceed max price." : "Çmimi minimal nuk mund të jetë më i madh se maksimali.");
+      return false;
+    }
+
+    setPriceError("");
+    applyFilters({
+      q: keyword.trim(),
+      location: location.trim(),
+      minPrice: min,
+      maxPrice: max
+    });
+    return true;
+  }, [keyword, location, minPrice, maxPrice, language, applyFilters]);
 
   return (
     <>
@@ -208,55 +231,46 @@ export default function SearchFilters() {
             {t.common.priceRange}
           </label>
           <div className="flex items-center gap-3">
-            <input 
+            <input
               type="number"
+              min={0}
               value={minPrice}
               onChange={(e) => setMinPrice(e.target.value)}
-              onBlur={() => applyFilters({ minPrice })}
+              onKeyDown={(e) => { if (e.key === "Enter") handleSearch(); }}
               placeholder={language === "en" ? "Min" : "Min."}
               className="w-full h-12 px-4 rounded-xl bg-slate-50 border-2 border-transparent focus:border-brand-500 focus:bg-white transition-all font-bold text-slate-950 text-sm shadow-inner"
             />
             <span className="text-slate-300">-</span>
-            <input 
+            <input
               type="number"
+              min={0}
               value={maxPrice}
               onChange={(e) => setMaxPrice(e.target.value)}
-              onBlur={() => applyFilters({ maxPrice })}
+              onKeyDown={(e) => { if (e.key === "Enter") handleSearch(); }}
               placeholder={language === "en" ? "Max" : "Maks."}
               className="w-full h-12 px-4 rounded-xl bg-slate-50 border-2 border-transparent focus:border-brand-500 focus:bg-white transition-all font-bold text-slate-950 text-sm shadow-inner"
             />
           </div>
-        </div>
-
-        {/* Rating */}
-        <div className="space-y-3">
-          <label className="text-[10px] font-black uppercase tracking-widest text-slate-900 ml-2 flex items-center gap-2">
-            <Star className="w-3 h-3" />
-            {t.common.minRating}
-          </label>
-          <div className="flex gap-2">
-            {[1, 2, 3, 4, 5].map((star) => (
-              <button
-                key={star}
-                onClick={() => {
-                  const val = String(star);
-                  setMinRating(val);
-                  applyFilters({ minRating: val });
-                }}
-                className={`flex-1 h-10 rounded-xl flex items-center justify-center transition-all ${
-                  Number(minRating) === star 
-                    ? 'bg-amber-500 text-white shadow-lg' 
-                    : 'bg-slate-50 text-slate-400 hover:bg-slate-100'
-                }`}
-              >
-                <span className="text-xs font-black">{star}</span>
-                <Star className={`w-3 h-3 ml-1 ${Number(minRating) === star ? 'fill-current' : ''}`} />
-              </button>
-            ))}
-          </div>
+          {priceError && (
+            <p className="text-xs font-semibold text-rose-600 ml-2">{priceError}</p>
+          )}
         </div>
 
       </div>
+
+      {/* Search button */}
+      <button
+        onClick={handleSearch}
+        disabled={isPending}
+        className="w-full h-14 rounded-2xl bg-brand-600 text-white text-xs font-black uppercase tracking-widest inline-flex items-center justify-center gap-2 transition-all hover:bg-brand-700 disabled:opacity-60 disabled:cursor-not-allowed shadow-lg"
+      >
+        {isPending ? (
+          <Loader2 className="w-4 h-4 animate-spin" />
+        ) : (
+          <Search className="w-4 h-4" />
+        )}
+        {language === "en" ? "Search" : "Kërko"}
+      </button>
 
       {isPending && (
         <div className="flex items-center justify-center py-4 gap-2 text-brand-600 animate-pulse">
@@ -297,26 +311,18 @@ export default function SearchFilters() {
             <div className="space-y-2">
               <label className="text-[10px] font-black uppercase tracking-widest text-slate-900 ml-1">{t.common.priceRange}</label>
               <div className="flex items-center gap-2">
-                <input type="number" value={minPrice} onChange={(e) => setMinPrice(e.target.value)} onBlur={() => applyFilters({ minPrice })} placeholder={language === "en" ? "Min" : "Min."} className="w-full h-12 px-4 rounded-xl bg-slate-50 border border-slate-200 focus:border-brand-500 outline-none text-sm font-semibold" />
-                <input type="number" value={maxPrice} onChange={(e) => setMaxPrice(e.target.value)} onBlur={() => applyFilters({ maxPrice })} placeholder={language === "en" ? "Max" : "Maks."} className="w-full h-12 px-4 rounded-xl bg-slate-50 border border-slate-200 focus:border-brand-500 outline-none text-sm font-semibold" />
+                <input type="number" min={0} value={minPrice} onChange={(e) => setMinPrice(e.target.value)} placeholder={language === "en" ? "Min" : "Min."} className="w-full h-12 px-4 rounded-xl bg-slate-50 border border-slate-200 focus:border-brand-500 outline-none text-sm font-semibold" />
+                <input type="number" min={0} value={maxPrice} onChange={(e) => setMaxPrice(e.target.value)} placeholder={language === "en" ? "Max" : "Maks."} className="w-full h-12 px-4 rounded-xl bg-slate-50 border border-slate-200 focus:border-brand-500 outline-none text-sm font-semibold" />
               </div>
-            </div>
-            <div className="space-y-2">
-              <label className="text-[10px] font-black uppercase tracking-widest text-slate-900 ml-1">{t.common.minRating}</label>
-              <div className="flex gap-2">
-                {[1, 2, 3, 4, 5].map((star) => (
-                  <button key={star} onClick={() => { const val = String(star); setMinRating(val); applyFilters({ minRating: val }); }} className={`flex-1 h-10 rounded-xl flex items-center justify-center transition-all ${Number(minRating) === star ? 'bg-amber-500 text-white shadow-lg' : 'bg-slate-100 text-slate-500'}`}>
-                    <span className="text-xs font-black">{star}</span>
-                    <Star className={`w-3 h-3 ml-1 ${Number(minRating) === star ? 'fill-current' : ''}`} />
-                  </button>
-                ))}
-              </div>
+              {priceError && (
+                <p className="text-xs font-semibold text-rose-600 ml-1">{priceError}</p>
+              )}
             </div>
           </div>
 
           <div className="mt-6 grid grid-cols-2 gap-3">
             <button onClick={handleReset} className="h-11 rounded-xl bg-slate-100 text-slate-700 text-[10px] font-black uppercase tracking-widest">{t.services.reset}</button>
-            <button onClick={() => setMobileFiltersOpen(false)} className="h-11 rounded-xl bg-slate-950 text-white text-xs font-black uppercase tracking-widest">{t.common.showResults}</button>
+            <button onClick={() => { if (handleSearch()) setMobileFiltersOpen(false); }} className="h-11 rounded-xl bg-slate-950 text-white text-xs font-black uppercase tracking-widest">{t.common.showResults}</button>
           </div>
         </div>
       </div>
