@@ -19,10 +19,11 @@ export default function AdminListingActions({ id, slug, title, status }: Props) 
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const { t } = useLanguage();
+  const adminText = t.admin as Record<string, string>;
 
   const handleDelete = async () => {
     const confirmed = window.confirm(
-      `A jeni të sigurt që dëshironi të fshini shërbimin "${title}"?`
+      (adminText.confirmDeleteListing || 'Are you sure you want to delete the service "{title}"?').replace("{title}", title)
     );
     if (!confirmed) return;
 
@@ -33,13 +34,13 @@ export default function AdminListingActions({ id, slug, title, status }: Props) 
       });
       const data = await res.json();
       if (res.ok) {
-        toast.success("Shërbimi u fshi me sukses!");
+        toast.success(adminText.listingDeleted || "Service deleted successfully!");
         router.refresh();
       } else {
-        toast.error(data.error || "Fshirja dështoi");
+        toast.error(data.error || adminText.deleteListingFailed || "Delete failed");
       }
     } catch {
-      toast.error("Ndodhi një gabim gjatë fshirjes");
+      toast.error(adminText.deleteListingError || "An error occurred while deleting");
     } finally {
       setLoading(false);
     }
@@ -67,14 +68,14 @@ export default function AdminListingActions({ id, slug, title, status }: Props) 
         className="inline-flex items-center gap-1 text-xs font-black text-slate-600 hover:text-brand-600 transition"
       >
         <Eye className="w-3.5 h-3.5" />
-        Shiko
+        {adminText.viewBtn || "View"}
       </Link>
       <Link
         href={`/listings/${slug}/edit`}
         className="inline-flex items-center gap-1 text-xs font-black text-slate-800 hover:text-brand-600 transition"
       >
         <Edit className="w-3.5 h-3.5" />
-        Modifiko
+        {adminText.editBtn || "Edit"}
       </Link>
       {status === "pending" && (
         <div className="flex items-center gap-2">
@@ -92,7 +93,7 @@ export default function AdminListingActions({ id, slug, title, status }: Props) 
         ) : (
           <Trash2 className="w-3.5 h-3.5" />
         )}
-        Fshi
+        {adminText.deleteListingBtn || "Delete"}
       </button>
     </div>
   );

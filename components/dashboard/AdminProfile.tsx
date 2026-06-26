@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
 import toast from "react-hot-toast";
+import { KeyRound, ShieldCheck } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 
 export default function AdminProfile({ displayName, authEmail }: { displayName: string; authEmail: string }) {
@@ -78,7 +79,7 @@ export default function AdminProfile({ displayName, authEmail }: { displayName: 
   }
 
   return (
-    <div className="w-full lg:max-w-md space-y-4">
+    <div className="flex h-full w-full flex-col gap-4 lg:max-w-md">
       <form onSubmit={saveProfile} className="surface p-4 rounded-2xl">
         <h3 className="text-sm font-semibold text-slate-500 uppercase">{t.admin.profileDataTitle || 'Të dhënat'}</h3>
         <div className="mt-3 grid gap-3">
@@ -116,15 +117,32 @@ export default function AdminProfile({ displayName, authEmail }: { displayName: 
         </div>
       </form>
 
-      <div className="surface p-4 rounded-2xl">
-        <h4 className="text-sm font-semibold text-slate-500 uppercase">{t.admin.forgotPasswordTitle || 'Fjalëkalimi'}</h4>
-        <div className="mt-3 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <p className="text-sm text-slate-600">{t.admin.forgotPasswordDesc || 'Dërgo një link të sigurt për rivendosje në emailin tuaj.'}</p>
-          <div className="w-full sm:w-auto">
-            <Button type="button" onClick={() => setConfirmResetOpen(true)} disabled={loading} className="!bg-slate-900 w-full sm:w-auto">
-              {t.admin.resetPasswordBtn || 'Rivendos Fjalëkalimin'}
-            </Button>
+      <div className="surface flex flex-1 flex-col p-5 rounded-2xl">
+        <div className="flex items-center gap-3">
+          <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-slate-900 text-white">
+            <KeyRound className="h-5 w-5" />
+          </span>
+          <div>
+            <p className="text-[11px] font-bold uppercase tracking-widest text-slate-400">{adminText.pwResetSubtitle || 'Siguria e llogarisë'}</p>
+            <h4 className="text-base font-black text-slate-900">{t.admin.forgotPasswordTitle || 'Fjalëkalimi'}</h4>
           </div>
+        </div>
+
+        <p className="mt-3 text-sm text-slate-600">{t.admin.forgotPasswordDesc || 'Dërgo një link të sigurt për rivendosje në emailin tuaj.'}</p>
+
+        <ul className="mt-4 space-y-2.5">
+          {[adminText.pwResetTip1, adminText.pwResetTip2, adminText.pwResetTip3].map((tip, i) => (
+            <li key={i} className="flex items-start gap-2.5 text-sm text-slate-600">
+              <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" />
+              <span>{tip}</span>
+            </li>
+          ))}
+        </ul>
+
+        <div className="mt-auto pt-5">
+          <Button type="button" onClick={() => setConfirmResetOpen(true)} disabled={loading} className="!bg-slate-900 w-full">
+            {t.admin.resetPasswordBtn || 'Rivendos Fjalëkalimin'}
+          </Button>
         </div>
       </div>
 

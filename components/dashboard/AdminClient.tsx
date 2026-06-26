@@ -4,6 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { Clock3, LayoutDashboard, MapPinned, PlusCircle, ShieldCheck, Users, AlertTriangle } from "lucide-react";
 import BlogStudio from "@/components/dashboard/BlogStudio";
+import CityStudio from "@/components/dashboard/CityStudio";
 import AdminProfile from "@/components/dashboard/AdminProfile";
 import { useLanguage } from "@/context/LanguageContext";
 
@@ -62,19 +63,23 @@ export default function AdminClient({
           <Link href="#blog-studio" className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-900">
             {adminText.blogStudio || 'Shto Blog'}
           </Link>
-          <Link href="/admin/cities" className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-900">
+          <button
+            type="button"
+            onClick={() => document.getElementById("city-studio")?.scrollIntoView({ behavior: "smooth", block: "start" })}
+            className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-900 hover:bg-slate-50"
+          >
             {adminText.addCity || 'Shto Qytet'}
-          </Link>
+          </button>
         </div>
       </div>
 
-      <div className="mt-8 grid grid-cols-1 gap-4 lg:grid-cols-3">
-        <div className="lg:col-span-1">
+      <div className="mt-8 grid grid-cols-1 gap-4 lg:grid-cols-3 lg:items-stretch">
+        <div className="flex lg:col-span-1">
           <AdminProfile displayName={displayName} authEmail={authEmail} />
         </div>
         <div className="lg:col-span-2 grid gap-4 sm:grid-cols-2 xl:grid-cols-2">
         {stats.map((item) => (
-          <Link key={item.label} href={item.href} className="surface p-6 hover:border-brand-500 transition-all hover:shadow-xl group">
+          <Link key={item.label} href={item.href} className="surface flex flex-col p-6 hover:border-brand-500 transition-all hover:shadow-xl group">
             <item.icon className={`h-10 w-10 rounded-2xl p-2.5 ${item.accent} transition-transform group-hover:scale-110`} />
             <p className="mt-6 text-sm font-bold text-slate-500 uppercase tracking-widest">{item.label}</p>
             <p className="mt-2 text-4xl font-black tracking-tight text-slate-950">{item.value.toLocaleString()}</p>
@@ -83,10 +88,12 @@ export default function AdminClient({
         </div>
       </div>
 
-      {/* Pending moderation removed from dashboard per request — manage approvals in /admin/listings?status=pending */}
-
       <div className="mt-12" id="blog-studio">
         <BlogStudio recentPosts={serializedBlogs as any[]} />
+      </div>
+
+      <div className="mt-12">
+        <CityStudio />
       </div>
 
     </section>
