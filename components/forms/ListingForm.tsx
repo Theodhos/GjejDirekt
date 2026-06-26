@@ -131,6 +131,12 @@ export default function ListingForm() {
   const [villages, setVillages] = useState<string[]>([]);
   const [selectedVillage, setSelectedVillage] = useState("");
 
+  // When a category is passed via the URL (?category=...), lock it and only show the subcategory selector.
+  const lockedCategoryParam = searchParams.get("category");
+  const categoryLocked = Boolean(
+    lockedCategoryParam && categories.some((item) => item.value === lockedCategoryParam)
+  );
+
   const subcategories = useMemo(() => {
     return categories.find((item) => item.value === selectedCategory)?.subcategories || [];
   }, [selectedCategory]);
@@ -294,22 +300,25 @@ export default function ListingForm() {
         />
       )}
 
-      <div className="grid gap-4 lg:grid-cols-2">
-        <Select
-          name="category"
-          label={t.common.category}
-          options={[
-            { label: t.common.selectCategory || (language === 'en' ? 'Select a category' : 'Zgjidhni një kategori'), value: '' },
-            ...categories.map((item) => ({ label: item.label, value: item.value }))
-          ]}
-          value={selectedCategory}
-          onChange={(event) => {
-            setSelectedCategory(event.target.value);
-            setSelectedSubcategory("");
-            setActiveTags([]); // Reset tags when category changes
-          }}
-          required
-        />
+      {categoryLocked && <input type="hidden" name="category" value={selectedCategory} />}
+      <div className={categoryLocked ? "grid gap-4" : "grid gap-4 lg:grid-cols-2"}>
+        {!categoryLocked && (
+          <Select
+            name="category"
+            label={t.common.category}
+            options={[
+              { label: t.common.selectCategory || (language === 'en' ? 'Select a category' : 'Zgjidhni një kategori'), value: '' },
+              ...categories.map((item) => ({ label: item.label, value: item.value }))
+            ]}
+            value={selectedCategory}
+            onChange={(event) => {
+              setSelectedCategory(event.target.value);
+              setSelectedSubcategory("");
+              setActiveTags([]); // Reset tags when category changes
+            }}
+            required
+          />
+        )}
         <Select
           name="subcategory"
           label={t.common.subcategory}

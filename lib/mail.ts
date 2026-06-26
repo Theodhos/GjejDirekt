@@ -10,9 +10,8 @@ const transporter = nodemailer.createTransport({
   }
 });
 
+// All email links must always point to the live site, never localhost or a preview URL.
 function getAppUrl() {
-  if (process.env.NEXT_PUBLIC_APP_URL) return process.env.NEXT_PUBLIC_APP_URL;
-  if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
   return "https://www.tripshqip.com";
 }
 
