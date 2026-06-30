@@ -2,7 +2,7 @@ import { connectDB } from "@/lib/db";
 import Listing from "@/models/Listing";
 import { categories } from "@/lib/constants";
 import Image from "next/image";
-import { MapPin, Sparkles } from "lucide-react";
+import { MapPin } from "lucide-react";
 import ListingCard from "@/components/ListingCard";
 import City from "@/models/City";
 import { seedCities } from "@/lib/cities-catalog";
@@ -115,12 +115,6 @@ export default async function CityPage({ params }: { params: { city: string } })
       <div className="page-shell space-y-12 py-12 sm:space-y-16 sm:py-16">
         {categorySections.length === 0 ? (
           <div className="text-center py-20">
-            <div
-              className="mb-6 inline-flex h-20 w-20 items-center justify-center rounded-2xl"
-              style={{ background: "var(--brand-light)", color: "var(--brand-accent)" }}
-            >
-              <Sparkles className="w-10 h-10" />
-            </div>
             <h2 className="section-heading mb-4">Asnje sherbim nuk u gjet</h2>
             <p className="mx-auto max-w-md text-sm leading-relaxed" style={{ color: "var(--text-secondary)" }}>
               Nuk u gjet asnje sherbim per &quot;{cityLabel}&quot; per momentin. Provoni nje qytet tjeter.
