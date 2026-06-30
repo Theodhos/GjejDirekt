@@ -71,22 +71,12 @@ export default function DashboardClient({ listings, activities, profileUser, isA
             {stats.map((stat) => {
               const inner = (
                 <>
-                  <div className="flex items-center justify-between gap-2 mb-2">
-                    <p
-                      className="text-xs font-semibold uppercase tracking-[0.15em]"
-                      style={{ color: stat.accent ? "var(--brand-accent)" : "var(--text-tertiary)" }}
-                    >
-                      {stat.label}
-                    </p>
-                    {stat.href && (
-                      <span
-                        className="flex h-7 w-7 items-center justify-center rounded-full transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
-                        style={{ background: "var(--brand-light)", color: "var(--brand-accent)", border: "1px solid var(--brand-border)" }}
-                      >
-                        <ArrowUpRight className="h-4 w-4" />
-                      </span>
-                    )}
-                  </div>
+                  <p
+                    className="text-xs font-semibold uppercase tracking-[0.15em] mb-2"
+                    style={{ color: stat.accent ? "var(--brand-accent)" : "var(--text-tertiary)" }}
+                  >
+                    {stat.label}
+                  </p>
                   <p
                     className="text-3xl font-bold tracking-tight"
                     style={{ color: stat.accent ? "var(--brand-accent)" : "var(--text-primary)" }}
@@ -94,12 +84,13 @@ export default function DashboardClient({ listings, activities, profileUser, isA
                     {stat.value}
                   </p>
                   {stat.href && (
-                    <p
-                      className="mt-2 text-xs font-semibold"
-                      style={{ color: "var(--brand-accent)" }}
+                    <span
+                      className="mt-4 inline-flex w-fit items-center gap-1.5 rounded-full px-4 py-2 text-sm font-semibold text-white transition-all group-hover:gap-2.5"
+                      style={{ background: "var(--brand-accent)" }}
                     >
-                      {en ? "View payments →" : "Shiko pagesat →"}
-                    </p>
+                      {en ? "View payments" : "Shiko pagesat"}
+                      <ArrowUpRight className="h-4 w-4" />
+                    </span>
                   )}
                 </>
               );

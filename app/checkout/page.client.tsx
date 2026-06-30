@@ -8,7 +8,8 @@ import {
   ArrowRight,
   ShieldCheck,
   Lock,
-  CheckCircle2
+  CheckCircle2,
+  Store
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -46,6 +47,15 @@ const copy = {
     successDescA: "Paketa juaj ",
     successDescB: " u aktivizua. Listimi juaj po përditësohet me veçori premium.",
     backToDashboard: "Kthehu te Paneli",
+    selectServiceTitle: "Për cilin shërbim është kjo paketë?",
+    selectServiceDesc: "Paketa do t'i ofrohet shërbimit që zgjidhni më poshtë.",
+    selectPlaceholder: "Zgjidh një shërbim",
+    selectServiceFirst: "Ju lutemi zgjidhni një shërbim fillimisht.",
+    loadingServices: "Duke ngarkuar shërbimet...",
+    noServiceTitle: "Nuk keni asnjë shërbim",
+    noServiceDesc: "Duhet të hidhni ose ngarkoni një shërbim fillimisht, pastaj të kryeni pagesën e paketës.",
+    addServiceCta: "Shto Shërbim",
+    closeModal: "Mbyll",
   },
   en: {
     eyebrow: "Secure payment",
@@ -75,6 +85,15 @@ const copy = {
     successDescA: "Your ",
     successDescB: " packet has been activated. Your listing is now being updated with premium features.",
     backToDashboard: "Back to Dashboard",
+    selectServiceTitle: "Which service is this package for?",
+    selectServiceDesc: "The package will be applied to the service you select below.",
+    selectPlaceholder: "Select a service",
+    selectServiceFirst: "Please select a service first.",
+    loadingServices: "Loading your services...",
+    noServiceTitle: "You have no service yet",
+    noServiceDesc: "You need to add or upload a service first, then complete the package payment.",
+    addServiceCta: "Add Service",
+    closeModal: "Close",
   },
 };
 
@@ -89,6 +108,39 @@ function CheckoutPageClient() {
   const [paymentMethod, setPaymentMethod] = useState<"card" | "paypal">("card");
   const [isSuccess, setIsSuccess] = useState(false);
 
+  type ServiceOption = { _id: string; title: string };
+  const [services, setServices] = useState<ServiceOption[]>([]);
+  const [servicesLoaded, setServicesLoaded] = useState(false);
+  const [selectedListingId, setSelectedListingId] = useState(listingId);
+  const [showNoServiceModal, setShowNoServiceModal] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch("/api/packages");
+        const data = await res.json();
+        if (cancelled) return;
+        const list: ServiceOption[] = Array.isArray(data?.listings)
+          ? data.listings.map((l: any) => ({ _id: String(l._id), title: l.title || "" }))
+          : [];
+        setServices(list);
+        if (list.length === 0) {
+          setShowNoServiceModal(true);
+        } else if (!list.some((l) => l._id === listingId)) {
+          setSelectedListingId(list[0]._id);
+        }
+      } catch {
+        if (!cancelled) setServices([]);
+      } finally {
+        if (!cancelled) setServicesLoaded(true);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [listingId]);
+
   const handlePayPalSuccess = async (details: any) => {
     try {
       const res = await fetch("/api/checkout/paypal", {
@@ -97,10 +149,11 @@ function CheckoutPageClient() {
         body: JSON.stringify({
           orderID: details.id,
           packet,
-          listingId
+          listingId: selectedListingId
         }),
       });
       if (res.ok) setIsSuccess(true);
+      else toast.error(c.paymentFailed);
     } catch (err) {
       toast.error(c.paypalError);
     }
@@ -155,6 +208,42 @@ function CheckoutPageClient() {
                 </p>
               </div>
 
+              {/* Service selector */}
+              <div
+                className="p-7 rounded-2xl"
+                style={{ background: "var(--surface-white)", border: "1px solid var(--border-soft)", boxShadow: "var(--shadow-card)" }}
+              >
+                <h3 className="text-base font-bold mb-1" style={{ color: "var(--text-primary)" }}>{c.selectServiceTitle}</h3>
+                <p className="text-sm font-medium mb-5" style={{ color: "var(--text-secondary)" }}>{c.selectServiceDesc}</p>
+                {!servicesLoaded ? (
+                  <p className="text-sm font-medium" style={{ color: "var(--text-tertiary)" }}>{c.loadingServices}</p>
+                ) : services.length === 0 ? (
+                  <div className="flex flex-col items-start gap-4">
+                    <p className="text-sm font-medium" style={{ color: "var(--text-secondary)" }}>{c.noServiceDesc}</p>
+                    <Link
+                      href="/create-listing"
+                      className="inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+                      style={{ background: "var(--brand-accent)" }}
+                    >
+                      {c.addServiceCta}
+                      <ArrowRight className="w-4 h-4" />
+                    </Link>
+                  </div>
+                ) : (
+                  <select
+                    value={selectedListingId}
+                    onChange={(e) => setSelectedListingId(e.target.value)}
+                    className="w-full rounded-xl px-4 py-3 text-sm font-semibold outline-none transition-all focus:ring-2"
+                    style={{ background: "var(--surface-cream)", border: "1px solid var(--border-soft)", color: "var(--text-primary)" }}
+                  >
+                    <option value="" disabled>{c.selectPlaceholder}</option>
+                    {services.map((s) => (
+                      <option key={s._id} value={s._id}>{s.title}</option>
+                    ))}
+                  </select>
+                )}
+              </div>
+
               {/* Toggle */}
               <div
                 className="inline-flex p-1.5 rounded-full"
@@ -196,8 +285,12 @@ function CheckoutPageClient() {
                         <h3 className="text-xl font-bold" style={{ color: "var(--text-primary)" }}>{c.cardTitle}</h3>
                       </div>
                       <p className="font-medium mb-8" style={{ color: "var(--text-secondary)" }}>{c.cardDesc}</p>
+                      {!selectedListingId && (
+                        <p className="mb-4 text-sm font-semibold" style={{ color: "var(--brand-accent)" }}>{c.selectServiceFirst}</p>
+                      )}
                       <PayPalButtons
                         fundingSource={FUNDING.CARD}
+                        disabled={!selectedListingId}
                         style={{ layout: "vertical", shape: "pill", label: "pay", color: "black" }}
                         createOrder={(data, actions) => {
                           return actions.order.create({ intent: "CAPTURE", purchase_units: [{ amount: { value: price.toString(), currency_code: "EUR" } }] });
@@ -220,8 +313,12 @@ function CheckoutPageClient() {
                         <Image src="https://www.paypalobjects.com/webstatic/mktg/logo/pp_cc_mark_111x69.jpg" alt="PayPal" fill className="object-contain" />
                       </div>
                       <p className="font-medium mb-8" style={{ color: "var(--text-secondary)" }}>{c.paypalDesc}</p>
+                      {!selectedListingId && (
+                        <p className="mb-4 text-sm font-semibold" style={{ color: "var(--brand-accent)" }}>{c.selectServiceFirst}</p>
+                      )}
                       <PayPalButtons
                         fundingSource={FUNDING.PAYPAL}
+                        disabled={!selectedListingId}
                         style={{ layout: "vertical", shape: "pill", label: "pay" }}
                         createOrder={(data, actions) => {
                           return actions.order.create({ intent: "CAPTURE", purchase_units: [{ amount: { value: price.toString(), currency_code: "EUR" } }] });
@@ -292,6 +389,47 @@ function CheckoutPageClient() {
           </div>
         </div>
       </div>
+
+      {showNoServiceModal && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          style={{ background: "rgba(15,23,42,0.55)" }}
+          onClick={() => setShowNoServiceModal(false)}
+        >
+          <div
+            className="w-full max-w-md rounded-2xl p-8 text-center animate-in fade-in zoom-in duration-300"
+            style={{ background: "var(--surface-white)", boxShadow: "var(--shadow-card)" }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div
+              className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full"
+              style={{ background: "var(--brand-light)" }}
+            >
+              <Store className="h-8 w-8" style={{ color: "var(--brand-accent)" }} />
+            </div>
+            <h3 className="mb-3 text-xl font-bold" style={{ color: "var(--text-primary)" }}>{c.noServiceTitle}</h3>
+            <p className="mb-7 text-sm font-medium leading-relaxed" style={{ color: "var(--text-secondary)" }}>{c.noServiceDesc}</p>
+            <div className="flex flex-col gap-3">
+              <Link
+                href="/create-listing"
+                className="inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+                style={{ background: "var(--brand-accent)" }}
+              >
+                {c.addServiceCta}
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+              <button
+                type="button"
+                onClick={() => setShowNoServiceModal(false)}
+                className="text-sm font-semibold"
+                style={{ color: "var(--text-tertiary)" }}
+              >
+                {c.closeModal}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 }

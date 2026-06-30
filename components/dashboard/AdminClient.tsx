@@ -2,7 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
-import { Clock3, LayoutDashboard, MapPinned, PlusCircle, ShieldCheck, Users, AlertTriangle, CreditCard } from "lucide-react";
+import { Clock3, LayoutDashboard, MapPinned, PlusCircle, ShieldCheck, Users, AlertTriangle, CreditCard, ArrowUpRight } from "lucide-react";
 import BlogStudio from "@/components/dashboard/BlogStudio";
 import CityStudio from "@/components/dashboard/CityStudio";
 import AdminProfile from "@/components/dashboard/AdminProfile";
@@ -33,8 +33,9 @@ export default function AdminClient({
   displayName: string;
   authEmail: string;
 }) {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const adminText = t.admin as Record<string, string>;
+  const viewLabel = language === "en" ? "View" : "Shiko";
 
   const stats = [
     { icon: Users, label: t.admin.users, value: totalUsers, accent: "bg-blue-50 text-blue-700", href: "/admin/users" },
@@ -82,10 +83,14 @@ export default function AdminClient({
         </div>
         <div className="lg:col-span-2 grid gap-4 sm:grid-cols-2 xl:grid-cols-2">
         {stats.map((item) => (
-          <Link key={item.label} href={item.href} className="surface flex flex-col p-6 hover:border-brand-500 transition-all hover:shadow-xl group">
+          <Link key={item.label} href={item.href} className="surface flex flex-col p-6 cursor-pointer hover:border-brand-500 transition-all hover:shadow-xl hover:-translate-y-0.5 group">
             <item.icon className={`h-10 w-10 rounded-2xl p-2.5 ${item.accent} transition-transform group-hover:scale-110`} />
             <p className="mt-6 text-sm font-bold text-slate-500 uppercase tracking-widest">{item.label}</p>
             <p className="mt-2 text-4xl font-black tracking-tight text-slate-950">{item.value.toLocaleString()}</p>
+            <span className="mt-5 inline-flex w-fit items-center gap-1.5 rounded-full bg-brand-600 px-4 py-2 text-sm font-semibold text-white transition-all group-hover:bg-brand-700 group-hover:gap-2.5">
+              {viewLabel}
+              <ArrowUpRight className="h-4 w-4" />
+            </span>
           </Link>
         ))}
         </div>

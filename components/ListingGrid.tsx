@@ -2,9 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { Loader2, Inbox, Sparkles } from "lucide-react";
+import { Loader2, Inbox, ChevronLeft, ChevronRight } from "lucide-react";
 import ListingCard from "@/components/ListingCard";
 import { useLanguage } from "@/context/LanguageContext";
+
+const PAGE_SIZE = 8;
 
 const copy = {
   al: {
@@ -12,16 +14,18 @@ const copy = {
     noResultsTitle: "Nuk u gjet asnje rezultat",
     noResultsDescription:
       "Nuk gjetem sherbime qe perputhen me filtrat tuaj. Provoni te ndryshoni kriteret e kerkimit.",
-    featuredTitle: "Te rekomanduara",
-    featuredDescription: "Eksploroni nje perzgjedhje te sherbimeve me te mira ne Shqiperi."
+    prev: "Para",
+    next: "Tjetra",
+    pageOf: (a: number, b: number) => `Faqja ${a} nga ${b}`
   },
   en: {
     loading: "Finding services...",
     noResultsTitle: "No results found",
     noResultsDescription:
       "We couldn't find any services matching your filters. Try adjusting your search criteria.",
-    featuredTitle: "Featured & Recommended",
-    featuredDescription: "Explore a random selection of the best services across Albania."
+    prev: "Prev",
+    next: "Next",
+    pageOf: (a: number, b: number) => `Page ${a} of ${b}`
   }
 };
 
@@ -31,6 +35,7 @@ export default function ListingGrid() {
   const text = copy[language];
   const [listings, setListings] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
 
   useEffect(() => {
     const fetchListings = async () => {
@@ -42,6 +47,7 @@ export default function ListingGrid() {
 
         // Keep the server's package-tier ranking intact (no shuffling).
         setListings(data.listings || []);
+        setPage(1);
       } catch (error) {
         console.error("Failed to fetch listings:", error);
       } finally {
@@ -75,25 +81,43 @@ export default function ListingGrid() {
     );
   }
 
-  return (
-    <div className="space-y-12">
-        {!searchParams?.toString() && (
-            <div className="flex items-center gap-4 p-8 rounded-[2.5rem] bg-brand-50 border border-brand-100 mb-12">
-                <div className="w-12 h-12 rounded-2xl bg-white flex items-center justify-center text-brand-600 shadow-sm shrink-0">
-                    <Sparkles className="w-6 h-6" />
-                </div>
-                <div>
-                    <h4 className="text-lg font-black text-slate-950">{text.featuredTitle}</h4>
-                    <p className="text-sm text-slate-500 font-medium">{text.featuredDescription}</p>
-                </div>
-            </div>
-        )}
+  const totalPages = Math.max(1, Math.ceil(listings.length / PAGE_SIZE));
+  const currentPage = Math.min(page, totalPages);
+  const visible = listings.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
 
+  return (
+    <div className="space-y-10">
         <div className="grid gap-8 sm:grid-cols-2">
-            {listings.map((listing) => (
+            {visible.map((listing) => (
                 <ListingCard key={listing._id} listing={listing} />
             ))}
         </div>
+
+        {totalPages > 1 && (
+            <div className="flex items-center justify-center gap-3 pt-2">
+                <button
+                    type="button"
+                    onClick={() => setPage((p) => Math.max(1, p - 1))}
+                    disabled={currentPage === 1}
+                    className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition-all hover:border-brand-500 hover:text-brand-700 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-slate-200 disabled:hover:text-slate-700"
+                >
+                    <ChevronLeft className="h-4 w-4" />
+                    {text.prev}
+                </button>
+
+                <span className="px-2 text-sm font-bold text-slate-600">{text.pageOf(currentPage, totalPages)}</span>
+
+                <button
+                    type="button"
+                    onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                    disabled={currentPage === totalPages}
+                    className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition-all hover:border-brand-500 hover:text-brand-700 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-slate-200 disabled:hover:text-slate-700"
+                >
+                    {text.next}
+                    <ChevronRight className="h-4 w-4" />
+                </button>
+            </div>
+        )}
     </div>
   );
 }
