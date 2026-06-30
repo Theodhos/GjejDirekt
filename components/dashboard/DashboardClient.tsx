@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Clock3 } from "lucide-react";
+import { Clock3, ArrowUpRight } from "lucide-react";
 import Button from "@/components/ui/Button";
 import ProfilePanel from "@/components/dashboard/ProfilePanel";
 import UserListingTable from "@/components/dashboard/UserListingTable";
@@ -71,18 +71,36 @@ export default function DashboardClient({ listings, activities, profileUser, isA
             {stats.map((stat) => {
               const inner = (
                 <>
-                  <p
-                    className="text-xs font-semibold uppercase tracking-[0.15em] mb-2"
-                    style={{ color: stat.accent ? "var(--brand-accent)" : "var(--text-tertiary)" }}
-                  >
-                    {stat.label}
-                  </p>
+                  <div className="flex items-center justify-between gap-2 mb-2">
+                    <p
+                      className="text-xs font-semibold uppercase tracking-[0.15em]"
+                      style={{ color: stat.accent ? "var(--brand-accent)" : "var(--text-tertiary)" }}
+                    >
+                      {stat.label}
+                    </p>
+                    {stat.href && (
+                      <span
+                        className="flex h-7 w-7 items-center justify-center rounded-full transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+                        style={{ background: "var(--brand-light)", color: "var(--brand-accent)", border: "1px solid var(--brand-border)" }}
+                      >
+                        <ArrowUpRight className="h-4 w-4" />
+                      </span>
+                    )}
+                  </div>
                   <p
                     className="text-3xl font-bold tracking-tight"
                     style={{ color: stat.accent ? "var(--brand-accent)" : "var(--text-primary)" }}
                   >
                     {stat.value}
                   </p>
+                  {stat.href && (
+                    <p
+                      className="mt-2 text-xs font-semibold"
+                      style={{ color: "var(--brand-accent)" }}
+                    >
+                      {en ? "View payments →" : "Shiko pagesat →"}
+                    </p>
+                  )}
                 </>
               );
               const cardStyle = {
@@ -94,7 +112,7 @@ export default function DashboardClient({ listings, activities, profileUser, isA
                 <Link
                   key={stat.label}
                   href={stat.href}
-                  className="rounded-2xl p-5 transition-all hover:-translate-y-0.5 hover:shadow-md"
+                  className="group cursor-pointer rounded-2xl p-5 transition-all hover:-translate-y-0.5 hover:shadow-md hover:border-[var(--brand-border)]"
                   style={cardStyle}
                 >
                   {inner}
