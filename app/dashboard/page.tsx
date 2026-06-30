@@ -4,6 +4,7 @@ import { connectDB } from "@/lib/db";
 import Listing from "@/models/Listing";
 import User from "@/models/User";
 import Activity from "@/models/Activity";
+import Payment from "@/models/Payment";
 import DashboardClient from "@/components/dashboard/DashboardClient";
 
 export const dynamic = "force-dynamic";
@@ -18,6 +19,9 @@ export default async function DashboardPage() {
     : await Listing.find({ owner: auth.id }).sort({ createdAt: -1 }).lean<any>();
   const user = await User.findById(auth.id).lean<any>();
   const activities = await Activity.find({ actor: auth.id }).sort({ createdAt: -1 }).limit(8).lean<any>();
+  const paymentsCount = auth.role === "admin"
+    ? await Payment.countDocuments({})
+    : await Payment.countDocuments({ user: auth.id });
 
   const profileUser = {
     name: user?.name || auth.name,
@@ -32,6 +36,7 @@ export default async function DashboardPage() {
       activities={JSON.parse(JSON.stringify(activities))}
       profileUser={profileUser}
       isAdmin={auth.role === "admin"}
+      paymentsCount={paymentsCount}
     />
   );
 }

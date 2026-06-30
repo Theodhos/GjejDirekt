@@ -161,7 +161,8 @@ export async function sendFreePackageInvoiceEmail({
   packageName,
   price,
   features,
-  language
+  language,
+  serviceName
 }: {
   userName: string;
   userEmail: string;
@@ -169,6 +170,7 @@ export async function sendFreePackageInvoiceEmail({
   price: number;
   features: string[];
   language: "al" | "en";
+  serviceName?: string;
 }) {
   const appUrl = getAppUrl();
   const isEn = language === "en";
@@ -179,6 +181,7 @@ export async function sendFreePackageInvoiceEmail({
         heading: "Your Invoice",
         intro: `Hi ${userName}, thank you for choosing TripShqip! Here is the invoice for your package.`,
         packageLabel: "Package",
+        serviceLabel: "Service",
         priceLabel: "Price",
         free: "Free",
         includes: "What's included",
@@ -191,6 +194,7 @@ export async function sendFreePackageInvoiceEmail({
         heading: "Fatura juaj",
         intro: `Përshëndetje ${userName}, faleminderit që zgjodhët TripShqip! Kjo është fatura për paketën tuaj.`,
         packageLabel: "Paketa",
+        serviceLabel: "Shërbimi",
         priceLabel: "Çmimi",
         free: "Falas",
         includes: "Çfarë përfshihet",
@@ -200,6 +204,9 @@ export async function sendFreePackageInvoiceEmail({
       };
 
   const priceText = price === 0 ? `€0 (${t.free})` : `€${price}`;
+  const serviceRow = serviceName
+    ? `<p style="margin: 0 0 10px 0;"><strong>${t.serviceLabel}:</strong> ${serviceName}</p>`
+    : "";
   const featureRows = features
     .map(
       (f) =>
@@ -213,6 +220,7 @@ export async function sendFreePackageInvoiceEmail({
       <p style="color: #64748b; font-size: 16px;">${t.intro}</p>
       <div style="background-color: #f8fafc; padding: 20px; border-radius: 15px; margin: 20px 0;">
         <p style="margin: 0 0 10px 0;"><strong>${t.packageLabel}:</strong> ${packageName}</p>
+        ${serviceRow}
         <p style="margin: 0 0 10px 0;"><strong>${t.priceLabel}:</strong> ${priceText}</p>
         <p style="margin: 16px 0 8px 0;"><strong>${t.includes}:</strong></p>
         <ul style="margin: 0; padding-left: 18px; list-style: none;">${featureRows}</ul>

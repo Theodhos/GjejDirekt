@@ -10,6 +10,8 @@ import toast from "react-hot-toast";
 function PacketPageClient() {
   const { language } = useLanguage();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const listingId = searchParams?.get("listingId") || "";
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const [freeLoading, setFreeLoading] = useState(false);
 
@@ -24,7 +26,7 @@ function PacketPageClient() {
     router.push(`/login?callback=${encodeURIComponent(window.location.pathname + window.location.search)}`);
   };
 
-  const handlePackageClick = (e: React.MouseEvent, href: string) => {
+  const handlePackageClick = (e: React.MouseEvent) => {
     if (isAuthenticated === false) {
       e.preventDefault();
       requireLogin();
@@ -42,7 +44,7 @@ function PacketPageClient() {
       const res = await fetch("/api/packages/free", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ language })
+        body: JSON.stringify({ language, listingId })
       });
       if (res.ok) {
         toast.success(
@@ -153,9 +155,6 @@ function PacketPageClient() {
       cta: language === "en" ? "Activate Ads Pro" : "Aktivizo Ads Pro",
     }
   ];
-
-  const searchParams = useSearchParams();
-  const listingId = searchParams?.get("listingId") || "";
 
   return (
     <main style={{ background: "var(--surface-page)", minHeight: "100vh" }}>
@@ -282,7 +281,7 @@ function PacketPageClient() {
               ) : (
                 <Link
                   href={`/checkout?packet=${pkg.id}&price=${pkg.price}&listingId=${listingId}`}
-                  onClick={(e) => handlePackageClick(e, `/checkout?packet=${pkg.id}&price=${pkg.price}&listingId=${listingId}`)}
+                  onClick={handlePackageClick}
                   className="flex w-full items-center justify-center gap-2 rounded-full py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90 active:scale-95"
                   style={{
                     background: pkg.popular ? "var(--brand-accent)" : "var(--text-primary)",

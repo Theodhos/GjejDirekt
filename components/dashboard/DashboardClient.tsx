@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { Clock3 } from "lucide-react";
 import Button from "@/components/ui/Button";
 import ProfilePanel from "@/components/dashboard/ProfilePanel";
@@ -16,18 +17,18 @@ type DashboardClientProps = {
     createdAt?: string | Date;
   };
   isAdmin: boolean;
+  paymentsCount: number;
 };
 
-export default function DashboardClient({ listings, activities, profileUser, isAdmin }: DashboardClientProps) {
+export default function DashboardClient({ listings, activities, profileUser, isAdmin, paymentsCount }: DashboardClientProps) {
   const { language } = useLanguage();
   const en = language === "en";
   const approved = listings.filter((listing: any) => listing.status === "approved").length;
-  const pending = listings.filter((listing: any) => listing.status === "pending").length;
   const rejected = listings.filter((listing: any) => listing.status === "rejected").length;
 
   const stats = [
     { label: en ? "Total Listings" : "Totali i shërbimeve", value: String(listings.length), accent: false },
-    { label: en ? "Pending Approval" : "Në pritje miratimi", value: String(pending), accent: false },
+    { label: en ? "Payments" : "Pagesat", value: String(paymentsCount), accent: false, href: "/dashboard/payments" },
     { label: en ? "Approved" : "Të miratuara", value: String(approved), accent: true },
     { label: en ? "Rejected" : "Të refuzuara", value: String(rejected), accent: false }
   ];
@@ -67,30 +68,43 @@ export default function DashboardClient({ listings, activities, profileUser, isA
       <div style={{ borderBottom: "1px solid var(--border-soft)", background: "var(--surface-cream)" }}>
         <div className="page-shell py-6">
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            {stats.map((stat) => (
-              <div
-                key={stat.label}
-                className="rounded-2xl p-5 transition-all"
-                style={{
-                  background: stat.accent ? "var(--brand-light)" : "var(--surface-white)",
-                  border: `1px solid ${stat.accent ? "var(--brand-border)" : "var(--border-soft)"}`,
-                  boxShadow: "var(--shadow-card)"
-                }}
-              >
-                <p
-                  className="text-xs font-semibold uppercase tracking-[0.15em] mb-2"
-                  style={{ color: stat.accent ? "var(--brand-accent)" : "var(--text-tertiary)" }}
+            {stats.map((stat) => {
+              const inner = (
+                <>
+                  <p
+                    className="text-xs font-semibold uppercase tracking-[0.15em] mb-2"
+                    style={{ color: stat.accent ? "var(--brand-accent)" : "var(--text-tertiary)" }}
+                  >
+                    {stat.label}
+                  </p>
+                  <p
+                    className="text-3xl font-bold tracking-tight"
+                    style={{ color: stat.accent ? "var(--brand-accent)" : "var(--text-primary)" }}
+                  >
+                    {stat.value}
+                  </p>
+                </>
+              );
+              const cardStyle = {
+                background: stat.accent ? "var(--brand-light)" : "var(--surface-white)",
+                border: `1px solid ${stat.accent ? "var(--brand-border)" : "var(--border-soft)"}`,
+                boxShadow: "var(--shadow-card)"
+              };
+              return stat.href ? (
+                <Link
+                  key={stat.label}
+                  href={stat.href}
+                  className="rounded-2xl p-5 transition-all hover:-translate-y-0.5 hover:shadow-md"
+                  style={cardStyle}
                 >
-                  {stat.label}
-                </p>
-                <p
-                  className="text-3xl font-bold tracking-tight"
-                  style={{ color: stat.accent ? "var(--brand-accent)" : "var(--text-primary)" }}
-                >
-                  {stat.value}
-                </p>
-              </div>
-            ))}
+                  {inner}
+                </Link>
+              ) : (
+                <div key={stat.label} className="rounded-2xl p-5 transition-all" style={cardStyle}>
+                  {inner}
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>
