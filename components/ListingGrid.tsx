@@ -6,7 +6,7 @@ import { Loader2, Inbox, ChevronLeft, ChevronRight } from "lucide-react";
 import ListingCard from "@/components/ListingCard";
 import { useLanguage } from "@/context/LanguageContext";
 
-const PAGE_SIZE = 8;
+const ITEMS_PER_VIEW = 4;
 
 const copy = {
   al: {
@@ -81,42 +81,75 @@ export default function ListingGrid() {
     );
   }
 
-  const totalPages = Math.max(1, Math.ceil(listings.length / PAGE_SIZE));
+  const totalPages = Math.max(1, Math.ceil(listings.length / ITEMS_PER_VIEW));
   const currentPage = Math.min(page, totalPages);
-  const visible = listings.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
+  // Always show the navigation arrows, even when there is only a single card /
+  // one page — the arrows for the boundary direction simply stay disabled.
+  const hasArrows = true;
+
+  // Group listings into slides of ITEMS_PER_VIEW so the track shifts one full
+  // viewport per arrow click — the section height stays fixed at a single row.
+  const slides: any[][] = [];
+  for (let i = 0; i < listings.length; i += ITEMS_PER_VIEW) {
+    slides.push(listings.slice(i, i + ITEMS_PER_VIEW));
+  }
+
+  const arrowClass =
+    "flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 shadow-sm transition-all hover:border-brand-500 hover:text-brand-700 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-slate-200 disabled:hover:text-slate-700";
 
   return (
-    <div className="space-y-10">
-        <div className="grid gap-8 sm:grid-cols-2">
-            {visible.map((listing) => (
+    <div className="space-y-5">
+        {/* Mobile: every card stacked full-width, no carousel */}
+        <div className="grid grid-cols-1 gap-4 sm:hidden">
+            {listings.map((listing) => (
                 <ListingCard key={listing._id} listing={listing} />
             ))}
         </div>
 
-        {totalPages > 1 && (
-            <div className="flex items-center justify-center gap-3 pt-2">
+        {/* Tablet/Desktop: 2x2 carousel navigated with arrows */}
+        <div className="hidden items-center gap-3 sm:flex sm:gap-4">
+            {hasArrows && (
                 <button
                     type="button"
+                    aria-label={text.prev}
                     onClick={() => setPage((p) => Math.max(1, p - 1))}
                     disabled={currentPage === 1}
-                    className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition-all hover:border-brand-500 hover:text-brand-700 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-slate-200 disabled:hover:text-slate-700"
+                    className={arrowClass}
                 >
-                    <ChevronLeft className="h-4 w-4" />
-                    {text.prev}
+                    <ChevronLeft className="h-5 w-5" />
                 </button>
+            )}
 
-                <span className="px-2 text-sm font-bold text-slate-600">{text.pageOf(currentPage, totalPages)}</span>
+            <div className="relative flex-1 overflow-hidden">
+                <div
+                    className="flex items-start transition-transform duration-300 ease-out"
+                    style={{ transform: `translateX(-${(currentPage - 1) * 100}%)` }}
+                >
+                    {slides.map((group, idx) => (
+                        <div key={idx} className="grid w-full shrink-0 grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6">
+                            {group.map((listing) => (
+                                <ListingCard key={listing._id} listing={listing} />
+                            ))}
+                        </div>
+                    ))}
+                </div>
+            </div>
 
+            {hasArrows && (
                 <button
                     type="button"
+                    aria-label={text.next}
                     onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                     disabled={currentPage === totalPages}
-                    className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition-all hover:border-brand-500 hover:text-brand-700 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-slate-200 disabled:hover:text-slate-700"
+                    className={arrowClass}
                 >
-                    {text.next}
-                    <ChevronRight className="h-4 w-4" />
+                    <ChevronRight className="h-5 w-5" />
                 </button>
-            </div>
+            )}
+        </div>
+
+        {totalPages > 1 && (
+            <p className="hidden text-center text-sm font-bold text-slate-600 sm:block">{text.pageOf(currentPage, totalPages)}</p>
         )}
     </div>
   );
