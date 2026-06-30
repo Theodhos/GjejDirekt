@@ -2,7 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
-import { Clock3, LayoutDashboard, MapPinned, PlusCircle, ShieldCheck, Users, AlertTriangle } from "lucide-react";
+import { Clock3, LayoutDashboard, MapPinned, PlusCircle, ShieldCheck, Users, AlertTriangle, CreditCard } from "lucide-react";
 import BlogStudio from "@/components/dashboard/BlogStudio";
 import CityStudio from "@/components/dashboard/CityStudio";
 import AdminProfile from "@/components/dashboard/AdminProfile";
@@ -16,6 +16,7 @@ export default function AdminClient({
   pendingListings,
   totalReports,
   totalBlogs,
+  totalPayments,
   totalCities,
   serializedBlogs,
   displayName,
@@ -26,6 +27,7 @@ export default function AdminClient({
   pendingListings: number;
   totalReports: number;
   totalBlogs: number;
+  totalPayments: number;
   totalCities: number;
   serializedBlogs: ListingAny[];
   displayName: string;
@@ -40,7 +42,8 @@ export default function AdminClient({
     { icon: Clock3, label: t.admin.pending, value: pendingListings, accent: "bg-amber-50 text-amber-700", href: "/admin/listings?status=pending" },
     { icon: AlertTriangle, label: t.admin.reports, value: totalReports, accent: "bg-red-50 text-red-700", href: "/admin/reports" },
     { icon: LayoutDashboard, label: t.admin.blogs, value: totalBlogs, accent: "bg-violet-50 text-violet-700", href: "/admin/blogs" },
-    { icon: MapPinned, label: adminText.cities || "Qytete", value: totalCities, accent: "bg-teal-50 text-teal-700", href: "/admin/cities" }
+    { icon: MapPinned, label: adminText.cities || "Qytete", value: totalCities, accent: "bg-teal-50 text-teal-700", href: "/admin/cities" },
+    { icon: CreditCard, label: adminText.payments || "Payments", value: totalPayments, accent: "bg-emerald-50 text-emerald-700", href: "/admin/payments" }
   ];
 
   return (

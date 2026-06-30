@@ -26,9 +26,9 @@ export const NO_PACKAGE_TIER = 3;
 export function normalizePackage(packet: PackageInput): "verify" | "trading" | "features" | null {
   if (!packet) return null;
   const p = String(packet).toLowerCase().trim();
-  if (p === "trending" || p === "trading") return "trading";
-  if (p === "features") return "features";
-  if (p === "verify") return "verify";
+  if (p === "ads-pro" || p === "features") return "features";
+  if (p === "ads" || p === "trending" || p === "trading") return "trading";
+  if (p === "verified" || p === "verify") return "verify";
   return null;
 }
 

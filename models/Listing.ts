@@ -54,6 +54,8 @@ export interface IListing extends Document {
   package?: PackageTier;
   packageExpiryDate?: Date;
   packagePurchaseDate?: Date;
+  verified: boolean;
+  verificationPending: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -118,7 +120,9 @@ const ListingSchema = new Schema<IListing>(
       default: null
     },
     packageExpiryDate: { type: Date },
-    packagePurchaseDate: { type: Date }
+    packagePurchaseDate: { type: Date },
+    verified: { type: Boolean, default: false, index: true },
+    verificationPending: { type: Boolean, default: false }
   },
   { timestamps: true }
 );

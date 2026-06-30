@@ -12,7 +12,6 @@ import {
   Phone,
   ShieldCheck,
   Sparkles,
-  Star,
   Eye,
   ArrowRight,
   Instagram,
@@ -154,10 +153,6 @@ export default async function ListingDetailPage({ params }: { params: { slug: st
                 <span className="flex items-center gap-1.5 text-sm" style={{ color: "var(--text-secondary)" }}>
                   <MapPin className="w-3.5 h-3.5 shrink-0" style={{ color: "var(--brand-accent)" }} />
                   {[listing.location, listing.country].filter(Boolean).join(", ")}
-                </span>
-                <span className="flex items-center gap-1.5 text-sm" style={{ color: "var(--text-secondary)" }}>
-                  <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
-                  {Number(listing.ratingAverage || 0).toFixed(1)}
                 </span>
                 <span className="flex items-center gap-1.5 text-sm" style={{ color: "var(--text-tertiary)" }}>
                   <Eye className="w-3.5 h-3.5" />

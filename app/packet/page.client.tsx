@@ -1,15 +1,17 @@
 "use client";
 
-import { Check, ArrowRight, Shield, Flame, Sparkles } from "lucide-react";
+import { Check, ArrowRight, Rocket, BadgeCheck, Megaphone, Crown } from "lucide-react";
 import Link from "next/link";
 import { useLanguage } from "@/context/LanguageContext";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
+import toast from "react-hot-toast";
 
 function PacketPageClient() {
   const { language } = useLanguage();
   const router = useRouter();
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+  const [freeLoading, setFreeLoading] = useState(false);
 
   useEffect(() => {
     fetch("/api/auth/me")
@@ -18,70 +20,137 @@ function PacketPageClient() {
       .catch(() => setIsAuthenticated(false));
   }, []);
 
+  const requireLogin = () => {
+    router.push(`/login?callback=${encodeURIComponent(window.location.pathname + window.location.search)}`);
+  };
+
   const handlePackageClick = (e: React.MouseEvent, href: string) => {
     if (isAuthenticated === false) {
       e.preventDefault();
-      router.push(`/login?callback=${encodeURIComponent(window.location.pathname + window.location.search)}`);
+      requireLogin();
+    }
+  };
+
+  // Free package: no payment — just email the user an invoice/confirmation.
+  const handleFreeStart = async () => {
+    if (isAuthenticated === false) {
+      requireLogin();
+      return;
+    }
+    setFreeLoading(true);
+    try {
+      const res = await fetch("/api/packages/free", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ language })
+      });
+      if (res.ok) {
+        toast.success(
+          language === "en"
+            ? "Done! We've emailed your invoice."
+            : "U krye! Ju dërguam faturën në email."
+        );
+      } else {
+        toast.error(language === "en" ? "Something went wrong." : "Ndodhi një gabim.");
+      }
+    } catch {
+      toast.error(language === "en" ? "Something went wrong." : "Ndodhi një gabim.");
+    } finally {
+      setFreeLoading(false);
     }
   };
 
   const packages = [
     {
-      id: "verify",
-      name: "Verify",
-      icon: Shield,
-      price: "5",
-      accent: "#3B82F6",
-      accentLight: "rgba(59,130,246,0.08)",
-      accentBorder: "rgba(59,130,246,0.18)",
-      features: [
-        language === "en" ? "Verified Badge on your listing" : "Distinktivi i verifikuar në listimin tuaj",
-        language === "en" ? "Basic priority in search results" : "Prioritet bazë në rezultatet e kërkimit",
-        language === "en" ? "Direct WhatsApp & Phone contact" : "Kontakt direkt me WhatsApp & Telefon",
-        language === "en" ? "Appear in category sections" : "Shfaqja në seksionet e kategorive",
-      ],
+      id: "free",
+      name: language === "en" ? "Free" : "Falas",
+      icon: Rocket,
+      price: "0",
+      priceSuffix: language === "en" ? "free" : "falas",
+      subtitle: language === "en"
+        ? "Perfect for businesses that want to be present on TripShqip."
+        : "Perfekte për bizneset që duan të jenë të pranishme në TripShqip.",
       description: language === "en"
-        ? "Build trust with your customers through verification."
-        : "Ndërtoni besim me klientët tuaj përmes verifikimit."
+        ? "Start at no cost and become part of Albania's tourism database."
+        : "Filloni pa asnjë kosto dhe bëhuni pjesë e databazës turistike të Shqipërisë.",
+      features: [
+        language === "en" ? "1 business listing" : "1 listing biznesi",
+        language === "en" ? "Business name and description" : "Emrin dhe përshkrimin e biznesit",
+        language === "en" ? "Photo gallery" : "Galeri fotosh",
+        language === "en" ? "Phone number" : "Numër telefoni",
+        "WhatsApp",
+        language === "en" ? "Website & social media" : "Website & rrjete sociale",
+        language === "en" ? "Location and Directions" : "Vendndodhje dhe Directions",
+        "Tags",
+        language === "en" ? "Appear in search results" : "Shfaqje në rezultatet e kërkimit",
+      ],
+      cta: language === "en" ? "Start Free" : "Fillo Falas",
     },
     {
-      id: "trending",
-      name: "Trending",
-      icon: Flame,
+      id: "verified",
+      name: "Verified",
+      icon: BadgeCheck,
+      price: "50",
+      priceSuffix: language === "en" ? "one-time" : "një herë",
+      subtitle: language === "en"
+        ? "Increase your business credibility."
+        : "Rrit besueshmërinë e biznesit tuaj.",
+      description: language === "en"
+        ? "The Verified badge shows tourists that the business has a verified profile on TripShqip and builds more trust."
+        : "Badge Verified u tregon turistëve se biznesi ka një profil të verifikuar në TripShqip dhe krijon më shumë besim.",
+      features: [
+        language === "en" ? "Verified badge" : "Badge Verified",
+        language === "en" ? "More credibility" : "Më shumë besueshmëri",
+        language === "en" ? "Easier identification in listings" : "Identifikim më i lehtë në listime",
+        language === "en" ? "Access to Ads and Ads Pro" : "Akses për Ads dhe Ads Pro",
+        language === "en" ? "Priority in verifying profile changes" : "Prioritet në verifikimin e ndryshimeve të profilit",
+      ],
+      cta: language === "en" ? "Become Verified" : "Bëhu Verified",
+    },
+    {
+      id: "ads",
+      name: "Ads",
+      icon: Megaphone,
       price: "10",
-      accent: "#F97316",
-      accentLight: "rgba(249,115,22,0.08)",
-      accentBorder: "rgba(249,115,22,0.22)",
-      popular: true,
-      features: [
-        language === "en" ? "Everything in Verify package" : "Gjithçka në paketën Verify",
-        language === "en" ? "Higher ranking than Verify users" : "Renditje më e lartë se përdoruesit Verify",
-        language === "en" ? "Featured in 'Trending' sections" : "I rekomanduar në seksionet 'Trending'",
-        language === "en" ? "Priority support 24/7" : "Suport prioritar 24/7",
-        language === "en" ? "Analytics for your listing" : "Analitika për listimin tuaj",
-      ],
+      priceSuffix: language === "en" ? "/ month" : "/ muaj",
+      subtitle: language === "en"
+        ? "Increase your business visibility."
+        : "Rrit shikueshmërinë e biznesit tuaj.",
       description: language === "en"
-        ? "Get more visibility and attract more customers."
-        : "Merrni më shumë shikueshmëri dhe tërhiqni më shumë klientë."
+        ? "For Verified businesses that want to appear more often and get more visits."
+        : "Për bizneset Verified që duan të shfaqen më shpesh dhe të marrin më shumë vizita.",
+      features: [
+        language === "en" ? "Ad badge" : "Badge Ad",
+        language === "en" ? "More frequent display in categories" : "Shfaqje më e shpeshtë në kategori",
+        language === "en" ? "Higher priority in search results" : "Prioritet më i lartë në rezultatet e kërkimit",
+        language === "en" ? "More exposure to visitors" : "Më shumë ekspozim te vizitorët",
+        language === "en" ? "More clicks and contacts" : "Më shumë klikime dhe kontakte",
+      ],
+      note: language === "en" ? "Only for Verified businesses." : "Vetëm për bizneset Verified.",
+      cta: language === "en" ? "Activate Ads" : "Aktivizo Ads",
     },
     {
-      id: "features",
-      name: "Features",
-      icon: Sparkles,
+      id: "ads-pro",
+      name: "Ads Pro",
+      icon: Crown,
       price: "15",
-      accent: "#EAB308",
-      accentLight: "rgba(234,179,8,0.08)",
-      accentBorder: "rgba(234,179,8,0.22)",
-      features: [
-        language === "en" ? "Everything in Trending package" : "Gjithçka në paketën Trending",
-        language === "en" ? "Highest ranking in all sections" : "Renditja më e lartë në të gjitha seksionet",
-        language === "en" ? "Featured on Home Hero section" : "I rekomanduar në seksionin Home Hero",
-        language === "en" ? "Professional photo review" : "Rishikim profesional i fotove",
-        language === "en" ? "Custom promotion on social media" : "Promovim i personalizuar në rrjetet sociale",
-      ],
+      priceSuffix: language === "en" ? "/ month" : "/ muaj",
+      popular: true,
+      subtitle: language === "en"
+        ? "Maximum exposure for your business."
+        : "Ekspozimi maksimal për biznesin tuaj.",
       description: language === "en"
-        ? "The ultimate package for maximum growth and reach."
-        : "Paketa përfundimtare për rritje dhe shtrirje maksimale."
+        ? "For Verified businesses that want to always be visible."
+        : "Për bizneset Verified që duan të jenë gjithmonë të dukshme.",
+      features: [
+        language === "en" ? "Ad badge" : "Badge Ad",
+        language === "en" ? "Highlighted listing" : "Listing i Highlighted",
+        language === "en" ? "Always displayed at the top of the category" : "Shfaqje gjithmonë në krye të kategorisë",
+        language === "en" ? "Maximum priority in searches" : "Prioritet maksimal në kërkime",
+        language === "en" ? "Premium exposure on the platform" : "Ekspozim premium në platformë",
+      ],
+      note: language === "en" ? "Only for Verified businesses." : "Vetëm për bizneset Verified.",
+      cta: language === "en" ? "Activate Ads Pro" : "Aktivizo Ads Pro",
     }
   ];
 
@@ -96,8 +165,8 @@ function PacketPageClient() {
         className="relative overflow-hidden"
         style={{ background: "var(--surface-cream)", borderBottom: "1px solid var(--border-soft)" }}
       >
-        <div className="pointer-events-none absolute -top-20 -right-20 w-[400px] h-[400px] rounded-full" style={{ background: "rgba(34,153,120,0.05)", filter: "blur(100px)" }} />
-        <div className="pointer-events-none absolute -bottom-12 -left-12 w-[300px] h-[300px] rounded-full" style={{ background: "rgba(34,153,120,0.04)", filter: "blur(80px)" }} />
+        <div className="pointer-events-none absolute -top-20 -right-20 w-[400px] h-[400px] rounded-full" style={{ background: "rgba(31,138,112,0.06)", filter: "blur(100px)" }} />
+        <div className="pointer-events-none absolute -bottom-12 -left-12 w-[300px] h-[300px] rounded-full" style={{ background: "rgba(31,138,112,0.05)", filter: "blur(80px)" }} />
 
         <div className="page-shell relative z-10 pt-16 pb-16 text-center max-w-2xl mx-auto">
           <p className="eyebrow mb-4">
@@ -119,16 +188,16 @@ function PacketPageClient() {
 
       {/* ── PRICING CARDS ── */}
       <section className="page-shell py-14">
-        <div className="grid gap-6 lg:grid-cols-3">
+        <div className="grid gap-6 sm:grid-cols-2 auto-rows-fr max-w-5xl mx-auto">
           {packages.map((pkg) => (
             <div
               key={pkg.id}
-              className="relative flex flex-col transition-all duration-300 hover:-translate-y-1"
+              className="relative flex flex-col h-full transition-all duration-300 hover:-translate-y-1"
               style={{
                 background: "var(--surface-white)",
-                border: pkg.popular ? `2px solid ${pkg.accent}` : "1px solid var(--border-soft)",
+                border: pkg.popular ? "2px solid var(--brand-accent)" : "1px solid var(--border-soft)",
                 borderRadius: "16px",
-                boxShadow: pkg.popular ? `0 8px 32px ${pkg.accentBorder}` : "var(--shadow-card)",
+                boxShadow: pkg.popular ? "0 8px 32px rgba(31,138,112,0.18)" : "var(--shadow-card)",
                 padding: "2rem"
               }}
             >
@@ -136,7 +205,7 @@ function PacketPageClient() {
               {pkg.popular && (
                 <div
                   className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full text-xs font-semibold text-white"
-                  style={{ background: pkg.accent }}
+                  style={{ background: "var(--brand-accent)" }}
                 >
                   {language === "en" ? "Most Popular" : "Më Popullorja"}
                 </div>
@@ -145,26 +214,36 @@ function PacketPageClient() {
               {/* Icon */}
               <div
                 className="flex h-12 w-12 items-center justify-center rounded-2xl mb-5"
-                style={{ background: pkg.accentLight }}
+                style={{ background: "var(--brand-light)" }}
               >
-                <pkg.icon className="w-5 h-5" style={{ color: pkg.accent }} />
+                <pkg.icon className="w-6 h-6" style={{ color: "var(--brand-accent)" }} />
               </div>
 
-              {/* Name + description */}
-              <h2 className="text-xl font-bold mb-2" style={{ color: "var(--text-primary)" }}>
+              {/* Name + subtitle + description */}
+              <h2 className="text-xl font-bold mb-1.5" style={{ color: "var(--text-primary)" }}>
                 {pkg.name}
               </h2>
-              <p className="text-sm leading-relaxed mb-6" style={{ color: "var(--text-secondary)" }}>
+              <p className="text-[15px] font-medium leading-snug mb-2" style={{ color: "var(--brand-accent)" }}>
+                {pkg.subtitle}
+              </p>
+              <p className="text-[14px] leading-relaxed mb-6" style={{ color: "var(--text-secondary)" }}>
                 {pkg.description}
               </p>
 
               {/* Price */}
-              <div className="flex items-baseline gap-1 mb-6">
+              <div className="flex items-baseline gap-1.5 mb-1">
                 <span className="text-4xl font-bold" style={{ color: "var(--text-primary)" }}>€{pkg.price}</span>
                 <span className="text-sm font-medium" style={{ color: "var(--text-tertiary)" }}>
-                  / {language === "en" ? "month" : "muaj"}
+                  {pkg.priceSuffix}
                 </span>
               </div>
+
+              {/* Note */}
+              {pkg.note ? (
+                <p className="text-xs font-medium mb-5" style={{ color: "var(--brand-hover)" }}>{pkg.note}</p>
+              ) : (
+                <div className="mb-5" />
+              )}
 
               {/* Divider */}
               <div style={{ borderTop: "1px solid var(--border-soft)", marginBottom: "1.25rem" }} />
@@ -175,11 +254,11 @@ function PacketPageClient() {
                   <li key={i} className="flex items-start gap-2.5">
                     <div
                       className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full mt-0.5"
-                      style={{ background: "rgba(34,153,120,0.1)" }}
+                      style={{ background: "var(--brand-light)" }}
                     >
                       <Check className="w-3 h-3" style={{ color: "var(--brand-accent)" }} />
                     </div>
-                    <span className="text-sm leading-snug" style={{ color: "var(--text-secondary)" }}>
+                    <span className="text-[14px] leading-snug" style={{ color: "var(--text-secondary)" }}>
                       {feature}
                     </span>
                   </li>
@@ -187,18 +266,33 @@ function PacketPageClient() {
               </ul>
 
               {/* CTA */}
-              <Link
-                href={`/checkout?packet=${pkg.id}&price=${pkg.price}&listingId=${listingId}`}
-                onClick={(e) => handlePackageClick(e, `/checkout?packet=${pkg.id}&price=${pkg.price}&listingId=${listingId}`)}
-                className="flex w-full items-center justify-center gap-2 rounded-full py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90 active:scale-95"
-                style={{
-                  background: pkg.popular ? pkg.accent : "var(--text-primary)",
-                  boxShadow: pkg.popular ? `0 4px 16px ${pkg.accentBorder}` : "none"
-                }}
-              >
-                {language === "en" ? "Get Started" : "Fillo Tani"}
-                <ArrowRight className="w-4 h-4" />
-              </Link>
+              {pkg.id === "free" ? (
+                <button
+                  type="button"
+                  onClick={handleFreeStart}
+                  disabled={freeLoading}
+                  className="flex w-full items-center justify-center gap-2 rounded-full py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90 active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed"
+                  style={{ background: "var(--text-primary)" }}
+                >
+                  {freeLoading
+                    ? (language === "en" ? "Sending..." : "Duke dërguar...")
+                    : pkg.cta}
+                  {!freeLoading && <ArrowRight className="w-4 h-4" />}
+                </button>
+              ) : (
+                <Link
+                  href={`/checkout?packet=${pkg.id}&price=${pkg.price}&listingId=${listingId}`}
+                  onClick={(e) => handlePackageClick(e, `/checkout?packet=${pkg.id}&price=${pkg.price}&listingId=${listingId}`)}
+                  className="flex w-full items-center justify-center gap-2 rounded-full py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90 active:scale-95"
+                  style={{
+                    background: pkg.popular ? "var(--brand-accent)" : "var(--text-primary)",
+                    boxShadow: pkg.popular ? "0 4px 16px rgba(31,138,112,0.18)" : "none"
+                  }}
+                >
+                  {pkg.cta}
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+              )}
             </div>
           ))}
         </div>

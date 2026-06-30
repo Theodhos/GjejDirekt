@@ -2,14 +2,15 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { MessageCircle, Phone, MapPin, Navigation, CheckCircle, ChevronLeft, ChevronRight, Tag } from "lucide-react";
+import { MessageCircle, Phone, MapPin, Share2, CheckCircle, ChevronLeft, ChevronRight, Tag } from "lucide-react";
 import Card from "@/components/ui/Card";
 import { getCategoryLabel, getSubcategoryLabel } from "@/lib/constants";
 import { translations } from "@/lib/dictionary";
 import { useLanguage } from "@/context/LanguageContext";
 import { useState, useRef, useLayoutEffect } from "react";
+import toast from "react-hot-toast";
 
-const TAG_GAP = 6;
+const TAG_GAP = 4;
 
 function tagChipStyle(kind: "cat" | "tag"): React.CSSProperties {
   return kind === "cat"
@@ -72,7 +73,7 @@ function CardTags({ category, tags }: { category?: string; tags: string[] }) {
   const Chip = ({ it, attr }: { it: { kind: "cat" | "tag"; label: string }; attr?: Record<string, string> }) => (
     <span
       {...attr}
-      className="flex shrink-0 items-center gap-1 whitespace-nowrap rounded-full px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide"
+      className="flex shrink-0 items-center gap-1 whitespace-nowrap rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide"
       style={tagChipStyle(it.kind)}
     >
       {it.kind === "cat" && <Tag className="h-2.5 w-2.5" />}
@@ -83,7 +84,7 @@ function CardTags({ category, tags }: { category?: string; tags: string[] }) {
   const Plus = ({ n, attr }: { n: number; attr?: Record<string, string> }) => (
     <span
       {...attr}
-      className="flex shrink-0 items-center whitespace-nowrap rounded-full px-2.5 py-0.5 text-[10px] font-semibold"
+      className="flex shrink-0 items-center whitespace-nowrap rounded-full px-2 py-0.5 text-[10px] font-semibold"
       style={{ background: "var(--surface-subtle)", color: "var(--text-tertiary)" }}
     >
       +{n}
@@ -93,7 +94,7 @@ function CardTags({ category, tags }: { category?: string; tags: string[] }) {
   return (
     <div className="relative mb-3 h-[22px]">
       {/* Visible row */}
-      <div ref={viewRef} className="flex h-[22px] flex-nowrap items-center gap-1.5 overflow-hidden">
+      <div ref={viewRef} className="flex h-[22px] flex-nowrap items-center gap-1 overflow-hidden">
         {items.slice(0, visibleCount).map((it, i) => (
           <Chip key={`v-${it.kind}-${i}`} it={it} />
         ))}
@@ -103,7 +104,7 @@ function CardTags({ category, tags }: { category?: string; tags: string[] }) {
       <div
         ref={measureRef}
         aria-hidden
-        className="pointer-events-none absolute left-0 top-0 flex flex-nowrap items-center gap-1.5"
+        className="pointer-events-none absolute left-0 top-0 flex flex-nowrap items-center gap-1"
         style={{ visibility: "hidden" }}
       >
         {items.map((it, i) => (
@@ -149,15 +150,7 @@ export default function ListingCard({ listing }: { listing: any }) {
     ? `https://wa.me/${phoneDigits}?text=${encodeURIComponent(`Hello, I am interested in ${listing.title}.`)}`
     : "";
 
-  const mapAddress = [listing.address, listing.location, listing.country].filter(Boolean).join(", ");
-  const mapQuery = encodeURIComponent(
-    listing.coordinates?.lat && listing.coordinates?.lng
-      ? `${listing.coordinates.lat},${listing.coordinates.lng}`
-      : mapAddress || listing.title
-  );
-  const directionsHref = `https://www.google.com/maps/dir/?api=1&destination=${mapQuery}`;
-
-  const isVerified = listing.verified !== false;
+  const isVerified = listing.verified === true;
   const t = translations[language];
 
   const priceSuffix =
@@ -343,22 +336,38 @@ export default function ListingCard({ listing }: { listing: any }) {
             <span className="text-[10px] font-semibold uppercase tracking-wide" style={{ color: "var(--text-secondary)" }}>{t.listing.whatsapp}</span>
           </a>
 
-          {/* Directions */}
-          <a
-            href={directionsHref}
-            target="_blank"
-            rel="noreferrer"
-            onClick={(e) => { e.stopPropagation(); }}
+          {/* Share */}
+          <button
+            type="button"
+            onClick={async (e) => {
+              e.stopPropagation();
+              e.preventDefault();
+              const url = `${window.location.origin}/listings/${listing.slug}`;
+              if (navigator.share) {
+                try {
+                  await navigator.share({ title: listing.title, url });
+                } catch {
+                  // user cancelled the share sheet — ignore
+                }
+              } else {
+                try {
+                  await navigator.clipboard.writeText(url);
+                  toast.success(language === "en" ? "Link copied" : "Linku u kopjua");
+                } catch {
+                  toast.error(language === "en" ? "Could not copy link" : "Linku nuk u kopjua");
+                }
+              }
+            }}
             className="flex flex-col items-center justify-center gap-1.5 rounded-lg py-1.5"
           >
             <div
               className="flex h-10 w-10 items-center justify-center rounded-full text-white shadow-sm transition-transform hover:scale-105"
               style={{ background: "var(--brand-accent)" }}
             >
-              <Navigation className="h-4 w-4 fill-current" />
+              <Share2 className="h-4 w-4" />
             </div>
-            <span className="text-[10px] font-semibold uppercase tracking-wide" style={{ color: "var(--text-secondary)" }}>{t.listing.directions}</span>
-          </a>
+            <span className="text-[10px] font-semibold uppercase tracking-wide" style={{ color: "var(--text-secondary)" }}>{t.listing.share}</span>
+          </button>
         </div>
       </div>
     </Card>
