@@ -104,7 +104,7 @@ export default function Header() {
           onClick={() => setMobileOpen(false)}
         >
           <Image
-            src="/uploads/Logo-black.png"
+            src="/uploads/trip-shqip-logo.jpeg"
             alt="TripShqip Logo"
             width={140}
             height={40}
