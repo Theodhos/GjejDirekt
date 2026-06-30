@@ -10,38 +10,38 @@ const config: Config = {
     extend: {
       colors: {
         brand: {
-          50: "#eefbf7",
-          100: "#d5f5ea",
-          200: "#abe9d5",
-          300: "#74d7b8",
-          400: "#42bb95",
-          500: "#229978",
-          600: "#1a7a62",
-          700: "#175f4e",
-          800: "#164d41",
-          900: "#133f36"
+          50: "#ECF7F3",
+          100: "#D0EBE2",
+          200: "#A3D8C7",
+          300: "#6CC2A9",
+          400: "#3FA98C",
+          500: "#1F8A70",
+          600: "#176B5A",
+          700: "#145948",
+          800: "#11463A",
+          900: "#0D372D"
         },
         warm: {
-          50: "#FDFCFA",
-          100: "#FAF8F5",
-          200: "#F5F1EB",
-          300: "#EDE8DF",
-          400: "#D9D2C5",
-          500: "#B8AFA2",
-          600: "#8C8579",
-          700: "#6B6560",
-          800: "#3D3A36",
-          900: "#1A1714"
+          50: "#FAFBFC",
+          100: "#F5F7F8",
+          200: "#EEF1F3",
+          300: "#E5E7EB",
+          400: "#D1D5DB",
+          500: "#9CA3AF",
+          600: "#6B7280",
+          700: "#4B5563",
+          800: "#374151",
+          900: "#1F2937"
         },
         cream: {
-          DEFAULT: "#F7F4EF",
-          light: "#FDFCFA",
-          dark: "#EDE8DF"
+          DEFAULT: "#F5F7F8",
+          light: "#FAFBFC",
+          dark: "#E5E7EB"
         },
         pebble: {
-          100: "#F0EDE8",
-          200: "#E0DBD3",
-          300: "#C8C2B9"
+          100: "#F5F7F8",
+          200: "#E5E7EB",
+          300: "#D1D5DB"
         }
       },
       boxShadow: {
@@ -58,11 +58,11 @@ const config: Config = {
       },
       backgroundImage: {
         "hero-grid":
-          "radial-gradient(circle at top, rgba(34,153,120,0.14), transparent 30%), linear-gradient(to bottom, rgba(248,250,252,1), rgba(236,253,245,1))"
+          "radial-gradient(circle at top, rgba(31,138,112,0.14), transparent 30%), linear-gradient(to bottom, rgba(255,255,255,1), rgba(245,247,248,1))"
       },
       fontFamily: {
-        sans: ["var(--font-manrope)", "system-ui", "sans-serif"],
-        serif: ["var(--font-fraunces)", "Georgia", "serif"]
+        sans: ["var(--font-poppins)", "system-ui", "sans-serif"],
+        serif: ["var(--font-poppins)", "system-ui", "sans-serif"]
       },
       maxWidth: {
         "8xl": "1200px"

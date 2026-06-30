@@ -10,27 +10,27 @@
   --header-height: 68px;
 
   /* Surface Colors */
-  --surface-page:    #FDFCFA;
-  --surface-cream:   #F7F4EF;
+  --surface-page:    #F5F7F8;
+  --surface-cream:   #F5F7F8;
   --surface-white:   #FFFFFF;
-  --surface-subtle:  #F0EDE8;
+  --surface-subtle:  #EEF1F3;
 
   /* Text */
-  --text-primary:    #000000;
-  --text-secondary:  #111827;
-  --text-tertiary:   #4B5563;
+  --text-primary:    #1F2937;
+  --text-secondary:  #374151;
+  --text-tertiary:   #6B7280;
 
   /* Brand */
-  --brand-accent:    #229978;
-  --brand-hover:     #1A7A62;
-  --brand-light:     rgba(34, 153, 120, 0.08);
-  --brand-ring:      rgba(34, 153, 120, 0.18);
-  --brand-border:    rgba(34, 153, 120, 0.2);
+  --brand-accent:    #1F8A70;
+  --brand-hover:     #176B5A;
+  --brand-light:     rgba(31, 138, 112, 0.08);
+  --brand-ring:      rgba(31, 138, 112, 0.18);
+  --brand-border:    rgba(31, 138, 112, 0.22);
 
   /* Borders */
-  --border-soft:     rgba(15, 20, 25, 0.08);
-  --border-medium:   rgba(15, 20, 25, 0.12);
-  --border-strong:   rgba(15, 20, 25, 0.18);
+  --border-soft:     #E5E7EB;
+  --border-medium:   #D1D5DB;
+  --border-strong:   #9CA3AF;
 
   /* Shadows */
   --shadow-card:     0 1px 3px rgba(15, 20, 25, 0.05), 0 4px 16px rgba(15, 20, 25, 0.05);
@@ -55,7 +55,7 @@ html {
 body {
   background-color: var(--surface-page);
   color: var(--text-primary);
-  font-family: var(--font-manrope), system-ui, sans-serif;
+  font-family: var(--font-poppins), system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
@@ -66,7 +66,7 @@ body {
 
 h1, h2, h3, h4, h5, h6 {
   color: var(--text-primary);
-  font-family: var(--font-manrope), system-ui, sans-serif;
+  font-family: var(--font-poppins), system-ui, sans-serif;
   line-height: 1.2;
   letter-spacing: -0.02em;
   font-weight: 700;
@@ -80,7 +80,7 @@ p {
 a { transition: color 0.15s ease, opacity 0.15s ease; }
 
 ::selection {
-  background: rgba(34, 153, 120, 0.15);
+  background: rgba(31, 138, 112, 0.15);
   color: var(--text-primary);
 }
 
@@ -175,9 +175,9 @@ a { transition: color 0.15s ease, opacity 0.15s ease; }
   line-height: 1.12;
 }
 
-/* Display font (Fraunces) */
+/* Display font */
 .display-font {
-  font-family: var(--font-fraunces), Georgia, serif;
+  font-family: var(--font-poppins), system-ui, sans-serif;
 }
 
 /* Travel pill */
@@ -270,11 +270,11 @@ a { transition: color 0.15s ease, opacity 0.15s ease; }
   border: none;
   cursor: pointer;
   transition: background 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
-  box-shadow: 0 2px 8px rgba(34, 153, 120, 0.2);
+  box-shadow: 0 2px 8px rgba(31, 138, 112, 0.2);
 }
 .btn-primary:hover {
   background: var(--brand-hover);
-  box-shadow: 0 4px 16px rgba(34, 153, 120, 0.28);
+  box-shadow: 0 4px 16px rgba(31, 138, 112, 0.28);
   transform: translateY(-1px);
 }
 .btn-primary:active { transform: translateY(0); }
@@ -342,7 +342,7 @@ a { transition: color 0.15s ease, opacity 0.15s ease; }
 /* Text color normalization */
 .text-slate-950 { color: var(--text-primary) !important; }
 .text-slate-900 { color: var(--text-primary) !important; }
-.text-slate-800 { color: #2D2B28 !important; }
+.text-slate-800 { color: #374151 !important; }
 .text-slate-700 { color: var(--text-secondary) !important; }
 .text-slate-600 { color: var(--text-secondary) !important; }
 .text-slate-500 { color: var(--text-tertiary) !important; }

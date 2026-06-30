@@ -14,43 +14,76 @@ interface FAQItem {
 const FAQ_DATA: FAQItem[] = [
   {
     category: "travelers",
-    question: { en: "How do I book a stay or service on Gjej Direkt?", al: "Si mund të rezervoj një qëndrim ose shërbim në Gjej Direkt?" },
-    answer: { en: "Gjej Direkt is a city-first discovery directory. Each listing features direct contact details (phone, exact address, and social links). You can contact the provider directly by clicking on 'Contact' or 'Book Now' to arrange your details directly with no platform fees!", al: "Gjej Direkt është një direktori zbulimi e fokusuar te qytetet. Çdo listim përmban detaje të drejtpërdrejta kontakti (telefon, adresë të saktë dhe rrjete sociale). Ju mund të kontaktoni drejtpërdrejt me ofruesin duke klikuar mbi 'Kontakt' ose 'Rezervo Tani' për të kryer marrëveshjen tuaj pa asnjë komision!" }
+    question: { en: "What is TripShqip?", al: "Çfarë është TripShqip?" },
+    answer: { en: "TripShqip is a tourism platform that helps users discover hotels, restaurants, attractions, events, and tourism businesses across Albania.", al: "TripShqip është një platformë turistike që ndihmon përdoruesit të zbulojnë hotele, restorante, atraksione, evente dhe biznese turistike në Shqipëri." }
   },
   {
     category: "travelers",
-    question: { en: "Are the listings on the platform verified?", al: "A janë të verifikuara shërbimet dhe listimet në platformë?" },
-    answer: { en: "Yes! The moderation team at Gjej Direkt manually reviews and verifies every listing before they go live on our platform. This ensures only trusted, authentic local services are presented to travelers.", al: "Po! Ekipi i moderimit në Gjej Direkt shqyrton dhe verifikon manualisht çdo listim përpara se ato të bëhen publike. Kjo siguron që vetëm shërbimet e besuara dhe autentike lokale t'u prezantohen udhëtarëve." }
+    question: { en: "How does TripShqip work?", al: "Si funksionon TripShqip?" },
+    answer: { en: "Users can search by categories, destinations, or tags and contact businesses directly via phone, WhatsApp, Instagram, or their website.", al: "Përdoruesit mund të kërkojnë sipas kategorive, destinacioneve ose tags dhe të kontaktojnë bizneset direkt përmes telefonit, WhatsApp, Instagramit ose website-it të tyre." }
+  },
+  {
+    category: "payments",
+    question: { en: "Can I book directly through TripShqip?", al: "A mund të rezervoj direkt nga TripShqip?" },
+    answer: { en: "For now, TripShqip focuses on the direct connection between tourists and businesses. Reservations are made directly with the business or through external links.", al: "Për momentin TripShqip fokusohet te lidhja direkte midis turistëve dhe bizneseve. Rezervimet realizohen direkt me biznesin ose përmes linkeve të jashtme." }
+  },
+  {
+    category: "hosts",
+    question: { en: "How can I add my business?", al: "Si mund të shtoj biznesin tim?" },
+    answer: { en: "You can create a profile and add your listing through the \"Add business\" page.", al: "Mund të krijoni një profil dhe të shtoni listing-un tuaj përmes faqes “Shto biznesin”." }
+  },
+  {
+    category: "hosts",
+    question: { en: "What does Verified mean?", al: "Çfarë do të thotë Verified?" },
+    answer: { en: "Verified indicates that a business has a more complete profile and a more professional presence on the platform.", al: "Verified tregon që biznesi ka një profil më të plotë dhe prezencë më profesionale në platformë." }
+  },
+  {
+    category: "hosts",
+    question: { en: "What benefits do Verified businesses get?", al: "Çfarë përfitimesh kanë bizneset Verified?" },
+    answer: {
+      en: "Verified businesses can have: (1) Verified Badge — a visual ✅ Verified badge that instantly builds trust; (2) \"Business checked by TripShqip\" on the listing page, which is psychologically very strong in Albania; (3) Priority support — faster changes and direct assistance; (4) More credibility in search — the badge naturally increases CTR (not a ranking boost, but an indirect advantage); (5) Protection against fake listings — users understand who is real and active.",
+      al: "Bizneset Verified mund të kenë: (1) Verified Badge — një badge vizual ✅ Verified që rrit besimin menjëherë; (2) “Business checked by TripShqip” tek faqja e listing-ut, shumë e fortë psikologjikisht në Shqipëri; (3) Prioritet në support — ndryshime më të shpejta dhe asistencë direkte; (4) Më shumë kredibilitet në kërkim — badge rrit CTR natyralisht (jo ranking boost, por avantazh indirekt); (5) Mbrojtje nga listings fake — useri kupton kush është real dhe aktiv."
+    }
+  },
+  {
+    category: "hosts",
+    question: { en: "Is it free to add a listing?", al: "A është falas të shtosh një listing?" },
+    answer: { en: "Yes, businesses can add a basic listing for free.", al: "Po, bizneset mund të shtojnë listing-un bazë falas." }
+  },
+  {
+    category: "hosts",
+    question: { en: "How do Ads and Ads Pro work?", al: "Si funksionojnë Ads dhe AdsPro?" },
+    answer: { en: "Ads and Ads Pro help Verified businesses gain more exposure on the platform.", al: "Ads dhe Ads Pro ndihmojnë bizneset Verified të marrin më shumë ekspozim në platformë." }
   },
   {
     category: "travelers",
-    question: { en: "Can I filter listings by specific cities or categories?", al: "A mund t'i filtroj listimet sipas qyteteve apo kategorive të caktuara?" },
-    answer: { en: "Absolutely! You can browse listings by selecting main categories or by visiting specific city pages where services are beautifully sorted for fast discovery.", al: "Plotësisht! Ju mund të shfletoni shërbimet duke përzgjedhur kategoritë kryesore ose duke vizituar faqet specifike të qyteteve ku shërbimet janë të organizuara shkëlqyeshëm." }
+    question: { en: "Can I contact the business directly?", al: "A mund të kontaktoj direkt biznesin?" },
+    answer: { en: "Yes. TripShqip is built for direct contact between tourists and businesses.", al: "Po. TripShqip është ndërtuar për kontakt të drejtpërdrejtë midis turistëve dhe bizneseve." }
   },
   {
-    category: "hosts",
-    question: { en: "How can I add my business to Gjej Direkt?", al: "Si mund ta shtoj biznesin ose shërbimin tim në Gjej Direkt?" },
-    answer: { en: "Listing your service is very simple! Register an account, click on 'Add Listing', choose your category, fill out the form with description, photos, business hours, and prices, and submit it. Our moderation team will review and approve it within 24 hours.", al: "Regjistrimi i shërbimit tuaj është shumë i thjeshtë! Regjistroni një llogari, klikoni në 'Shto Listim', zgjidhni kategorinë tuaj, plotësoni formularin dhe dërgojeni. Ekipi ynë do ta shqyrtojë dhe miratojë brenda 24 orëve." }
-  },
-  {
-    category: "hosts",
-    question: { en: "Is there a listing fee to register on the platform?", al: "A ka ndonjë tarifë për të regjistruar biznesin tim në platformë?" },
-    answer: { en: "Gjej Direkt offers a free basic listing package for local tourism providers. For extra visibility or advanced promotion, we offer premium featured packages that you can view in your dashboard.", al: "Gjej Direkt ofron një paketë bazë regjistrimi krejtësisht falas. Për vizibilitet të shtuar, ofrojmë paketa premium që mund t'i shikoni në panelin tuaj." }
-  },
-  {
-    category: "hosts",
-    question: { en: "Can I manage multiple listings under one account?", al: "A mund të menaxhoj disa listime me një llogari të vetme?" },
-    answer: { en: "Yes, you can list and edit as many listings as you want! From your personal Host Dashboard, you can see all your registered properties, edit prices, upload new gallery photos, and check approval status in real-time.", al: "Po, ju mund të regjistroni dhe të redaktoni sa listime të dëshironi! Nga paneli juaj personal, mund të shikoni të gjitha pronat tuaja, ndryshoni çmimet dhe kontrolloni statusin e tyre." }
+    category: "travelers",
+    question: { en: "What categories can I find on TripShqip?", al: "Çfarë kategorish mund të gjej në TripShqip?" },
+    answer: { en: "On TripShqip you can find: Accommodation, Restaurants, Attractions, Events & Activities, Tourism Services, Local Products, and Transport & Taxi.", al: "Në TripShqip mund të gjeni: Akomodime, Restorante, Atraksione, Evente & Aktivitete, Shërbime Turistike, Produkte Lokale dhe Transport & Taxi." }
   },
   {
     category: "payments",
-    question: { en: "Does Gjej Direkt handle online payments or bookings?", al: "A kryen Gjej Direkt pagesa online ose rezervime direkte?" },
-    answer: { en: "No, Gjej Direkt currently acts as a guide and direct connection engine. We do not charge commission fees! All payments and booking confirmations are agreed upon directly between you and the host.", al: "Jo, Gjej Direkt shërben si udhëzues dhe motor i lidhjes së drejtpërdrejtë. Ne nuk marrim asnjë komision! Të gjitha pagesat bëhen drejtpërdrejt mes jush dhe host-it." }
+    question: { en: "How can I report a listing?", al: "Si mund të raportoj një listing?" },
+    answer: { en: "You can contact us through the contact page if a listing has inaccurate or problematic information.", al: "Mund të na kontaktoni përmes faqes së kontaktit nëse një listing ka informacion të pasaktë ose problematik." }
   },
   {
-    category: "payments",
-    question: { en: "Who do I contact if I have an issue with a booked stay?", al: "Me cilin duhet të kontaktoj nëse kam një problem me një akomodim të rezervuar?" },
-    answer: { en: "Because bookings are handled directly, you should immediately contact the service provider using the contact phone or email listed on their page. For listing quality issues, you can report them to our support team.", al: "Duke qenë se rezervimet kryhen drejtpërdrejt, duhet të kontaktoni menjëherë ofruesin duke përdorur telefonin ose email-in e listuar. Për probleme me cilësinë, mund t'i raportoni tek ekipi ynë." }
+    category: "hosts",
+    question: { en: "Can I add events or activities?", al: "A mund të shtoj evente ose aktivitete?" },
+    answer: { en: "Yes, events and activities can be added under the Events & Activities category.", al: "Po, eventet dhe aktivitetet mund të shtohen në kategorinë Evente & Aktivitete." }
+  },
+  {
+    category: "travelers",
+    question: { en: "Does TripShqip work on mobile?", al: "A funksionon TripShqip në mobile?" },
+    answer: { en: "Yes, TripShqip is built mobile-first for a fast and simple experience.", al: "Po, TripShqip është ndërtuar me fokus mobile-first për një eksperiencë të shpejtë dhe të thjeshtë." }
+  },
+  {
+    category: "travelers",
+    question: { en: "How can I contact TripShqip?", al: "Si mund të kontaktoj TripShqip?" },
+    answer: { en: "You can contact us through the \"Contact\" page or our social networks.", al: "Mund të na kontaktoni përmes faqes “Kontakt” ose rrjeteve tona sociale." }
   }
 ];
 
@@ -91,8 +124,8 @@ export default function FAQPage() {
         className="relative overflow-hidden"
         style={{ background: "var(--surface-cream)", borderBottom: "1px solid var(--border-soft)" }}
       >
-        <div className="pointer-events-none absolute -top-20 -right-20 w-[400px] h-[400px] rounded-full" style={{ background: "rgba(34,153,120,0.05)", filter: "blur(100px)" }} />
-        <div className="pointer-events-none absolute -bottom-12 -left-12 w-[300px] h-[300px] rounded-full" style={{ background: "rgba(34,153,120,0.04)", filter: "blur(80px)" }} />
+        <div className="pointer-events-none absolute -top-20 -right-20 w-[400px] h-[400px] rounded-full" style={{ background: "rgba(31,138,112,0.06)", filter: "blur(100px)" }} />
+        <div className="pointer-events-none absolute -bottom-12 -left-12 w-[300px] h-[300px] rounded-full" style={{ background: "rgba(31,138,112,0.05)", filter: "blur(80px)" }} />
 
         <div className="page-shell relative z-10 pt-14 pb-14 text-center max-w-2xl mx-auto">
           {/* Breadcrumb */}
@@ -113,7 +146,7 @@ export default function FAQPage() {
           >
             {language === "en" ? "Frequently Asked Questions" : "Pyetje të Shpeshta"}
           </h1>
-          <p className="text-sm leading-relaxed" style={{ color: "var(--text-secondary)" }}>
+          <p className="text-base leading-relaxed" style={{ color: "var(--text-secondary)" }}>
             {language === "en"
               ? "Find answers quickly or contact our dedicated support team directly."
               : "Gjeni përgjigje shpejt ose kontaktoni direkt me ekipin tonë të dedikuar."}
@@ -162,7 +195,7 @@ export default function FAQPage() {
               <button
                 key={cat.id}
                 onClick={() => { setSelectedCategory(cat.id as any); setOpenIndex(null); }}
-                className="inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-xs font-semibold transition-all"
+                className="inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-[13px] font-semibold transition-all"
                 style={{
                   background: active ? "var(--text-primary)" : "var(--surface-white)",
                   color: active ? "#fff" : "var(--text-secondary)",
@@ -197,7 +230,7 @@ export default function FAQPage() {
                     onClick={() => toggleAccordion(index)}
                     className="w-full flex items-center justify-between gap-4 text-left outline-none px-5 py-4"
                   >
-                    <span className="text-sm font-semibold leading-snug" style={{ color: "var(--text-primary)" }}>
+                    <span className="text-[15px] font-semibold leading-snug" style={{ color: "var(--text-primary)" }}>
                       {language === "en" ? faq.question.en : faq.question.al}
                     </span>
                     <div
@@ -214,13 +247,13 @@ export default function FAQPage() {
 
                   <div
                     style={{
-                      maxHeight: isOpen ? "400px" : "0",
+                      maxHeight: isOpen ? "720px" : "0",
                       overflow: "hidden",
                       transition: "max-height 0.35s ease"
                     }}
                   >
                     <div
-                      className="px-5 pb-5 text-sm leading-relaxed"
+                      className="px-5 pb-5 text-[15px] leading-relaxed"
                       style={{
                         color: "var(--text-secondary)",
                         borderTop: "1px solid var(--border-soft)"
@@ -269,7 +302,7 @@ export default function FAQPage() {
           <h3 className="text-lg font-bold mb-2" style={{ color: "var(--text-primary)" }}>
             {language === "en" ? "Still have questions?" : "Keni ende pyetje?"}
           </h3>
-          <p className="text-sm leading-relaxed mb-5 max-w-sm mx-auto" style={{ color: "var(--text-secondary)" }}>
+          <p className="text-[15px] leading-relaxed mb-5 max-w-sm mx-auto" style={{ color: "var(--text-secondary)" }}>
             {language === "en"
               ? "Email us directly and our team will get back to you right away."
               : "Na shkruani direkt dhe ekipi ynë do t'ju ndihmojë menjëherë."}

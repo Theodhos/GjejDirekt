@@ -49,7 +49,7 @@ export default function PrivacyPolicyPage() {
         className="relative overflow-hidden"
         style={{ background: "var(--surface-cream)", borderBottom: "1px solid var(--border-soft)" }}
       >
-        <div className="pointer-events-none absolute -top-20 -right-20 w-[400px] h-[400px] rounded-full" style={{ background: "rgba(34,153,120,0.05)", filter: "blur(100px)" }} />
+        <div className="pointer-events-none absolute -top-20 -right-20 w-[400px] h-[400px] rounded-full" style={{ background: "rgba(31,138,112,0.06)", filter: "blur(100px)" }} />
         <div className="page-shell relative z-10 pt-14 pb-14 max-w-3xl mx-auto">
           <div className="flex items-center gap-2 mb-6 text-xs font-medium" style={{ color: "var(--text-tertiary)" }}>
             <Link href="/" className="hover:text-brand-600 transition-colors">{language === "en" ? "Home" : "Kreu"}</Link>
@@ -63,7 +63,7 @@ export default function PrivacyPolicyPage() {
           <h1 className="font-bold tracking-tight mb-4" style={{ fontSize: "clamp(2rem, 5vw, 3rem)", color: "var(--text-primary)", lineHeight: 1.1 }}>
             {language === "en" ? "Privacy Policy" : "Politika e Privatësisë"}
           </h1>
-          <p className="text-sm leading-relaxed" style={{ color: "var(--text-secondary)" }}>
+          <p className="text-base leading-relaxed" style={{ color: "var(--text-secondary)" }}>
             {language === "en"
               ? "At TripShqip, your privacy and data protection are important to us."
               : "Në TripShqip, privatësia dhe mbrojtja e të dhënave tuaja janë të rëndësishme për ne."}
@@ -83,7 +83,7 @@ export default function PrivacyPolicyPage() {
               </h2>
               <ul className="space-y-3">
                 {summary.map((text, i) => (
-                  <li key={i} className="flex items-start gap-2.5 text-xs leading-relaxed" style={{ color: "var(--text-secondary)" }}>
+                  <li key={i} className="flex items-start gap-2.5 text-[13px] leading-relaxed" style={{ color: "var(--text-secondary)" }}>
                     <CheckCircle className="w-4 h-4 shrink-0 mt-0.5" style={{ color: "var(--brand-accent)" }} />
                     {text}
                   </li>
@@ -100,11 +100,11 @@ export default function PrivacyPolicyPage() {
                 className="rounded-2xl p-5 sm:p-6 transition-all"
                 style={{ background: "var(--surface-white)", border: "1px solid var(--border-soft)", boxShadow: "var(--shadow-card)" }}
               >
-                <h3 className="flex items-center gap-2.5 text-base font-semibold mb-3" style={{ color: "var(--text-primary)" }}>
-                  <Lock className="w-4 h-4 shrink-0" style={{ color: "var(--brand-accent)" }} />
+                <h3 className="flex items-center gap-2.5 text-lg font-semibold mb-3" style={{ color: "var(--text-primary)" }}>
+                  <Lock className="w-[18px] h-[18px] shrink-0" style={{ color: "var(--brand-accent)" }} />
                   {section.title}
                 </h3>
-                <p className="text-sm leading-relaxed" style={{ color: "var(--text-secondary)" }}>{section.body}</p>
+                <p className="text-[15px] leading-relaxed" style={{ color: "var(--text-secondary)" }}>{section.body}</p>
               </div>
             ))}
           </div>

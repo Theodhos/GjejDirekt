@@ -32,7 +32,7 @@ export const translations = {
       privacy: "Privacy Policy"
     },
     legal: {
-      intro: "These terms define how users, service providers, and administrators interact on the tourism platform.",
+      intro: "Welcome to TripShqip. By using our platform, you accept these Terms of Use. Please read them carefully.",
       lastUpdated: "Last updated: May 17, 2026"
     },
     common: {
@@ -276,6 +276,7 @@ export const translations = {
       call: "Call",
       whatsapp: "WhatsApp",
       share: "Share",
+      directions: "Directions",
       linkCopied: "Link copied to clipboard!",
       linkCopyFailed: "Failed to copy link",
       verified: "VERIFIED",
@@ -452,64 +453,54 @@ export const translations = {
     },
     terms: [
         {
-          title: "1. Acceptance of Terms",
+          title: "1. About TripShqip",
           body:
-            "By accessing or using this platform, you agree to these Terms and to all applicable laws. If you do not agree, please do not use the platform."
+            "TripShqip is a tourism platform that helps users discover and contact businesses, attractions, and tourism services in Albania. The platform serves as an informational and promotional space for businesses and users."
         },
         {
-          title: "2. Platform Role",
+          title: "2. Use of the Platform",
           body:
-            "The platform helps users discover tourism-related services, contact providers, and submit listings. We do not own, operate, or guarantee third-party services listed by users."
+            "By using TripShqip, you agree to: use the platform lawfully, not publish false or misleading content, not infringe the rights of other users, and not use the platform for spam or unauthorized activities."
         },
         {
-          title: "3. Accounts and Eligibility",
+          title: "3. Listings and Content",
           body:
-            "You are responsible for account activity under your credentials and for keeping your login details secure. You must provide accurate profile and listing information."
+            "Businesses are responsible for the accuracy of the information they publish, including descriptions, contacts, photos, prices, links, and other information. TripShqip reserves the right to moderate, edit, refuse, or remove listings that are deemed inappropriate, inaccurate, or in conflict with these terms."
         },
         {
-          title: "4. Listings, Content, and Moderation",
+          title: "4. Verified, Ads, Ads Pro",
           body:
-            "Users are responsible for listing content, media, claims, prices, and contact details they publish. Listings may be reviewed by administrators and can be approved, rejected, edited for clarity, or removed if they violate law, intellectual property rights, safety expectations, or platform rules."
+            "TripShqip may offer promotional options such as Verified, Ads, and Ads Pro. These options provide greater exposure for listings, but do not guarantee specific results or reservations."
         },
         {
-          title: "5. Prohibited Conduct",
+          title: "5. Contacts and Reservations",
           body:
-            "You agree not to publish misleading information, unlawful offers, harmful content, spam, malware, or abusive communications. Attempts to bypass moderation or impersonate other people are not allowed."
+            "TripShqip enables direct contact between users and businesses. TripShqip is not a party to the agreements, reservations, or payments made outside the platform between users and businesses."
         },
         {
-          title: "6. Reviews and User Interactions",
+          title: "6. External Links",
           body:
-            "Reviews must reflect real experiences and follow respectful conduct standards. We may remove reviews or comments that are fraudulent, abusive, discriminatory, or unrelated to the service experience."
+            "The platform may contain links to other websites or platforms. TripShqip is not responsible for the content or services provided by third parties."
         },
         {
-          title: "7. Payments and Packages",
+          title: "7. Intellectual Property",
           body:
-            "If paid features or packages are offered, billing terms are shown at checkout. Unless explicitly stated otherwise, fees are non-refundable after activation of the purchased feature."
+            "The content, logo, design, and elements of the TripShqip platform are the property of TripShqip and may not be copied or used without permission."
         },
         {
-          title: "8. Intellectual Property",
+          title: "8. Limitation of Liability",
           body:
-            "Platform design, code, branding, and original content are protected by applicable intellectual property laws. You keep ownership of content you upload, and grant us a limited license to display and process it for platform operation."
+            "TripShqip does not guarantee the absolute accuracy of every listing, the availability of services, or the quality of products or services offered by businesses. Use of the platform is at the user's own responsibility."
         },
         {
-          title: "9. Disclaimer and Limitation of Liability",
+          title: "9. Changes to the Terms",
           body:
-            "The platform is provided \"as is\" and \"as available.\" We are not liable for losses resulting from third-party listings, provider actions, availability issues, booking outcomes, or user-to-user transactions."
+            "TripShqip reserves the right to update these terms at any time. Changes take effect upon publication on the platform."
         },
         {
-          title: "10. Suspension and Termination",
+          title: "10. Contact",
           body:
-            "We may suspend or terminate accounts or listings that violate these Terms, create legal or security risk, or harm platform integrity."
-        },
-        {
-          title: "11. Changes to These Terms",
-          body:
-            "We may update these Terms periodically. Continued use of the platform after updates means you accept the revised version."
-        },
-        {
-          title: "12. Contact",
-          body:
-            "For questions about these Terms, contact platform administration through the official support or admin communication channels provided in the platform."
+            "For any questions or requests regarding these Terms of Use, you can contact us through the \"Contact\" page."
         }
       ]
   },
@@ -544,7 +535,7 @@ export const translations = {
       privacy: "Privatesia"
     },
     legal: {
-      intro: "Këto kushte përshkruajnë mënyrën se si përdoruesit, ofruesit e shërbimeve dhe administratorët ndërveprojnë në platformën turistike.",
+      intro: "Mirë se vini në TripShqip. Duke përdorur platformën tonë, ju pranoni këto Kushte të Përdorimit. Ju lutemi lexojini me kujdes.",
       lastUpdated: "Përditësuar më: 17 Maj 2026"
     },
     common: {
@@ -787,6 +778,7 @@ export const translations = {
       call: "Telefon",
       whatsapp: "WhatsApp",
       share: "Shpërnda",
+      directions: "Drejtime",
       linkCopied: "Linku u kopjua!",
       linkCopyFailed: "Dështoi kopjimi i linkut",
       verified: "VERIFIKUAR",
@@ -967,64 +959,54 @@ export const translations = {
       ,
       terms: [
         {
-          title: "1. Pranimi i Kushteve",
+          title: "1. Rreth TripShqip",
           body:
-            "Duke hyrë ose përdorur këtë platformë, ju pranoni këto Kushte dhe të gjitha ligjet në fuqi. Nëse nuk pranoni, ju lutemi mos përdorni platformën."
+            "TripShqip është një platformë turistike që ndihmon përdoruesit të zbulojnë dhe kontaktojnë biznese, atraksione dhe shërbime turistike në Shqipëri. Platforma shërben si një hapësirë informuese dhe promovuese për bizneset dhe përdoruesit."
         },
         {
-          title: "2. Roli i Platformës",
+          title: "2. Përdorimi i Platformës",
           body:
-            "Platforma ndihmon përdoruesit të gjejnë shërbime turistike, të kontaktojnë ofruesit dhe të publikojnë listime. Ne nuk zotërojmë, drejtojmë, ose garantojmë shërbimet e palëve të treta të listuara."
+            "Duke përdorur TripShqip, ju pranoni të: përdorni platformën në mënyrë të ligjshme, mos publikoni përmbajtje të rreme ose mashtruese, mos cenoni të drejtat e përdoruesve të tjerë, dhe mos përdorni platformën për spam ose aktivitete të paautorizuara."
         },
         {
-          title: "3. Llogaritë dhe Përshtatshmëria",
+          title: "3. Listing-et dhe Përmbajtja",
           body:
-            "Jeni përgjegjës për aktivitetin e llogarisë suaj dhe për ruajtjen e sigurisë së kredencialeve. Duhet të siguroni informacion të saktë për profilin dhe listimet tuaja."
+            "Bizneset janë përgjegjëse për saktësinë e informacionit që publikojnë, përfshirë përshkrimet, kontaktet, fotot, çmimet, linket dhe informacionet e tjera. TripShqip rezervon të drejtën të moderojë, ndryshojë, refuzojë ose heqë listing-e që konsiderohen të papërshtatshme, të pasakta ose në kundërshtim me këto kushte."
         },
         {
-          title: "4. Listimet, Përmbajtja dhe Moderimi",
+          title: "4. Verified, Ads, Ads Pro",
           body:
-            "Përdoruesit janë përgjegjës për përmbajtjen e listimeve, mediat, pretendimet, çmimet dhe detajet e kontaktit që publikojnë. Listimet mund të shqyrtohen nga administratorët dhe mund të miratohen, refuzohen, redaktohen për qartësi, ose hiqen nëse shkelin ligjet, të drejtat e pronësisë intelektuale, ose rregullat e platformës."
+            "TripShqip mund të ofrojë opsione promocionale si Verified, Ads dhe Ads Pro. Këto opsione ofrojnë ekspozim më të madh për listing-et, por nuk garantojnë rezultate specifike apo rezervime."
         },
         {
-          title: "5. Sjellje e Ndaluar",
+          title: "5. Kontaktet dhe Rezervimet",
           body:
-            "Ju pranoni që të mos publikoni informacione mashtruese, oferta të paligjshme, përmbajtje të dëmshme, spam, malware ose komunikime abuzuese. Përpjekjet për të shmangur moderimin ose për t'u impersonuar janë të ndaluara."
+            "TripShqip mundëson kontakt direkt midis përdoruesve dhe bizneseve. TripShqip nuk është palë në marrëveshjet, rezervimet ose pagesat që realizohen jashtë platformës midis përdoruesve dhe bizneseve."
         },
         {
-          title: "6. Vlerësimet dhe Ndërveprimet e Përdoruesve",
+          title: "6. Linke të Jashtme",
           body:
-            "Vlerësimet duhet të reflektojnë përvoja reale dhe të respektojnë standardet e sjelljes. Ne mund të heqim vlerësime ose komente që janë mashtruese, abuzuese, diskriminuese, ose të papërshtatshme."
+            "Platforma mund të përmbajë linke drejt website-ve ose platformave të tjera. TripShqip nuk mban përgjegjësi për përmbajtjen ose shërbimet e ofruara nga palë të treta."
         },
         {
-          title: "7. Pagesat dhe Paketat",
+          title: "7. Pronësia Intelektuale",
           body:
-            "Nëse ofrohen funksione të paguara ose paketa, kushtet e faturimit shfaqen në procesin e pagesës. Përveç nëse theksohet ndryshe, tarifat nuk janë të rimbursueshme pas aktivizimit të shërbimit."
+            "Përmbajtja, logoja, dizajni dhe elementët e platformës TripShqip janë pronë e TripShqip dhe nuk mund të kopjohen ose përdoren pa leje."
         },
         {
-          title: "8. Pronësia Intelektuale",
+          title: "8. Kufizimi i Përgjegjësisë",
           body:
-            "Dizajni i platformës, kodi, marka dhe përmbajtja origjinale mbrohen nga ligjet përkatëse të pronësisë intelektuale. Ju mbani pronësinë e përmbajtjes që ngarkoni dhe na jepni një licencë të kufizuar për ta shfaqur dhe përpunuar për funksionimin e platformës."
+            "TripShqip nuk garanton saktësinë absolute të çdo listing-u, disponueshmërinë e shërbimeve, apo cilësinë e produkteve ose shërbimeve të ofruara nga bizneset. Përdorimi i platformës bëhet me përgjegjësinë e vetë përdoruesit."
         },
         {
-          title: "9. Përjashtim dhe Kufizim i Përgjegjësisë",
+          title: "9. Ndryshimet në Kushtet",
           body:
-            "Platforma ofrohet \"as is\" dhe \"as available\". Ne nuk jemi përgjegjës për humbjet që rrjedhin nga listimet e palëve të treta, veprimet e ofruesve, probleme të disponueshmërisë, rezultate rezervimesh, ose transaksione midis përdoruesve."
+            "TripShqip rezervon të drejtën të përditësojë këto kushte në çdo kohë. Ndryshimet hyjnë në fuqi pas publikimit në platformë."
         },
         {
-          title: "10. Ndalim dhe Përfundim",
+          title: "10. Kontakt",
           body:
-            "Ne mund të pezullrojmë ose të përfundojmë llogari ose listime që shkelin këto Kushte, krijojnë rrezik ligjor ose sigurie, ose dëmtojnë integritetin e platformës."
-        },
-        {
-          title: "11. Ndryshimet në Këto Kushte",
-          body:
-            "Ne mund të përditësojmë këto Kushte periodikisht. Përdorimi i mëtejshëm i platformës pas përditësimeve do të nënkuptojë pranimin e versionit të rishikuar."
-        },
-        {
-          title: "12. Kontakt",
-          body:
-            "Për pyetje rreth këtyre Kushteve, kontaktoni administratën e platformës përmes kanaleve zyrtare të mbështetjes ose komunikimit që gjenden në platformë."
+            "Për çdo pyetje ose kërkesë lidhur me këto Kushte të Përdorimit, mund të na kontaktoni përmes faqes “Kontakt”."
         }
       ]
   }

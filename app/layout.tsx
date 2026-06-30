@@ -4,16 +4,12 @@ import Providers from "./providers";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import ChatWidget from "@/components/ChatWidget";
-import { Manrope, Fraunces } from "next/font/google";
+import { Poppins } from "next/font/google";
 
-const manrope = Manrope({
+const poppins = Poppins({
   subsets: ["latin"],
-  variable: "--font-manrope"
-});
-
-const fraunces = Fraunces({
-  subsets: ["latin"],
-  variable: "--font-fraunces"
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-poppins"
 });
 
 export const metadata: Metadata = {
@@ -26,7 +22,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="sq" className={`${manrope.variable} ${fraunces.variable}`}>
+    <html lang="sq" className={poppins.variable}>
       <body className="font-sans antialiased">
         <Providers>
           <Header />

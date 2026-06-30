@@ -2,13 +2,118 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { MessageCircle, Phone, Share2, MapPin, CheckCircle, ChevronLeft, ChevronRight, Tag } from "lucide-react";
+import { MessageCircle, Phone, MapPin, Navigation, CheckCircle, ChevronLeft, ChevronRight, Tag } from "lucide-react";
 import Card from "@/components/ui/Card";
 import { getCategoryLabel, getSubcategoryLabel } from "@/lib/constants";
 import { translations } from "@/lib/dictionary";
 import { useLanguage } from "@/context/LanguageContext";
-import { useState } from "react";
-import toast from "react-hot-toast";
+import { useState, useRef, useLayoutEffect } from "react";
+
+const TAG_GAP = 6;
+
+function tagChipStyle(kind: "cat" | "tag"): React.CSSProperties {
+  return kind === "cat"
+    ? { background: "var(--surface-subtle)", color: "var(--text-secondary)", border: "1px solid var(--border-soft)" }
+    : { background: "var(--brand-light)", color: "var(--brand-accent)", border: "1px solid var(--brand-border)" };
+}
+
+/**
+ * Single-line tag row. A hidden measurement row (always holding every chip) gives
+ * stable widths; a layout effect picks how many chips fit and folds the rest into a
+ * "+N" pill — so a chip is never sliced mid-word. Refits on container resize.
+ */
+function CardTags({ category, tags }: { category?: string; tags: string[] }) {
+  const viewRef = useRef<HTMLDivElement>(null);
+  const measureRef = useRef<HTMLDivElement>(null);
+  const [visibleCount, setVisibleCount] = useState(0);
+
+  const items: { kind: "cat" | "tag"; label: string }[] = [
+    ...(category ? [{ kind: "cat" as const, label: category }] : []),
+    ...tags.map((t) => ({ kind: "tag" as const, label: t }))
+  ];
+  const total = items.length;
+  const key = `${category || ""}|${tags.join("|")}`;
+
+  useLayoutEffect(() => {
+    const view = viewRef.current;
+    const measure = measureRef.current;
+    if (!view || !measure) return;
+
+    const compute = () => {
+      const max = view.clientWidth;
+      if (max === 0) return;
+      const widths = Array.from(measure.querySelectorAll<HTMLElement>("[data-mchip]")).map((e) => e.offsetWidth);
+      if (widths.length === 0) return;
+      const plusEl = measure.querySelector<HTMLElement>("[data-mplus]");
+      const plusW = plusEl ? plusEl.offsetWidth : 32;
+      const widthUpTo = (count: number, reservePlus: boolean) => {
+        let w = 0;
+        for (let i = 0; i < count; i++) w += widths[i] + (i > 0 ? TAG_GAP : 0);
+        if (reservePlus) w += TAG_GAP + plusW;
+        return w;
+      };
+      let n = widths.length;
+      if (widthUpTo(n, false) > max) {
+        while (n > 1 && widthUpTo(n, true) > max) n--;
+      }
+      setVisibleCount(n);
+    };
+
+    compute();
+    const ro = new ResizeObserver(compute);
+    ro.observe(view);
+    return () => ro.disconnect();
+  }, [key]);
+
+  if (total === 0) return <div className="mb-3 h-[22px]" />;
+
+  const hiddenCount = total - visibleCount;
+
+  const Chip = ({ it, attr }: { it: { kind: "cat" | "tag"; label: string }; attr?: Record<string, string> }) => (
+    <span
+      {...attr}
+      className="flex shrink-0 items-center gap-1 whitespace-nowrap rounded-full px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide"
+      style={tagChipStyle(it.kind)}
+    >
+      {it.kind === "cat" && <Tag className="h-2.5 w-2.5" />}
+      {it.label}
+    </span>
+  );
+
+  const Plus = ({ n, attr }: { n: number; attr?: Record<string, string> }) => (
+    <span
+      {...attr}
+      className="flex shrink-0 items-center whitespace-nowrap rounded-full px-2.5 py-0.5 text-[10px] font-semibold"
+      style={{ background: "var(--surface-subtle)", color: "var(--text-tertiary)" }}
+    >
+      +{n}
+    </span>
+  );
+
+  return (
+    <div className="relative mb-3 h-[22px]">
+      {/* Visible row */}
+      <div ref={viewRef} className="flex h-[22px] flex-nowrap items-center gap-1.5 overflow-hidden">
+        {items.slice(0, visibleCount).map((it, i) => (
+          <Chip key={`v-${it.kind}-${i}`} it={it} />
+        ))}
+        {hiddenCount > 0 && <Plus n={hiddenCount} />}
+      </div>
+      {/* Hidden measurement row — always holds every chip so widths stay available */}
+      <div
+        ref={measureRef}
+        aria-hidden
+        className="pointer-events-none absolute left-0 top-0 flex flex-nowrap items-center gap-1.5"
+        style={{ visibility: "hidden" }}
+      >
+        {items.map((it, i) => (
+          <Chip key={`m-${it.kind}-${i}`} it={it} attr={{ "data-mchip": "" }} />
+        ))}
+        <Plus n={total} attr={{ "data-mplus": "" }} />
+      </div>
+    </div>
+  );
+}
 
 export default function ListingCard({ listing }: { listing: any }) {
   const { language } = useLanguage();
@@ -44,36 +149,13 @@ export default function ListingCard({ listing }: { listing: any }) {
     ? `https://wa.me/${phoneDigits}?text=${encodeURIComponent(`Hello, I am interested in ${listing.title}.`)}`
     : "";
 
-  const handleShare = async (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    const baseUrl =
-      typeof window !== "undefined" && !window.location.hostname.includes("localhost")
-        ? "https://www.tripshqip.com"
-        : "http://localhost:3000";
-    const url = `${baseUrl}/listings/${listing.slug}`;
-    if (navigator.share) {
-      try { await navigator.share({ url }); } catch {}
-    } else {
-      try {
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-          await navigator.clipboard.writeText(url);
-        } else {
-          const textarea = document.createElement("textarea");
-          textarea.value = url;
-          textarea.style.position = "fixed";
-          document.body.appendChild(textarea);
-          textarea.focus();
-          textarea.select();
-          document.execCommand("copy");
-          document.body.removeChild(textarea);
-        }
-        toast.success(translations[language].listing.linkCopied);
-      } catch {
-        toast.error(translations[language].listing.linkCopyFailed);
-      }
-    }
-  };
+  const mapAddress = [listing.address, listing.location, listing.country].filter(Boolean).join(", ");
+  const mapQuery = encodeURIComponent(
+    listing.coordinates?.lat && listing.coordinates?.lng
+      ? `${listing.coordinates.lat},${listing.coordinates.lng}`
+      : mapAddress || listing.title
+  );
+  const directionsHref = `https://www.google.com/maps/dir/?api=1&destination=${mapQuery}`;
 
   const isVerified = listing.verified !== false;
   const t = translations[language];
@@ -92,9 +174,15 @@ export default function ListingCard({ listing }: { listing: any }) {
 
   return (
     <Card className="travel-card group relative flex h-full flex-col">
-      {/* Image */}
+      {/* Whole-card link overlay → navigates to the listing. Interactive controls sit above it (z-20). */}
       <Link
         href={`/listings/${listing.slug}`}
+        aria-label={listing.title}
+        className="absolute inset-0 z-10"
+      />
+
+      {/* Image */}
+      <div
         className="relative aspect-[4/3] overflow-hidden block shrink-0"
         style={{ borderRadius: "16px 16px 0 0" }}
       >
@@ -108,10 +196,10 @@ export default function ListingCard({ listing }: { listing: any }) {
 
         {/* Verified Badge */}
         {isVerified && (
-          <div className="absolute left-3 top-3 z-10">
+          <div className="pointer-events-none absolute left-3 top-3 z-20">
             <div
               className="flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold text-white backdrop-blur-sm"
-              style={{ background: "rgba(34,153,120,0.88)" }}
+              style={{ background: "rgba(22,163,74,0.92)" }}
             >
               <CheckCircle className="h-3 w-3" />
               {t.listing.verified}
@@ -120,7 +208,7 @@ export default function ListingCard({ listing }: { listing: any }) {
         )}
 
         {/* Price Badge */}
-        <div className="absolute bottom-0 right-0 z-10">
+        <div className="pointer-events-none absolute bottom-0 right-0 z-20">
           <div
             className="rounded-tl-xl px-3.5 py-1.5"
             style={{ background: "rgba(15,20,25,0.85)", backdropFilter: "blur(8px)" }}
@@ -168,13 +256,13 @@ export default function ListingCard({ listing }: { listing: any }) {
           <>
             <button
               onClick={prevImage}
-              className="absolute left-2.5 top-1/2 -translate-y-1/2 z-20 flex h-7 w-7 items-center justify-center rounded-full bg-white/85 text-neutral-700 shadow-sm backdrop-blur-sm transition hover:bg-white hover:scale-110"
+              className="absolute left-2.5 top-1/2 -translate-y-1/2 z-30 flex h-7 w-7 items-center justify-center rounded-full bg-white/85 text-neutral-700 shadow-sm backdrop-blur-sm transition hover:bg-white hover:scale-110"
             >
               <ChevronLeft className="h-4 w-4" />
             </button>
             <button
               onClick={nextImage}
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 z-20 flex h-7 w-7 items-center justify-center rounded-full bg-white/85 text-neutral-700 shadow-sm backdrop-blur-sm transition hover:bg-white hover:scale-110"
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 z-30 flex h-7 w-7 items-center justify-center rounded-full bg-white/85 text-neutral-700 shadow-sm backdrop-blur-sm transition hover:bg-white hover:scale-110"
             >
               <ChevronRight className="h-4 w-4" />
             </button>
@@ -188,21 +276,17 @@ export default function ListingCard({ listing }: { listing: any }) {
             </div>
           </>
         )}
-      </Link>
+      </div>
 
       {/* Content */}
-      <div className="flex flex-1 flex-col px-4 py-3.5">
-        {/* Title */}
-        <Link href={`/listings/${listing.slug}`} className="group/link block mb-1">
-          <h3
-            className="text-[15px] font-semibold leading-snug transition-colors duration-150 line-clamp-2"
-            style={{ color: "var(--text-primary)" }}
-            onMouseEnter={e => ((e.currentTarget as HTMLElement).style.color = "var(--brand-accent)")}
-            onMouseLeave={e => ((e.currentTarget as HTMLElement).style.color = "var(--text-primary)")}
-          >
-            {listing.title}
-          </h3>
-        </Link>
+      <div className="relative flex flex-1 flex-col px-4 py-3.5">
+        {/* Title — reserves 2 lines so every card keeps the same height */}
+        <h3
+          className="mb-1 line-clamp-2 min-h-[2.7em] text-[15px] font-semibold leading-snug transition-colors duration-150 group-hover:text-brand-600"
+          style={{ color: "var(--text-primary)" }}
+        >
+          {listing.title}
+        </h3>
 
         {/* Location */}
         <div className="mb-2.5 flex items-center gap-1.5 text-xs" style={{ color: "var(--text-tertiary)" }}>
@@ -210,72 +294,28 @@ export default function ListingCard({ listing }: { listing: any }) {
           <span className="truncate">{listing.location}{listing.country ? `, ${listing.country}` : ""}</span>
         </div>
 
-        {/* Tags */}
-        {(() => {
-          const displayTags = [
+        {/* Tags — single fixed-height row; overflow collapses into a clean "+N" (never clips a chip) */}
+        <CardTags
+          category={categoryLabel}
+          tags={[
             ...(listing.tags || []),
             ...(listing.amenities || [])
-          ].filter((v, i, self) => self.indexOf(v) === i);
+          ].filter((v, i, self) => self.indexOf(v) === i)}
+        />
 
-          return (
-            <div className="mb-3 flex flex-wrap gap-1.5 mt-auto">
-              {categoryLabel && (
-                <span
-                  className="flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide"
-                  style={{
-                    background: "var(--surface-subtle)",
-                    color: "var(--text-secondary)",
-                    border: "1px solid var(--border-soft)"
-                  }}
-                >
-                  <Tag className="h-2.5 w-2.5" />
-                  {categoryLabel}
-                </span>
-              )}
-              {displayTags.slice(0, 2).map((tag: string, index: number) => (
-                <span
-                  key={index}
-                  className="flex items-center rounded-full px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide"
-                  style={{
-                    background: "rgba(34,153,120,0.08)",
-                    color: "var(--brand-accent)",
-                    border: "1px solid rgba(34,153,120,0.15)"
-                  }}
-                >
-                  {tag}
-                </span>
-              ))}
-              {displayTags.length > 2 && (
-                <span
-                  className="flex items-center rounded-full px-2.5 py-0.5 text-[10px] font-semibold"
-                  style={{ background: "var(--surface-subtle)", color: "var(--text-tertiary)" }}
-                >
-                  +{displayTags.length - 2}
-                </span>
-              )}
-            </div>
-          );
-        })()}
-
-        {/* Contact Actions */}
-        <div
-          className="grid grid-cols-3 gap-1.5 rounded-xl p-2 sm:p-1.5"
-          style={{
-            background: "var(--surface-cream)",
-            border: "1px solid var(--border-soft)"
-          }}
-        >
+        {/* Contact Actions — flat brand-green icons, pinned to bottom, sit above the card link overlay */}
+        <div className="relative z-20 mt-auto grid grid-cols-3 gap-1.5 pt-1">
           {/* Call */}
           <a
             href={phone ? `tel:${phone}` : "#"}
             onClick={(e) => { e.stopPropagation(); if (!phone) e.preventDefault(); }}
-            className={`flex flex-col items-center justify-center gap-1 rounded-lg py-2 transition-colors hover:bg-[var(--surface-white)] ${phone ? "" : "opacity-40 cursor-not-allowed"}`}
+            className={`flex flex-col items-center justify-center gap-1.5 rounded-lg py-1.5 ${phone ? "" : "pointer-events-none opacity-40"}`}
           >
             <div
-              className="flex h-8 w-8 items-center justify-center rounded-full text-white shadow-sm transition-transform hover:scale-105"
-              style={{ background: "#3b82f6" }}
+              className="flex h-10 w-10 items-center justify-center rounded-full text-white shadow-sm transition-transform hover:scale-105"
+              style={{ background: "var(--brand-accent)" }}
             >
-              <Phone className="h-3.5 w-3.5 fill-current" />
+              <Phone className="h-4 w-4 fill-current" />
             </div>
             <span className="text-[10px] font-semibold uppercase tracking-wide" style={{ color: "var(--text-secondary)" }}>{t.listing.call}</span>
           </a>
@@ -292,30 +332,33 @@ export default function ListingCard({ listing }: { listing: any }) {
                 fetch(`/api/listings/${listing._id}/whatsapp-click`, { method: "POST", keepalive: true }).catch(() => {});
               }
             }}
-            className={`flex flex-col items-center justify-center gap-1 rounded-lg py-2 transition-colors hover:bg-[var(--surface-white)] ${whatsappHref ? "" : "opacity-40 cursor-not-allowed"}`}
+            className={`flex flex-col items-center justify-center gap-1.5 rounded-lg py-1.5 ${whatsappHref ? "" : "pointer-events-none opacity-40"}`}
           >
             <div
-              className="flex h-8 w-8 items-center justify-center rounded-full text-white shadow-sm transition-transform hover:scale-105"
-              style={{ background: "#25D366" }}
+              className="flex h-10 w-10 items-center justify-center rounded-full text-white shadow-sm transition-transform hover:scale-105"
+              style={{ background: "var(--brand-accent)" }}
             >
               <MessageCircle className="h-4 w-4 fill-current" />
             </div>
-            <span className="text-[10px] font-semibold uppercase tracking-wide" style={{ color: "#16a34a" }}>{t.listing.whatsapp}</span>
+            <span className="text-[10px] font-semibold uppercase tracking-wide" style={{ color: "var(--text-secondary)" }}>{t.listing.whatsapp}</span>
           </a>
 
-          {/* Share */}
-          <button
-            onClick={handleShare}
-            className="flex flex-col items-center justify-center gap-1 rounded-lg py-2 transition-colors hover:bg-[var(--surface-white)]"
+          {/* Directions */}
+          <a
+            href={directionsHref}
+            target="_blank"
+            rel="noreferrer"
+            onClick={(e) => { e.stopPropagation(); }}
+            className="flex flex-col items-center justify-center gap-1.5 rounded-lg py-1.5"
           >
             <div
-              className="flex h-8 w-8 items-center justify-center rounded-full text-white shadow-sm transition-transform hover:scale-105"
-              style={{ background: "#6366f1" }}
+              className="flex h-10 w-10 items-center justify-center rounded-full text-white shadow-sm transition-transform hover:scale-105"
+              style={{ background: "var(--brand-accent)" }}
             >
-              <Share2 className="h-3.5 w-3.5" />
+              <Navigation className="h-4 w-4 fill-current" />
             </div>
-            <span className="text-[10px] font-semibold uppercase tracking-wide" style={{ color: "var(--text-secondary)" }}>{t.listing.share}</span>
-          </button>
+            <span className="text-[10px] font-semibold uppercase tracking-wide" style={{ color: "var(--text-secondary)" }}>{t.listing.directions}</span>
+          </a>
         </div>
       </div>
     </Card>
