@@ -228,54 +228,56 @@ export default function ListingGallery({ images, listing }: ListingGalleryProps)
       </div>
 
       {/* ==================== MOBILE LAYOUT (Swipeable Slider) ==================== */}
-      <div className="relative md:hidden left-1/2 right-1/2 w-screen max-w-none -translate-x-1/2 min-h-[520px] overflow-hidden">
-        {/* Floating Share Action (Mobile Overlay) */}
-        <div className="absolute top-4 right-4 z-10">
-          <button 
-            onClick={handleShare} 
-            className="w-10 h-10 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center text-slate-800 shadow-md hover:scale-105 active:scale-95 transition-all"
+      <div className="relative md:hidden left-1/2 right-1/2 w-screen max-w-none -translate-x-1/2 overflow-hidden">
+        <div className="relative h-[calc(100vh-22rem)] min-h-[380px] overflow-hidden">
+          {/* Floating Share Action (Mobile Overlay) */}
+          <div className="absolute top-4 right-4 z-10">
+            <button 
+              onClick={handleShare} 
+              className="w-10 h-10 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center text-slate-800 shadow-md hover:scale-105 active:scale-95 transition-all"
+            >
+              <Share2 className="w-5 h-5" />
+            </button>
+          </div>
+
+          {/* Navigation Arrows for Mobile Slider */}
+          {images.length > 1 && (
+            <>
+              <button 
+                onClick={scrollPrev}
+                className="absolute left-4 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white/40 backdrop-blur-sm flex items-center justify-center text-slate-800/80 shadow-md hover:scale-105 hover:bg-white/60 active:scale-95 transition-all"
+              >
+                <ChevronLeft className="w-6 h-6" />
+              </button>
+              <button 
+                onClick={scrollNext}
+                className="absolute right-4 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white/40 backdrop-blur-sm flex items-center justify-center text-slate-800/80 shadow-md hover:scale-105 hover:bg-white/60 active:scale-95 transition-all"
+              >
+                <ChevronRight className="w-6 h-6" />
+              </button>
+            </>
+          )}
+
+          {/* Horizontal scroll container with scroll snap */}
+          <div 
+            ref={scrollRef}
+            className="flex overflow-x-auto snap-x snap-mandatory h-full w-full"
+            onScroll={handleScroll}
           >
-            <Share2 className="w-5 h-5" />
-          </button>
-        </div>
+            {usedImages.map((img, idx) => (
+              <div 
+                key={idx} 
+                className="min-w-full snap-start snap-always relative h-full w-full"
+              >
+                <img src={img} alt={`Slide ${idx + 1}`} className="object-cover h-full w-full" />
+              </div>
+            ))}
+          </div>
 
-        {/* Navigation Arrows for Mobile Slider */}
-        {images.length > 1 && (
-          <>
-            <button 
-              onClick={scrollPrev}
-              className="absolute left-4 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white/40 backdrop-blur-sm flex items-center justify-center text-slate-800/80 shadow-md hover:scale-105 hover:bg-white/60 active:scale-95 transition-all"
-            >
-              <ChevronLeft className="w-6 h-6" />
-            </button>
-            <button 
-              onClick={scrollNext}
-              className="absolute right-4 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white/40 backdrop-blur-sm flex items-center justify-center text-slate-800/80 shadow-md hover:scale-105 hover:bg-white/60 active:scale-95 transition-all"
-            >
-              <ChevronRight className="w-6 h-6" />
-            </button>
-          </>
-        )}
-
-        {/* Horizontal scroll container with scroll snap */}
-        <div 
-          ref={scrollRef}
-          className="flex overflow-x-auto snap-x snap-mandatory h-full w-full"
-          onScroll={handleScroll}
-        >
-          {usedImages.map((img, idx) => (
-            <div 
-              key={idx} 
-              className="min-w-full snap-start snap-always relative h-full w-full"
-            >
-              <img src={img} alt={`Slide ${idx + 1}`} className="object-cover h-full w-full" />
-            </div>
-          ))}
-        </div>
-
-        {/* Counter indicator (3 / 16) */}
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 bg-black/70 backdrop-blur-sm text-white text-[11px] px-3 py-1.5 rounded-full font-semibold z-10 shadow-lg">
-          {mobileIndex + 1} / {usedImages.length}
+          {/* Counter indicator (3 / 16) */}
+          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/70 backdrop-blur-sm text-white text-[11px] px-3 py-1.5 rounded-full font-semibold z-10 shadow-lg">
+            {mobileIndex + 1} / {usedImages.length}
+          </div>
         </div>
       </div>
 
