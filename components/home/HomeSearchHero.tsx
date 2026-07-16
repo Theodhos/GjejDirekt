@@ -15,6 +15,7 @@ export default function HomeSearchHero() {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [listingSuggestions, setListingSuggestions] = useState<any[]>([]);
   const [isLoadingListings, setIsLoadingListings] = useState(false);
+  const [isMobileScreen, setIsMobileScreen] = useState(false);
   const debouncedSearch = useDebounce(city, 300);
   const { language } = useLanguage();
   const searchRef = useRef<HTMLDivElement>(null);
@@ -64,11 +65,18 @@ export default function HomeSearchHero() {
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    const isMobile = window.innerWidth < 640;
+    const updateMobileState = () => setIsMobileScreen(window.innerWidth < 640);
+    updateMobileState();
+    window.addEventListener("resize", updateMobileState);
+    return () => window.removeEventListener("resize", updateMobileState);
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
     window.dispatchEvent(
-      new CustomEvent("mobile-search-overlay", { detail: { open: showSuggestions && isMobile } })
+      new CustomEvent("mobile-search-overlay", { detail: { open: showSuggestions && isMobileScreen } })
     );
-    if (showSuggestions && isMobile) {
+    if (showSuggestions && isMobileScreen) {
       document.body.style.overflow = "hidden";
       document.documentElement.style.overflow = "hidden";
       return () => {
@@ -80,7 +88,7 @@ export default function HomeSearchHero() {
     return () => {
       window.dispatchEvent(new CustomEvent("mobile-search-overlay", { detail: { open: false } }));
     };
-  }, [showSuggestions]);
+  }, [showSuggestions, isMobileScreen]);
 
   const suggestions = useMemo(() => {
     const query = city.toLowerCase().trim();
@@ -190,101 +198,41 @@ export default function HomeSearchHero() {
   }
 
   return (
-    <section className="relative flex min-h-[76svh] items-center justify-center overflow-visible py-10 sm:min-h-[calc(100vh-var(--header-height))] sm:py-0" style={{ background: "#0d1117" }}>
-      {/* Background Image */}
-      <div className="absolute inset-0 overflow-hidden">
-        <Image
-          src="https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=2000&q=80"
-          alt="Albania Landscapes"
-          fill
-          className="object-cover opacity-80 animate-slow-zoom"
-          priority
-        />
-        {/* Darker overlay to make text highly readable */}
-        <div className="absolute inset-0" style={{ background: "linear-gradient(to bottom, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.5) 50%, rgba(0,0,0,0.8) 100%)" }} />
-      </div>
-
-      {/* Content */}
-      <div className="page-shell relative z-10 w-full flex flex-col items-center pt-2 sm:pt-0">
-        {/* Heading */}
-        <div className="text-center max-w-4xl mb-7 sm:mb-12">
-          <p className="text-[11px] sm:text-sm font-bold uppercase tracking-[0.22em] sm:tracking-[0.25em] text-white/80 mb-4 sm:mb-5" style={{ textShadow: "0 2px 4px rgba(0,0,0,0.8)" }}>
-            {language === "en" ? "Albania's Tourism Marketplace" : "Platforma e Turizmit Shqiptar"}
-          </p>
+    <section className="relative flex min-h-[48vh] items-center justify-center py-10 sm:min-h-[52vh]" style={{ background: "linear-gradient(180deg, #0b2319 0%, #0f3f2d 100%)" }}>
+      <div className="page-shell relative z-10 w-full max-w-3xl px-4">
+        <div className="text-center mb-8">
           <h1
-            className="font-bold text-white mb-4 px-1 sm:mb-6 sm:px-2"
-            style={{
-              fontSize: "clamp(2rem, 12vw, 4.5rem)",
-              lineHeight: 1.05,
-              letterSpacing: "-0.025em",
-              textShadow: "0 4px 32px rgba(0,0,0,0.8), 0 2px 8px rgba(0,0,0,0.9)"
-            }}
+            className="font-bold text-white text-3xl sm:text-5xl leading-tight tracking-tight"
+            style={{ lineHeight: 1.03, maxWidth: "100%" }}
           >
-            {language === "en" ? "Find easily. Contact directly. Enjoy holidays." : "Gjej lehtë. Kontakto direkt. Shijo pushimet."}
+            {language === "en" ? (
+              <>
+                <span className="block whitespace-nowrap">Find easily. Contact directly.</span>
+                <span className="block">Enjoy holidays.</span>
+              </>
+            ) : (
+              <>
+                <span className="block whitespace-nowrap">Gjej lehtë. Kontakto direkt.</span>
+                <span className="block">Shijo pushimet.</span>
+              </>
+            )}
           </h1>
-          <p
-            className="text-sm sm:text-lg text-white/90 font-medium leading-relaxed max-w-2xl mx-auto px-2 sm:px-4"
-            style={{ textShadow: "0 2px 12px rgba(0,0,0,0.9)" }}
-          >
-            {language === "en"
-              ? "Discover hotels, restaurants, attractions, experiences, and authentic Albanian businesses in a single platform."
-              : "Zbulo hotele, restorante, atraksione, eksperienca dhe biznese autentike shqiptare në një platformë të vetme."}
-          </p>
         </div>
 
         {/* Search Bar */}
         <div
-          className={`${
-            showSuggestions
-              ? "fixed inset-0 z-[11111111111] w-screen h-screen bg-white sm:relative sm:z-[100] sm:bg-transparent sm:w-full sm:h-auto sm:max-w-3xl flex flex-col"
-              : "relative w-full max-w-3xl z-[100]"
-          }`}
+          className="relative w-full max-w-3xl mx-auto z-[100]"
           ref={searchRef}
         >
-          {/* Mobile overlay header */}
-          {showSuggestions && (
-            <div className="sm:hidden px-4 pt-3 pb-3 border-b" style={{ borderColor: "var(--border-soft)", background: "#fff" }}>
-              <div className="flex items-center justify-between gap-3">
-                <div
-                  className="flex items-center gap-3 flex-1 rounded-xl border bg-white px-4 py-2.5"
-                  style={{ borderColor: "var(--border-medium)" }}
-                >
-                  <Search className="w-4 h-4 shrink-0" style={{ color: "var(--brand-accent)" }} />
-                  <input
-                    value={city}
-                    onChange={(event) => setCity(event.target.value)}
-                    placeholder={language === "en" ? "Search hotels, restaurants, beaches, tours..." : "Kërko hotele, restorante, plazhe, ture..."}
-                    className="w-full bg-transparent text-base outline-none font-medium"
-                    style={{ color: "var(--text-primary)" }}
-                    autoFocus
-                  />
-                </div>
-                <button
-                  onClick={() => setShowSuggestions(false)}
-                  className="p-2 rounded-xl transition-colors"
-                  style={{ color: "var(--text-secondary)" }}
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-            </div>
-          )}
-
           {/* Search form */}
-          <div
-            className={`relative z-20 ${
-              showSuggestions
-                ? "hidden sm:block"
-                : ""
-            }`}
-          >
+          <div className="relative z-20">
             <div
               className="rounded-2xl p-1.5"
               style={{
-                background: "rgba(255,255,255,0.12)",
-                border: "1px solid rgba(255,255,255,0.18)",
-                backdropFilter: "blur(24px)",
-                WebkitBackdropFilter: "blur(24px)"
+                background: "rgba(255,255,255,0.08)",
+                border: "1px solid rgba(255,255,255,0.16)",
+                backdropFilter: "blur(18px)",
+                WebkitBackdropFilter: "blur(18px)"
               }}
             >
               <form onSubmit={submit}>
@@ -292,7 +240,7 @@ export default function HomeSearchHero() {
                   className="flex flex-col sm:flex-row items-center gap-2 p-2.5 pl-4 sm:pl-6 rounded-xl transition-all duration-300"
                   style={{
                     background: "var(--surface-white)",
-                    border: "1px solid var(--border-soft)"
+                    border: "1px solid rgba(15,20,25,0.08)"
                   }}
                 >
                   <div className="flex items-center gap-3 w-full">
@@ -305,7 +253,7 @@ export default function HomeSearchHero() {
                       }}
                       onFocus={() => {
                         setShowSuggestions(true);
-                        if (window.innerWidth >= 640) {
+                        if (!isMobileScreen) {
                           searchRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
                         }
                       }}
@@ -314,7 +262,7 @@ export default function HomeSearchHero() {
                       style={{ color: "var(--text-primary)" }}
                     />
                   </div>
-                  <div className="flex items-center w-full sm:w-auto shrink-0 pr-1">
+                  <div className="hidden sm:flex items-center w-auto shrink-0 pr-1">
                     <button
                       type="submit"
                       className="btn-primary w-full sm:w-auto px-8 py-3 rounded-xl flex items-center justify-center gap-2.5"
@@ -328,10 +276,93 @@ export default function HomeSearchHero() {
             </div>
           </div>
 
+          {/* Mobile search overlay */}
+          {isMobileScreen && showSuggestions && (
+            <div className="fixed inset-0 z-[9999] bg-white overflow-y-auto">
+              <div className="px-4 pt-4 pb-3 border-b" style={{ borderColor: "var(--border-soft)" }}>
+                <form onSubmit={submit} className="flex items-center gap-3">
+                  <div className="flex-1 rounded-2xl border bg-white px-4 py-3 flex items-center gap-3" style={{ borderColor: "var(--border-medium)" }}>
+                    <Search className="w-5 h-5 shrink-0" style={{ color: "var(--brand-accent)" }} />
+                    <input
+                      value={city}
+                      onChange={(event) => setCity(event.target.value)}
+                      placeholder={language === "en" ? "Kërko hotele, restorante, plazhe" : "Kërko hotele, restorante, plazhe"}
+                      className="w-full bg-transparent text-base outline-none font-medium"
+                      style={{ color: "var(--text-primary)" }}
+                      autoFocus
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setShowSuggestions(false)}
+                    className="flex h-12 w-12 items-center justify-center rounded-2xl border bg-white text-slate-600"
+                    style={{ borderColor: "var(--border-soft)" }}
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </form>
+              </div>
+              <div className="p-4">
+                {!city.trim() && (
+                  <div className="mb-4 flex flex-wrap gap-2">
+                    {popularCities.slice(0, 6).map((name) => (
+                      <button
+                        key={name}
+                        onClick={() => {
+                          setCity(name);
+                          router.push(`/city/${encodeURIComponent(name.toLowerCase())}`);
+                          setShowSuggestions(false);
+                        }}
+                        className="rounded-2xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-100"
+                      >
+                        {name}
+                      </button>
+                    ))}
+                  </div>
+                )}
+                <div className="space-y-3">
+                  {suggestions.map((suggestion, index) => (
+                    <button
+                      key={index}
+                      onClick={() => handleSuggestionClick(suggestion)}
+                      className="w-full flex items-center gap-4 rounded-2xl border px-4 py-4 text-left transition hover:bg-slate-50"
+                      style={{ borderColor: "rgba(15,20,25,0.06)" }}
+                    >
+                      {suggestion.type === "listing" && suggestion.image ? (
+                        <div className="relative w-12 h-12 overflow-hidden rounded-2xl border shrink-0 shadow-sm" style={{ borderColor: "rgba(15,20,25,0.08)" }}>
+                          <Image src={suggestion.image} alt={suggestion.label} fill className="object-cover" sizes="48px" />
+                        </div>
+                      ) : (
+                        <div
+                          className="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0"
+                          style={{
+                            background: "rgba(34,153,120,0.08)",
+                            color: "var(--brand-accent)",
+                            border: "1px solid rgba(34,153,120,0.12)"
+                          }}
+                        >
+                          <suggestion.icon className="w-5 h-5" strokeWidth={2.5} />
+                        </div>
+                      )}
+                      <div className="flex-grow min-w-0 pr-2">
+                        <p className="text-base font-semibold truncate leading-tight" style={{ color: "var(--text-primary)" }}>
+                          {suggestion.label}
+                        </p>
+                        <span className="mt-1 inline-flex items-center rounded-full bg-slate-100 px-2 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-600">
+                          {suggestion.type === "listing" ? suggestion.category : suggestion.type}
+                        </span>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Suggestions Dropdown */}
-          {showSuggestions && suggestions.length > 0 && (
+          {!isMobileScreen && showSuggestions && suggestions.length > 0 && (
             <div
-              className="flex-1 w-full bg-white overflow-hidden sm:absolute sm:top-full sm:left-0 sm:right-0 sm:mt-3 sm:flex-none sm:rounded-2xl sm:border sm:z-[9999] shadow-none sm:shadow-[var(--shadow-float)]"
+              className="absolute top-full left-0 right-0 w-full bg-white overflow-hidden mt-3 rounded-2xl border z-[9999] shadow-[0_18px_60px_rgba(15,23,42,0.12)]"
               style={{
                 borderColor: "var(--border-soft)"
               }}

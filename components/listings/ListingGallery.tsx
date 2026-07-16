@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import Image from "next/image";
 import Lightbox from "@/components/ui/Lightbox";
 import { Maximize2, Heart, ArrowLeft, Share2, LayoutGrid, ChevronLeft, ChevronRight } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
@@ -127,30 +126,29 @@ export default function ListingGallery({ images, listing }: ListingGalleryProps)
     setMobileIndex(newIndex);
   };
 
-  if (!images || images.length === 0) return null;
+  const validImages = images.filter(Boolean);
+  const usedImages = validImages.length > 0 ? validImages : ["https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80"];
 
-  // Pad displayImages to always have 5 items so grid never breaks
-  const padImages = [...images];
+  // Pad displayImages to always have 5 items so desktop grid never breaks
+  const padImages = [...usedImages];
   while (padImages.length < 5) {
-    padImages.push(images[0] || "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80");
+    padImages.push(usedImages[0]);
   }
   const displayImages = padImages.slice(0, 5);
 
   return (
     <>
       {/* ==================== DESKTOP LAYOUT (Airbnb 5-Photo Grid) ==================== */}
-      <div className="relative hidden md:grid md:grid-cols-4 gap-3 h-[400px] lg:h-[480px] xl:h-[540px] w-full rounded-[2rem] overflow-hidden group">
+      <div className="relative hidden md:grid md:grid-cols-4 gap-3 h-[400px] lg:h-[480px] xl:h-[540px] w-full overflow-hidden group">
         {/* Main large image (Left half) */}
         <div 
           className="col-span-2 row-span-2 relative h-full w-full overflow-hidden cursor-zoom-in group/item"
           onClick={() => openLightbox(0)}
         >
-          <Image 
+          <img 
             src={displayImages[0]} 
             alt="Listing main image" 
-            fill 
-            className="object-cover transition duration-700 group-hover/item:scale-102"
-            priority
+            className="object-cover h-full w-full transition duration-700"
           />
           <div className="absolute inset-0 bg-black/10 opacity-0 group-hover/item:opacity-100 transition-opacity duration-300 flex items-center justify-center">
             <Maximize2 className="w-8 h-8 text-white drop-shadow-md" />
@@ -162,11 +160,10 @@ export default function ListingGallery({ images, listing }: ListingGalleryProps)
           className="relative h-full w-full overflow-hidden cursor-zoom-in group/item"
           onClick={() => openLightbox(1)}
         >
-          <Image 
+          <img 
             src={displayImages[1]} 
             alt="Listing image 2" 
-            fill 
-            className="object-cover transition duration-700 group-hover/item:scale-102"
+            className="object-cover h-full w-full transition duration-700"
           />
           <div className="absolute inset-0 bg-black/10 opacity-0 group-hover/item:opacity-100 transition-opacity duration-300 flex items-center justify-center">
             <Maximize2 className="w-6 h-6 text-white drop-shadow-md" />
@@ -178,11 +175,10 @@ export default function ListingGallery({ images, listing }: ListingGalleryProps)
           className="relative h-full w-full overflow-hidden cursor-zoom-in group/item"
           onClick={() => openLightbox(2)}
         >
-          <Image 
+          <img 
             src={displayImages[2]} 
             alt="Listing image 3" 
-            fill 
-            className="object-cover transition duration-700 group-hover/item:scale-102"
+            className="object-cover h-full w-full transition duration-700"
           />
           <div className="absolute inset-0 bg-black/10 opacity-0 group-hover/item:opacity-100 transition-opacity duration-300 flex items-center justify-center">
             <Maximize2 className="w-6 h-6 text-white drop-shadow-md" />
@@ -194,11 +190,10 @@ export default function ListingGallery({ images, listing }: ListingGalleryProps)
           className="relative h-full w-full overflow-hidden cursor-zoom-in group/item"
           onClick={() => openLightbox(3)}
         >
-          <Image 
+          <img 
             src={displayImages[3]} 
             alt="Listing image 4" 
-            fill 
-            className="object-cover transition duration-700 group-hover/item:scale-102"
+            className="object-cover h-full w-full transition duration-700"
           />
           <div className="absolute inset-0 bg-black/10 opacity-0 group-hover/item:opacity-100 transition-opacity duration-300 flex items-center justify-center">
             <Maximize2 className="w-6 h-6 text-white drop-shadow-md" />
@@ -210,11 +205,10 @@ export default function ListingGallery({ images, listing }: ListingGalleryProps)
           className="relative h-full w-full overflow-hidden cursor-zoom-in group/item"
           onClick={() => openLightbox(4)}
         >
-          <Image 
+          <img 
             src={displayImages[4]} 
             alt="Listing image 5" 
-            fill 
-            className="object-cover transition duration-700 group-hover/item:scale-102"
+            className="object-cover h-full w-full transition duration-700"
           />
           <div className="absolute inset-0 bg-black/10 opacity-0 group-hover/item:opacity-100 transition-opacity duration-300 flex items-center justify-center">
             <Maximize2 className="w-6 h-6 text-white drop-shadow-md" />
@@ -234,7 +228,7 @@ export default function ListingGallery({ images, listing }: ListingGalleryProps)
       </div>
 
       {/* ==================== MOBILE LAYOUT (Swipeable Slider) ==================== */}
-      <div className="relative md:hidden aspect-[660/375] w-full overflow-hidden rounded-[2rem] bg-slate-950 shadow-lg">
+      <div className="relative md:hidden left-1/2 right-1/2 w-screen max-w-none -translate-x-1/2 min-h-[520px] overflow-hidden">
         {/* Floating Share Action (Mobile Overlay) */}
         <div className="absolute top-4 right-4 z-10">
           <button 
@@ -266,23 +260,23 @@ export default function ListingGallery({ images, listing }: ListingGalleryProps)
         {/* Horizontal scroll container with scroll snap */}
         <div 
           ref={scrollRef}
-          className="flex overflow-x-auto snap-x snap-mandatory no-scrollbar h-full w-full"
+          className="flex overflow-x-auto snap-x snap-mandatory h-full w-full"
           onScroll={handleScroll}
         >
-          {images.map((img, idx) => (
+          {usedImages.map((img, idx) => (
             <div 
               key={idx} 
               className="min-w-full snap-start snap-always relative h-full w-full cursor-zoom-in"
               onClick={() => openLightbox(idx)}
             >
-              <Image src={img} alt={`Slide ${idx + 1}`} fill className="object-cover" />
+              <img src={img} alt={`Slide ${idx + 1}`} className="object-cover h-full w-full" />
             </div>
           ))}
         </div>
 
         {/* Counter indicator (3 / 16) */}
-        <div className="absolute bottom-4 right-4 bg-black/60 backdrop-blur-sm text-white text-xs px-2.5 py-1.5 rounded-lg font-bold z-10">
-          {mobileIndex + 1} / {images.length}
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 bg-black/70 backdrop-blur-sm text-white text-[11px] px-3 py-1.5 rounded-full font-semibold z-10 shadow-lg">
+          {mobileIndex + 1} / {usedImages.length}
         </div>
       </div>
 

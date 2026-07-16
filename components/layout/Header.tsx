@@ -82,7 +82,7 @@ export default function Header() {
 
   return (
     <header
-      className="sticky top-0 z-50 transition-all duration-200"
+      className="fixed inset-x-0 top-0 z-50 w-full transition-all duration-200"
       style={{
         background: scrolled
           ? "rgba(253, 252, 250, 0.92)"

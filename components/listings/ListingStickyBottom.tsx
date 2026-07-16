@@ -50,9 +50,9 @@ export default function ListingStickyBottom({
         {phone && (
           <a
             href={`tel:${phone}`}
-            className="flex items-center justify-center gap-2 h-12 w-full bg-brand-500 text-slate-950 rounded-2xl font-black text-xs hover:scale-102 active:scale-98 transition-all shadow-md"
+            className="flex items-center justify-center gap-2 h-12 w-full bg-brand-500 text-white rounded-2xl font-black text-xs hover:scale-102 active:scale-98 transition-all shadow-md"
           >
-            <Phone className="w-4 h-4" />
+            <Phone className="w-4 h-4 fill-current" />
             <span>{t.listing.call}</span>
           </a>
         )}

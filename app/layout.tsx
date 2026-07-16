@@ -26,7 +26,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="font-sans antialiased">
         <Providers>
           <Header />
-          <main>{children}</main>
+          <main className="pt-[var(--header-height)]">{children}</main>
           <Footer />
           <ChatWidget />
         </Providers>

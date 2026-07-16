@@ -67,7 +67,13 @@ export default async function ListingDetailPage({ params }: { params: { slug: st
     status: "approved"
   }).limit(4).lean<any>();
 
-  const allImages = listing.images || [];
+  const allImages = listing.images?.length > 0
+    ? listing.images
+    : listing.photos?.length > 0
+    ? listing.photos
+    : listing.bannerImage
+    ? [listing.bannerImage]
+    : [];
   const categoryLabel = getCategoryLabel(listing.category);
   const subcategoryLabel = getSubcategoryLabel(listing.category, listing.subcategory);
 
@@ -109,7 +115,7 @@ export default async function ListingDetailPage({ params }: { params: { slug: st
     >
 
       {/* ── GALLERY ── */}
-      <section className="page-shell pt-6 pb-0">
+      <section className="page-shell pb-0">
         <ListingGallery images={allImages} listing={listing} />
       </section>
 

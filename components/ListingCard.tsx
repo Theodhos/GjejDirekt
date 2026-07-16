@@ -259,11 +259,11 @@ export default function ListingCard({ listing }: { listing: any }) {
             >
               <ChevronRight className="h-4 w-4" />
             </button>
-            <div className="absolute bottom-2.5 left-3 flex gap-1 z-10">
+            <div className="absolute bottom-2.5 left-3 flex gap-2 z-10">
               {allImages.map((_: string, idx: number) => (
                 <div
                   key={idx}
-                  className={`h-1 rounded-full transition-all ${idx === currentImageIndex ? "w-4 bg-white" : "w-1 bg-white/60"}`}
+                  className={`h-2 rounded-full transition-all ${idx === currentImageIndex ? "w-6 bg-white" : "w-2 bg-white/70"}`}
                 />
               ))}
             </div>
@@ -310,7 +310,7 @@ export default function ListingCard({ listing }: { listing: any }) {
             >
               <Phone className="h-4 w-4 fill-current" />
             </div>
-            <span className="text-[10px] font-semibold uppercase tracking-wide" style={{ color: "var(--text-secondary)" }}>{t.listing.call}</span>
+            <span className="text-[10px] font-semibold uppercase tracking-wide text-white">{t.listing.call}</span>
           </a>
 
           {/* WhatsApp */}
