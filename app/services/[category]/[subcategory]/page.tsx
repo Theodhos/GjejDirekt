@@ -7,6 +7,7 @@ import { albaniaCities } from "@/lib/albania-cities";
 import { categories, getCategorySearchValues, getSubcategorySearchValues } from "@/lib/constants";
 import { connectDB } from "@/lib/db";
 import Listing from "@/models/Listing";
+import { sortByPackageTier } from "@/lib/ranking";
 
 export const dynamic = "force-dynamic";
 
@@ -42,7 +43,8 @@ export default async function SubcategoryPage({
         ? { ratingAverage: -1, reviewCount: -1, createdAt: -1 }
         : { createdAt: -1 };
 
-  const listings = await Listing.find(query).sort(sort).lean<any>();
+  const found = await Listing.find(query).sort(sort).lean<any>();
+  const listings = sortByPackageTier(found);
 
   return (
     <main className="min-h-screen bg-slate-50/50">

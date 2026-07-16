@@ -36,6 +36,7 @@ import { getCategoryLabel, getSubcategoryLabel } from "@/lib/constants";
 import ReportListing from "@/components/ReportListing";
 import ListingGallery from "@/components/listings/ListingGallery";
 import ListingStickyBottom from "@/components/listings/ListingStickyBottom";
+import ListingContactButtons from "@/components/listings/ListingContactButtons";
 
 export const dynamic = "force-dynamic";
 
@@ -412,31 +413,12 @@ export default async function ListingDetailPage({ params }: { params: { slug: st
               </div>
 
               <div className="p-6 space-y-3">
-                {/* Phone */}
-                {phone && (
-                  <a
-                    href={`tel:${phone}`}
-                    className="flex items-center justify-center gap-2.5 w-full rounded-full py-3 font-semibold text-sm text-white transition-opacity hover:opacity-90 active:scale-95"
-                    style={{ background: "var(--brand-accent)", boxShadow: "0 2px 8px rgba(34,153,120,0.22)" }}
-                  >
-                    <Phone className="w-4 h-4" />
-                    Call Directly
-                  </a>
-                )}
-
-                {/* WhatsApp */}
-                {whatsappHref && (
-                  <a
-                    href={whatsappHref}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="flex items-center justify-center gap-2.5 w-full rounded-full py-3 font-semibold text-sm text-white transition-opacity hover:opacity-90 active:scale-95"
-                    style={{ background: "#25D366", boxShadow: "0 2px 8px rgba(37,211,102,0.18)" }}
-                  >
-                    <MessageCircle className="w-4 h-4" />
-                    WhatsApp
-                  </a>
-                )}
+                {/* Phone + WhatsApp — clicks counted for ranking */}
+                <ListingContactButtons
+                  phone={phone}
+                  whatsappHref={whatsappHref}
+                  listingId={listing._id.toString()}
+                />
 
                 {!phone && (
                   <p className="text-center text-sm py-2" style={{ color: "var(--text-tertiary)" }}>

@@ -37,6 +37,7 @@ export interface IListing extends Document {
   status: ListingStatus;
   views: number;
   whatsappClicks: number;
+  phoneClicks: number;
   featured: boolean;
   ratingAverage: number;
   reviewCount: number;
@@ -100,6 +101,7 @@ const ListingSchema = new Schema<IListing>(
     },
     views: { type: Number, default: 0 },
     whatsappClicks: { type: Number, default: 0 },
+    phoneClicks: { type: Number, default: 0 },
     featured: { type: Boolean, default: false },
     ratingAverage: { type: Number, default: 0 },
     reviewCount: { type: Number, default: 0 },

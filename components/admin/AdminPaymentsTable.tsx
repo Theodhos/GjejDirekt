@@ -1,16 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Mail, Calendar, Search, CheckCircle2, Clock3, BadgeCheck, Megaphone, Crown, ArrowLeft } from "lucide-react";
+import { Mail, Calendar, Search, CheckCircle2, Clock3, BadgeCheck, Megaphone, Crown, ArrowLeft, ArrowUp } from "lucide-react";
 import toast from "react-hot-toast";
 import { useLanguage } from "@/context/LanguageContext";
 
 const COPY = {
   al: {
     title: "Pagesat",
-    subtitle: "Shiko kush ka paguar dhe aprovo kërkesat për paketën Verified.",
+    subtitle: "Shiko kush ka paguar dhe aprovo manualisht paketat Verified, Ads dhe Ads Pro.",
     searchPlaceholder: "Kërko përdorues, listim, paketë...",
     noPayments: "Ende nuk ka pagesa.",
     summary: (count: number, total: number) =>
@@ -20,16 +20,21 @@ const COPY = {
     colAmount: "Shuma",
     colDate: "Data",
     colStatus: "Statusi",
-    approveVerify: "Aprovo Verify",
-    verifying: "Duke verifikuar...",
+    colAction: "Paketat",
+    statusNone: "None",
+    approveVerify: "Aprovo Verified",
+    approveAds: "Aprovo Ads",
+    approveAdsPro: "Aprovo Ads Pro",
+    approved: "Aprovuar",
+    verifying: "Procesohet...",
     verified: "I Verifikuar",
     paid: "Paguar",
-    verifiedToast: "Biznesi u verifikua",
-    failToast: "Verifikimi dështoi"
+    verifiedToast: "Paketë e aprovuar",
+    failToast: "Aprovimi dështoi"
   },
   en: {
     title: "Payments",
-    subtitle: "See who paid and approve Verified package requests.",
+    subtitle: "See who paid and approve Verified, Ads, and Ads Pro packages manually.",
     searchPlaceholder: "Search user, listing, package...",
     noPayments: "No payments yet.",
     summary: (count: number, total: number) =>
@@ -39,12 +44,17 @@ const COPY = {
     colAmount: "Amount",
     colDate: "Date",
     colStatus: "Status",
-    approveVerify: "Approve Verify",
-    verifying: "Verifying...",
+    colAction: "Packages",
+    statusNone: "None",
+    approveVerify: "Approve Verified",
+    approveAds: "Approve Ads",
+    approveAdsPro: "Approve Ads Pro",
+    approved: "Approved",
+    verifying: "Processing...",
     verified: "Verified",
     paid: "Paid",
-    verifiedToast: "Business verified",
-    failToast: "Failed to verify"
+    verifiedToast: "Package approved",
+    failToast: "Approval failed"
   }
 } as const;
 
@@ -58,15 +68,9 @@ type Payment = {
   amount?: number;
   currency?: string;
   verificationStatus?: "none" | "pending" | "approved";
+  listingPackage?: string | null;
+  listingVerified?: boolean;
   createdAt?: string | null;
-};
-
-// Fixed display order + icon per package category.
-const CATEGORY_ORDER = ["Verified", "Ads", "Ads Pro"] as const;
-const CATEGORY_ICON: Record<string, any> = {
-  Verified: BadgeCheck,
-  Ads: Megaphone,
-  "Ads Pro": Crown
 };
 
 export default function AdminPaymentsTable({ initialPayments }: { initialPayments: Payment[] }) {
@@ -74,35 +78,52 @@ export default function AdminPaymentsTable({ initialPayments }: { initialPayment
   const { language } = useLanguage();
   const c = COPY[language === "en" ? "en" : "al"];
   const [search, setSearch] = useState("");
-  const [verifyingId, setVerifyingId] = useState<string | null>(null);
+  const [pending, setPending] = useState<{ id: string; packageKey: string } | null>(null);
+  const [showScrollTop, setShowScrollTop] = useState(false);
 
   const filtered = initialPayments.filter((p) => {
     const term = search.toLowerCase();
     return (
       (p.userName && p.userName.toLowerCase().includes(term)) ||
       (p.userEmail && p.userEmail.toLowerCase().includes(term)) ||
-      (p.listingTitle && p.listingTitle.toLowerCase().includes(term)) ||
-      (p.packageName && p.packageName.toLowerCase().includes(term))
+      (p.listingTitle && p.listingTitle.toLowerCase().includes(term))
     );
   });
 
-  // Group payments by package category. Keep known packages in a fixed order,
-  // then append any unexpected category names at the end.
-  const groups = new Map<string, Payment[]>();
-  for (const p of filtered) {
-    const key = p.packageName || p.packet || "Other";
-    if (!groups.has(key)) groups.set(key, []);
-    groups.get(key)!.push(p);
-  }
-  const orderedKeys = [
-    ...CATEGORY_ORDER.filter((k) => groups.has(k)),
-    ...Array.from(groups.keys()).filter((k) => !CATEGORY_ORDER.includes(k as any))
+  // The assigned package renders black; the packages still available render green.
+  const ASSIGNED_COLOR = "bg-slate-900 text-white";
+  const AVAILABLE_COLOR = "bg-brand-600 text-white";
+
+  const PACKAGE_TAGS = [
+    { label: "Verified", value: "verified" },
+    { label: "Ads", value: "ads" },
+    { label: "Ads Pro", value: "ads pro" }
   ];
 
-  const handleApprove = async (id: string) => {
-    setVerifyingId(id);
+  const normalizePackage = (packageName?: string) => {
+    const key = String(packageName || "").toLowerCase();
+    if (key.includes("verified") || key === "verify") return "verified";
+    if (key.includes("ads pro") || packageName === "features") return "ads pro";
+    if (key.includes("ads") || key === "trading") return "ads";
+    return null;
+  };
+
+  const getCurrentPackage = (p: Payment) => normalizePackage(p.listingPackage || p.packageName);
+
+  const handleApprove = async (id: string, packageKey: string, packageLabel: string) => {
+    if (!window.confirm(language === "en"
+      ? `Approve ${packageLabel} for this service?`
+      : `Aprovo ${packageLabel} për këtë shërbim?`)) {
+      return;
+    }
+
+    setPending({ id, packageKey });
     try {
-      const res = await fetch(`/api/admin/payments/${id}/verify`, { method: "POST" });
+      const res = await fetch(`/api/admin/payments/${id}/verify`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ packageKey })
+      });
       if (res.ok) {
         toast.success(c.verifiedToast);
         router.refresh();
@@ -112,19 +133,23 @@ export default function AdminPaymentsTable({ initialPayments }: { initialPayment
     } catch {
       toast.error(c.failToast);
     } finally {
-      setVerifyingId(null);
+      setPending(null);
     }
   };
 
+  const totalAmount = filtered.reduce((sum, payment) => sum + (payment.amount ?? 0), 0);
+
   return (
     <div className="space-y-8">
-      <div className="flex items-center gap-4">
-        <Link href="/admin" className="w-10 h-10 rounded-full border border-slate-200 flex items-center justify-center hover:bg-slate-50 transition">
-          <ArrowLeft className="w-5 h-5 text-slate-600" />
-        </Link>
+      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
           <h1 className="text-3xl font-black text-slate-950">{c.title}</h1>
           <p className="text-sm text-slate-500 mt-1">{c.subtitle}</p>
+        </div>
+        <div className="text-sm text-slate-500">
+          {language === "en"
+            ? `${filtered.length} payments · €${totalAmount} total`
+            : `${filtered.length} pagesa · €${totalAmount} gjithsej`}
         </div>
       </div>
 
@@ -139,49 +164,32 @@ export default function AdminPaymentsTable({ initialPayments }: { initialPayment
         />
       </div>
 
-      {orderedKeys.length === 0 && (
+      {filtered.length === 0 ? (
         <div className="surface border-none shadow-xl rounded-[2rem] bg-white p-12 text-center">
           <p className="text-sm font-bold text-slate-500">{c.noPayments}</p>
         </div>
-      )}
-
-      {orderedKeys.map((key) => {
-        const rows = groups.get(key)!;
-        const Icon = CATEGORY_ICON[key] || CheckCircle2;
-        const total = rows.reduce((sum, r) => sum + (r.amount ?? 0), 0);
-        return (
-          <div key={key} className="surface overflow-hidden border-none shadow-xl rounded-[2rem] bg-white">
-            <div className="p-6 border-b border-slate-100 flex items-center justify-between gap-4">
-              <div className="flex items-center gap-3">
-                <div className="w-11 h-11 rounded-2xl bg-brand-50 flex items-center justify-center text-brand-600 border border-brand-100/50">
-                  <Icon className="w-5 h-5" />
-                </div>
-                <div>
-                  <h2 className="text-lg font-black text-slate-950">{key}</h2>
-                  <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">
-                    {c.summary(rows.length, total)}
-                  </p>
-                </div>
-              </div>
-            </div>
-            <div className="overflow-x-auto">
-              <table className="w-full border-collapse">
-                <thead className="bg-slate-50/90">
-                  <tr className="border-b border-slate-100">
-                    <th className="px-6 py-4 text-left text-[10px] font-black uppercase tracking-widest text-slate-400">{c.colUser}</th>
-                    <th className="px-6 py-4 text-left text-[10px] font-black uppercase tracking-widest text-slate-400">{c.colListing}</th>
-                    <th className="px-6 py-4 text-left text-[10px] font-black uppercase tracking-widest text-slate-400">{c.colAmount}</th>
-                    <th className="px-6 py-4 text-left text-[10px] font-black uppercase tracking-widest text-slate-400">{c.colDate}</th>
-                    <th className="px-6 py-4 text-left text-[10px] font-black uppercase tracking-widest text-slate-400">{c.colStatus}</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100">
-                  {rows.map((p) => (
+      ) : (
+        <div className="surface overflow-hidden border-none shadow-xl rounded-[2rem] bg-white">
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse">
+              <thead className="bg-slate-50/90">
+                <tr className="border-b border-slate-100">
+                  <th className="px-6 py-4 text-left text-[10px] font-black uppercase tracking-widest text-slate-400">{c.colUser}</th>
+                  <th className="px-6 py-4 text-left text-[10px] font-black uppercase tracking-widest text-slate-400">{c.colListing}</th>
+                  <th className="px-6 py-4 text-left text-[10px] font-black uppercase tracking-widest text-slate-400">{c.colStatus}</th>
+                  <th className="px-6 py-4 text-left text-[10px] font-black uppercase tracking-widest text-slate-400">{c.colAction}</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {filtered.map((p) => {
+                  const currentPackageValue = getCurrentPackage(p);
+                  const currentTag = PACKAGE_TAGS.find((tag) => tag.value === currentPackageValue);
+                  return (
                     <tr key={p._id} className="hover:bg-slate-50/50 transition">
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-4">
                           <div className="w-11 h-11 rounded-2xl bg-brand-50 flex items-center justify-center font-black text-brand-600 text-lg shadow-sm border border-brand-100/50">
-                            {p.userName?.charAt(0) || "U"}
+                            {p.userName?.charAt(0).toUpperCase() || "U"}
                           </div>
                           <div>
                             <p className="font-black text-slate-950 text-sm">{p.userName || "—"}</p>
@@ -196,44 +204,43 @@ export default function AdminPaymentsTable({ initialPayments }: { initialPayment
                         <p className="text-sm font-bold text-slate-600">{p.listingTitle || "—"}</p>
                       </td>
                       <td className="px-6 py-4">
-                        <span className="text-sm font-black text-slate-950">€{p.amount ?? 0}</span>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-2 text-sm font-bold text-slate-500">
-                          <Calendar className="w-4 h-4 text-slate-400" />
-                          {p.createdAt ? new Date(p.createdAt).toLocaleDateString() : "—"}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        {p.verificationStatus === "pending" ? (
-                          <button
-                            onClick={() => handleApprove(p._id)}
-                            disabled={verifyingId === p._id}
-                            className="inline-flex items-center gap-1.5 rounded-full bg-amber-500 px-4 py-2 text-[11px] font-black uppercase tracking-widest text-white hover:bg-amber-600 transition disabled:opacity-60"
-                          >
-                            <Clock3 className="w-3.5 h-3.5" />
-                            {verifyingId === p._id ? c.verifying : c.approveVerify}
-                          </button>
-                        ) : p.verificationStatus === "approved" ? (
-                          <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-50 px-3.5 py-1.5 text-[11px] font-black uppercase tracking-widest text-brand-700 border border-brand-100">
-                            <BadgeCheck className="w-3.5 h-3.5" />
-                            {c.verified}
+                        {currentTag ? (
+                          <span className={`inline-flex items-center justify-center rounded-full px-3 py-2 text-[11px] font-black uppercase tracking-widest ${ASSIGNED_COLOR}`}>
+                            {currentTag.label}
                           </span>
                         ) : (
-                          <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3.5 py-1.5 text-[11px] font-black uppercase tracking-widest text-emerald-700 border border-emerald-100">
-                            <CheckCircle2 className="w-3.5 h-3.5" />
-                            {c.paid}
+                          <span className="inline-flex items-center justify-center rounded-full border border-slate-200 bg-slate-50 px-3 py-2 text-[11px] font-black uppercase tracking-widest text-slate-400">
+                            {c.statusNone}
                           </span>
                         )}
                       </td>
+                      <td className="px-6 py-4 space-y-2">
+                        <div className="flex flex-wrap gap-2">
+                          {PACKAGE_TAGS.map((tag) => {
+                            const isCurrent = tag.value === currentPackageValue;
+                            const isRowPending = pending?.id === p._id;
+                            const isLoading = isRowPending && pending?.packageKey === tag.value;
+                            return (
+                              <button
+                                key={tag.value}
+                                onClick={() => handleApprove(p._id, tag.value, tag.label)}
+                                disabled={isRowPending}
+                                className={`inline-flex items-center justify-center rounded-full px-3 py-2 text-[11px] font-black uppercase tracking-widest transition ${isCurrent ? ASSIGNED_COLOR : `${AVAILABLE_COLOR} opacity-90 hover:opacity-100`} ${isRowPending && !isLoading ? "opacity-50 cursor-not-allowed" : ""}`}
+                              >
+                                {isLoading ? c.verifying : tag.label}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </td>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  );
+                })}
+              </tbody>
+            </table>
           </div>
-        );
-      })}
+        </div>
+      )}
     </div>
   );
 }

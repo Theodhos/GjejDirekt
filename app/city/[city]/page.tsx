@@ -6,17 +6,19 @@ import { MapPin } from "lucide-react";
 import ListingCard from "@/components/ListingCard";
 import City from "@/models/City";
 import { seedCities } from "@/lib/cities-catalog";
+import { rankListings } from "@/lib/ranking";
 
 export const dynamic = "force-dynamic";
 
 async function getListingsByCity(city: string) {
   await connectDB();
-  return Listing.find({
+  const found = await Listing.find({
     location: { $regex: city, $options: "i" },
     status: "approved"
   })
     .sort({ createdAt: -1 })
     .lean<any[]>();
+  return rankListings(found);
 }
 
 async function getCityMeta(city: string) {

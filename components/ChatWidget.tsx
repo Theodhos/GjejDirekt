@@ -86,6 +86,15 @@ type Suggestion = {
   package?: string | null;
 };
 
+// Show the package the admin assigned, so the ranking (Ads Pro > Ads >
+// Verified) is visible instead of one generic "recommended" badge.
+function packageLabel(packet?: string | null) {
+  if (packet === "features") return "ADS PRO";
+  if (packet === "trading") return "ADS";
+  if (packet === "verify") return "VERIFIED";
+  return null;
+}
+
 function Bubble({ from, children }: { from: "user" | "bot"; children: React.ReactNode }) {
   return (
     <div className={`flex ${from === "user" ? "justify-end" : "justify-start"}`}>
@@ -261,9 +270,9 @@ export default function ChatWidget() {
                       >
                         <div className="flex items-center justify-between gap-2">
                           <span className="text-sm font-bold" style={{ color: "var(--text-primary)" }}>{s.title}</span>
-                          {s.package ? (
+                          {packageLabel(s.package) ? (
                             <span className="shrink-0 rounded-full px-2 py-0.5 text-[10px] font-black uppercase tracking-wide" style={{ background: "var(--brand-accent)", color: "#ffffff" }}>
-                              {c.paidBadge}
+                              {packageLabel(s.package)}
                             </span>
                           ) : null}
                         </div>

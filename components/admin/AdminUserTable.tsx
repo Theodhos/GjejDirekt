@@ -36,6 +36,7 @@ export default function AdminUserTable({ initialUsers }: { initialUsers: any[] }
               <th className="px-6 py-4 text-left text-[10px] font-black uppercase tracking-widest text-slate-400">User</th>
               <th className="px-6 py-4 text-left text-[10px] font-black uppercase tracking-widest text-slate-400">Contact</th>
               <th className="px-6 py-4 text-left text-[10px] font-black uppercase tracking-widest text-slate-400">Role</th>
+              <th className="px-6 py-4 text-left text-[10px] font-black uppercase tracking-widest text-slate-400">Services</th>
               <th className="px-6 py-4 text-left text-[10px] font-black uppercase tracking-widest text-slate-400">Joined</th>
             </tr>
           </thead>
@@ -60,11 +61,6 @@ export default function AdminUserTable({ initialUsers }: { initialUsers: any[] }
                         <Mail className="w-4 h-4 text-slate-400" />
                         {user.email}
                       </div>
-                      {user.phone && (
-                        <div className="flex items-center gap-2 text-xs font-medium text-slate-400">
-                          {user.phone}
-                        </div>
-                      )}
                     </div>
                   </td>
                   <td className="px-6 py-4">
@@ -80,16 +76,31 @@ export default function AdminUserTable({ initialUsers }: { initialUsers: any[] }
                     </span>
                   </td>
                   <td className="px-6 py-4">
+                    <div className="space-y-2">
+                      {user.services?.slice(0, 3).map((service: any) => (
+                        <div key={service.slug} className="rounded-2xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-semibold text-slate-700">
+                          <p>{service.title}</p>
+                          <p className="text-[11px] uppercase tracking-widest text-slate-400">
+                            {service.package === "verify" ? "Verified" : service.package === "trading" ? "Ads" : service.package === "features" ? "Ads Pro" : "Standard"}
+                          </p>
+                        </div>
+                      ))}
+                      {user.services?.length > 3 && (
+                        <p className="text-[11px] font-bold uppercase tracking-widest text-slate-400">+{user.services.length - 3} more</p>
+                      )}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4">
                     <div className="flex items-center gap-2 text-sm font-bold text-slate-500">
                       <Calendar className="w-4 h-4 text-slate-400" />
-                      {new Date(user.createdAt).toLocaleDateString()}
+                      {user.createdAt ? new Date(user.createdAt).toLocaleDateString() : "—"}
                     </div>
                   </td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan={4} className="px-6 py-12 text-center">
+                <td colSpan={5} className="px-6 py-12 text-center">
                   <p className="text-sm font-bold text-slate-500">No users found.</p>
                 </td>
               </tr>

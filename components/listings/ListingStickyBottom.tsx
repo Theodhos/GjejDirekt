@@ -32,6 +32,12 @@ export default function ListingStickyBottom({
     }
   };
 
+  const trackPhone = () => {
+    if (listingId) {
+      fetch(`/api/listings/${listingId}/phone-click`, { method: "POST", keepalive: true }).catch(() => {});
+    }
+  };
+
   return (
     <div className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-100 px-6 py-3.5 pb-[calc(14px+env(safe-area-inset-bottom,0px))] shadow-[0_-10px_40px_rgba(0,0,0,0.06)] md:hidden">
       <div className={`grid gap-3 w-full ${whatsappHref && phone ? "grid-cols-2" : "grid-cols-1"}`}>
@@ -50,6 +56,7 @@ export default function ListingStickyBottom({
         {phone && (
           <a
             href={`tel:${phone}`}
+            onClick={trackPhone}
             className="flex items-center justify-center gap-2 h-12 w-full bg-brand-500 text-white rounded-2xl font-black text-xs hover:scale-102 active:scale-98 transition-all shadow-md"
           >
             <Phone className="w-4 h-4 fill-current" />

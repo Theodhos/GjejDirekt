@@ -83,10 +83,10 @@ export default function AdminProfile({ displayName, authEmail }: { displayName: 
       <form onSubmit={saveProfile} className="surface p-4 rounded-2xl">
         <h3 className="text-sm font-semibold text-slate-500 uppercase">{t.admin.profileDataTitle || 'Të dhënat'}</h3>
         <div className="mt-3 grid gap-3">
-          <label className="text-xs font-bold text-slate-500 uppercase">{t.admin.fullNameLabel || 'Full name'}</label>
+          <label className="text-xs font-bold text-slate-500 uppercase">{t.admin.fullNameLabel || 'Emri i plotë'}</label>
           <Input value={name} onChange={(e) => setName(e.target.value)} />
 
-          <label className="text-xs font-bold text-slate-500 uppercase">{t.admin.emailLabel || 'Email address'}</label>
+          <label className="text-xs font-bold text-slate-500 uppercase">{t.admin.emailLabel || 'Adresa e email-it'}</label>
           <div className="flex items-center gap-2">
             <div className="flex-1">
               <Input value={email} onChange={(e) => {
@@ -99,25 +99,25 @@ export default function AdminProfile({ displayName, authEmail }: { displayName: 
             <div>
               {isEmailVerified === true ? (
                 <span className="inline-flex items-center gap-2 rounded-full bg-emerald-50 text-emerald-700 px-3 py-1 text-xs font-semibold">
-                  ✓ {adminText.verifiedLabel || 'Verified'}
+                  ✓ {adminText.verifiedLabel || 'I verifikuar'}
                 </span>
               ) : isEmailVerified === false ? (
                 <span className="inline-flex items-center gap-2 rounded-full bg-rose-50 text-rose-700 px-3 py-1 text-xs font-semibold">
-                  {adminText.unverifiedLabel || 'Unverified'}
+                  {adminText.unverifiedLabel || 'I pavërtetuar'}
                 </span>
               ) : null}
             </div>
           </div>
-          {!emailValid && <p className="text-xs text-rose-600 mt-1">{adminText.invalidEmail || 'Please enter a valid email address.'}</p>}
+          {!emailValid && <p className="text-xs text-rose-600 mt-1">{adminText.invalidEmail || 'Ju lutem shkruani një adresë email-i të vlefshme.'}</p>}
 
           <div className="flex items-center gap-4 mt-2">
-            <Button type="submit" disabled={loading}>{t.admin.saveProfileBtn || 'Save Profile'}</Button>
-            <button type="button" onClick={() => { setName(displayName); setEmail(authEmail); }} className="text-sm font-medium text-slate-600">{commonText.discard || 'Discard'}</button>
+            <Button type="submit" disabled={loading}>{t.admin.saveProfileBtn || 'Ruaj profilin'}</Button>
+            <button type="button" onClick={() => { setName(displayName); setEmail(authEmail); }} className="text-sm font-medium text-slate-600">{commonText.discard || 'Anulo'}</button>
           </div>
         </div>
       </form>
 
-      <div className="surface flex flex-1 flex-col p-5 rounded-2xl">
+      <div className="surface flex flex-col p-5 rounded-2xl">
         <div className="flex items-center gap-3">
           <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-slate-900 text-white">
             <KeyRound className="h-5 w-5" />
@@ -131,7 +131,11 @@ export default function AdminProfile({ displayName, authEmail }: { displayName: 
         <p className="mt-3 text-sm text-slate-600">{t.admin.forgotPasswordDesc || 'Dërgo një link të sigurt për rivendosje në emailin tuaj.'}</p>
 
         <ul className="mt-4 space-y-2.5">
-          {[adminText.pwResetTip1, adminText.pwResetTip2, adminText.pwResetTip3].map((tip, i) => (
+          {[
+            adminText.pwResetTip1 || 'Linku i rivendosjes skadon për 30 minuta',
+            adminText.pwResetTip2 || 'Dërgohet vetëm te email-i juaj i verifikuar',
+            adminText.pwResetTip3 || 'Fjalëkalimi juaj aktual mbetet aktiv derisa ta ndryshoni'
+          ].map((tip, i) => (
             <li key={i} className="flex items-start gap-2.5 text-sm text-slate-600">
               <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" />
               <span>{tip}</span>
@@ -139,7 +143,9 @@ export default function AdminProfile({ displayName, authEmail }: { displayName: 
           ))}
         </ul>
 
-        <div className="mt-auto pt-5">
+        <p className="mt-4 text-sm text-slate-600">Përdorni butonin më poshtë për të dërguar menjëherë një link të sigurt rivendosjeje në emailin tuaj të verifikuar.</p>
+
+        <div className="pt-5">
           <Button type="button" onClick={() => setConfirmResetOpen(true)} disabled={loading} className="!bg-slate-900 w-full">
             {t.admin.resetPasswordBtn || 'Rivendos Fjalëkalimin'}
           </Button>
@@ -149,11 +155,11 @@ export default function AdminProfile({ displayName, authEmail }: { displayName: 
       {confirmResetOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
           <div className="bg-white rounded-2xl p-6 w-11/12 max-w-md">
-            <h3 className="text-lg font-bold">{adminText.resetConfirmTitle || 'Confirm password reset'}</h3>
-            <p className="mt-2 text-sm text-slate-600">{adminText.resetConfirmDesc || 'We will send a password reset link to your email. Continue?'}</p>
+            <h3 className="text-lg font-bold">{adminText.resetConfirmTitle || 'Konfirmo rivendosjen e fjalëkalimit'}</h3>
+            <p className="mt-2 text-sm text-slate-600">{adminText.resetConfirmDesc || 'Ne do të dërgojmë një link për rivendosje në emailin tuaj. Të vazhdojmë?'}</p>
             <div className="mt-4 flex justify-end gap-3">
-              <button type="button" onClick={() => setConfirmResetOpen(false)} className="px-4 py-2 rounded-lg border">{commonText.cancel || 'Cancel'}</button>
-              <Button type="button" onClick={sendResetConfirmed} disabled={loading}>{t.admin.resetPasswordBtn || 'Send'}</Button>
+              <button type="button" onClick={() => setConfirmResetOpen(false)} className="px-4 py-2 rounded-lg border">{commonText.cancel || 'Anulo'}</button>
+              <Button type="button" onClick={sendResetConfirmed} disabled={loading}>{t.admin.resetPasswordBtn || 'Dërgo'}</Button>
             </div>
           </div>
         </div>

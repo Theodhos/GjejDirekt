@@ -45,26 +45,12 @@ export async function POST(request: Request) {
     }
 
     const info = PACKAGE_INFO[String(packet).toLowerCase()] || { amount: 0, name: tier };
-    const isVerifyPackage = tier === "verify";
+    const needsApproval = tier === "verify" || tier === "trading" || tier === "features";
 
-    if (isVerifyPackage) {
-      // Verification is granted by the admin after payment — flag as pending,
-      // do not mark the listing verified automatically.
+    if (needsApproval) {
       await Listing.updateOne(
         { _id: listingId, owner: auth.id },
         { $set: { verificationPending: true } }
-      );
-    } else {
-      // Ranking packages (Ads / Ads Pro) take effect immediately.
-      await Listing.updateOne(
-        { _id: listingId, owner: auth.id },
-        {
-          $set: {
-            package: tier,
-            packagePurchaseDate: new Date(),
-            packageExpiryDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) // 30 days
-          }
-        }
       );
     }
 
@@ -79,7 +65,7 @@ export async function POST(request: Request) {
       amount: info.amount,
       currency: "EUR",
       orderID,
-      verificationStatus: isVerifyPackage ? "pending" : "none"
+      verificationStatus: needsApproval ? "pending" : "none"
     });
 
     try {

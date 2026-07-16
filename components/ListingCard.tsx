@@ -153,6 +153,14 @@ export default function ListingCard({ listing }: { listing: any }) {
   const isVerified = listing.verified === true;
   const t = translations[language];
 
+  // The ribbon reflects the package the admin approved: Verified, Ads, or Ads Pro.
+  const badgeLabel =
+    listing.package === "trading"
+      ? "ADS"
+      : listing.package === "features"
+      ? "ADS PRO"
+      : t.listing.verified;
+
   const priceSuffix =
     listing.category === "akomodim"
       ? `/${t.listing.nightSuffix}`
@@ -187,7 +195,7 @@ export default function ListingCard({ listing }: { listing: any }) {
           onError={() => setImageError(true)}
         />
 
-        {/* Verified Badge */}
+        {/* Package Badge — Verified / Ads / Ads Pro */}
         {isVerified && (
           <div className="pointer-events-none absolute left-3 top-3 z-20">
             <div
@@ -195,7 +203,7 @@ export default function ListingCard({ listing }: { listing: any }) {
               style={{ background: "rgba(22,163,74,0.92)" }}
             >
               <CheckCircle className="h-3 w-3" />
-              {t.listing.verified}
+              {badgeLabel}
             </div>
           </div>
         )}
@@ -291,9 +299,14 @@ export default function ListingCard({ listing }: { listing: any }) {
         <CardTags
           category={categoryLabel}
           tags={[
+            ...(listing.package ? [
+              listing.package === "verify" ? "Verified" :
+              listing.package === "trading" ? "Ads" :
+              listing.package === "features" ? "Ads Pro" : null
+            ].filter(Boolean) : []),
             ...(listing.tags || []),
             ...(listing.amenities || [])
-          ].filter((v, i, self) => self.indexOf(v) === i)}
+          ].filter((v, i, self) => v && self.indexOf(v) === i)}
         />
 
         {/* Contact Actions — flat brand-green icons, pinned to bottom, sit above the card link overlay */}
@@ -301,7 +314,13 @@ export default function ListingCard({ listing }: { listing: any }) {
           {/* Call */}
           <a
             href={phone ? `tel:${phone}` : "#"}
-            onClick={(e) => { e.stopPropagation(); if (!phone) e.preventDefault(); }}
+            onClick={(e) => {
+              e.stopPropagation();
+              if (!phone) { e.preventDefault(); return; }
+              if (listing._id) {
+                fetch(`/api/listings/${listing._id}/phone-click`, { method: "POST", keepalive: true }).catch(() => {});
+              }
+            }}
             className={`flex flex-col items-center justify-center gap-1.5 rounded-lg py-1.5 ${phone ? "" : "pointer-events-none opacity-40"}`}
           >
             <div

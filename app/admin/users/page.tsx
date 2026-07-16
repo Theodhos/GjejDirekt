@@ -1,9 +1,10 @@
 import { getAuthUser } from "@/lib/auth";
 import { connectDB } from "@/lib/db";
 import User from "@/models/User";
+import Listing from "@/models/Listing";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, UserPlus, Mail, Shield, Calendar } from "lucide-react";
+import { ArrowLeft, UserPlus } from "lucide-react";
 import AdminUserTable from "@/components/admin/AdminUserTable";
 
 export const dynamic = "force-dynamic";
@@ -13,8 +14,36 @@ export default async function AdminUsersPage() {
   if (!auth || auth.role !== "admin") redirect("/login");
 
   await connectDB();
-  const users = await User.find().sort({ createdAt: -1 }).lean<any>();
-  const serializedUsers = users.map((u: any) => ({ ...u, _id: u._id.toString() }));
+  const listings = await Listing.find().populate("owner", "name email role createdAt").lean<any>();
+
+  const usersMap = new Map<string, any>();
+  listings.forEach((listing) => {
+    const owner = listing.owner;
+    if (!owner || typeof owner === "string") return;
+    const ownerId = owner._id.toString();
+    if (!usersMap.has(ownerId)) {
+      usersMap.set(ownerId, {
+        _id: ownerId,
+        name: owner.name,
+        email: owner.email,
+        role: owner.role,
+        createdAt: owner.createdAt ? new Date(owner.createdAt).toISOString() : null,
+        services: []
+      });
+    }
+    usersMap.get(ownerId).services.push({
+      title: listing.title,
+      slug: listing.slug,
+      package: listing.package,
+      status: listing.status
+    });
+  });
+
+  const serializedUsers = Array.from(usersMap.values()).sort((a, b) => {
+    if (!a.createdAt) return 1;
+    if (!b.createdAt) return -1;
+    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+  });
 
   return (
     <section className="page-shell py-10">
@@ -24,8 +53,8 @@ export default async function AdminUsersPage() {
                 <ArrowLeft className="w-5 h-5 text-slate-600" />
             </Link>
             <div>
-                <h1 className="text-3xl font-black text-slate-950">User Management</h1>
-                <p className="text-sm text-slate-500 mt-1">Manage all registered accounts and roles.</p>
+                <h1 className="text-3xl font-black text-slate-950">Users with Services</h1>
+                <p className="text-sm text-slate-500 mt-1">All users that have listings on the platform and their services are shown below.</p>
             </div>
         </div>
         <button className="hidden sm:inline-flex items-center gap-2 rounded-full bg-slate-950 px-6 py-3 text-sm font-black text-white hover:bg-brand-600 transition">
