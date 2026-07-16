@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import Image from "next/image";
 import Lightbox from "@/components/ui/Lightbox";
 import { Maximize2, Heart, ArrowLeft, Share2, LayoutGrid, ChevronLeft, ChevronRight } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
@@ -145,10 +146,13 @@ export default function ListingGallery({ images, listing }: ListingGalleryProps)
           className="col-span-2 row-span-2 relative h-full w-full overflow-hidden cursor-zoom-in group/item"
           onClick={() => openLightbox(0)}
         >
-          <img 
-            src={displayImages[0]} 
-            alt="Listing main image" 
-            className="object-cover h-full w-full transition duration-700"
+          <Image
+            src={displayImages[0]}
+            alt="Listing main image"
+            fill
+            priority
+            sizes="(max-width: 768px) 100vw, 50vw"
+            className="object-cover transition duration-700"
           />
           <div className="absolute inset-0 bg-black/10 opacity-0 group-hover/item:opacity-100 transition-opacity duration-300 flex items-center justify-center">
             <Maximize2 className="w-8 h-8 text-white drop-shadow-md" />
@@ -160,10 +164,12 @@ export default function ListingGallery({ images, listing }: ListingGalleryProps)
           className="relative h-full w-full overflow-hidden cursor-zoom-in group/item"
           onClick={() => openLightbox(1)}
         >
-          <img 
-            src={displayImages[1]} 
-            alt="Listing image 2" 
-            className="object-cover h-full w-full transition duration-700"
+          <Image
+            src={displayImages[1]}
+            alt="Listing image 2"
+            fill
+            sizes="(max-width: 768px) 100vw, 25vw"
+            className="object-cover transition duration-700"
           />
           <div className="absolute inset-0 bg-black/10 opacity-0 group-hover/item:opacity-100 transition-opacity duration-300 flex items-center justify-center">
             <Maximize2 className="w-6 h-6 text-white drop-shadow-md" />
@@ -175,10 +181,12 @@ export default function ListingGallery({ images, listing }: ListingGalleryProps)
           className="relative h-full w-full overflow-hidden cursor-zoom-in group/item"
           onClick={() => openLightbox(2)}
         >
-          <img 
-            src={displayImages[2]} 
-            alt="Listing image 3" 
-            className="object-cover h-full w-full transition duration-700"
+          <Image
+            src={displayImages[2]}
+            alt="Listing image 3"
+            fill
+            sizes="(max-width: 768px) 100vw, 25vw"
+            className="object-cover transition duration-700"
           />
           <div className="absolute inset-0 bg-black/10 opacity-0 group-hover/item:opacity-100 transition-opacity duration-300 flex items-center justify-center">
             <Maximize2 className="w-6 h-6 text-white drop-shadow-md" />
@@ -190,10 +198,12 @@ export default function ListingGallery({ images, listing }: ListingGalleryProps)
           className="relative h-full w-full overflow-hidden cursor-zoom-in group/item"
           onClick={() => openLightbox(3)}
         >
-          <img 
-            src={displayImages[3]} 
-            alt="Listing image 4" 
-            className="object-cover h-full w-full transition duration-700"
+          <Image
+            src={displayImages[3]}
+            alt="Listing image 4"
+            fill
+            sizes="(max-width: 768px) 100vw, 25vw"
+            className="object-cover transition duration-700"
           />
           <div className="absolute inset-0 bg-black/10 opacity-0 group-hover/item:opacity-100 transition-opacity duration-300 flex items-center justify-center">
             <Maximize2 className="w-6 h-6 text-white drop-shadow-md" />
@@ -205,10 +215,12 @@ export default function ListingGallery({ images, listing }: ListingGalleryProps)
           className="relative h-full w-full overflow-hidden cursor-zoom-in group/item"
           onClick={() => openLightbox(4)}
         >
-          <img 
-            src={displayImages[4]} 
-            alt="Listing image 5" 
-            className="object-cover h-full w-full transition duration-700"
+          <Image
+            src={displayImages[4]}
+            alt="Listing image 5"
+            fill
+            sizes="(max-width: 768px) 100vw, 25vw"
+            className="object-cover transition duration-700"
           />
           <div className="absolute inset-0 bg-black/10 opacity-0 group-hover/item:opacity-100 transition-opacity duration-300 flex items-center justify-center">
             <Maximize2 className="w-6 h-6 text-white drop-shadow-md" />
@@ -269,7 +281,14 @@ export default function ListingGallery({ images, listing }: ListingGalleryProps)
                 key={idx} 
                 className="min-w-full snap-start snap-always relative h-full w-full"
               >
-                <img src={img} alt={`Slide ${idx + 1}`} className="object-cover h-full w-full" />
+                <Image
+                  src={img}
+                  alt={`Slide ${idx + 1}`}
+                  fill
+                  priority={idx === 0}
+                  sizes="100vw"
+                  className="object-cover"
+                />
               </div>
             ))}
           </div>

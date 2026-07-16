@@ -14,7 +14,7 @@ export default async function AdminUsersPage() {
   if (!auth || auth.role !== "admin") redirect("/login");
 
   await connectDB();
-  const listings = await Listing.find().populate("owner", "name email role createdAt").lean<any>();
+  const listings = await Listing.find().populate("owner", "name email role createdAt").lean<any[]>();
 
   const usersMap = new Map<string, any>();
   listings.forEach((listing) => {

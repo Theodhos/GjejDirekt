@@ -25,7 +25,7 @@ export default async function AdminPaymentsPage() {
   const listings = await Listing.find({ status: { $in: ["approved", "pending", "rejected"] } })
     .populate("owner", "name email")
     .sort({ createdAt: -1 })
-    .lean<any>();
+    .lean<any[]>();
 
   const serializedPayments = listings
     .filter((listing) => listing.owner && typeof listing.owner !== "string")

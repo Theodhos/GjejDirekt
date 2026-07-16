@@ -75,7 +75,7 @@ export async function POST(request: Request) {
         packageName: info.name,
         amount: info.amount,
         listingTitle: listing.title,
-        needsVerification: isVerifyPackage
+        needsVerification: needsApproval
       });
     } catch (mailError) {
       console.error("Payment notification email failed:", mailError);
