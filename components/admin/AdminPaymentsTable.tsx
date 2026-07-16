@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Mail, Calendar, Search, CheckCircle2, Clock3, BadgeCheck, Megaphone, Crown, ArrowLeft, ArrowUp } from "lucide-react";
+import { Mail, Calendar, Search, CheckCircle2, Clock3, BadgeCheck, Megaphone, Crown, ArrowLeft, ArrowUp, X } from "lucide-react";
 import toast from "react-hot-toast";
 import { useLanguage } from "@/context/LanguageContext";
 
@@ -30,6 +30,8 @@ const COPY = {
     verified: "I Verifikuar",
     paid: "Paguar",
     verifiedToast: "Paketë e aprovuar",
+    removedToast: "Paketa u hoq",
+    removePackage: "Hiq paketën",
     failToast: "Aprovimi dështoi"
   },
   en: {
@@ -54,6 +56,8 @@ const COPY = {
     verified: "Verified",
     paid: "Paid",
     verifiedToast: "Package approved",
+    removedToast: "Package removed",
+    removePackage: "Remove package",
     failToast: "Approval failed"
   }
 } as const;
@@ -111,9 +115,14 @@ export default function AdminPaymentsTable({ initialPayments }: { initialPayment
   const getCurrentPackage = (p: Payment) => normalizePackage(p.listingPackage || p.packageName);
 
   const handleApprove = async (id: string, packageKey: string, packageLabel: string) => {
-    if (!window.confirm(language === "en"
-      ? `Approve ${packageLabel} for this service?`
-      : `Aprovo ${packageLabel} për këtë shërbim?`)) {
+    const confirmMessage = packageKey === "none"
+      ? (language === "en"
+        ? `Remove ${packageLabel} from this service?`
+        : `Hiq ${packageLabel} nga ky shërbim?`)
+      : (language === "en"
+        ? `Approve ${packageLabel} for this service?`
+        : `Aprovo ${packageLabel} për këtë shërbim?`);
+    if (!window.confirm(confirmMessage)) {
       return;
     }
 
@@ -125,7 +134,7 @@ export default function AdminPaymentsTable({ initialPayments }: { initialPayment
         body: JSON.stringify({ packageKey })
       });
       if (res.ok) {
-        toast.success(c.verifiedToast);
+        toast.success(packageKey === "none" ? c.removedToast : c.verifiedToast);
         router.refresh();
       } else {
         toast.error(c.failToast);
@@ -220,15 +229,29 @@ export default function AdminPaymentsTable({ initialPayments }: { initialPayment
                             const isCurrent = tag.value === currentPackageValue;
                             const isRowPending = pending?.id === p._id;
                             const isLoading = isRowPending && pending?.packageKey === tag.value;
+                            const isRemoving = isRowPending && pending?.packageKey === "none" && isCurrent;
                             return (
-                              <button
-                                key={tag.value}
-                                onClick={() => handleApprove(p._id, tag.value, tag.label)}
-                                disabled={isRowPending}
-                                className={`inline-flex items-center justify-center rounded-full px-3 py-2 text-[11px] font-black uppercase tracking-widest transition ${isCurrent ? ASSIGNED_COLOR : `${AVAILABLE_COLOR} opacity-90 hover:opacity-100`} ${isRowPending && !isLoading ? "opacity-50 cursor-not-allowed" : ""}`}
-                              >
-                                {isLoading ? c.verifying : tag.label}
-                              </button>
+                              <div key={tag.value} className="relative">
+                                <button
+                                  onClick={() => handleApprove(p._id, tag.value, tag.label)}
+                                  disabled={isRowPending}
+                                  className={`inline-flex items-center justify-center rounded-full px-3 py-2 text-[11px] font-black uppercase tracking-widest transition ${isCurrent ? ASSIGNED_COLOR : `${AVAILABLE_COLOR} opacity-90 hover:opacity-100`} ${isRowPending && !isLoading && !isRemoving ? "opacity-50 cursor-not-allowed" : ""}`}
+                                >
+                                  {isLoading || isRemoving ? c.verifying : tag.label}
+                                </button>
+                                {isCurrent && (
+                                  <button
+                                    type="button"
+                                    title={c.removePackage}
+                                    aria-label={c.removePackage}
+                                    onClick={() => handleApprove(p._id, "none", tag.label)}
+                                    disabled={isRowPending}
+                                    className={`absolute -right-1.5 -top-1.5 inline-flex h-5 w-5 items-center justify-center rounded-full border border-white bg-rose-500 text-white shadow-sm transition hover:bg-rose-600 ${isRowPending ? "opacity-50 cursor-not-allowed" : ""}`}
+                                  >
+                                    <X className="h-3 w-3" strokeWidth={3} />
+                                  </button>
+                                )}
+                              </div>
                             );
                           })}
                         </div>

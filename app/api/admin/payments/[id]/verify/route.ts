@@ -15,7 +15,12 @@ export async function POST(request: Request, { params }: { params: { id: string 
     const packageKey = String(body.packageKey || "").toLowerCase();
     const updates: any = { verificationPending: false };
 
-    if (packageKey === "verified" || packageKey === "verify") {
+    if (packageKey === "none") {
+      updates.verified = false;
+      updates.package = null;
+      updates.packagePurchaseDate = null;
+      updates.packageExpiryDate = null;
+    } else if (packageKey === "verified" || packageKey === "verify") {
       updates.verified = true;
       updates.package = "verify";
       updates.packagePurchaseDate = new Date();
@@ -38,7 +43,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
     const payment = await Payment.findById(params.id);
     if (payment) {
       listingId = payment.listing ? payment.listing.toString() : null;
-      payment.verificationStatus = "approved";
+      payment.verificationStatus = packageKey === "none" ? "none" : "approved";
       payment.packageName = packageKey === "ads" ? "Ads" : packageKey === "ads pro" ? "Ads Pro" : packageKey === "verified" || packageKey === "verify" ? "Verified" : payment.packageName;
       await payment.save();
     } else {
