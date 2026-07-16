@@ -1,7 +1,6 @@
 "use client";
 
 import { Check, ArrowRight, Rocket, BadgeCheck, Megaphone, Crown } from "lucide-react";
-import Link from "next/link";
 import { useLanguage } from "@/context/LanguageContext";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
@@ -13,13 +12,20 @@ function PacketPageClient() {
   const searchParams = useSearchParams();
   const listingId = searchParams?.get("listingId") || "";
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+  const [user, setUser] = useState<any>(null);
   const [freeLoading, setFreeLoading] = useState(false);
 
   useEffect(() => {
     fetch("/api/auth/me")
       .then(res => res.json())
-      .then(data => setIsAuthenticated(!!data.user))
-      .catch(() => setIsAuthenticated(false));
+      .then(data => {
+        setIsAuthenticated(!!data.user);
+        setUser(data.user || null);
+      })
+      .catch(() => {
+        setIsAuthenticated(false);
+        setUser(null);
+      });
   }, []);
 
   const requireLogin = () => {
@@ -31,6 +37,22 @@ function PacketPageClient() {
       e.preventDefault();
       requireLogin();
     }
+  };
+
+  const handlePaidPackageClick = (pkg: any) => {
+    if (isAuthenticated === false) {
+      requireLogin();
+      return;
+    }
+
+    const userName = user?.name || user?.email || "N/A";
+    const userEmail = user?.email || "N/A";
+    const requestText = language === "en"
+      ? `Hello TripShqip! I want to buy the ${pkg.name} package.\nPrice: €${pkg.price} ${pkg.priceSuffix}.\nDescription: ${pkg.description}.\nFeatures:\n- ${pkg.features.join("\n- ")}\nUser: ${userName}\nEmail: ${userEmail}\nListing ID: ${listingId || "N/A"}`
+      : `Përshëndetje TripShqip! Dua të blej paketën ${pkg.name}.\nÇmimi: €${pkg.price} ${pkg.priceSuffix}.\nPërshkrimi: ${pkg.description}.\nKarakteristikat:\n- ${pkg.features.join("\n- ")}\nPërdoruesi: ${userName}\nEmail: ${userEmail}\nListing ID: ${listingId || "N/A"}`;
+
+    const whatsappUrl = `https://wa.me/355695429998?text=${encodeURIComponent(requestText)}`;
+    window.open(whatsappUrl, "_blank");
   };
 
   // Free package: no payment — just email the user an invoice/confirmation.
@@ -279,9 +301,9 @@ function PacketPageClient() {
                   {!freeLoading && <ArrowRight className="w-4 h-4" />}
                 </button>
               ) : (
-                <Link
-                  href={`/checkout?packet=${pkg.id}&price=${pkg.price}&listingId=${listingId}`}
-                  onClick={handlePackageClick}
+                <button
+                  type="button"
+                  onClick={() => handlePaidPackageClick(pkg)}
                   className="flex w-full items-center justify-center gap-2 rounded-full py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90 active:scale-95"
                   style={{
                     background: pkg.popular ? "var(--brand-accent)" : "var(--text-primary)",
@@ -290,7 +312,7 @@ function PacketPageClient() {
                 >
                   {pkg.cta}
                   <ArrowRight className="w-4 h-4" />
-                </Link>
+                </button>
               )}
             </div>
           ))}

@@ -266,8 +266,7 @@ export default function ListingGallery({ images, listing }: ListingGalleryProps)
           {usedImages.map((img, idx) => (
             <div 
               key={idx} 
-              className="min-w-full snap-start snap-always relative h-full w-full cursor-zoom-in"
-              onClick={() => openLightbox(idx)}
+              className="min-w-full snap-start snap-always relative h-full w-full"
             >
               <img src={img} alt={`Slide ${idx + 1}`} className="object-cover h-full w-full" />
             </div>
