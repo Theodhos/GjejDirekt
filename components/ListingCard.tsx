@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { MessageCircle, Phone, MapPin, Share2, CheckCircle, ChevronLeft, ChevronRight, Tag } from "lucide-react";
+import { MessageCircle, Phone, MapPin, Share2, CheckCircle, ChevronLeft, ChevronRight, Tag, Crown } from "lucide-react";
 import Card from "@/components/ui/Card";
 import { getCategoryLabel, getSubcategoryLabel } from "@/lib/constants";
 import { translations } from "@/lib/dictionary";
@@ -153,13 +153,9 @@ export default function ListingCard({ listing }: { listing: any }) {
   const isVerified = listing.verified === true;
   const t = translations[language];
 
-  // The ribbon reflects the package the admin approved: Verified, Ads, or Ads Pro.
-  const badgeLabel =
-    listing.package === "trading"
-      ? "ADS"
-      : listing.package === "features"
-      ? "ADS PRO"
-      : t.listing.verified;
+  // Verified remains visible even when Ads or Ads Pro is also assigned.
+  const showVerifiedBadge = isVerified;
+  const isAdsPackage = listing.package === "trading" || listing.package === "features";
 
   const priceSuffix =
     listing.category === "akomodim"
@@ -174,7 +170,19 @@ export default function ListingCard({ listing }: { listing: any }) {
       : listing.currency || "€";
 
   return (
-    <Card className="travel-card group relative flex h-full flex-col">
+    <Card 
+      className={`travel-card group relative flex h-full flex-col transition-all duration-300 ${
+        listing.package === "features" ? "z-10" : "hover:shadow-lg"
+      }`}
+      style={isAdsPackage ? {
+        border: "3px solid transparent",
+        backgroundImage: "linear-gradient(var(--surface-white), var(--surface-white)), linear-gradient(135deg, var(--brand-accent) 0%, #2aa889 50%, #176b59 100%)",
+        backgroundOrigin: "border-box",
+        backgroundClip: "padding-box, border-box",
+        boxShadow: "0 12px 35px rgba(31, 138, 112, 0.28)",
+        ...(listing.package === "features" ? { transform: "translateY(-4px)" } : {})
+      } : undefined}
+    >
       {/* Whole-card link overlay → navigates to the listing. Interactive controls sit above it (z-20). */}
       <Link
         href={`/listings/${listing.slug}`}
@@ -195,18 +203,20 @@ export default function ListingCard({ listing }: { listing: any }) {
           onError={() => setImageError(true)}
         />
 
-        {/* Package Badge — Verified / Ads / Ads Pro */}
-        {isVerified && (
+        {/* Package Badge — Verified */}
+        {showVerifiedBadge && (
           <div className="pointer-events-none absolute left-3 top-3 z-20">
             <div
               className="flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold text-white backdrop-blur-sm"
               style={{ background: "rgba(22,163,74,0.92)" }}
             >
               <CheckCircle className="h-3 w-3" />
-              {badgeLabel}
+              {t.listing.verified}
             </div>
           </div>
         )}
+
+
 
         {/* Price Badge */}
         <div className="pointer-events-none absolute bottom-0 right-0 z-20">
@@ -299,11 +309,6 @@ export default function ListingCard({ listing }: { listing: any }) {
         <CardTags
           category={categoryLabel}
           tags={[
-            ...(listing.package ? [
-              listing.package === "verify" ? "Verified" :
-              listing.package === "trading" ? "Ads" :
-              listing.package === "features" ? "Ads Pro" : null
-            ].filter(Boolean) : []),
             ...(listing.tags || []),
             ...(listing.amenities || [])
           ].filter((v, i, self) => v && self.indexOf(v) === i)}

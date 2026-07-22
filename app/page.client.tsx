@@ -421,16 +421,11 @@ function HomePageClient() {
             </div>
         </section>
 
-        {/* 8. BLOG (RE-PRESENTED IN NEW FORM) - CLEAN VERSION */}
-        <section className="relative">
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
-            <div>
-                <p className="eyebrow mb-3">{t.blog.archiveTitle}</p>
-                <h2
-                  className="font-bold tracking-tight"
-                  style={{ fontSize: "clamp(1.75rem, 4vw, 2.5rem)", color: "var(--text-primary)", lineHeight: 1.15 }}
-                >{t.blog.latestPub}</h2>
-            </div>
+        {/* 8. BLOG (RE-PRESENTED AS SLIDER) */}
+        <HorizontalRail
+          eyebrow={t.blog.archiveTitle}
+          title={t.blog.latestPub}
+          actionButton={
             <Link
               href="/blog"
               className="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-xl text-sm font-semibold text-white transition-all active:scale-95 shrink-0"
@@ -439,70 +434,40 @@ function HomePageClient() {
               onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = "var(--brand-accent)")}>
                 {language === 'en' ? 'Visit Journal' : 'Vizito Revistën'} <ArrowRight className="w-4 h-4" />
             </Link>
-          </div>
-          
-          <div className="grid gap-8 lg:grid-cols-12">
-            {/* Main Featured */}
-            <div className="lg:col-span-12">
-                <Link href={`/blog/${blogPosts[0]?.slug || "sample"}`} className="group relative block h-[420px] sm:h-[520px] overflow-hidden" style={{ borderRadius: "20px" }}>
-                    <Image src={blogPosts[0]?.coverImage || "https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=1200&q=80"} alt="Hero Blog" fill className="object-cover transition duration-700 group-hover:scale-103" />
-                    <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(10,12,16,0.9) 0%, rgba(10,12,16,0.2) 55%, transparent 100%)" }} />
-                    <div className="absolute inset-0 p-8 sm:p-12 flex flex-col justify-end text-white">
-                        <div
-                          className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-[10px] font-semibold uppercase tracking-[0.2em] mb-5 w-fit"
-                          style={{ background: "var(--brand-accent)", boxShadow: "0 2px 8px rgba(34,153,120,0.3)" }}
-                        >
-                            {language === 'en' ? 'Featured Story' : 'Historia e rekomanduar'}
-                        </div>
-                        <h3
-                          className="font-bold mb-4 text-white leading-tight group-hover:opacity-90 transition-opacity"
-                          style={{ fontSize: "clamp(1.5rem, 4vw, 2.75rem)", textShadow: "0 2px 12px rgba(0,0,0,0.4)" }}
-                        >{blogPosts[0]?.title || blogFallbacks[0].title}</h3>
-                        <p className="text-sm mb-6 line-clamp-2 max-w-2xl leading-relaxed" style={{ color: "rgba(255,255,255,0.75)" }}>
-                            {blogPosts[0]?.excerpt || blogFallbacks[0].excerpt}
-                        </p>
-                        <span className="inline-flex items-center gap-2.5 text-xs font-semibold uppercase tracking-[0.18em] text-white">
-                            {t.blog.readStory} <ArrowRight className="w-3.5 h-3.5" />
-                        </span>
-                    </div>
-                </Link>
+          }
+        >
+          {(blogPosts.length > 0 ? blogPosts : blogFallbacks).map((post: any) => (
+            <div key={post._id?.toString?.() || post.slug} className="min-w-[320px] max-w-[320px] shrink-0 snap-start h-full">
+              <Link
+                  href={`/blog/${post.slug}`}
+                  className="group flex flex-col transition-all duration-250 hover:-translate-y-1 h-full"
+                  style={{ background: "var(--surface-white)", border: "1px solid var(--border-soft)", borderRadius: "16px", boxShadow: "var(--shadow-card)", overflow: "hidden" }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.boxShadow = "var(--shadow-hover)"; (e.currentTarget as HTMLElement).style.borderColor = "rgba(34,153,120,0.2)"; }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.boxShadow = "var(--shadow-card)"; (e.currentTarget as HTMLElement).style.borderColor = "var(--border-soft)"; }}
+              >
+                  <div className="relative w-full aspect-[16/9] overflow-hidden flex-shrink-0">
+                      <Image src={post.coverImage || "https://images.unsplash.com/photo-1507525428034-b723cf961d3e"} alt={post.title} fill className="object-cover transition duration-500 group-hover:scale-103" />
+                  </div>
+                  <div className="flex flex-col flex-1 p-5">
+                      <p className="eyebrow mb-2">
+                          {post.createdAt ? new Date(post.createdAt).toLocaleDateString() : "Editorial"}
+                      </p>
+                      <h4
+                        className="text-base font-semibold line-clamp-2 leading-snug mb-2 transition-colors"
+                        style={{ color: "var(--text-primary)" }}
+                      >{post.title}</h4>
+                      <p className="text-sm line-clamp-2 leading-relaxed mb-4" style={{ color: "var(--text-secondary)" }}>{post.excerpt}</p>
+                      <span
+                        className="mt-auto text-xs font-semibold uppercase tracking-[0.18em] flex items-center gap-2 transition-colors"
+                        style={{ color: "var(--brand-accent)" }}
+                      >
+                          {language === 'en' ? 'Full Story' : 'Lexo të plotë'} <ArrowRight className="w-3.5 h-3.5" />
+                      </span>
+                  </div>
+              </Link>
             </div>
-            
-            {/* Small Cards below */}
-            <div className="lg:col-span-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-                {(blogPosts.length > 1 ? blogPosts.slice(1, 4) : blogFallbacks).map((post: any) => (
-                    <Link
-                        key={post._id?.toString?.() || post.slug}
-                        href={`/blog/${post.slug}`}
-                        className="group flex flex-col transition-all duration-250 hover:-translate-y-1"
-                        style={{ background: "var(--surface-white)", border: "1px solid var(--border-soft)", borderRadius: "16px", boxShadow: "var(--shadow-card)", overflow: "hidden" }}
-                        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.boxShadow = "var(--shadow-hover)"; (e.currentTarget as HTMLElement).style.borderColor = "rgba(34,153,120,0.2)"; }}
-                        onMouseLeave={e => { (e.currentTarget as HTMLElement).style.boxShadow = "var(--shadow-card)"; (e.currentTarget as HTMLElement).style.borderColor = "var(--border-soft)"; }}
-                    >
-                        <div className="relative w-full aspect-[16/9] overflow-hidden flex-shrink-0">
-                            <Image src={post.coverImage || "https://images.unsplash.com/photo-1507525428034-b723cf961d3e"} alt={post.title} fill className="object-cover transition duration-500 group-hover:scale-103" />
-                        </div>
-                        <div className="flex flex-col flex-1 p-5">
-                            <p className="eyebrow mb-2">
-                                {post.createdAt ? new Date(post.createdAt).toLocaleDateString() : "Editorial"}
-                            </p>
-                            <h4
-                              className="text-base font-semibold line-clamp-2 leading-snug mb-2 transition-colors"
-                              style={{ color: "var(--text-primary)" }}
-                            >{post.title}</h4>
-                            <p className="text-sm line-clamp-2 leading-relaxed mb-4" style={{ color: "var(--text-secondary)" }}>{post.excerpt}</p>
-                            <span
-                              className="mt-auto text-xs font-semibold uppercase tracking-[0.18em] flex items-center gap-2 transition-colors"
-                              style={{ color: "var(--brand-accent)" }}
-                            >
-                                {language === 'en' ? 'Full Story' : 'Lexo të plotë'} <ArrowRight className="w-3.5 h-3.5" />
-                            </span>
-                        </div>
-                    </Link>
-                ))}
-            </div>
-          </div>
-        </section>
+          ))}
+        </HorizontalRail>
       </div>
       )}
     </main>

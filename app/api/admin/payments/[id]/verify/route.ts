@@ -12,39 +12,49 @@ export async function POST(request: Request, { params }: { params: { id: string 
     await connectDB();
 
     const body = await request.json();
-    const packageKey = String(body.packageKey || "").toLowerCase();
+    const desiredVerified = body.desiredVerified;
+    const desiredPackage = body.desiredPackage;
     const updates: any = { verificationPending: false };
 
-    if (packageKey === "none") {
-      updates.verified = false;
-      updates.package = null;
-      updates.packagePurchaseDate = null;
-      updates.packageExpiryDate = null;
-    } else if (packageKey === "verified" || packageKey === "verify") {
-      updates.verified = true;
-      updates.package = "verify";
-      updates.packagePurchaseDate = new Date();
-      updates.packageExpiryDate = null;
-    } else if (packageKey === "ads" || packageKey === "trading") {
-      updates.verified = true;
-      updates.package = "trading";
-      updates.packagePurchaseDate = new Date();
-      updates.packageExpiryDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
-    } else if (packageKey === "ads pro" || packageKey === "features") {
-      updates.verified = true;
-      updates.package = "features";
-      updates.packagePurchaseDate = new Date();
-      updates.packageExpiryDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
-    } else {
-      return NextResponse.json({ error: "Invalid package" }, { status: 400 });
+    if (desiredVerified !== undefined) {
+      updates.verified = desiredVerified;
+    }
+
+    if (desiredPackage !== undefined) {
+      if (desiredPackage === "trading") {
+        updates.package = "trading";
+        updates.packagePurchaseDate = new Date();
+        updates.packageExpiryDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+      } else if (desiredPackage === "features") {
+        updates.package = "features";
+        updates.packagePurchaseDate = new Date();
+        updates.packageExpiryDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+      } else {
+        updates.package = null;
+        updates.packagePurchaseDate = null;
+        updates.packageExpiryDate = null;
+      }
     }
 
     let listingId: string | null = null;
     const payment = await Payment.findById(params.id);
     if (payment) {
       listingId = payment.listing ? payment.listing.toString() : null;
-      payment.verificationStatus = packageKey === "none" ? "none" : "approved";
-      payment.packageName = packageKey === "ads" ? "Ads" : packageKey === "ads pro" ? "Ads Pro" : packageKey === "verified" || packageKey === "verify" ? "Verified" : payment.packageName;
+      
+      if (desiredVerified === false && desiredPackage === null) {
+         payment.verificationStatus = "none";
+      } else {
+         payment.verificationStatus = "approved";
+      }
+
+      if (desiredPackage === "trading") {
+         payment.packageName = "Ads";
+      } else if (desiredPackage === "features") {
+         payment.packageName = "Ads Pro";
+      } else if (desiredVerified === true) {
+         payment.packageName = "Verified";
+      }
+      
       await payment.save();
     } else {
       listingId = params.id;

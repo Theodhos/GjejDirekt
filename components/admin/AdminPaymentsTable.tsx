@@ -114,27 +114,48 @@ export default function AdminPaymentsTable({ initialPayments }: { initialPayment
 
   const getCurrentPackage = (p: Payment) => normalizePackage(p.listingPackage || p.packageName);
 
-  const handleApprove = async (id: string, packageKey: string, packageLabel: string) => {
-    const confirmMessage = packageKey === "none"
+  const getCurrentPackages = (p: Payment) => {
+    const currentPackage = getCurrentPackage(p);
+    return PACKAGE_TAGS.filter((tag) =>
+      (tag.value === "verified" && p.listingVerified) ||
+      (tag.value === currentPackage && tag.value !== "verified")
+    );
+  };
+
+  const handleApprove = async (p: Payment, tagValue: string, tagLabel: string, action: "toggle" | "remove") => {
+    const confirmMessage = action === "remove"
       ? (language === "en"
-        ? `Remove ${packageLabel} from this service?`
-        : `Hiq ${packageLabel} nga ky shërbim?`)
+        ? `Remove ${tagLabel} from this service?`
+        : `Hiq ${tagLabel} nga ky shërbim?`)
       : (language === "en"
-        ? `Approve ${packageLabel} for this service?`
-        : `Aprovo ${packageLabel} për këtë shërbim?`);
+        ? `Approve ${tagLabel} for this service?`
+        : `Aprovo ${tagLabel} për këtë shërbim?`);
     if (!window.confirm(confirmMessage)) {
       return;
     }
 
-    setPending({ id, packageKey });
+    setPending({ id: p._id, packageKey: action === "remove" ? "none" : tagValue });
+
+    let desiredVerified = p.listingVerified;
+    let desiredPackage = getCurrentPackage(p) === "ads pro" ? "features" : getCurrentPackage(p) === "ads" ? "trading" : null;
+
+    if (action === "remove") {
+      if (tagValue === "verified") desiredVerified = false;
+      if (tagValue === "ads" || tagValue === "ads pro") desiredPackage = null;
+    } else {
+      if (tagValue === "verified") desiredVerified = true;
+      if (tagValue === "ads") desiredPackage = "trading";
+      if (tagValue === "ads pro") desiredPackage = "features";
+    }
+
     try {
-      const res = await fetch(`/api/admin/payments/${id}/verify`, {
+      const res = await fetch(`/api/admin/payments/${p._id}/verify`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ packageKey })
+        body: JSON.stringify({ desiredVerified, desiredPackage })
       });
       if (res.ok) {
-        toast.success(packageKey === "none" ? c.removedToast : c.verifiedToast);
+        toast.success(action === "remove" ? c.removedToast : c.verifiedToast);
         router.refresh();
       } else {
         toast.error(c.failToast);
@@ -197,7 +218,7 @@ export default function AdminPaymentsTable({ initialPayments }: { initialPayment
               <tbody className="divide-y divide-slate-100">
                 {filtered.map((p) => {
                   const currentPackageValue = getCurrentPackage(p);
-                  const currentTag = PACKAGE_TAGS.find((tag) => tag.value === currentPackageValue);
+                  const currentPackages = getCurrentPackages(p);
                   return (
                     <tr key={p._id} className="hover:bg-slate-50/50 transition">
                       <td className="px-6 py-4">
@@ -218,10 +239,14 @@ export default function AdminPaymentsTable({ initialPayments }: { initialPayment
                         <p className="text-sm font-bold text-slate-600">{p.listingTitle || "—"}</p>
                       </td>
                       <td className="px-6 py-4">
-                        {currentTag ? (
-                          <span className={`inline-flex items-center justify-center rounded-full px-3 py-2 text-[11px] font-black uppercase tracking-widest ${ASSIGNED_COLOR}`}>
-                            {currentTag.label}
-                          </span>
+                        {currentPackages.length > 0 ? (
+                          <div className="flex flex-wrap gap-2">
+                            {currentPackages.map((tag) => (
+                              <span key={tag.value} className={`inline-flex items-center justify-center rounded-full px-3 py-2 text-[11px] font-black uppercase tracking-widest ${ASSIGNED_COLOR}`}>
+                                {tag.label}
+                              </span>
+                            ))}
+                          </div>
                         ) : (
                           <span className="inline-flex items-center justify-center rounded-full border border-slate-200 bg-slate-50 px-3 py-2 text-[11px] font-black uppercase tracking-widest text-slate-400">
                             {c.statusNone}
@@ -231,14 +256,20 @@ export default function AdminPaymentsTable({ initialPayments }: { initialPayment
                       <td className="px-6 py-4 space-y-2">
                         <div className="flex flex-wrap gap-2">
                           {PACKAGE_TAGS.map((tag) => {
-                            const isCurrent = tag.value === currentPackageValue;
+                            // Check if this tag is active
+                            const isCurrent = 
+                              (tag.value === "verified" && p.listingVerified) || 
+                              (tag.value === "ads" && currentPackageValue === "ads") ||
+                              (tag.value === "ads pro" && currentPackageValue === "ads pro");
+                            
                             const isRowPending = pending?.id === p._id;
                             const isLoading = isRowPending && pending?.packageKey === tag.value;
                             const isRemoving = isRowPending && pending?.packageKey === "none" && isCurrent;
+                            
                             return (
                               <div key={tag.value} className="relative">
                                 <button
-                                  onClick={() => handleApprove(p._id, tag.value, tag.label)}
+                                  onClick={() => handleApprove(p, tag.value, tag.label, "toggle")}
                                   disabled={isRowPending}
                                   className={`inline-flex items-center justify-center rounded-full px-3 py-2 text-[11px] font-black uppercase tracking-widest transition ${isCurrent ? ASSIGNED_COLOR : `${AVAILABLE_COLOR} opacity-90 hover:opacity-100`} ${isRowPending && !isLoading && !isRemoving ? "opacity-50 cursor-not-allowed" : ""}`}
                                 >
@@ -249,7 +280,7 @@ export default function AdminPaymentsTable({ initialPayments }: { initialPayment
                                     type="button"
                                     title={c.removePackage}
                                     aria-label={c.removePackage}
-                                    onClick={() => handleApprove(p._id, "none", tag.label)}
+                                    onClick={() => handleApprove(p, tag.value, tag.label, "remove")}
                                     disabled={isRowPending}
                                     className={`absolute -right-1.5 -top-1.5 inline-flex h-5 w-5 items-center justify-center rounded-full border border-white bg-rose-500 text-white shadow-sm transition hover:bg-rose-600 ${isRowPending ? "opacity-50 cursor-not-allowed" : ""}`}
                                   >

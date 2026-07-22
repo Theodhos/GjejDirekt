@@ -209,14 +209,16 @@ function PacketPageClient() {
 
       {/* ── PRICING CARDS ── */}
       <section className="page-shell py-14">
-        <div className="grid gap-6 sm:grid-cols-2 auto-rows-fr max-w-5xl mx-auto">
+        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-2 auto-rows-fr max-w-7xl mx-auto">
           {packages.map((pkg) => (
             <div
               key={pkg.id}
               className="relative flex flex-col h-full transition-all duration-300 hover:-translate-y-1"
               style={{
                 background: "var(--surface-white)",
-                border: pkg.popular ? "2px solid var(--brand-accent)" : "1px solid var(--border-soft)",
+                border: pkg.popular || pkg.id === "ads"
+                  ? "2px solid var(--brand-accent)"
+                  : "1px solid var(--border-soft)",
                 borderRadius: "16px",
                 boxShadow: pkg.popular ? "0 8px 32px rgba(31,138,112,0.18)" : "var(--shadow-card)",
                 padding: "2rem"
