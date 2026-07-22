@@ -155,7 +155,8 @@ export default function ListingCard({ listing }: { listing: any }) {
 
   // Verified remains visible even when Ads or Ads Pro is also assigned.
   const showVerifiedBadge = isVerified;
-  const isAdsPackage = listing.package === "trading" || listing.package === "features";
+  // Ads only affects ranking. The visual border is reserved for Ads Pro.
+  const isAdsProPackage = listing.package === "features";
 
   const priceSuffix =
     listing.category === "akomodim"
@@ -174,7 +175,7 @@ export default function ListingCard({ listing }: { listing: any }) {
       className={`travel-card group relative flex h-full flex-col transition-all duration-300 ${
         listing.package === "features" ? "z-10" : "hover:shadow-lg"
       }`}
-      style={isAdsPackage ? {
+      style={isAdsProPackage ? {
         border: "3px solid transparent",
         backgroundImage: "linear-gradient(var(--surface-white), var(--surface-white)), linear-gradient(135deg, var(--brand-accent) 0%, #2aa889 50%, #176b59 100%)",
         backgroundOrigin: "border-box",
