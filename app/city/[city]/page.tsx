@@ -1,7 +1,7 @@
 import { connectDB } from "@/lib/db";
 import Listing from "@/models/Listing";
 import { categories } from "@/lib/constants";
-import Image from "next/image";
+import SafeImage from "@/components/ui/SafeImage";
 import { MapPin } from "lucide-react";
 import ListingCard from "@/components/ListingCard";
 import City from "@/models/City";
@@ -72,7 +72,7 @@ export default async function CityPage({ params }: { params: { city: string } })
     <main className="min-h-screen" style={{ background: "var(--surface-page)" }}>
       <section className="relative flex min-h-[calc(62vh-var(--header-height))] items-center overflow-hidden bg-slate-950 py-16 sm:min-h-[calc(72vh-var(--header-height))] sm:py-20">
         <div className="absolute inset-0">
-          <Image src={cityImage} alt={cityLabel} fill className="object-cover opacity-90" unoptimized priority />
+          <SafeImage src={cityImage} alt={cityLabel} fill className="object-cover opacity-90" priority />
           <div
             className="absolute inset-0"
             style={{
@@ -114,9 +114,9 @@ export default async function CityPage({ params }: { params: { city: string } })
         </div>
       </section>
 
-      <div className="page-shell space-y-12 py-12 sm:space-y-16 sm:py-16">
+      <div className="page-shell space-y-7 py-6 sm:space-y-9 sm:py-10">
         {categorySections.length === 0 ? (
-          <div className="text-center py-20">
+          <div className="text-center py-12">
             <h2 className="section-heading mb-4">Asnje sherbim nuk u gjet</h2>
             <p className="mx-auto max-w-md text-sm leading-relaxed" style={{ color: "var(--text-secondary)" }}>
               Nuk u gjet asnje sherbim per &quot;{cityLabel}&quot; per momentin. Provoni nje qytet tjeter.

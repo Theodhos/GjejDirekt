@@ -23,9 +23,9 @@ export default function Footer() {
       }}
     >
       {/* CTA Banner */}
-      <div className="page-shell pt-12 pb-4">
+      <div className="page-shell pt-8 pb-3">
         <div
-          className="rounded-2xl px-8 py-10 sm:px-12 sm:py-12 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6"
+          className="rounded-2xl px-6 py-8 sm:px-10 sm:py-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-5"
           style={{
             background: "var(--text-primary)",
             border: "1px solid rgba(255,255,255,0.06)"
@@ -64,8 +64,8 @@ export default function Footer() {
       </div>
 
       {/* Footer Grid */}
-      <div className="page-shell py-10">
-        <div className="grid gap-10 md:gap-8 md:grid-cols-5 text-left md:text-left">
+      <div className="page-shell py-8">
+        <div className="grid gap-8 md:gap-6 md:grid-cols-5 text-left md:text-left">
           {/* Brand */}
           <div className="md:col-span-1 md:pr-4">
             <p
@@ -92,10 +92,10 @@ export default function Footer() {
             </p>
             {[
               { href: "/", label: t.nav.home },
-              { href: "/services", label: t.nav.services },
+              { href: "/services", label: t.footer.destinations },
               { href: "/blog", label: t.nav.blog },
               { href: "/about-us", label: t.nav.aboutUs || (language === "en" ? "About Us" : "Rreth Nesh") },
-              { href: "/faq", label: t.nav.faq || (language === "en" ? "FAQ" : "Pyetje të Shpeshta") }
+              { href: "/faq", label: t.footer.faqShort }
             ].map((link) => (
               <Link
                 key={link.href}
@@ -107,16 +107,16 @@ export default function Footer() {
             ))}
           </div>
 
-          {/* Get Started */}
+          {/* For Businesses */}
           <div className="space-y-2">
             <p
               className="text-xs font-semibold uppercase tracking-[0.18em] mb-3"
               style={{ color: "var(--text-primary)" }}
             >
-              {t.footer.getStarted}
+              {t.footer.forBusinesses}
             </p>
             {[
-              { href: "/create-listing", label: t.nav.addListing },
+              { href: "/create-listing", label: t.footer.listBusiness },
               { href: "/register", label: t.nav.register },
               { href: "/login", label: t.nav.login }
             ].map((link) => (
@@ -182,7 +182,7 @@ export default function Footer() {
           style={{ borderTop: "1px solid var(--border-soft)" }}
         >
           <p className="text-xs" style={{ color: "var(--text-tertiary)" }}>
-            © {year} Gjej Direkt. {t.footer.rightsReserved}
+            © {year} TripShqip.com – {t.footer.bottomTagline}
           </p>
           <div className="flex items-center justify-left gap-4">
             <Link

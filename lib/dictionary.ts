@@ -159,7 +159,7 @@ export const translations = {
         archiveTitle: "The Archive",
         latestPub: "Latest Publications",
       readStory: "Read Story",
-      loadMore: "Load More Stories",
+      loadMore: "Read More",
       journalLabel: "The Journal",
       fallbacks: [
         {
@@ -241,7 +241,10 @@ export const translations = {
       description: "Access your personalized dashboard to manage listings, save favorites, and share your experiences.",
       featureLabel: "Feature",
       features: ["Saved trips", "Moderation tools", "Reviews", "Listing management"],
-      newToPlatform: "New to the platform?"
+      signInSubtitle: "Sign in to manage your business profile on TripShqip.",
+      noAccount: "Don't have an account?",
+      listFreePitch: "List your business for free in just 5 minutes.",
+      perks: ["Free to list", "0% commission", "Direct contact with tourists"]
     },
     register: {
       start: "Start your journey",
@@ -267,9 +270,14 @@ export const translations = {
       exploreServices: "Explore services",
       addListing: "Add a listing",
       getStarted: "Get started",
+      forBusinesses: "For Businesses",
+      listBusiness: "List Your Business",
+      destinations: "Destinations",
+      faqShort: "FAQ",
       contactTitle: "Contact Us",
       follow: "Follow",
-      rightsReserved: "All rights reserved."
+      rightsReserved: "All rights reserved.",
+      bottomTagline: "Find easily. Contact directly. Enjoy the journey"
     },
     listing: {
       request: "Request",
@@ -663,7 +671,7 @@ export const translations = {
         archiveTitle: "Arkiva",
         latestPub: "Publikimet e Fundit",
         readStory: "Lexo Historinë",
-        loadMore: "Ngarko më shumë histori",
+        loadMore: "Shiko Më Shumë",
       journalLabel: "Revista",
       fallbacks: [
         {
@@ -744,7 +752,10 @@ export const translations = {
       description: "Aksesoni panelin tuaj të personalizuar për të menaxhuar listimet, ruajtur të preferuarat dhe ndarë përvojat tuaja.",
       featureLabel: "Funksioni",
       features: ["Udhëtime të ruajtura", "Mjetet e moderimit", "Vlerësimet", "Menaxhimi i listimeve"],
-      newToPlatform: "I ri në platformë?"
+      signInSubtitle: "Hyni për të menaxhuar profilin e biznesit tuaj në TripShqip.",
+      noAccount: "Nuk keni një llogari?",
+      listFreePitch: "Listoni biznesin falas në vetëm 5 minuta.",
+      perks: ["Falas për t'u listuar", "0% komision", "Kontakt direkt me turistët"]
     },
     register: {
       start: "Filloni udhëtimin tuaj",
@@ -770,9 +781,14 @@ export const translations = {
       exploreServices: "Eksploro sherbimet",
       addListing: "Shto nje listim",
       getStarted: "Fillo tani",
+      forBusinesses: "Për Bizneset",
+      listBusiness: "Listo Biznesin",
+      destinations: "Destinacionet",
+      faqShort: "FAQ",
       contactTitle: "Na Kontaktoni",
       follow: "Na ndiqni",
-      rightsReserved: "Te gjitha te drejtat e rezervuara."
+      rightsReserved: "Te gjitha te drejtat e rezervuara.",
+      bottomTagline: "Gjej lehtë. Kontakto direkt. Shijo udhëtimin"
     },
     listing: {
       request: "Kërkesë",

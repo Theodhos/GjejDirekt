@@ -189,10 +189,10 @@ function CheckoutPageClient() {
   }
 
   return (
-    <main className="min-h-screen py-20" style={{ background: "var(--surface-page)" }}>
+    <main className="min-h-screen py-10 sm:py-14" style={{ background: "var(--surface-page)" }}>
       <div className="page-shell">
         <div className="max-w-6xl mx-auto">
-          <div className="grid gap-12 lg:grid-cols-[1fr_400px]">
+          <div className="grid gap-8 lg:grid-cols-[1fr_400px]">
 
             <div className="space-y-10">
               <div>

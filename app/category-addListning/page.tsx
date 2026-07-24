@@ -1,14 +1,10 @@
 import React from 'react';
+import Link from 'next/link';
 
 export const dynamic = "force-dynamic";
 
 // Define a functional component for the home page
 const HomePage: React.FC = () => {
-  // Function to handle navigation
-  const navigateToCategory = (category: string) => {
-    window.location.href = `/category/${category}`;
-  };
-
   const categories = [
     {
       title: 'Accommodation',
@@ -60,10 +56,10 @@ const HomePage: React.FC = () => {
 
         <div className="grid gap-4">
           {categories.map((category) => (
-            <div
+            <Link
               key={category.path}
-              onClick={() => navigateToCategory(category.path)}
-              className="bg-white rounded-2xl shadow-md p-5 cursor-pointer transition hover:shadow-xl hover:scale-[1.01]"
+              href={`/categories/${category.path}`}
+              className="block bg-white rounded-2xl shadow-md p-5 cursor-pointer transition hover:shadow-xl hover:scale-[1.01]"
             >
               <h2 className="text-2xl font-semibold mb-2">
                 {category.title}
@@ -72,7 +68,7 @@ const HomePage: React.FC = () => {
               <p className="text-gray-600">
                 {category.description}
               </p>
-            </div>
+            </Link>
           ))}
         </div>
       </div>

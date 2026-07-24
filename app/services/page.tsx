@@ -22,8 +22,8 @@ export default function ServicesPage() {
     <main style={{ background: "var(--surface-page)", minHeight: "100vh", paddingBottom: "5rem" }}>
       <ServicesPageHeader />
 
-      <section className="page-shell pt-10">
-        <div className="grid gap-8 lg:grid-cols-[300px_1fr] lg:gap-10">
+      <section className="page-shell pt-6 sm:pt-8">
+        <div className="grid gap-6 lg:grid-cols-[300px_1fr] lg:gap-8">
           <aside className="relative">
             <Suspense
               fallback={

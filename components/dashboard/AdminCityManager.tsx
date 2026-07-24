@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Image from "next/image";
+import SafeImage from "@/components/ui/SafeImage";
+import { imageUrlError } from "@/lib/images";
 import { Edit3, Save, Trash2, Upload, X } from "lucide-react";
 import toast from "react-hot-toast";
 import Button from "@/components/ui/Button";
@@ -37,7 +38,7 @@ async function uploadImage(file: File) {
 }
 
 export default function AdminCityManager() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const commonText = t.common as Record<string, string>;
   const adminText = t.admin as Record<string, string>;
   const [deletingValue, setDeletingValue] = useState("");
@@ -149,7 +150,7 @@ export default function AdminCityManager() {
             return (
               <article key={city.value} className="overflow-hidden rounded-xl border border-slate-200 bg-white">
                 <div className="relative aspect-[16/9]">
-                  <Image src={previewImage} alt={city.label} fill className="object-cover" sizes="(min-width: 1280px) 33vw, (min-width: 768px) 50vw, 100vw" unoptimized />
+                  <SafeImage src={previewImage} alt={city.label} fill className="object-cover" sizes="(min-width: 1280px) 33vw, (min-width: 768px) 50vw, 100vw" />
                 </div>
                 <div className="p-4">
                   {!isEditing ? (
@@ -185,7 +186,7 @@ export default function AdminCityManager() {
                     >
                       <Input label={t.admin.cityNameLabel || "City name"} value={draft.label} onChange={(event) => setDraft((current) => ({ ...current, label: event.target.value }))} required />
                       <Input label={t.admin.regionLabel || "Region"} value={draft.region} onChange={(event) => setDraft((current) => ({ ...current, region: event.target.value }))} />
-                      <Input label={t.admin.imageLabel || "Image URL"} value={draft.image} onChange={(event) => setDraft((current) => ({ ...current, image: event.target.value }))} placeholder="https://..." />
+                      <Input label={t.admin.imageLabel || "Image URL"} value={draft.image} onChange={(event) => setDraft((current) => ({ ...current, image: event.target.value }))} placeholder="https://..." error={imageUrlError(draft.image, language === "en")} />
                       <label className="flex items-center justify-between gap-3 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-700">
                         <span className="inline-flex items-center gap-2">
                           <Upload className="h-4 w-4" />

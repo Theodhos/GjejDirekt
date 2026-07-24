@@ -41,7 +41,7 @@ export default function CreateListingPage() {
         className="relative overflow-hidden"
         style={{ borderBottom: "1px solid var(--border-soft)", background: "var(--surface-cream)" }}
       >
-        <div className="page-shell py-20 text-center sm:py-24">
+        <div className="page-shell py-10 text-center sm:py-14">
           <p className="eyebrow mb-5">{en ? "Directory" : "Direktoria"}</p>
           <h1
             className="font-bold tracking-tight"
@@ -60,7 +60,7 @@ export default function CreateListingPage() {
         </div>
       </section>
 
-      <section className="page-shell py-12 sm:py-16">
+      <section className="page-shell py-6 sm:py-10">
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
           {categories.map((category) => {
             const colors = categoryColors[category.value] || {

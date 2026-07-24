@@ -3,6 +3,7 @@
 import { useRef } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import ListingCard from "@/components/ListingCard";
+import { useLanguage } from "@/context/LanguageContext";
 
 type Props = {
   categoryLabel: string;
@@ -18,6 +19,7 @@ export default function CityCategorySlider({
   cityName,
 }: Props) {
   const railRef = useRef<HTMLDivElement>(null);
+  const { language } = useLanguage();
 
   function scroll(direction: -1 | 1) {
     railRef.current?.scrollBy({ left: direction * 420, behavior: "smooth" });
@@ -86,11 +88,13 @@ export default function CityCategorySlider({
 
           {listings.length === 0 && (
             <div
-              className="flex w-full items-center justify-center rounded-2xl border-2 border-dashed py-16"
+              className="flex w-full items-center justify-center rounded-2xl border-2 border-dashed py-12"
               style={{ background: "var(--surface-cream)", borderColor: "var(--border-soft)" }}
             >
               <p className="eyebrow">
-                Nuk ka shërbime të disponueshme për momentin
+                {language === "en"
+                  ? "No services available at the moment"
+                  : "Nuk ka shërbime të disponueshme për momentin"}
               </p>
             </div>
           )}

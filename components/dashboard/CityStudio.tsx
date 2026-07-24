@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
+import SafeImage from "@/components/ui/SafeImage";
 import { useRouter } from "next/navigation";
 import { MapPinned, Upload, X } from "lucide-react";
 import toast from "react-hot-toast";
@@ -88,7 +88,7 @@ export default function CityStudio() {
         </div>
         <div className="lg:min-w-[320px]">
           <div className="relative aspect-[16/9] overflow-hidden rounded-[1.4rem] border border-slate-200 bg-slate-50">
-            <Image src={previewImage} alt={label || "City banner"} fill className="object-cover" sizes="320px" unoptimized />
+            <SafeImage src={previewImage} alt={label || "City banner"} fill className="object-cover" sizes="320px" />
           </div>
         </div>
       </div>

@@ -1,9 +1,10 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { MessageCircle, Phone, MapPin, Share2, CheckCircle, ChevronLeft, ChevronRight, Tag, Crown } from "lucide-react";
 import Card from "@/components/ui/Card";
+import SafeImage from "@/components/ui/SafeImage";
+import { FALLBACK_IMAGE } from "@/lib/images";
 import { getCategoryLabel, getSubcategoryLabel } from "@/lib/constants";
 import { translations } from "@/lib/dictionary";
 import { useLanguage } from "@/context/LanguageContext";
@@ -118,7 +119,6 @@ function CardTags({ category, tags }: { category?: string; tags: string[] }) {
 
 export default function ListingCard({ listing }: { listing: any }) {
   const { language } = useLanguage();
-  const [imageError, setImageError] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   const allImages = listing.images?.length > 0
@@ -127,7 +127,7 @@ export default function ListingCard({ listing }: { listing: any }) {
       ? listing.photos
       : (listing.bannerImage ? [listing.bannerImage] : []));
   if (allImages.length === 0) {
-    allImages.push("https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80");
+    allImages.push(FALLBACK_IMAGE);
   }
 
   const nextImage = (e: React.MouseEvent) => {
@@ -196,12 +196,11 @@ export default function ListingCard({ listing }: { listing: any }) {
         className="relative aspect-[4/3] overflow-hidden block shrink-0"
         style={{ borderRadius: "16px 16px 0 0" }}
       >
-        <Image
-          src={imageError ? "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80" : allImages[currentImageIndex]}
+        <SafeImage
+          src={allImages[currentImageIndex]}
           alt={listing.title}
           fill
           className="object-cover transition-transform duration-500 group-hover:scale-105"
-          onError={() => setImageError(true)}
         />
 
         {/* Package Badge — Verified */}

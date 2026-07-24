@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import SafeImage from "@/components/ui/SafeImage";
 import { useMemo, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
@@ -389,7 +389,7 @@ export default function ListingEditForm({ listing }: { listing: ListingData }) {
                 title={en ? "Click to remove" : "Kliko për ta hequr"}
               >
                 <div className="relative h-32 w-full">
-                  <Image src={image} alt={en ? "Current listing" : "Imazh aktual"} fill className="object-cover" />
+                  <SafeImage src={image} alt={en ? "Current listing" : "Imazh aktual"} fill className="object-cover" />
                 </div>
                 <span className="absolute inset-0 flex items-center justify-center bg-slate-950/0 text-white opacity-0 transition group-hover:bg-slate-950/40 group-hover:opacity-100">
                   {en ? "Remove" : "Hiq"}

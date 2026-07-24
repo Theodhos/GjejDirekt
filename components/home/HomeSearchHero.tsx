@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import SafeImage from "@/components/ui/SafeImage";
 import { useRouter } from "next/navigation";
 import { ArrowRight, Search, Compass, Sparkles, MapPin, Tag, X } from "lucide-react";
 import { useState, useMemo, useEffect, useRef } from "react";
@@ -199,24 +199,24 @@ export default function HomeSearchHero() {
 
   return (
     <section className="relative flex min-h-[48vh] items-center justify-center py-10 sm:min-h-[52vh]" style={{ background: "linear-gradient(180deg, #0b2319 0%, #0f3f2d 100%)" }}>
-      <div className="page-shell relative z-10 w-full max-w-3xl px-4">
-        <div className="text-center mb-8">
+      <div className="page-shell relative z-10 w-full max-w-4xl px-4">
+        <div className="text-center mb-7">
           <h1
-            className="font-bold text-white text-3xl sm:text-5xl leading-tight tracking-tight"
-            style={{ lineHeight: 1.03, maxWidth: "100%" }}
+            className="mx-auto max-w-[52rem] text-balance font-bold text-white text-[1.75rem] sm:text-[2.5rem]"
+            style={{ lineHeight: 1.16, letterSpacing: "-0.02em" }}
           >
-            {language === "en" ? (
-              <>
-                <span className="block whitespace-nowrap">Find easily. Contact directly.</span>
-                <span className="block">Enjoy holidays.</span>
-              </>
-            ) : (
-              <>
-                <span className="block whitespace-nowrap">Gjej lehtë. Kontakto direkt.</span>
-                <span className="block">Shijo pushimet.</span>
-              </>
-            )}
+            {language === "en"
+              ? "Hotels, restaurants, attractions and activities across Albania."
+              : "Hotele, restorante, atraksione dhe aktivitete në të gjithë Shqipërinë."}
           </h1>
+          <p
+            className="mx-auto mt-4 max-w-xl text-sm sm:text-base leading-relaxed"
+            style={{ color: "rgba(255,255,255,0.7)" }}
+          >
+            {language === "en"
+              ? "Find easily, contact directly, enjoy the journey."
+              : "Gjej lehtë, kontakto direkt, shijo udhëtimin."}
+          </p>
         </div>
 
         {/* Search Bar */}
@@ -257,7 +257,7 @@ export default function HomeSearchHero() {
                           searchRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
                         }
                       }}
-                      placeholder={language === "en" ? "Search hotels, restaurants, beaches, tours..." : "Kërko hotele, restorante, plazhe, ture..."}
+                      placeholder={language === "en" ? "Search for a hotel, restaurant or activity..." : "Kërko hotel, restorant ose aktivitet..."}
                       className="w-full bg-transparent py-4 sm:py-3.5 text-lg sm:text-base outline-none font-medium"
                       style={{ color: "var(--text-primary)" }}
                     />
@@ -286,7 +286,7 @@ export default function HomeSearchHero() {
                     <input
                       value={city}
                       onChange={(event) => setCity(event.target.value)}
-                      placeholder={language === "en" ? "Kërko hotele, restorante, plazhe" : "Kërko hotele, restorante, plazhe"}
+                      placeholder={language === "en" ? "Search for a hotel, restaurant or activity..." : "Kërko hotel, restorant ose aktivitet..."}
                       className="w-full bg-transparent text-base outline-none font-medium"
                       style={{ color: "var(--text-primary)" }}
                       autoFocus
@@ -330,7 +330,7 @@ export default function HomeSearchHero() {
                     >
                       {suggestion.type === "listing" && suggestion.image ? (
                         <div className="relative w-12 h-12 overflow-hidden rounded-2xl border shrink-0 shadow-sm" style={{ borderColor: "rgba(15,20,25,0.08)" }}>
-                          <Image src={suggestion.image} alt={suggestion.label} fill className="object-cover" sizes="48px" />
+                          <SafeImage src={suggestion.image} alt={suggestion.label} fill className="object-cover" sizes="48px" />
                         </div>
                       ) : (
                         <div
@@ -414,7 +414,7 @@ export default function HomeSearchHero() {
                     >
                       {suggestion.type === "listing" && suggestion.image ? (
                         <div className="relative w-12 h-12 overflow-hidden rounded-2xl border shrink-0 shadow-sm" style={{ borderColor: "rgba(15,20,25,0.08)" }}>
-                          <Image src={suggestion.image} alt={suggestion.label} fill className="object-cover" sizes="48px" />
+                          <SafeImage src={suggestion.image} alt={suggestion.label} fill className="object-cover" sizes="48px" />
                         </div>
                       ) : (
                         <div

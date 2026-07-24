@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import SafeImage from "@/components/ui/SafeImage";
 import Link from "next/link";
 import React from "react";
 import { CategoryDefinition } from "@/lib/constants";
@@ -25,7 +25,7 @@ export default function CategoryClient({
     <main className="min-h-screen" style={{ background: "var(--surface-page)" }}>
       <section className="relative flex min-h-[calc(62vh-var(--header-height))] items-center overflow-hidden bg-slate-950 py-16 sm:min-h-[calc(72vh-var(--header-height))] sm:py-20">
         <div className="absolute inset-0">
-          <Image src={category.image} alt={categoryLabel} fill className="object-cover opacity-90" unoptimized priority />
+          <SafeImage src={category.image} alt={categoryLabel} fill className="object-cover opacity-90" priority />
           <div
             className="absolute inset-0"
             style={{
@@ -67,7 +67,7 @@ export default function CategoryClient({
         </div>
       </section>
 
-      <div className="page-shell py-12 sm:py-16">
+      <div className="page-shell py-6 sm:py-10">
         {initialListings.length === 0 ? (
           <div className="text-center py-10">
             <div

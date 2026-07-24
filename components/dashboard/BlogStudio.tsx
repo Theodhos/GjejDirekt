@@ -7,6 +7,7 @@ import toast from "react-hot-toast";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
 import Textarea from "@/components/ui/Textarea";
+import { imageUrlError } from "@/lib/images";
 
 type BlogPreview = {
   _id: string;
@@ -19,7 +20,7 @@ type BlogPreview = {
 };
 
 export default function BlogStudio({ recentPosts }: { recentPosts: BlogPreview[] }) {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const blogText = t.blog as unknown as Record<string, string>;
   const commonText = t.common as Record<string, string>;
   const router = useRouter();
@@ -101,6 +102,7 @@ export default function BlogStudio({ recentPosts }: { recentPosts: BlogPreview[]
               value={coverImage}
               onChange={(event) => setCoverImage(event.target.value)}
               placeholder={t.admin.coverImagePlaceholder || 'https://images.unsplash.com/...'}
+              error={imageUrlError(coverImage, language === "en")}
             />
           </div>
           <Textarea

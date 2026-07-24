@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { X, ChevronLeft, ChevronRight, Maximize2 } from "lucide-react";
-import Image from "next/image";
+import SafeImage from "@/components/ui/SafeImage";
 
 interface LightboxProps {
   images: string[];
@@ -37,10 +37,10 @@ export default function Lightbox({ images, isOpen, onClose, initialIndex = 0 }: 
         </button>
 
         <div className="relative w-full h-full max-w-6xl max-h-[80vh]">
-          <Image 
-            src={images[currentIndex]} 
-            alt={`Gallery ${currentIndex}`} 
-            fill 
+          <SafeImage
+            src={images[currentIndex]}
+            alt={`Gallery ${currentIndex}`}
+            fill
             className="object-contain"
             priority
           />

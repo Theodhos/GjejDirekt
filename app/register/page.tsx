@@ -13,7 +13,7 @@ export default function RegisterPage() {
 
   return (
     <section
-      className="page-shell flex items-center justify-center min-h-[calc(100vh-5rem)] py-10"
+      className="page-shell flex items-center justify-center min-h-[calc(100vh-var(--header-height))] py-8 sm:py-12"
       style={{ background: "var(--surface-page)" }}
     >
       <div
@@ -21,29 +21,29 @@ export default function RegisterPage() {
       >
         <div className="grid lg:grid-cols-2">
 
-          {/* Left — Simplified Image Panel */}
-          <div className="relative hidden lg:block overflow-hidden min-h-full">
+          {/* Left — Image Panel */}
+          <div className="relative hidden lg:block overflow-hidden">
             <Image
               src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80"
               alt="Travel registration"
               fill
               className="object-cover"
+              sizes="(min-width: 1024px) 50vw, 0px"
+              priority
             />
             {/* Very subtle, smooth gradient */}
             <div
               className="absolute inset-0"
-              style={{ background: "linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.2) 40%, transparent 100%)" }}
+              style={{ background: "linear-gradient(to top, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.22) 45%, transparent 100%)" }}
             />
-            <div className="absolute inset-0 flex flex-col justify-end p-12">
+            <div className="absolute inset-0 flex flex-col justify-end p-10 xl:p-12">
               <h1
-                className="text-3xl font-bold text-white mb-3 leading-snug"
+                className="text-[1.75rem] xl:text-3xl font-bold text-white leading-snug"
                 style={{ textShadow: "0 4px 12px rgba(0,0,0,0.3)" }}
               >
                 {t.register.joinTitle}
               </h1>
-              <p
-                className="text-base text-white/80"
-              >
+              <p className="mt-3 text-sm xl:text-base text-white/80 leading-relaxed">
                 {language === "en" ? "Create an account to start exploring." : "Krijoni një llogari për të filluar eksplorimin."}
               </p>
             </div>
@@ -51,18 +51,18 @@ export default function RegisterPage() {
 
           {/* Right — Form Panel */}
           <div
-            className="flex flex-col justify-center p-10 sm:p-14"
+            className="flex flex-col justify-center p-7 sm:p-10"
             style={{ background: "var(--surface-white)" }}
           >
-            <div className="max-w-sm mx-auto w-full">
-              <div className="mb-8">
+            <div className="w-full max-w-sm mx-auto">
+              <div className="mb-7">
                 <h2
-                  className="font-bold mb-2"
+                  className="font-bold tracking-tight"
                   style={{ fontSize: "1.625rem", color: "var(--text-primary)" }}
                 >
                   {t.nav.register}
                 </h2>
-                <p className="text-sm leading-relaxed" style={{ color: "var(--text-secondary)" }}>
+                <p className="mt-2 text-sm leading-relaxed" style={{ color: "var(--text-secondary)" }}>
                   {language === "en"
                     ? "Fill in the details to create your new account."
                     : "Plotësoni detajet për të krijuar llogarinë tuaj të re."}
@@ -71,11 +71,21 @@ export default function RegisterPage() {
 
               <AuthForm mode="register" />
 
-              <div className="mt-6">
-                <SocialLogin />
+              {/* Divider — same rhythm as the login page */}
+              <div className="my-6 flex items-center gap-3">
+                <span className="h-px flex-1" style={{ background: "var(--border-soft)" }} />
+                <span
+                  className="text-[11px] font-semibold uppercase tracking-[0.16em]"
+                  style={{ color: "var(--text-tertiary)" }}
+                >
+                  {language === "en" ? "or" : "ose"}
+                </span>
+                <span className="h-px flex-1" style={{ background: "var(--border-soft)" }} />
               </div>
 
-              <p className="mt-7 text-center text-sm" style={{ color: "var(--text-tertiary)" }}>
+              <SocialLogin />
+
+              <p className="mt-7 text-center text-sm leading-relaxed" style={{ color: "var(--text-tertiary)" }}>
                 {t.register.alreadyAccount}{" "}
                 <Link
                   href="/login"

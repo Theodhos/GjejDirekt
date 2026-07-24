@@ -493,7 +493,7 @@ export default async function ListingDetailPage({ params }: { params: { slug: st
 
       {/* ── RELATED LISTINGS ── */}
       {relatedListings.length > 0 && (
-        <section className="page-shell mt-8 lg:mt-16">
+        <section className="page-shell mt-8 lg:mt-10">
           <div className="flex items-end justify-between mb-8">
             <div>
               <p className="eyebrow mb-2">More like this</p>

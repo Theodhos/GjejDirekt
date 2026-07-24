@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import SafeImage from "@/components/ui/SafeImage";
 import Link from "next/link";
 import { MapPin, ArrowRight } from "lucide-react";
 import { albaniaCities } from "@/lib/albania-cities";
@@ -25,20 +25,20 @@ export default function CitiesPage() {
   }, []);
 
   return (
-    <main className="min-h-screen bg-slate-50 py-24">
+    <main className="min-h-screen bg-slate-50 py-10 sm:py-14">
       <div className="page-shell">
-        <div className="text-center max-w-3xl mx-auto mb-20">
-          <h1 className="text-5xl sm:text-7xl font-black tracking-tight text-slate-950 mb-8">
+        <div className="text-center max-w-3xl mx-auto mb-8 sm:mb-10">
+          <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-slate-950 mb-4">
             {language === 'en' ? 'Explore Cities' : 'Eksploro Qytetet'}
           </h1>
-          <p className="text-xl text-slate-600 font-medium leading-relaxed">
+          <p className="text-base sm:text-lg text-slate-600 font-medium leading-relaxed">
             {language === 'en' 
               ? 'Discover the unique charm and services of each Albanian city.' 
               : 'Zbuloni shijen unike dhe shërbimet e çdo qyteti shqiptar.'}
           </p>
         </div>
 
-        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-5 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
           {cities.map((city) => (
             <Link
               key={city.value}
@@ -47,11 +47,12 @@ export default function CitiesPage() {
               className="group relative overflow-hidden rounded-[3rem] bg-white border border-slate-100 transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl shadow-soft"
             >
               <div className="relative aspect-[16/10] overflow-hidden">
-                <Image 
-                  src={city.image || "https://images.unsplash.com/photo-1512917774080-9991f1c4c750"} 
-                  alt={city.label} 
-                  fill 
-                  className="object-cover transition duration-700 group-hover:scale-110" 
+                <SafeImage
+                  src={city.image}
+                  alt={city.label}
+                  fallbackSrc="https://images.unsplash.com/photo-1512917774080-9991f1c4c750"
+                  fill
+                  className="object-cover transition duration-700 group-hover:scale-110"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/20 to-transparent" />
                 <div className="absolute top-6 left-6">

@@ -19,10 +19,13 @@ export default function HorizontalRail({ id, eyebrow, title, description, action
     railRef.current?.scrollBy({ left: direction * 420, behavior: "smooth" });
   }
 
+  // No vertical padding on the section — the home page sets the rhythm with space-y,
+  // which keeps the gaps compact and identical between every rail. scroll-mt clears
+  // the fixed header when an anchor link jumps to a category.
   return (
-    <section id={id} className="py-5 sm:py-8">
+    <section id={id} className="scroll-mt-24">
       {/* Header */}
-      <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+      <div className="mb-4 sm:mb-5 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
         <div className="max-w-xl">
           {eyebrow && (
             <p className="eyebrow mb-2">{eyebrow}</p>
@@ -103,7 +106,7 @@ export default function HorizontalRail({ id, eyebrow, title, description, action
       {/* Scroll Rail */}
       <div
         ref={railRef}
-        className="flex items-stretch gap-5 overflow-x-auto no-scrollbar scroll-smooth snap-x snap-mandatory py-4 px-0.5 -mx-0.5"
+        className="flex items-stretch gap-4 sm:gap-5 overflow-x-auto no-scrollbar scroll-smooth snap-x snap-mandatory py-3 px-0.5 -mx-0.5"
       >
         {children}
       </div>

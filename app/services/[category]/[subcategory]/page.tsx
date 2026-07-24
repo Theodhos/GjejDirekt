@@ -1,4 +1,4 @@
-import Image from "next/image";
+import SafeImage from "@/components/ui/SafeImage";
 import Link from "next/link";
 import { Sparkles, MapPin, ArrowLeft } from "lucide-react";
 import SearchFilters from "@/components/SearchFilters";
@@ -50,9 +50,10 @@ export default async function SubcategoryPage({
     <main className="min-h-screen bg-slate-50/50">
       {/* Category Banner */}
       <section className="relative h-[40vh] min-h-[350px] w-full overflow-hidden">
-        <Image
-          src={categoryObj?.image || "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=2000&q=80"}
+        <SafeImage
+          src={categoryObj?.image}
           alt={subcategoryLabel}
+          fallbackSrc="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=2000&q=80"
           fill
           className="object-cover scale-105"
         />
@@ -72,7 +73,7 @@ export default async function SubcategoryPage({
         </div>
       </section>
 
-      <section className="page-shell -mt-16 relative z-20 pb-20">
+      <section className="page-shell -mt-16 relative z-20 pb-10">
         <div className="surface p-6 sm:p-12 mb-12 flex flex-col md:flex-row items-center justify-between gap-8 border-none shadow-2xl">
             <div className="max-w-2xl text-center md:text-left">
                 <h2 className="text-2xl sm:text-3xl font-black text-slate-950 mb-4">Explore {listings.length} premium {subcategoryLabel.toLowerCase()}</h2>

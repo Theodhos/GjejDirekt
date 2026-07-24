@@ -1,6 +1,7 @@
 "use client";
 
-import Image from "next/image";
+import SafeImage from "@/components/ui/SafeImage";
+import { imageUrlError } from "@/lib/images";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, Edit3, ExternalLink, Save, Upload, X } from "lucide-react";
@@ -44,7 +45,7 @@ async function uploadImage(file: File) {
 }
 
 export default function AdminBlogsClient({ posts, page, total, perPage, totalPages }: any) {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const adminText = t.admin as Record<string, string>;
   const commonText = t.common as Record<string, string>;
   const router = useRouter();
@@ -142,13 +143,12 @@ export default function AdminBlogsClient({ posts, page, total, perPage, totalPag
               <article key={post._id} className="overflow-hidden rounded-xl border border-slate-200 bg-white">
                 <div className="grid gap-0 md:grid-cols-[190px_1fr]">
                   <div className="relative aspect-[16/10] md:aspect-auto md:min-h-full">
-                    <Image
+                    <SafeImage
                       src={previewImage}
                       alt={post.title}
                       fill
                       className="object-cover"
                       sizes="(min-width: 1024px) 190px, 100vw"
-                      unoptimized
                     />
                   </div>
 
@@ -188,7 +188,7 @@ export default function AdminBlogsClient({ posts, page, total, perPage, totalPag
                         }}
                       >
                         <Input label={commonText.title || "Title"} value={draft.title} onChange={(event) => setDraft((current) => ({ ...current, title: event.target.value }))} required />
-                        <Input label={adminText.coverImage || "Cover image URL"} value={draft.coverImage} onChange={(event) => setDraft((current) => ({ ...current, coverImage: event.target.value }))} placeholder="https://..." />
+                        <Input label={adminText.coverImage || "Cover image URL"} value={draft.coverImage} onChange={(event) => setDraft((current) => ({ ...current, coverImage: event.target.value }))} placeholder="https://..." error={imageUrlError(draft.coverImage, language === "en")} />
                         <label className="flex items-center justify-between gap-3 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-700">
                           <span className="inline-flex items-center gap-2">
                             <Upload className="h-4 w-4" />

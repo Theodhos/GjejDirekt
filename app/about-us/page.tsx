@@ -63,7 +63,7 @@ export default function AboutUsPage() {
             </span>
           </div>
 
-          <div className="grid gap-12 lg:grid-cols-[1fr_400px] items-center">
+          <div className="grid gap-8 lg:grid-cols-[1fr_400px] items-center">
             <div>
               <p className="eyebrow mb-4">
                 {language === "en" ? "Welcome to TripShqip" : "Mirësevini në TripShqip"}
@@ -285,7 +285,7 @@ export default function AboutUsPage() {
       {/* ── SUPPORTS ── */}
       <section style={{ background: "var(--surface-cream)", borderBottom: "1px solid var(--border-soft)" }}>
         <div className="page-shell" style={{ paddingTop: "3.5rem", paddingBottom: "3.5rem" }}>
-          <div className="grid gap-10 lg:grid-cols-[1fr_360px] items-center">
+          <div className="grid gap-8 lg:grid-cols-[1fr_360px] items-center">
             <div>
               <p className="eyebrow mb-4">{language === "en" ? "Community Support" : "Mbështetja e Komunitetit"}</p>
               <h2

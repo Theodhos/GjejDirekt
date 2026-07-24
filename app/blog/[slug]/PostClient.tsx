@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import SafeImage from "@/components/ui/SafeImage";
 import Link from "next/link";
 import { ArrowLeft, CalendarDays, Facebook, Share2, UserRound } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
@@ -88,7 +88,7 @@ export default function PostClient({ post }: { post: any }) {
               borderColor: "var(--border-soft)",
             }}
           >
-            <Image
+            <SafeImage
               src={image}
               alt={post.title}
               fill
@@ -99,7 +99,7 @@ export default function PostClient({ post }: { post: any }) {
           </div>
         </header>
 
-        <div className="page-shell mt-12 sm:mt-16">
+        <div className="page-shell mt-8 sm:mt-10">
           <div className="mx-auto max-w-[820px]">
             <div className="space-y-7">
               {paragraphs.length > 0 ? (

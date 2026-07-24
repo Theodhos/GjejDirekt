@@ -96,11 +96,11 @@ export default function Header() {
       }}
     >
       {/* Desktop Header */}
-      <div className="page-shell flex items-center justify-between gap-3 py-3.5 sm:gap-6">
+      <div className="page-shell flex items-center justify-between gap-3 py-2.5 sm:gap-6">
         {/* Logo */}
         <Link
           href="/"
-          className="flex items-center shrink-0"
+          className="flex flex-col items-start shrink-0 leading-none"
           onClick={() => setMobileOpen(false)}
         >
           <Image
@@ -111,6 +111,12 @@ export default function Header() {
             className="h-7 w-auto object-contain min-[360px]:h-8 sm:h-9 md:h-10"
             priority
           />
+          <span
+            className="mt-0.5 whitespace-nowrap text-[8px] font-semibold uppercase tracking-[0.16em] sm:text-[10px] sm:tracking-[0.22em]"
+            style={{ color: "var(--text-tertiary)" }}
+          >
+            {language === "en" ? "Tourism Platform" : "Platformë Turistike"}
+          </span>
         </Link>
 
         {/* Desktop Nav */}

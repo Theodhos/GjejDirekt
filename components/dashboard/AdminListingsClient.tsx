@@ -2,7 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
-import Image from "next/image";
+import SafeImage from "@/components/ui/SafeImage";
 import { ArrowLeft, Search } from "lucide-react";
 import AdminListingActions from "@/components/admin/AdminListingActions";
 import { useLanguage } from "@/context/LanguageContext";
@@ -68,7 +68,7 @@ export default function AdminListingsClient({ groupedListings, categories, categ
                       className={`flex items-center gap-4 px-5 py-3.5 hover:bg-slate-50/80 transition-colors ${idx !== 0 ? 'border-t border-slate-50' : ''}`}
                     >
                       <div className="relative w-10 h-10 rounded-xl overflow-hidden flex-shrink-0 bg-slate-100">
-                        <Image src={listing.images?.[0] || "https://images.unsplash.com/photo-1512917774080-9991f1c4c750"} alt={listing.title} fill className="object-cover" />
+                        <SafeImage src={listing.images?.[0]} alt={listing.title} fill className="object-cover" />
                       </div>
 
                       <div className="flex-1 min-w-0">

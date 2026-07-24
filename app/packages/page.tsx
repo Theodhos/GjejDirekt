@@ -102,7 +102,7 @@ export default function PackagesPage() {
     <main className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="text-center mb-16">
+        <div className="text-center mb-8 sm:mb-10">
           <h1 className="text-5xl sm:text-6xl font-black text-slate-950 mb-4">{labels.title}</h1>
           <p className="text-xl text-slate-600 max-w-2xl mx-auto">{labels.subtitle}</p>
         </div>
@@ -110,7 +110,7 @@ export default function PackagesPage() {
         {step === "select" ? (
           <>
             {/* Packages Grid */}
-            <div className="grid md:grid-cols-3 gap-8 mb-16">
+            <div className="grid md:grid-cols-3 gap-6 mb-10">
               {PACKAGES.map((plan) => {
                 const Icon = plan.icon;
                 const isSelected = selectedPackage === plan.id;

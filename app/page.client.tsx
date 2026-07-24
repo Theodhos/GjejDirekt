@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
-import Image from "next/image";
+import SafeImage from "@/components/ui/SafeImage";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { ArrowRight, MapPin, Sparkles, ChevronLeft, ChevronRight, CheckCircle, Flame, Star, Bed, Utensils, Car, Plane, Anchor, Truck, Calendar, Music, Ticket, ShoppingBag, Camera } from "lucide-react";
@@ -205,14 +205,10 @@ function HomePageClient() {
       {!showSearchResults && <HomeSearchHero />}
 
       {showSearchResults ? null : (
-      <div className="page-shell space-y-8 py-8 sm:space-y-14 sm:py-14">
+      <div className="page-shell space-y-7 py-6 sm:space-y-9 sm:py-10">
         
         {/* 1. POPULAR DESTINATIONS (CITIES) - Logical First Step */}
-        <HorizontalRail
-          eyebrow={t.common.category}
-          title={t.home.popularDestinations}
-          description={t.home.popularSub}
-        >
+        <HorizontalRail title={t.home.popularDestinations}>
           {dynamicCities.map((city) => (
             <Link
               key={city.value}
@@ -220,7 +216,7 @@ function HomePageClient() {
               className="travel-card group min-w-[260px] overflow-hidden transition-all duration-250 hover:-translate-y-1" 
             >
               <div className="relative aspect-[16/10] overflow-hidden" style={{ borderRadius: "16px 16px 0 0" }}>
-                <Image src={city.image || "https://images.unsplash.com/photo-1512917774080-9991f1c4c750"} alt={city.label} fill className="object-cover transition duration-500 group-hover:scale-105" />
+                <SafeImage src={city.image} fallbackSrc="https://images.unsplash.com/photo-1512917774080-9991f1c4c750" alt={city.label} fill className="object-cover transition duration-500 group-hover:scale-105" />
                 <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(10,12,16,0.75) 0%, rgba(10,12,16,0.1) 60%, transparent 100%)" }} />
                 <div className="absolute inset-0 flex flex-col justify-end p-5">
                     <p className="text-[10px] font-semibold uppercase tracking-[0.2em] mb-1.5" style={{ color: "rgba(255,255,255,0.6)" }}>{t.common.city}</p>
@@ -338,7 +334,7 @@ function HomePageClient() {
                     href={`/categories/${section.category?.value}/${sub.value}`}
                     className="travel-card min-w-[300px] max-w-[300px] shrink-0 snap-start group relative overflow-hidden transition hover:-translate-y-1"
                   >
-                    <Image
+                    <SafeImage
                       src={section.fallbackImage}
                       alt={sub.label}
                       fill
@@ -355,7 +351,7 @@ function HomePageClient() {
                 ))
               ) : (
                 categoryListings.map((listing) => (
-                  <div key={listing._id} className="min-w-[280px] max-w-[280px] shrink-0 snap-start h-full">
+                  <div key={listing._id} className="min-w-[280px] max-w-[280px] shrink-0 snap-start">
                     <ListingCard listing={listing} />
                   </div>
                 ))
@@ -369,7 +365,7 @@ function HomePageClient() {
           className="rounded-2xl p-8 sm:p-14 overflow-hidden"
           style={{ background: "var(--surface-cream)", border: "1px solid var(--border-soft)" }}
         >
-            <div className="grid gap-12 lg:grid-cols-3">
+            <div className="grid gap-8 lg:grid-cols-3">
                 <div className="lg:col-span-1">
                     <p className="eyebrow mb-4">{language === 'en' ? 'The Advantage' : 'Avantazhi'}</p>
                     <h2
@@ -436,17 +432,20 @@ function HomePageClient() {
             </Link>
           }
         >
+          {/* The card wrapper must NOT set a height: an explicit height on a flex item
+              opts it out of the rail's items-stretch, so cards ended up sized to their
+              own text. Letting it stretch keeps every card the same height. */}
           {(blogPosts.length > 0 ? blogPosts : blogFallbacks).map((post: any) => (
-            <div key={post._id?.toString?.() || post.slug} className="min-w-[320px] max-w-[320px] shrink-0 snap-start h-full">
+            <div key={post._id?.toString?.() || post.slug} className="min-w-[320px] max-w-[320px] shrink-0 snap-start">
               <Link
                   href={`/blog/${post.slug}`}
-                  className="group flex flex-col transition-all duration-250 hover:-translate-y-1 h-full"
+                  className="group flex h-full flex-col transition-all duration-250 hover:-translate-y-1"
                   style={{ background: "var(--surface-white)", border: "1px solid var(--border-soft)", borderRadius: "16px", boxShadow: "var(--shadow-card)", overflow: "hidden" }}
                   onMouseEnter={e => { (e.currentTarget as HTMLElement).style.boxShadow = "var(--shadow-hover)"; (e.currentTarget as HTMLElement).style.borderColor = "rgba(34,153,120,0.2)"; }}
                   onMouseLeave={e => { (e.currentTarget as HTMLElement).style.boxShadow = "var(--shadow-card)"; (e.currentTarget as HTMLElement).style.borderColor = "var(--border-soft)"; }}
               >
                   <div className="relative w-full aspect-[16/9] overflow-hidden flex-shrink-0">
-                      <Image src={post.coverImage || "https://images.unsplash.com/photo-1507525428034-b723cf961d3e"} alt={post.title} fill className="object-cover transition duration-500 group-hover:scale-103" />
+                      <SafeImage src={post.coverImage} fallbackSrc="https://images.unsplash.com/photo-1507525428034-b723cf961d3e" alt={post.title} fill className="object-cover transition duration-500 group-hover:scale-103" />
                   </div>
                   <div className="flex flex-col flex-1 p-5">
                       <p className="eyebrow mb-2">

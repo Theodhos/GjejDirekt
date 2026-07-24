@@ -269,7 +269,7 @@ export default function FAQPage() {
             })
           ) : (
             <div
-              className="rounded-2xl py-16 text-center"
+              className="rounded-2xl py-10 text-center"
               style={{ background: "var(--surface-white)", border: "1px solid var(--border-soft)" }}
             >
               <HelpCircle className="w-10 h-10 mx-auto mb-4" style={{ color: "var(--text-tertiary)" }} />

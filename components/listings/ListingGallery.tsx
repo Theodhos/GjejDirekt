@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import Image from "next/image";
+import SafeImage from "@/components/ui/SafeImage";
 import Lightbox from "@/components/ui/Lightbox";
 import { Maximize2, Heart, ArrowLeft, Share2, LayoutGrid, ChevronLeft, ChevronRight } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
@@ -146,7 +146,7 @@ export default function ListingGallery({ images, listing }: ListingGalleryProps)
           className="col-span-2 row-span-2 relative h-full w-full overflow-hidden cursor-zoom-in group/item"
           onClick={() => openLightbox(0)}
         >
-          <Image
+          <SafeImage
             src={displayImages[0]}
             alt="Listing main image"
             fill
@@ -164,7 +164,7 @@ export default function ListingGallery({ images, listing }: ListingGalleryProps)
           className="relative h-full w-full overflow-hidden cursor-zoom-in group/item"
           onClick={() => openLightbox(1)}
         >
-          <Image
+          <SafeImage
             src={displayImages[1]}
             alt="Listing image 2"
             fill
@@ -181,7 +181,7 @@ export default function ListingGallery({ images, listing }: ListingGalleryProps)
           className="relative h-full w-full overflow-hidden cursor-zoom-in group/item"
           onClick={() => openLightbox(2)}
         >
-          <Image
+          <SafeImage
             src={displayImages[2]}
             alt="Listing image 3"
             fill
@@ -198,7 +198,7 @@ export default function ListingGallery({ images, listing }: ListingGalleryProps)
           className="relative h-full w-full overflow-hidden cursor-zoom-in group/item"
           onClick={() => openLightbox(3)}
         >
-          <Image
+          <SafeImage
             src={displayImages[3]}
             alt="Listing image 4"
             fill
@@ -215,7 +215,7 @@ export default function ListingGallery({ images, listing }: ListingGalleryProps)
           className="relative h-full w-full overflow-hidden cursor-zoom-in group/item"
           onClick={() => openLightbox(4)}
         >
-          <Image
+          <SafeImage
             src={displayImages[4]}
             alt="Listing image 5"
             fill
@@ -281,7 +281,7 @@ export default function ListingGallery({ images, listing }: ListingGalleryProps)
                 key={idx} 
                 className="min-w-full snap-start snap-always relative h-full w-full"
               >
-                <Image
+                <SafeImage
                   src={img}
                   alt={`Slide ${idx + 1}`}
                   fill

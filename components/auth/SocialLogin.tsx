@@ -62,15 +62,15 @@ export default function SocialLogin() {
   }
 
   return (
-    <button 
+    <button
       onClick={handleGoogleLogin}
       disabled={loading}
-      className="w-full flex items-center justify-center gap-4 rounded-2xl border-2 border-slate-100 p-4 font-black text-slate-950 hover:bg-slate-50 transition-all shadow-sm disabled:opacity-50"
+      className="w-full flex items-center justify-center gap-3 rounded-xl border border-[var(--border-medium)] px-4 py-2.5 text-sm font-semibold text-[var(--text-primary)] bg-[var(--surface-white)] hover:border-[var(--brand-accent)] hover:bg-[var(--surface-subtle)] transition-all duration-150 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
     >
       {loading ? (
-        <div className="w-5 h-5 border-2 border-slate-300 border-t-slate-900 rounded-full animate-spin" />
+        <div className="w-[18px] h-[18px] border-2 border-slate-300 border-t-slate-900 rounded-full animate-spin" />
       ) : (
-        <Image src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" width={20} height={20} />
+        <Image src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" width={18} height={18} />
       )}
       {translations[language].auth.continueWithGoogle}
     </button>

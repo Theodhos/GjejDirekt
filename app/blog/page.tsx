@@ -1,11 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
+import SafeImage from "@/components/ui/SafeImage";
 import { ArrowRight, Calendar, User, Sparkles } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { translations } from "@/lib/dictionary";
 import { useEffect, useState } from "react";
+
+// One full row on desktop per batch — the button stays useful even with few posts.
+const POSTS_PER_PAGE = 3;
 
 export default function BlogPage() {
   const { language } = useLanguage();
@@ -13,6 +16,7 @@ export default function BlogPage() {
 
   const [posts, setPosts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [visibleCount, setVisibleCount] = useState(POSTS_PER_PAGE);
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -31,6 +35,9 @@ export default function BlogPage() {
 
   const heroPost = posts[0];
   const blogFallbacks = t.blog.fallbacks || [];
+  const allPosts: any[] = posts.length > 0 ? posts : blogFallbacks;
+  const visiblePosts = allPosts.slice(0, visibleCount);
+  const hasMore = !loading && allPosts.length > visibleCount;
 
   return (
     <main style={{ background: "var(--surface-page)" }}>
@@ -62,9 +69,9 @@ export default function BlogPage() {
       </section>
 
       {/* ── ARTICLES GRID ── */}
-      <section className="page-shell py-16 sm:py-20">
+      <section className="page-shell py-8 sm:py-12">
         {/* Section header */}
-        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6 mb-10">
+        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-6">
           <div>
             <p className="eyebrow mb-3">{t.blog.archiveTitle}</p>
             <h2
@@ -78,7 +85,7 @@ export default function BlogPage() {
 
         {/* Grid */}
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {(loading ? Array.from({ length: 6 }) : (posts.length > 0 ? posts : blogFallbacks)).map(
+          {(loading ? Array.from({ length: POSTS_PER_PAGE }) : visiblePosts).map(
             (post: any, idx) => (
               <article
                 key={idx}
@@ -93,9 +100,10 @@ export default function BlogPage() {
                     className="relative aspect-[4/3] overflow-hidden block"
                     style={{ borderRadius: "16px 16px 0 0" }}
                   >
-                    <Image
-                      src={post.coverImage || "https://images.unsplash.com/photo-1501386761578-eac5c94b800a?auto=format&fit=crop&w=800&q=80"}
+                    <SafeImage
+                      src={post.coverImage}
                       alt={post.title}
+                      fallbackSrc="https://images.unsplash.com/photo-1501386761578-eac5c94b800a?auto=format&fit=crop&w=800&q=80"
                       fill
                       className="object-cover transition-transform duration-500 group-hover:scale-105"
                     />
@@ -175,15 +183,19 @@ export default function BlogPage() {
           )}
         </div>
 
-        {/* Load More */}
-        <div className="mt-14 flex justify-center">
-          <button
-            className="btn-primary inline-flex items-center gap-2.5 rounded-full px-8 py-3"
-          >
-            {t.blog.loadMore}
-            <ArrowRight className="w-4 h-4" />
-          </button>
-        </div>
+        {/* Load More — reveals the next batch of posts already fetched from the API */}
+        {hasMore && (
+          <div className="mt-8 flex justify-center">
+            <button
+              type="button"
+              onClick={() => setVisibleCount((count) => count + POSTS_PER_PAGE)}
+              className="btn-primary inline-flex items-center gap-2.5 rounded-full px-8 py-3"
+            >
+              {t.blog.loadMore}
+              <ArrowRight className="w-4 h-4" />
+            </button>
+          </div>
+        )}
       </section>
     </main>
   );
