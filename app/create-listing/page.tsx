@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useRef } from "react";
+import React from "react";
 import { useRouter } from "next/navigation";
 import { categories } from "@/lib/constants";
-import { Briefcase, Calendar, Car, ChevronLeft, ChevronRight, Compass, Home, MapPin, UtensilsCrossed } from "lucide-react";
+import { Briefcase, Calendar, Car, Compass, Home, MapPin, UtensilsCrossed } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 
 const categoryIcons: Record<string, React.ReactNode> = {
@@ -30,18 +30,9 @@ export default function CreateListingPage() {
   const router = useRouter();
   const { language, t } = useLanguage();
   const en = language === "en";
-  const sliderRef = useRef<HTMLDivElement>(null);
 
   function handleCategoryClick(categoryValue: string) {
     router.push(`/listings/add?category=${categoryValue}`);
-  }
-
-  function scrollByCard(dir: -1 | 1) {
-    const rail = sliderRef.current;
-    if (!rail) return;
-    const card = rail.firstElementChild as HTMLElement | null;
-    const step = card ? card.offsetWidth + 16 : rail.clientWidth * 0.8;
-    rail.scrollBy({ left: dir * step, behavior: "smooth" });
   }
 
   return (
@@ -70,33 +61,8 @@ export default function CreateListingPage() {
       </section>
 
       <section className="page-shell py-6 sm:py-10">
-        {/* Arrows — phones only, a cue that more categories sit off-screen. */}
-        <div className="mb-4 flex items-center justify-center gap-3 md:hidden">
-          <button
-            type="button"
-            onClick={() => scrollByCard(-1)}
-            aria-label={en ? "Previous" : "Para"}
-            className="flex h-11 w-14 items-center justify-center rounded-full border border-[var(--border-medium)] bg-[var(--surface-white)] text-[var(--text-secondary)] shadow-sm transition-all active:scale-95"
-          >
-            <ChevronLeft className="h-5 w-5" />
-          </button>
-          <button
-            type="button"
-            onClick={() => scrollByCard(1)}
-            aria-label={en ? "Next" : "Pas"}
-            className="flex h-11 w-14 items-center justify-center rounded-full border border-[var(--border-medium)] bg-[var(--surface-white)] text-[var(--text-secondary)] shadow-sm transition-all active:scale-95"
-          >
-            <ChevronRight className="h-5 w-5" />
-          </button>
-        </div>
-
-        {/* Phones swipe the categories left/right; from md up it's the usual grid.
-            80vw card + 10vw padding each side = the active card sits centred with the
-            next one peeking in. snap-center keeps every card centred as you swipe. */}
-        <div
-          ref={sliderRef}
-          className="-mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-[10vw] pb-4 no-scrollbar md:mx-0 md:grid md:snap-none md:grid-cols-2 md:gap-6 md:overflow-visible md:px-0 md:pb-0 lg:grid-cols-3"
-        >
+        {/* Two cards per row on phones, then 3 from lg up. */}
+        <div className="grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-3">
           {categories.map((category) => {
             const colors = categoryColors[category.value] || {
               bg: "bg-gray-50 hover:bg-gray-100",
@@ -111,13 +77,13 @@ export default function CreateListingPage() {
                 key={category.value}
                 type="button"
                 onClick={() => handleCategoryClick(category.value)}
-                className={`${colors.bg} ${colors.border} w-[80vw] max-w-[340px] shrink-0 snap-center rounded-2xl border p-8 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-xl md:w-auto md:max-w-none`}
+                className={`${colors.bg} ${colors.border} rounded-2xl border p-5 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-xl sm:p-8`}
               >
                 <span className="flex flex-col items-center text-center">
-                  <span className={`${colors.icon} mb-4 rounded-full p-4 text-white shadow-lg`}>
+                  <span className={`${colors.icon} mb-3 rounded-full p-3.5 text-white shadow-lg sm:mb-4 sm:p-4`}>
                     {icon}
                   </span>
-                  <span className="text-xl font-semibold text-gray-800">{label}</span>
+                  <span className="text-base font-semibold text-gray-800 sm:text-xl">{label}</span>
                 </span>
               </button>
             );
