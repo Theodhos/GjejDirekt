@@ -198,21 +198,25 @@ export default function HomeSearchHero() {
   }
 
   return (
-    <section className="relative flex min-h-[48vh] items-center justify-center overflow-hidden py-10 sm:min-h-[52vh]" style={{ background: "#0b2319" }}>
-      {/* Background photo */}
-      <SafeImage
-        src="/uploads/1000068416.jpg.jpg"
-        alt=""
-        fill
-        priority
-        sizes="100vw"
-        className="object-cover object-center"
-      />
-      {/* Dark green overlay so the headline and search stay legible over any photo */}
-      <div
-        className="absolute inset-0"
-        style={{ background: "linear-gradient(180deg, rgba(6,18,13,0.55) 0%, rgba(8,24,17,0.62) 55%, rgba(6,18,13,0.78) 100%)" }}
-      />
+    <section className="relative flex min-h-[48vh] items-center justify-center py-10 sm:min-h-[52vh]" style={{ background: "#0b2319" }}>
+      {/* Background photo + overlay live in their own clipped layer so the section
+          itself keeps overflow visible — the desktop search dropdown must be able to
+          extend past the hero instead of being cut off by it. */}
+      <div className="absolute inset-0 overflow-hidden">
+        <SafeImage
+          src="/uploads/1000068416.jpg.jpg"
+          alt=""
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover object-center"
+        />
+        {/* Dark green overlay so the headline and search stay legible over any photo */}
+        <div
+          className="absolute inset-0"
+          style={{ background: "linear-gradient(180deg, rgba(6,18,13,0.55) 0%, rgba(8,24,17,0.62) 55%, rgba(6,18,13,0.78) 100%)" }}
+        />
+      </div>
       <div className="page-shell relative z-10 w-full max-w-4xl px-4">
         <div className="text-center mb-7">
           <h1
@@ -271,7 +275,7 @@ export default function HomeSearchHero() {
                           searchRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
                         }
                       }}
-                      placeholder={language === "en" ? "Search..." : "Kërko..."}
+                      placeholder={language === "en" ? "Find a hotel, restaurant, attraction..." : "Gjej hotel, restorant, atraksion..."}
                       className="w-full bg-transparent py-4 sm:py-3.5 text-lg sm:text-base outline-none font-medium"
                       style={{ color: "var(--text-primary)" }}
                     />
@@ -283,7 +287,7 @@ export default function HomeSearchHero() {
                       type="submit"
                       className="btn-primary w-full sm:w-auto px-8 py-3.5 sm:py-3 rounded-xl flex items-center justify-center gap-2.5"
                     >
-                      {language === "en" ? "Explore Albania" : "Eksploro Shqipërinë"}
+                      {language === "en" ? "Search" : "Kërko"}
                       <ArrowRight className="w-4 h-4" />
                     </button>
                   </div>
@@ -302,7 +306,7 @@ export default function HomeSearchHero() {
                     <input
                       value={city}
                       onChange={(event) => setCity(event.target.value)}
-                      placeholder={language === "en" ? "Search for a hotel, restaurant or activity..." : "Kërko hotel, restorant ose aktivitet..."}
+                      placeholder={language === "en" ? "Find a hotel, restaurant, attraction..." : "Gjej hotel, restorant, atraksion..."}
                       className="w-full bg-transparent text-base outline-none font-medium"
                       style={{ color: "var(--text-primary)" }}
                       autoFocus
