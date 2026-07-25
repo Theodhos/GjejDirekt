@@ -16,6 +16,8 @@ export default function ServicesContent() {
   const { listings, featuredListings, suggestedListings, loading } = useServicesData();
   const [visibleCount, setVisibleCount] = useState(12);
   const railRef = useRef<HTMLDivElement>(null);
+  const resultsRailRef = useRef<HTMLDivElement>(null);
+  const suggestedRailRef = useRef<HTMLDivElement>(null);
 
   const loadMore = () => {
     setVisibleCount(prev => prev + 12);
@@ -26,6 +28,36 @@ export default function ServicesContent() {
     const scrollAmount = 400;
     railRef.current.scrollBy({ left: dir === 'left' ? -scrollAmount : scrollAmount, behavior: 'smooth' });
   }
+
+  /** Scrolls a swipe row by one card, so the arrows work where swiping is awkward. */
+  const scrollByCard = (ref: React.RefObject<HTMLDivElement>, dir: 'left' | 'right') => {
+    const rail = ref.current;
+    if (!rail) return;
+    const card = rail.firstElementChild as HTMLElement | null;
+    const step = card ? card.offsetWidth + 16 : rail.clientWidth * 0.8;
+    rail.scrollBy({ left: dir === 'left' ? -step : step, behavior: 'smooth' });
+  };
+
+  const MobileArrows = ({ target }: { target: React.RefObject<HTMLDivElement> }) => (
+    <div className="flex shrink-0 gap-2 sm:hidden">
+      <button
+        type="button"
+        onClick={() => scrollByCard(target, 'left')}
+        aria-label={language === 'en' ? 'Previous' : 'Para'}
+        className="flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 shadow-sm active:scale-95"
+      >
+        <ChevronLeft className="h-4 w-4" />
+      </button>
+      <button
+        type="button"
+        onClick={() => scrollByCard(target, 'right')}
+        aria-label={language === 'en' ? 'Next' : 'Pas'}
+        className="flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 shadow-sm active:scale-95"
+      >
+        <ChevronRight className="h-4 w-4" />
+      </button>
+    </div>
+  );
 
   return (
     <>
@@ -83,22 +115,26 @@ export default function ServicesContent() {
 
       {/* Full Width Grid Section */}
       <section className="page-shell mt-8 sm:mt-10">
-        <div className="flex items-center gap-4 mb-6">
-            <div className="w-16 h-16 rounded-[1.5rem] bg-slate-950 flex items-center justify-center text-white shadow-xl">
-                <Filter className="w-7 h-7" />
+        <div className="flex items-center gap-3 sm:gap-4 mb-6">
+            <div className="w-12 h-12 sm:w-16 sm:h-16 shrink-0 rounded-[1.25rem] sm:rounded-[1.5rem] bg-slate-950 flex items-center justify-center text-white shadow-xl">
+                <Filter className="w-5 h-5 sm:w-7 sm:h-7" />
             </div>
-            <div>
-                <h2 className="text-4xl font-black text-slate-950 tracking-tight">{t.services.results}</h2>
-                <p className="text-sm font-bold text-slate-400 uppercase tracking-[0.2em] mt-1">
+            <div className="min-w-0 flex-1">
+                <h2 className="text-2xl sm:text-4xl font-black text-slate-950 tracking-tight">{t.services.results}</h2>
+                <p className="text-[11px] sm:text-sm font-bold text-slate-400 uppercase tracking-[0.2em] mt-1">
                     {loading ? t.common.loading : `${listings.length} ${language === 'en' ? 'Verified Listings' : 'Listime të verifikuara'}`}
                 </p>
             </div>
+            {!loading && listings.length > 1 && <MobileArrows target={resultsRailRef} />}
         </div>
 
         {/* Phones swipe through the results; from sm up it stays the usual grid.
             The mobile cards keep a fixed width so the next one peeks in and the
             row reads as swipeable. */}
-        <div className="-mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-3 no-scrollbar sm:mx-0 sm:grid sm:snap-none sm:grid-cols-2 sm:gap-6 sm:overflow-visible sm:px-0 sm:pb-0 lg:grid-cols-3 xl:grid-cols-4">
+        <div
+          ref={resultsRailRef}
+          className="-mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-3 no-scrollbar sm:mx-0 sm:grid sm:snap-none sm:grid-cols-2 sm:gap-6 sm:overflow-visible sm:px-0 sm:pb-0 lg:grid-cols-3 xl:grid-cols-4"
+        >
           {loading ? (
             Array.from({ length: 8 }).map((_, i) => (
               <div key={i} className="h-[420px] w-[78vw] shrink-0 snap-start rounded-[2rem] bg-slate-200 animate-pulse sm:w-auto" />
@@ -140,16 +176,22 @@ export default function ServicesContent() {
           phones, and it only appears when a filter left something out. */}
       {!loading && suggestedListings.length > 0 && (
         <section className="page-shell mt-8 sm:mt-10">
-          <div className="mb-4">
-            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-600 mb-1.5">
-              {language === 'en' ? 'You may also like' : 'Mund t’ju pëlqejnë'}
-            </p>
-            <h2 className="text-xl sm:text-2xl font-black text-slate-950 tracking-tight">
-              {language === 'en' ? 'Related services' : 'Shërbime të ngjashme'}
-            </h2>
+          <div className="mb-4 flex items-end justify-between gap-3">
+            <div className="min-w-0">
+              <p className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-600 mb-1.5">
+                {language === 'en' ? 'You may also like' : 'Mund t’ju pëlqejnë'}
+              </p>
+              <h2 className="text-xl sm:text-2xl font-black text-slate-950 tracking-tight">
+                {language === 'en' ? 'Related services' : 'Shërbime të ngjashme'}
+              </h2>
+            </div>
+            <MobileArrows target={suggestedRailRef} />
           </div>
 
-          <div className="-mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-3 no-scrollbar sm:mx-0 sm:gap-5 sm:px-0">
+          <div
+            ref={suggestedRailRef}
+            className="-mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-3 no-scrollbar sm:mx-0 sm:gap-5 sm:px-0"
+          >
             {suggestedListings.map((listing) => (
               <div key={listing._id} className="w-[78vw] max-w-[320px] shrink-0 snap-start sm:w-[280px]">
                 <ListingCard listing={listing} />

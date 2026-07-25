@@ -42,7 +42,7 @@ export default function Footer() {
               {t.footer.tagline}
             </h2>
             <p className="mt-2 text-sm leading-relaxed max-w-md" style={{ color: "rgba(255,255,255,0.65)" }}>
-              {t.footer.description}
+              {t.footer.ctaDescription}
             </p>
           </div>
           <div className="flex flex-wrap gap-3 shrink-0">
@@ -65,9 +65,9 @@ export default function Footer() {
 
       {/* Footer Grid */}
       <div className="page-shell py-8">
-        <div className="grid gap-8 md:gap-6 md:grid-cols-5 text-left md:text-left">
-          {/* Brand */}
-          <div className="md:col-span-1 md:pr-4">
+        <div className="grid grid-cols-2 gap-x-6 gap-y-8 md:grid-cols-5 md:gap-6 text-left">
+          {/* Brand — hidden on phones to keep the footer compact there */}
+          <div className="hidden md:col-span-1 md:block md:pr-4">
             <p
               className="text-base font-bold tracking-tight"
               style={{ color: "var(--text-primary)" }}
@@ -130,8 +130,8 @@ export default function Footer() {
             ))}
           </div>
 
-          {/* Contact */}
-          <div className="space-y-2">
+          {/* Contact — full width on phones so the email never overflows the half column */}
+          <div className="space-y-2 col-span-2 md:col-span-1">
             <p
               className="text-xs font-semibold uppercase tracking-[0.18em] mb-3"
               style={{ color: "var(--text-primary)" }}
@@ -150,7 +150,7 @@ export default function Footer() {
           </div>
 
           {/* Social */}
-          <div className="space-y-3 flex flex-col items-left md:items-start">
+          <div className="space-y-3 flex flex-col items-left md:items-start col-span-2 md:col-span-1">
             <p
               className="text-xs font-semibold uppercase tracking-[0.18em] mb-3"
               style={{ color: "var(--text-primary)" }}

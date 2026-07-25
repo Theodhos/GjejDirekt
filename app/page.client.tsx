@@ -4,7 +4,7 @@ import { useEffect, useState, useRef } from "react";
 import SafeImage from "@/components/ui/SafeImage";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { ArrowRight, MapPin, Sparkles, ChevronLeft, ChevronRight, CheckCircle, Flame, Star, Bed, Utensils, Car, Plane, Anchor, Truck, Calendar, Music, Ticket, ShoppingBag, Camera } from "lucide-react";
+import { ArrowRight, MapPin, Sparkles, ChevronLeft, ChevronRight, CheckCircle, Flame, Star, Bed, Utensils, Car, Plane, Anchor, Truck, Calendar, Music, Ticket, ShoppingBag, Camera, Phone, Wallet } from "lucide-react";
 import HomeSearchHero from "@/components/home/HomeSearchHero";
 import HorizontalRail from "@/components/home/HorizontalRail";
 import ListingCard from "@/components/ListingCard";
@@ -315,17 +315,6 @@ function HomePageClient() {
               eyebrow={section.eyebrow}
               title={section.title}
               description={section.description}
-              actionButton={
-                <Link 
-                  href={`/create-listing?category=${section.id}`} 
-                  className="group inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-medium transition-all duration-200 active:scale-95 border border-[var(--border-medium)] bg-[var(--surface-white)] text-[var(--text-secondary)] hover:border-[var(--brand-accent)] hover:text-[var(--brand-accent)] shadow-sm"
-                >
-                  <svg className="w-3.5 h-3.5 transition-transform duration-200 group-hover:rotate-90" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
-                  </svg>
-                  {section.buttonLabel}
-                </Link>
-              }
             >
               {showFallback ? (
                 section.category?.subcategories.map((sub) => (
@@ -372,12 +361,12 @@ function HomePageClient() {
                       className="font-bold tracking-tight mb-5"
                       style={{ fontSize: "clamp(1.75rem, 3.5vw, 2.25rem)", color: "var(--text-primary)", lineHeight: 1.15 }}
                     >
-                        {language === 'en' ? 'Why choose our marketplace?' : 'Pse të zgjidhni tregun tonë?'}
+                        {language === 'en' ? 'Why use TripShqip?' : 'Pse të përdorni TripShqip?'}
                     </h2>
                     <p className="text-sm leading-relaxed mb-8" style={{ color: "var(--text-secondary)" }}>
-                        {language === 'en' 
-                            ? 'We connect you directly with verified local hosts to ensure authentic experiences and the best prices.' 
-                            : 'Ne ju lidhim drejtpërdrejt me hostë lokalë të verifikuar për të siguruar përvoja autentike dhe çmimet më të mira.'}
+                        {language === 'en'
+                            ? 'Find tourism businesses in Albania, contact them directly by phone or WhatsApp, and book with zero commission.'
+                            : 'Gjeni bizneset turistike në Shqipëri, kontaktoni direkt me telefon ose WhatsApp dhe rezervoni pa komision.'}
                     </p>
                     <Link
                       href="/services"
@@ -391,10 +380,10 @@ function HomePageClient() {
                 
                 <div className="lg:col-span-2 grid gap-4 sm:grid-cols-2">
                     {[
-                        { title: language === 'en' ? 'Verified Quality' : 'Cilësi e Verifikuar', desc: language === 'en' ? 'Every listing is manually reviewed for accuracy.' : 'Çdo listim shqyrtohet manualisht për saktësi.', icon: CheckCircle },
-                        { title: language === 'en' ? 'Direct Booking' : 'Rezervim Direkt', desc: language === 'en' ? 'Communicate directly with the hosts via phone or WhatsApp.' : 'Komunikoni drejtpërdrejt me hostët me telefon ose WhatsApp.', icon: Sparkles },
-                        { title: language === 'en' ? 'Local Expertise' : 'Ekspertizë Lokale', desc: language === 'en' ? 'Get insider tips from people who live in the cities you visit.' : 'Merrni këshilla nga njerëzit që jetojnë në qytetet që vizitoni.', icon: Star },
-                        { title: language === 'en' ? 'No Hidden Fees' : 'Pa Tarifa të Fshehura', desc: language === 'en' ? 'What you see is what you pay. Transparent pricing always.' : 'Ajo që shihni është ajo që paguani. Çmime transparente gjithmonë.', icon: Flame }
+                        { title: language === 'en' ? 'Direct Contact' : 'Kontakt Direkt', desc: language === 'en' ? 'Phone, WhatsApp or Book Now — no middlemen.' : 'Telefon, WhatsApp ose Book Now pa ndërmjetës.', icon: Phone },
+                        { title: language === 'en' ? '0% Commission' : '0% Komision', desc: language === 'en' ? 'Get the price directly from the business.' : 'Merrni çmimin direkt nga biznesi.', icon: Wallet },
+                        { title: language === 'en' ? 'Verified Businesses' : 'Biznese të Verifikuara', desc: language === 'en' ? 'The Verified badge builds trust and safety.' : 'Badge Verified rrit besimin dhe sigurinë.', icon: CheckCircle },
+                        { title: language === 'en' ? 'Everything in one place' : 'Gjithçka në një vend', desc: language === 'en' ? 'Hotels, restaurants, attractions and activities.' : 'Hotele, restorante, atraksione dhe aktivitete.', icon: MapPin }
                     ].map((benefit, i) => (
                         <div
                           key={i}
@@ -428,7 +417,7 @@ function HomePageClient() {
               style={{ background: "var(--brand-accent)", boxShadow: "0 2px 12px rgba(34,153,120,0.22)" }}
               onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = "var(--brand-hover)")}
               onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = "var(--brand-accent)")}>
-                {language === 'en' ? 'Visit Journal' : 'Vizito Revistën'} <ArrowRight className="w-4 h-4" />
+                {language === 'en' ? 'View all articles' : 'Shiko të gjitha artikujt'} <ArrowRight className="w-4 h-4" />
             </Link>
           }
         >

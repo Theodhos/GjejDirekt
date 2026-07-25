@@ -198,7 +198,21 @@ export default function HomeSearchHero() {
   }
 
   return (
-    <section className="relative flex min-h-[48vh] items-center justify-center py-10 sm:min-h-[52vh]" style={{ background: "linear-gradient(180deg, #0b2319 0%, #0f3f2d 100%)" }}>
+    <section className="relative flex min-h-[48vh] items-center justify-center overflow-hidden py-10 sm:min-h-[52vh]" style={{ background: "#0b2319" }}>
+      {/* Background photo */}
+      <SafeImage
+        src="/uploads/1000068416.jpg.jpg"
+        alt=""
+        fill
+        priority
+        sizes="100vw"
+        className="object-cover object-center"
+      />
+      {/* Dark green overlay so the headline and search stay legible over any photo */}
+      <div
+        className="absolute inset-0"
+        style={{ background: "linear-gradient(180deg, rgba(6,18,13,0.55) 0%, rgba(8,24,17,0.62) 55%, rgba(6,18,13,0.78) 100%)" }}
+      />
       <div className="page-shell relative z-10 w-full max-w-4xl px-4">
         <div className="text-center mb-7">
           <h1
@@ -257,7 +271,7 @@ export default function HomeSearchHero() {
                           searchRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
                         }
                       }}
-                      placeholder={language === "en" ? "Search for a hotel, restaurant or activity..." : "Kërko hotel, restorant ose aktivitet..."}
+                      placeholder={language === "en" ? "Search..." : "Kërko..."}
                       className="w-full bg-transparent py-4 sm:py-3.5 text-lg sm:text-base outline-none font-medium"
                       style={{ color: "var(--text-primary)" }}
                     />

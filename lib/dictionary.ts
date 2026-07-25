@@ -264,11 +264,12 @@ export const translations = {
         feature2: "Fast Growth"
     },
     footer: {
-      platformName: "Tourism Platform",
-      tagline: "Plan, review, and book the kind of trip people remember.",
+      platformName: "Use TripShqip",
+      tagline: "More tourists. More contacts. More bookings.",
       description: "Built for travelers, hosts, and editors. A single platform for discovery, trust, and high-quality tourism listings.",
-      exploreServices: "Explore services",
-      addListing: "Add a listing",
+      ctaDescription: "TripShqip lets tourism businesses build a professional online presence and receive calls, WhatsApp messages, and direct bookings — with zero commission on every reservation.",
+      exploreServices: "List for Free",
+      addListing: "How it works?",
       getStarted: "Get started",
       forBusinesses: "For Businesses",
       listBusiness: "List Your Business",
@@ -775,11 +776,12 @@ export const translations = {
         feature2: "Rritje e Shpejtë"
     },
     footer: {
-      platformName: "Platforma Turistike",
-      tagline: "Planifikoni, rishikoni dhe rezervoni llojin e udhëtimit që mbahet mend.",
+      platformName: "Përdorni TripShqip",
+      tagline: "Më shumë turistë. Më shumë kontakte. Më shumë rezervime.",
       description: "Ndertuar per udhetaret, hostet dhe editoret. Nje platforme e vetme per zbulim, besim dhe listime turistike cilesore.",
-      exploreServices: "Eksploro sherbimet",
-      addListing: "Shto nje listim",
+      ctaDescription: "TripShqip u mundëson bizneseve turistike të krijojnë një prezencë profesionale online, të marrin telefonata, mesazhe në WhatsApp dhe rezervime direkte pa komision për çdo prenotim.",
+      exploreServices: "Listo Falas",
+      addListing: "Si funksionon?",
       getStarted: "Fillo tani",
       forBusinesses: "Për Bizneset",
       listBusiness: "Listo Biznesin",
