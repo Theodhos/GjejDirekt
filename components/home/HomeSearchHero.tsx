@@ -276,10 +276,12 @@ export default function HomeSearchHero() {
                       style={{ color: "var(--text-primary)" }}
                     />
                   </div>
-                  <div className="hidden sm:flex items-center w-auto shrink-0 pr-1">
+                  {/* Full-width button below the field on phones; inline from sm up.
+                      A hairline separates it from the input only on phones. */}
+                  <div className="flex w-full shrink-0 items-center border-t border-slate-100 pt-2 sm:w-auto sm:border-t-0 sm:pt-0 sm:pr-1">
                     <button
                       type="submit"
-                      className="btn-primary w-full sm:w-auto px-8 py-3 rounded-xl flex items-center justify-center gap-2.5"
+                      className="btn-primary w-full sm:w-auto px-8 py-3.5 sm:py-3 rounded-xl flex items-center justify-center gap-2.5"
                     >
                       {language === "en" ? "Explore Albania" : "Eksploro Shqipërinë"}
                       <ArrowRight className="w-4 h-4" />
