@@ -1,35 +1,12 @@
 "use client";
 
-import React from "react";
-import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import {
-  ArrowLeft,
-  BadgeCheck,
-  Briefcase,
-  Calendar,
-  Camera,
-  Car,
-  Compass,
-  Home,
-  MapPin,
-  ShieldCheck,
-  Sparkles,
-  UtensilsCrossed
-} from "lucide-react";
-import ListingForm from "@/components/forms/ListingForm";
+import { ArrowLeft, MapPin } from "lucide-react";
+import ListingWizard from "@/components/forms/ListingWizard";
+import ListingFormAside from "@/components/listings/ListingFormAside";
 import { useLanguage } from "@/context/LanguageContext";
 import { categories } from "@/lib/constants";
-
-const categoryIcons: Record<string, React.ReactNode> = {
-  akomodim: <Home className="h-7 w-7" />,
-  restorante: <UtensilsCrossed className="h-7 w-7" />,
-  atraksione: <Compass className="h-7 w-7" />,
-  evente: <Calendar className="h-7 w-7" />,
-  "sherbime-turistike": <Briefcase className="h-7 w-7" />,
-  "produkte-lokale": <MapPin className="h-7 w-7" />,
-  transport: <Car className="h-7 w-7" />
-};
+import { categoryIcons } from "@/lib/category-icons";
 
 export default function AddListingShell() {
   const { language, t } = useLanguage();
@@ -43,32 +20,26 @@ export default function AddListingShell() {
     ? t.categories.names[categoryDef.value as keyof typeof t.categories.names] || categoryDef.label
     : null;
 
-  const tips = [
-    { icon: Camera, title: t.addListing.tip1Title, desc: t.addListing.tip1Desc },
-    { icon: Sparkles, title: t.addListing.tip2Title, desc: t.addListing.tip2Desc },
-    { icon: MapPin, title: t.addListing.tip3Title, desc: t.addListing.tip3Desc }
-  ];
-
   return (
     <div style={{ background: "var(--surface-page)" }}>
       {/* ---------- Page header ---------- */}
-      <section
-        style={{ borderBottom: "1px solid var(--border-soft)", background: "var(--surface-cream)" }}
-      >
-        <div className="page-shell py-8 sm:py-10">
+      <section style={{ borderBottom: "1px solid var(--border-soft)", background: "var(--surface-cream)" }}>
+        {/* On phones only the category chip survives — every other line is dropped
+            so the form starts as high up the screen as possible. */}
+        <div className="page-shell py-3 sm:py-10">
           <button
             type="button"
             onClick={() => router.back()}
-            className="mb-4 inline-flex items-center gap-1.5 text-xs font-semibold transition-colors"
+            className="mb-4 hidden items-center gap-1.5 text-xs font-semibold transition-colors sm:inline-flex"
             style={{ color: "var(--text-tertiary)" }}
           >
             <ArrowLeft className="h-3.5 w-3.5" />
             {en ? "Back" : "Kthehu prapa"}
           </button>
 
-          <p className="eyebrow mb-3">{en ? "New listing" : "Listim i ri"}</p>
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-            <div className="max-w-2xl">
+          <p className="eyebrow mb-3 hidden sm:block">{en ? "New listing" : "Listim i ri"}</p>
+          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between sm:gap-4">
+            <div className="hidden max-w-2xl sm:block">
               <h1
                 className="font-bold tracking-tight"
                 style={{ fontSize: "clamp(1.75rem, 4vw, 2.5rem)", color: "var(--text-primary)", lineHeight: 1.1 }}
@@ -82,7 +53,7 @@ export default function AddListingShell() {
 
             {categoryLabel && (
               <span
-                className="inline-flex w-fit items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold"
+                className="inline-flex w-fit items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-semibold sm:px-4 sm:py-2 sm:text-sm"
                 style={{
                   borderColor: "var(--brand-border)",
                   background: "var(--brand-light)",
@@ -99,66 +70,13 @@ export default function AddListingShell() {
         </div>
       </section>
 
-      <section className="page-shell py-8 sm:py-10">
+      <section className="page-shell pb-8 pt-4 sm:py-10">
         {categoryDef ? (
-          <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-start">
+          <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-start lg:gap-6">
             <div id="listing-form">
-              <ListingForm />
+              <ListingWizard />
             </div>
-
-            {/* ---------- Helper column ---------- */}
-            <aside className="space-y-4 lg:sticky lg:top-28">
-              <div
-                className="rounded-2xl border bg-white p-5"
-                style={{ borderColor: "var(--border-soft)", boxShadow: "var(--shadow-card)" }}
-              >
-                <p className="eyebrow mb-4">{t.addListing.proTips}</p>
-                <ul className="space-y-4">
-                  {tips.map((tip) => (
-                    <li key={tip.title} className="flex gap-3">
-                      <span
-                        className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full"
-                        style={{ background: "var(--brand-light)", color: "var(--brand-accent)" }}
-                      >
-                        <tip.icon className="h-4 w-4" />
-                      </span>
-                      <span>
-                        <span className="block text-sm font-semibold" style={{ color: "var(--text-primary)" }}>
-                          {tip.title}
-                        </span>
-                        <span className="mt-0.5 block text-xs leading-relaxed" style={{ color: "var(--text-tertiary)" }}>
-                          {tip.desc}
-                        </span>
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              <div
-                className="rounded-2xl border p-5"
-                style={{ borderColor: "var(--brand-border)", background: "var(--brand-light)" }}
-              >
-                <span
-                  className="flex h-9 w-9 items-center justify-center rounded-full text-white"
-                  style={{ background: "var(--brand-accent)" }}
-                >
-                  <ShieldCheck className="h-4 w-4" />
-                </span>
-                <p className="mt-3 text-sm font-bold" style={{ color: "var(--text-primary)" }}>
-                  {en ? "Verified profile" : "Profili Verified"}
-                </p>
-                <p className="mt-1 text-xs leading-relaxed" style={{ color: "var(--text-secondary)" }}>
-                  {en
-                    ? "Website, Book Now, Instagram, Facebook and a gallery of up to 10 photos unlock with the Verified badge."
-                    : "Website, Book Now, Instagram, Facebook dhe galeria deri në 10 foto aktivizohen me statusin Verified."}
-                </p>
-                <Link href="/packet" className="btn-primary mt-4 w-full text-xs">
-                  <BadgeCheck className="h-4 w-4" />
-                  {en ? "Get Verified" : "Bëhu Verified"}
-                </Link>
-              </div>
-            </aside>
+            <ListingFormAside />
           </div>
         ) : (
           /* ---------- No (or invalid) ?category= — pick one first ---------- */

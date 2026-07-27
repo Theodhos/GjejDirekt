@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
-import { ArrowUpRight, Edit3, Eye, Loader2, MapPin, Trash2, User } from "lucide-react";
+import { Edit3, Eye, Loader2, Trash2, User } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 
 export default function UserListingTable({
@@ -140,14 +140,6 @@ export default function UserListingTable({
                       title={en ? "View Listing" : "Shiko Shërbimin"}
                     >
                       <Eye className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                    </Link>
-                    <Link
-                      href={`/listings/${listing.slug}`}
-                      className="hidden h-10 w-10 md:h-11 md:w-11 items-center justify-center rounded-xl transition-colors hover:bg-neutral-100 lg:inline-flex"
-                      style={{ border: "1px solid var(--border-medium)", color: "var(--text-secondary)" }}
-                      title={en ? "Open public page" : "Hap faqen publike"}
-                    >
-                      <ArrowUpRight className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                     </Link>
                     <button
                       disabled={deletingId === listing._id}

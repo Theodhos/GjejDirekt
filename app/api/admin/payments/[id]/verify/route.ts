@@ -3,6 +3,52 @@ import { requireAdmin } from "@/lib/auth";
 import { connectDB } from "@/lib/db";
 import Payment from "@/models/Payment";
 import Listing from "@/models/Listing";
+import User from "@/models/User";
+import { PACKAGE_CATALOG } from "@/lib/packages";
+
+/** Marks the payment rows this admin flow owns, so they can be revoked cleanly. */
+const ADMIN_GRANT = "admin-grant";
+
+const GRANT_MAP = {
+  verify: PACKAGE_CATALOG.verified,
+  trading: PACKAGE_CATALOG.ads,
+  features: PACKAGE_CATALOG["ads-pro"]
+} as const;
+
+/**
+ * Keeps the user's payment history in sync with what the admin grants, so
+ * /dashboard/payments shows the same package name and price as the catalogue.
+ */
+async function syncGrantedPackage(
+  listing: any,
+  packet: keyof typeof GRANT_MAP,
+  granted: boolean,
+  owner: { name?: string; email?: string } | null
+) {
+  const filter = { user: listing.owner, listing: listing._id, packet, orderID: ADMIN_GRANT };
+
+  if (!granted) {
+    await Payment.deleteMany(filter);
+    return;
+  }
+
+  const definition = GRANT_MAP[packet];
+  await Payment.findOneAndUpdate(
+    filter,
+    {
+      $set: {
+        userName: owner?.name || "",
+        userEmail: owner?.email || "",
+        listingTitle: listing.title,
+        packageName: definition.label.en,
+        amount: definition.price,
+        currency: definition.currency,
+        verificationStatus: "approved"
+      }
+    },
+    { upsert: true, setDefaultsOnInsert: true }
+  );
+}
 
 export async function POST(request: Request, { params }: { params: { id: string } }) {
   try {
@@ -70,6 +116,18 @@ export async function POST(request: Request, { params }: { params: { id: string 
     }
 
     await Listing.updateOne({ _id: listingId }, { $set: updates });
+
+    // Mirror the grant in the payment history the listing owner sees.
+    const owner = await User.findById(listing.owner).select("name email").lean<any>();
+
+    if (desiredVerified !== undefined) {
+      await syncGrantedPackage(listing, "verify", Boolean(desiredVerified), owner);
+    }
+
+    if (desiredPackage !== undefined) {
+      await syncGrantedPackage(listing, "trading", desiredPackage === "trading", owner);
+      await syncGrantedPackage(listing, "features", desiredPackage === "features", owner);
+    }
 
     return NextResponse.json({ success: true });
   } catch (error) {

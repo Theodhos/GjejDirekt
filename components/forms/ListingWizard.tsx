@@ -20,17 +20,56 @@ import {
   Lock,
   MapPin,
   Phone,
+  Plus,
   Sparkles,
   Tag,
   Trash2,
-  Wallet
+  Wallet,
+  X
 } from "lucide-react";
 import Input from "@/components/ui/Input";
 import Textarea from "@/components/ui/Textarea";
 import Select from "@/components/ui/Select";
-import { categories } from "@/lib/constants";
+import { categories, getCategoryFormValue, getSubcategoryFormValue } from "@/lib/constants";
 import { albaniaCities } from "@/lib/albania-cities";
 import { useLanguage } from "@/context/LanguageContext";
+
+export type WizardListing = {
+  _id: string;
+  slug?: string;
+  title?: string;
+  description?: string;
+  category?: string;
+  subcategory?: string;
+  location?: string;
+  country?: string;
+  address?: string;
+  currency?: string;
+  price?: number;
+  priceFrom?: number;
+  tags?: string[];
+  amenities?: string[];
+  highlights?: string[];
+  contactInfo?: { phone?: string; email?: string; website?: string };
+  socialLinks?: { instagram?: string; facebook?: string; tiktok?: string; x?: string };
+  googleMapsLink?: string;
+  businessHours?: string;
+  whatsapp?: string;
+  website?: string;
+  checkIn?: string;
+  checkOut?: string;
+  menuLink?: string;
+  tips?: string;
+  eventDate?: string;
+  eventTime?: string;
+  bookingLink?: string;
+  transportType?: string;
+  bannerImage?: string;
+  photos?: string[];
+  images?: string[];
+  verified?: boolean;
+  status?: string;
+};
 
 async function uploadImage(file: File) {
   const formData = new FormData();
@@ -156,6 +195,7 @@ const COPY = {
     coverHint: "JPG ose PNG · rekomandohet 1600×900 · maksimumi 5MB",
     coverReplace: "Ndrysho foton",
     coverRemove: "Hiq",
+    coverCurrent: "Fotoja aktuale",
     phone: "Telefon",
     whatsapp: "WhatsApp",
     whatsappHint: "Lëreni bosh nëse përdorni të njëjtin numër si telefoni.",
@@ -187,6 +227,8 @@ const COPY = {
     customTag: "Shto karakteristikë... (shtyp Enter)",
     verifiedTitle: "Opsione për Verified",
     verifiedSubtitle: "Këto fusha aktivizohen automatikisht kur listimi juaj verifikohet nga administratori.",
+    verifiedActiveTitle: "Listimi juaj është Verified",
+    verifiedActiveSubtitle: "Të gjitha opsionet e mëposhtme janë aktive — plotësojini për të marrë më shumë kontakte.",
     website: "Website",
     bookNow: "Book Now — linku i rezervimit",
     instagram: "Instagram",
@@ -195,6 +237,8 @@ const COPY = {
     galleryLocked: "Galeri deri në 10 foto",
     galleryFree: "Falas: 1 foto kryesore",
     galleryVerified: "Verified: deri në 10 foto",
+    galleryAdd: "Shto foto",
+    galleryCount: "foto nga 10",
     verifiedNote: "Bëhu Verified për të aktivizuar këto funksione.",
     verifiedCta: "Bëhu Verified",
     back: "Kthehu",
@@ -202,16 +246,21 @@ const COPY = {
     publish: "Publiko Listimin",
     publishing: "Duke publikuar...",
     publishNote: "Mund ta përditësoni profilin tuaj në çdo kohë.",
+    save: "Ruaj Ndryshimet",
+    saving: "Duke ruajtur...",
+    saveNote: "Mund ta përditësoni profilin tuaj në çdo kohë.",
     reviewNote: "Listimi shkon te administratori për miratim dhe publikohet pas aprovimit.",
+    reviewNoteEdit: "Pas ruajtjes, ndryshimet kalojnë sërish në rishikim nga administratori.",
     required: "Kjo fushë është e detyrueshme.",
     descriptionShort: "Përshkrimi duhet të ketë të paktën 30 karaktere.",
     coverRequired: "Fotoja kryesore është e detyrueshme.",
     invalidUrl: "Linku duhet të fillojë me http:// ose https://",
     invalidPriceRange: "Çmimi maksimal duhet të jetë më i madh se minimali.",
     fileTooLarge: "Fotoja është shumë e madhe (maksimumi 5MB).",
+    galleryFull: "Mund të ngarkoni maksimumi 10 foto në galeri.",
     fixErrors: "Ju lutem plotësoni fushat e detyrueshme.",
     success: "Listimi u dërgua për miratim",
-    optional: "opsionale"
+    updated: "Shërbimi u përditësua"
   },
   en: {
     stepWord: "Step",
@@ -244,6 +293,7 @@ const COPY = {
     coverHint: "JPG or PNG · 1600×900 recommended · max 5MB",
     coverReplace: "Replace photo",
     coverRemove: "Remove",
+    coverCurrent: "Current photo",
     phone: "Phone",
     whatsapp: "WhatsApp",
     whatsappHint: "Leave empty if it is the same as the phone number.",
@@ -275,6 +325,8 @@ const COPY = {
     customTag: "Add a feature... (press Enter)",
     verifiedTitle: "Verified options",
     verifiedSubtitle: "These fields unlock automatically once an admin verifies your listing.",
+    verifiedActiveTitle: "Your listing is Verified",
+    verifiedActiveSubtitle: "Every option below is active — fill them in to get more contacts.",
     website: "Website",
     bookNow: "Book Now — booking link",
     instagram: "Instagram",
@@ -283,6 +335,8 @@ const COPY = {
     galleryLocked: "Gallery up to 10 photos",
     galleryFree: "Free: 1 main photo",
     galleryVerified: "Verified: up to 10 photos",
+    galleryAdd: "Add photos",
+    galleryCount: "photos of 10",
     verifiedNote: "Become Verified to activate these features.",
     verifiedCta: "Get Verified",
     back: "Back",
@@ -290,20 +344,26 @@ const COPY = {
     publish: "Publish listing",
     publishing: "Publishing...",
     publishNote: "You can update your profile at any time.",
+    save: "Save changes",
+    saving: "Saving...",
+    saveNote: "You can update your profile at any time.",
     reviewNote: "Your listing goes to an admin for approval and goes live once approved.",
+    reviewNoteEdit: "After saving, the changes go back to an admin for review.",
     required: "This field is required.",
     descriptionShort: "The description needs at least 30 characters.",
     coverRequired: "The cover photo is required.",
     invalidUrl: "The link must start with http:// or https://",
     invalidPriceRange: "The maximum price must be higher than the minimum.",
     fileTooLarge: "The photo is too large (max 5MB).",
+    galleryFull: "You can upload a maximum of 10 gallery photos.",
     fixErrors: "Please complete the required fields.",
     success: "Listing submitted for approval",
-    optional: "optional"
+    updated: "Listing updated"
   }
 } as const;
 
 const MAX_COVER_SIZE = 5 * 1024 * 1024;
+const MAX_GALLERY = 10;
 const MIN_DESCRIPTION = 30;
 const STEP_ICONS = [MapPin, Phone, Wallet, Lock];
 const TOTAL_STEPS = 4;
@@ -327,31 +387,89 @@ const emptyForm = {
   eventTime: "",
   transportType: "",
   menuLink: "",
-  tips: ""
+  tips: "",
+  // Verified-only fields — editable once the listing is verified by an admin.
+  website: "",
+  bookingLink: "",
+  instagram: "",
+  facebook: ""
 };
 
 type FormState = typeof emptyForm;
 type FormKey = keyof FormState;
+type NewPhoto = { id: string; file: File; preview: string };
 
-export default function ListingForm() {
+function initialForm(listing?: WizardListing): FormState {
+  if (!listing) return emptyForm;
+  return {
+    title: listing.title || "",
+    location: listing.location || "",
+    village: "",
+    description: listing.description || "",
+    contactPhone: listing.contactInfo?.phone || "",
+    whatsapp: listing.whatsapp || "",
+    address: listing.address || "",
+    googleMapsLink: listing.googleMapsLink || "",
+    priceFrom: listing.priceFrom ? String(listing.priceFrom) : "",
+    price: listing.price ? String(listing.price) : "",
+    currency: listing.currency || "€",
+    checkIn: listing.checkIn || "",
+    checkOut: listing.checkOut || "",
+    businessHours: listing.businessHours || "",
+    eventDate: listing.eventDate || "",
+    eventTime: listing.eventTime || "",
+    transportType: listing.transportType || "",
+    menuLink: listing.menuLink || "",
+    tips: listing.tips || "",
+    website: listing.website || listing.contactInfo?.website || "",
+    bookingLink: listing.bookingLink || "",
+    instagram: listing.socialLinks?.instagram || "",
+    facebook: listing.socialLinks?.facebook || ""
+  };
+}
+
+export default function ListingWizard({ listing }: { listing?: WizardListing }) {
   const { language, t } = useLanguage();
   const c = COPY[language];
   const router = useRouter();
   const searchParams = useSearchParams();
 
+  const isEdit = Boolean(listing?._id);
+  /** Verified is granted by an admin, so it only ever unlocks step 4 while editing. */
+  const verifiedUnlocked = isEdit && Boolean(listing?.verified);
+
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
-  const [form, setForm] = useState<FormState>(emptyForm);
+  const [form, setForm] = useState<FormState>(() => initialForm(listing));
   const [errors, setErrors] = useState<Partial<Record<string, string>>>({});
 
-  const [selectedCategory, setSelectedCategory] = useState("");
-  const [selectedSubcategory, setSelectedSubcategory] = useState("");
-  const [activeTags, setActiveTags] = useState<string[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState(
+    listing ? getCategoryFormValue(listing.category) : ""
+  );
+  const [selectedSubcategory, setSelectedSubcategory] = useState(
+    listing ? getSubcategoryFormValue(listing.category, listing.subcategory) : ""
+  );
+  const [activeTags, setActiveTags] = useState<string[]>(listing?.tags || []);
   const [customTag, setCustomTag] = useState("");
+  // Edit mode keeps the saved tags; create mode seeds them from the category.
+  const [tagsTouched, setTagsTouched] = useState(isEdit);
 
+  const existingImages = useMemo(() => {
+    if (!listing) return [] as string[];
+    if (listing.images?.length) return listing.images;
+    return [listing.bannerImage, ...(listing.photos || [])].filter((item): item is string => Boolean(item));
+  }, [listing]);
+
+  const [coverUrl, setCoverUrl] = useState(listing?.bannerImage || existingImages[0] || "");
   const [coverFile, setCoverFile] = useState<File | null>(null);
   const [coverPreview, setCoverPreview] = useState("");
   const coverInputRef = useRef<HTMLInputElement>(null);
+
+  const [galleryUrls, setGalleryUrls] = useState<string[]>(() =>
+    listing ? (listing.photos?.length ? listing.photos : existingImages.slice(1)) : []
+  );
+  const [newPhotos, setNewPhotos] = useState<NewPhoto[]>([]);
+  const galleryInputRef = useRef<HTMLInputElement>(null);
 
   const [cities, setCities] = useState<any[]>(albaniaCities);
   const [villages, setVillages] = useState<string[]>([]);
@@ -359,11 +477,11 @@ export default function ListingForm() {
 
   // A category passed through the URL (?category=...) locks the choice for the whole flow.
   const lockedCategoryParam = searchParams.get("category");
-  const categoryLocked = Boolean(
-    lockedCategoryParam && categories.some((item) => item.value === lockedCategoryParam)
-  );
+  const categoryLocked =
+    !isEdit && Boolean(lockedCategoryParam && categories.some((item) => item.value === lockedCategoryParam));
 
   useEffect(() => {
+    if (isEdit) return;
     const categoryParam = searchParams.get("category");
     const subcategoryParam = searchParams.get("subcategory");
     if (categoryParam && categories.some((item) => item.value === categoryParam)) {
@@ -373,7 +491,7 @@ export default function ListingForm() {
         setSelectedSubcategory(subcategoryParam);
       }
     }
-  }, [searchParams]);
+  }, [searchParams, isEdit]);
 
   useEffect(() => {
     const loadCities = async () => {
@@ -423,15 +541,16 @@ export default function ListingForm() {
   };
 
   const suggestedTags = useMemo(() => {
-    if (!selectedCategory) return [];
+    if (!selectedCategory) return [] as string[];
     if (selectedSubcategory && SUBCATEGORY_DEFAULT_TAGS[selectedCategory]?.[selectedSubcategory]) {
       return SUBCATEGORY_DEFAULT_TAGS[selectedCategory][selectedSubcategory];
     }
     return categoryDef?.tags || [];
   }, [selectedCategory, selectedSubcategory, categoryDef]);
 
-  // Pre-select the five most relevant features whenever the category/subcategory changes.
+  // Pre-select the five most relevant features until the user edits the selection.
   useEffect(() => {
+    if (tagsTouched) return;
     if (!selectedCategory) {
       setActiveTags([]);
       return;
@@ -443,12 +562,13 @@ export default function ListingForm() {
     } else {
       setActiveTags((categories.find((item) => item.value === selectedCategory)?.tags || []).slice(0, 5));
     }
-  }, [selectedCategory, selectedSubcategory]);
+  }, [selectedCategory, selectedSubcategory, tagsTouched]);
 
   const isPerPersonCategory = selectedCategory === "akomodim" || selectedCategory === "restorante";
   const showCheckTimes = selectedCategory === "akomodim";
   const showBusinessHours = selectedCategory !== "akomodim" && selectedCategory !== "evente";
   const showEventFields = selectedCategory === "evente";
+  const galleryTotal = galleryUrls.length + newPhotos.length;
 
   const update = (key: FormKey, value: string) => {
     setForm((prev) => ({ ...prev, [key]: value }));
@@ -456,6 +576,7 @@ export default function ListingForm() {
   };
 
   const toggleTag = (tag: string) => {
+    setTagsTouched(true);
     setActiveTags((prev) => (prev.includes(tag) ? prev.filter((item) => item !== tag) : [...prev, tag]));
   };
 
@@ -464,6 +585,7 @@ export default function ListingForm() {
     event.preventDefault();
     const value = customTag.trim();
     if (!value) return;
+    setTagsTouched(true);
     if (!activeTags.includes(value)) setActiveTags((prev) => [...prev, value]);
     setCustomTag("");
   };
@@ -478,6 +600,33 @@ export default function ListingForm() {
     setErrors((prev) => ({ ...prev, cover: "" }));
   };
 
+  const pickGallery = (files: FileList | null) => {
+    if (!files?.length) return;
+    const room = MAX_GALLERY - galleryTotal;
+    if (room <= 0) {
+      toast.error(c.galleryFull);
+      return;
+    }
+    const accepted: NewPhoto[] = [];
+    for (const file of Array.from(files).slice(0, room)) {
+      if (file.size > MAX_COVER_SIZE) {
+        toast.error(c.fileTooLarge);
+        continue;
+      }
+      accepted.push({ id: `${file.name}-${file.size}-${accepted.length}`, file, preview: URL.createObjectURL(file) });
+    }
+    if (Array.from(files).length > room) toast.error(c.galleryFull);
+    setNewPhotos((prev) => [...prev, ...accepted]);
+  };
+
+  const removeNewPhoto = (id: string) => {
+    setNewPhotos((prev) => {
+      const target = prev.find((item) => item.id === id);
+      if (target) URL.revokeObjectURL(target.preview);
+      return prev.filter((item) => item.id !== id);
+    });
+  };
+
   function validateStep(target: number) {
     const next: Record<string, string> = {};
 
@@ -487,7 +636,7 @@ export default function ListingForm() {
       if (!selectedSubcategory) next.subcategory = c.required;
       if (!form.location.trim()) next.location = c.required;
       if (form.description.trim().length < MIN_DESCRIPTION) next.description = c.descriptionShort;
-      if (!coverFile) next.cover = c.coverRequired;
+      if (!coverFile && !coverUrl) next.cover = c.coverRequired;
     }
 
     if (target === 2) {
@@ -509,6 +658,12 @@ export default function ListingForm() {
       if (form.priceFrom && form.price && Number(form.price) < Number(form.priceFrom)) {
         next.price = c.invalidPriceRange;
       }
+    }
+
+    if (target === 4 && verifiedUnlocked) {
+      (["website", "bookingLink", "instagram", "facebook"] as const).forEach((key) => {
+        if (form[key].trim() && !/^https?:\/\//i.test(form[key].trim())) next[key] = c.invalidUrl;
+      });
     }
 
     setErrors(next);
@@ -541,13 +696,13 @@ export default function ListingForm() {
     event.preventDefault();
     if (loading) return;
 
-    // Enter inside a field must move the wizard forward, never publish early.
+    // Enter inside a field must move the wizard forward, never save early.
     if (step < TOTAL_STEPS) {
       goToStep(step + 1);
       return;
     }
 
-    for (let current = 1; current <= 3; current += 1) {
+    for (let current = 1; current <= TOTAL_STEPS; current += 1) {
       if (!validateStep(current)) {
         setStep(current);
         toast.error(c.fixErrors);
@@ -558,47 +713,78 @@ export default function ListingForm() {
 
     setLoading(true);
     try {
-      const bannerUrl = await uploadImage(coverFile as File);
+      const bannerUrl = coverFile ? await uploadImage(coverFile) : coverUrl;
 
-      const response = await fetch("/api/listings", {
-        method: "POST",
+      let gallery = galleryUrls;
+      if (verifiedUnlocked && newPhotos.length) {
+        const uploaded: string[] = [];
+        for (const item of newPhotos) {
+          uploaded.push(await uploadImage(item.file));
+        }
+        gallery = [...galleryUrls, ...uploaded].slice(0, MAX_GALLERY);
+      }
+
+      const payload: Record<string, unknown> = {
+        title: form.title.trim(),
+        description: form.description.trim(),
+        category: selectedCategory,
+        subcategory: selectedSubcategory,
+        location: form.location.trim(),
+        village: form.village,
+        country: listing?.country || "Albania",
+        address: form.address.trim(),
+        contactPhone: form.contactPhone.trim(),
+        whatsapp: form.whatsapp.trim(),
+        googleMapsLink: form.googleMapsLink.trim(),
+        priceFrom: form.priceFrom,
+        price: form.price,
+        currency: form.currency,
+        checkIn: form.checkIn,
+        checkOut: form.checkOut,
+        businessHours: form.businessHours.trim(),
+        eventDate: form.eventDate,
+        eventTime: form.eventTime,
+        transportType: form.transportType.trim(),
+        menuLink: form.menuLink.trim(),
+        tips: form.tips.trim(),
+        // Verified-only values: editable when unlocked, sent unchanged otherwise.
+        website: form.website.trim(),
+        bookingLink: form.bookingLink.trim(),
+        instagram: form.instagram.trim(),
+        instagramLink: form.instagram.trim(),
+        facebook: form.facebook.trim(),
+        facebookLink: form.facebook.trim(),
+        bannerImage: bannerUrl,
+        photos: gallery,
+        images: [bannerUrl, ...gallery],
+        tags: activeTags,
+        amenities: activeTags
+      };
+
+      if (isEdit && listing) {
+        // Fields the wizard does not expose must be echoed back or PATCH clears them.
+        payload.contactEmail = listing.contactInfo?.email || "";
+        payload.tiktok = listing.socialLinks?.tiktok || "";
+        payload.x = listing.socialLinks?.x || "";
+        payload.highlights = listing.highlights || [];
+      }
+
+      const response = await fetch(isEdit ? `/api/listings/${listing!._id}` : "/api/listings", {
+        method: isEdit ? "PATCH" : "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          title: form.title.trim(),
-          description: form.description.trim(),
-          category: selectedCategory,
-          subcategory: selectedSubcategory,
-          location: form.location.trim(),
-          village: form.village,
-          country: "Albania",
-          address: form.address.trim(),
-          contactPhone: form.contactPhone.trim(),
-          whatsapp: form.whatsapp.trim(),
-          googleMapsLink: form.googleMapsLink.trim(),
-          priceFrom: form.priceFrom,
-          price: form.price,
-          currency: form.currency,
-          checkIn: form.checkIn,
-          checkOut: form.checkOut,
-          businessHours: form.businessHours.trim(),
-          eventDate: form.eventDate,
-          eventTime: form.eventTime,
-          transportType: form.transportType.trim(),
-          menuLink: form.menuLink.trim(),
-          tips: form.tips.trim(),
-          bannerImage: bannerUrl,
-          // Gallery, website and social links stay empty until the listing is verified.
-          photos: [],
-          images: [bannerUrl],
-          tags: activeTags
-        })
+        body: JSON.stringify(payload)
       });
 
       const data = await response.json();
-      if (!response.ok) throw new Error(data.error || "Failed to create listing");
+      if (!response.ok) throw new Error(data.error || "Something went wrong");
 
-      toast.success(c.success);
-      router.push("/dashboard");
+      if (isEdit) {
+        toast.success(c.updated);
+        router.push(`/listings/${data.listing?.slug || listing!.slug || ""}`);
+      } else {
+        toast.success(c.success);
+        router.push("/dashboard");
+      }
       router.refresh();
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Something went wrong");
@@ -608,9 +794,10 @@ export default function ListingForm() {
   }
 
   const inputClass = "rounded-xl py-2.5";
+  const showCoverPreview = coverPreview || coverUrl;
 
   return (
-    <form onSubmit={submit} className="space-y-6">
+    <form onSubmit={submit} className="space-y-4 sm:space-y-6">
       <div ref={topRef} className="scroll-mt-28" />
 
       {/* ---------- Stepper ---------- */}
@@ -688,7 +875,7 @@ export default function ListingForm() {
         className="rounded-2xl border bg-white"
         style={{ borderColor: "var(--border-soft)", boxShadow: "var(--shadow-card)" }}
       >
-        <div className="border-b px-5 py-5 sm:px-7" style={{ borderColor: "var(--border-soft)" }}>
+        <div className="border-b px-5 py-4 sm:px-7 sm:py-5" style={{ borderColor: "var(--border-soft)" }}>
           <p className="eyebrow mb-2">
             {c.stepWord} {step} {c.ofWord} {TOTAL_STEPS}
           </p>
@@ -750,6 +937,7 @@ export default function ListingForm() {
                     onChange={(event) => {
                       setSelectedCategory(event.target.value);
                       setSelectedSubcategory("");
+                      setTagsTouched(false);
                       setErrors((prev) => ({ ...prev, category: "" }));
                     }}
                   />
@@ -863,16 +1051,16 @@ export default function ListingForm() {
                   {c.cover} *
                 </span>
 
-                {coverPreview ? (
+                {showCoverPreview ? (
                   <div
                     className="overflow-hidden rounded-2xl border"
                     style={{ borderColor: "var(--border-soft)" }}
                   >
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={coverPreview} alt="cover" className="h-48 w-full object-cover sm:h-60" />
+                    <img src={coverPreview || coverUrl} alt="cover" className="h-48 w-full object-cover sm:h-60" />
                     <div className="flex items-center justify-between gap-3 px-4 py-3">
                       <span className="truncate text-xs" style={{ color: "var(--text-tertiary)" }}>
-                        {coverFile?.name}
+                        {coverFile?.name || c.coverCurrent}
                       </span>
                       <span className="flex shrink-0 items-center gap-2">
                         <button
@@ -885,7 +1073,10 @@ export default function ListingForm() {
                         </button>
                         <button
                           type="button"
-                          onClick={() => setCoverFile(null)}
+                          onClick={() => {
+                            setCoverFile(null);
+                            setCoverUrl("");
+                          }}
                           className="flex items-center gap-1 rounded-full px-3 py-1.5 text-xs font-semibold text-rose-600 transition-colors hover:bg-rose-50"
                         >
                           <Trash2 className="h-3.5 w-3.5" />
@@ -1231,73 +1422,193 @@ export default function ListingForm() {
                 <BadgeCheck className="mt-0.5 h-5 w-5 shrink-0" style={{ color: "var(--brand-accent)" }} />
                 <div>
                   <p className="text-sm font-bold" style={{ color: "var(--text-primary)" }}>
-                    {c.verifiedTitle}
+                    {verifiedUnlocked ? c.verifiedActiveTitle : c.verifiedTitle}
                   </p>
                   <p className="mt-1 text-xs" style={{ color: "var(--text-secondary)" }}>
-                    {c.verifiedSubtitle}
+                    {verifiedUnlocked ? c.verifiedActiveSubtitle : c.verifiedSubtitle}
                   </p>
                 </div>
               </div>
 
-              {/* Locked fields — kept visually muted so the limit is obvious at a glance. */}
-              <div className="grid gap-4 sm:grid-cols-2">
-                <LockedField icon={Globe} label={c.website} placeholder="https://..." />
-                <LockedField icon={CalendarClock} label={c.bookNow} placeholder="https://..." />
-                <LockedField icon={Instagram} label={c.instagram} placeholder="https://instagram.com/..." />
-                <LockedField icon={Facebook} label={c.facebook} placeholder="https://facebook.com/..." />
-              </div>
+              {verifiedUnlocked ? (
+                <>
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <UnlockedField
+                      icon={Globe}
+                      label={c.website}
+                      placeholder="https://..."
+                      value={form.website}
+                      error={errors.website}
+                      onChange={(value) => update("website", value)}
+                    />
+                    <UnlockedField
+                      icon={CalendarClock}
+                      label={c.bookNow}
+                      placeholder="https://..."
+                      value={form.bookingLink}
+                      error={errors.bookingLink}
+                      onChange={(value) => update("bookingLink", value)}
+                    />
+                    <UnlockedField
+                      icon={Instagram}
+                      label={c.instagram}
+                      placeholder="https://instagram.com/..."
+                      value={form.instagram}
+                      error={errors.instagram}
+                      onChange={(value) => update("instagram", value)}
+                    />
+                    <UnlockedField
+                      icon={Facebook}
+                      label={c.facebook}
+                      placeholder="https://facebook.com/..."
+                      value={form.facebook}
+                      error={errors.facebook}
+                      onChange={(value) => update("facebook", value)}
+                    />
+                  </div>
 
-              <div className="space-y-2 opacity-60">
-                <span className="flex items-center gap-2 text-sm font-semibold" style={{ color: "var(--text-primary)" }}>
-                  <ImagePlus className="h-4 w-4" />
-                  {c.galleryLocked}
-                  <Lock className="h-3.5 w-3.5" />
-                </span>
-                <div className="grid grid-cols-5 gap-2 sm:grid-cols-10">
-                  {Array.from({ length: 10 }).map((_, index) => (
-                    <div
-                      key={index}
-                      className="flex aspect-square items-center justify-center rounded-lg border border-dashed"
-                      style={{ borderColor: "var(--border-medium)", background: "var(--surface-cream)" }}
-                    >
-                      <Lock className="h-3.5 w-3.5" style={{ color: "var(--text-tertiary)" }} />
+                  {/* Gallery manager — up to 10 photos next to the cover. */}
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between gap-3">
+                      <span className="flex items-center gap-2 text-sm font-semibold" style={{ color: "var(--text-primary)" }}>
+                        <ImagePlus className="h-4 w-4" style={{ color: "var(--brand-accent)" }} />
+                        {c.gallery}
+                      </span>
+                      <span className="text-xs font-semibold" style={{ color: "var(--text-tertiary)" }}>
+                        {galleryTotal} {c.galleryCount}
+                      </span>
                     </div>
-                  ))}
-                </div>
-              </div>
 
-              <div
-                className="rounded-xl border px-4 py-3"
-                style={{ borderColor: "var(--border-soft)", background: "var(--surface-cream)" }}
-              >
-                <p className="text-xs font-semibold" style={{ color: "var(--text-primary)" }}>
-                  {c.gallery}
-                </p>
-                <ul className="mt-1.5 space-y-1 text-xs" style={{ color: "var(--text-secondary)" }}>
-                  <li className="flex items-center gap-2">
-                    <Check className="h-3.5 w-3.5" style={{ color: "var(--brand-accent)" }} />
-                    {c.galleryFree}
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <Lock className="h-3.5 w-3.5" style={{ color: "var(--text-tertiary)" }} />
-                    {c.galleryVerified}
-                  </li>
-                </ul>
-              </div>
+                    <div className="grid grid-cols-3 gap-2 sm:grid-cols-5">
+                      {galleryUrls.map((url) => (
+                        <div
+                          key={url}
+                          className="group relative aspect-square overflow-hidden rounded-xl border"
+                          style={{ borderColor: "var(--border-soft)" }}
+                        >
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img src={url} alt="gallery" className="h-full w-full object-cover" />
+                          <button
+                            type="button"
+                            onClick={() => setGalleryUrls((prev) => prev.filter((item) => item !== url))}
+                            className="absolute right-1.5 top-1.5 flex h-6 w-6 items-center justify-center rounded-full bg-white/90 text-rose-600 shadow-sm transition-transform hover:scale-105"
+                            title={c.coverRemove}
+                          >
+                            <X className="h-3.5 w-3.5" />
+                          </button>
+                        </div>
+                      ))}
 
-              <div
-                className="flex flex-col gap-3 rounded-2xl border px-4 py-4 sm:flex-row sm:items-center sm:justify-between"
-                style={{ borderColor: "var(--border-soft)" }}
-              >
-                <p className="flex items-center gap-2 text-sm font-semibold" style={{ color: "var(--text-primary)" }}>
-                  <Lock className="h-4 w-4" style={{ color: "var(--text-tertiary)" }} />
-                  {c.verifiedNote}
-                </p>
-                <Link href="/packet" className="btn-primary shrink-0 text-xs">
-                  <BadgeCheck className="h-4 w-4" />
-                  {c.verifiedCta}
-                </Link>
-              </div>
+                      {newPhotos.map((item) => (
+                        <div
+                          key={item.id}
+                          className="group relative aspect-square overflow-hidden rounded-xl border"
+                          style={{ borderColor: "var(--brand-border)" }}
+                        >
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img src={item.preview} alt="new" className="h-full w-full object-cover" />
+                          <button
+                            type="button"
+                            onClick={() => removeNewPhoto(item.id)}
+                            className="absolute right-1.5 top-1.5 flex h-6 w-6 items-center justify-center rounded-full bg-white/90 text-rose-600 shadow-sm transition-transform hover:scale-105"
+                            title={c.coverRemove}
+                          >
+                            <X className="h-3.5 w-3.5" />
+                          </button>
+                        </div>
+                      ))}
+
+                      {galleryTotal < MAX_GALLERY && (
+                        <button
+                          type="button"
+                          onClick={() => galleryInputRef.current?.click()}
+                          className="flex aspect-square flex-col items-center justify-center gap-1 rounded-xl border border-dashed transition-colors hover:bg-[var(--brand-light)]"
+                          style={{ borderColor: "var(--border-medium)", background: "var(--surface-cream)" }}
+                        >
+                          <Plus className="h-4 w-4" style={{ color: "var(--brand-accent)" }} />
+                          <span className="text-[10px] font-semibold" style={{ color: "var(--text-tertiary)" }}>
+                            {c.galleryAdd}
+                          </span>
+                        </button>
+                      )}
+                    </div>
+
+                    <input
+                      ref={galleryInputRef}
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      className="hidden"
+                      onChange={(event) => {
+                        pickGallery(event.target.files);
+                        event.target.value = "";
+                      }}
+                    />
+                  </div>
+                </>
+              ) : (
+                <>
+                  {/* Locked fields — kept visually muted so the limit is obvious at a glance. */}
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <LockedField icon={Globe} label={c.website} placeholder="https://..." />
+                    <LockedField icon={CalendarClock} label={c.bookNow} placeholder="https://..." />
+                    <LockedField icon={Instagram} label={c.instagram} placeholder="https://instagram.com/..." />
+                    <LockedField icon={Facebook} label={c.facebook} placeholder="https://facebook.com/..." />
+                  </div>
+
+                  <div className="space-y-2 opacity-60">
+                    <span className="flex items-center gap-2 text-sm font-semibold" style={{ color: "var(--text-primary)" }}>
+                      <ImagePlus className="h-4 w-4" />
+                      {c.galleryLocked}
+                      <Lock className="h-3.5 w-3.5" />
+                    </span>
+                    <div className="grid grid-cols-5 gap-2 sm:grid-cols-10">
+                      {Array.from({ length: MAX_GALLERY }).map((_, index) => (
+                        <div
+                          key={index}
+                          className="flex aspect-square items-center justify-center rounded-lg border border-dashed"
+                          style={{ borderColor: "var(--border-medium)", background: "var(--surface-cream)" }}
+                        >
+                          <Lock className="h-3.5 w-3.5" style={{ color: "var(--text-tertiary)" }} />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div
+                    className="rounded-xl border px-4 py-3"
+                    style={{ borderColor: "var(--border-soft)", background: "var(--surface-cream)" }}
+                  >
+                    <p className="text-xs font-semibold" style={{ color: "var(--text-primary)" }}>
+                      {c.gallery}
+                    </p>
+                    <ul className="mt-1.5 space-y-1 text-xs" style={{ color: "var(--text-secondary)" }}>
+                      <li className="flex items-center gap-2">
+                        <Check className="h-3.5 w-3.5" style={{ color: "var(--brand-accent)" }} />
+                        {c.galleryFree}
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <Lock className="h-3.5 w-3.5" style={{ color: "var(--text-tertiary)" }} />
+                        {c.galleryVerified}
+                      </li>
+                    </ul>
+                  </div>
+
+                  <div
+                    className="flex flex-col gap-3 rounded-2xl border px-4 py-4 sm:flex-row sm:items-center sm:justify-between"
+                    style={{ borderColor: "var(--border-soft)" }}
+                  >
+                    <p className="flex items-center gap-2 text-sm font-semibold" style={{ color: "var(--text-primary)" }}>
+                      <Lock className="h-4 w-4" style={{ color: "var(--text-tertiary)" }} />
+                      {c.verifiedNote}
+                    </p>
+                    <Link href="/packet" className="btn-primary shrink-0 text-xs">
+                      <BadgeCheck className="h-4 w-4" />
+                      {c.verifiedCta}
+                    </Link>
+                  </div>
+                </>
+              )}
             </div>
           )}
         </div>
@@ -1325,13 +1636,13 @@ export default function ListingForm() {
             </button>
           ) : (
             <span className="hidden text-xs sm:block" style={{ color: "var(--text-tertiary)" }}>
-              {c.reviewNote}
+              {isEdit ? c.reviewNoteEdit : c.reviewNote}
             </span>
           )}
         </div>
       </div>
 
-      {/* ---------- Publish ---------- */}
+      {/* ---------- Publish / Save ---------- */}
       {step === TOTAL_STEPS && (
         <div className="space-y-3 text-center">
           <button
@@ -1343,17 +1654,16 @@ export default function ListingForm() {
             {loading ? (
               <>
                 <Loader2 className="h-5 w-5 animate-spin" />
-                {c.publishing}
+                {isEdit ? c.saving : c.publishing}
               </>
+            ) : isEdit ? (
+              c.save
             ) : (
-              <>
-                <span aria-hidden>🟢</span>
-                {c.publish}
-              </>
+              c.publish
             )}
           </button>
           <p className="text-xs" style={{ color: "var(--text-tertiary)" }}>
-            {c.publishNote}
+            {isEdit ? c.saveNote : c.publishNote}
           </p>
         </div>
       )}
@@ -1389,5 +1699,39 @@ function LockedField({
         }}
       />
     </label>
+  );
+}
+
+function UnlockedField({
+  icon: Icon,
+  label,
+  placeholder,
+  value,
+  error,
+  onChange
+}: {
+  icon: React.ComponentType<{ className?: string; style?: React.CSSProperties }>;
+  label: string;
+  placeholder: string;
+  value: string;
+  error?: string;
+  onChange: (value: string) => void;
+}) {
+  return (
+    <div>
+      <span className="mb-1.5 flex items-center gap-1.5 text-sm font-semibold" style={{ color: "var(--text-primary)" }}>
+        <Icon className="h-4 w-4" style={{ color: "var(--brand-accent)" }} />
+        {label}
+        <BadgeCheck className="h-3.5 w-3.5" style={{ color: "var(--brand-accent)" }} />
+      </span>
+      <Input
+        className="rounded-xl py-2.5"
+        placeholder={placeholder}
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+        error={error}
+        inputMode="url"
+      />
+    </div>
   );
 }
