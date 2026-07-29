@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Search, MapPin, Tag, SlidersHorizontal, RotateCcw, Loader2, Euro, X, Check } from "lucide-react";
+import { Search, MapPin, Tag, SlidersHorizontal, RotateCcw, Loader2, Euro, X, Check, BadgeCheck } from "lucide-react";
 import { categories } from "@/lib/constants";
 import { useLanguage } from "@/context/LanguageContext";
 import { translations } from "@/lib/dictionary";
@@ -22,7 +22,13 @@ export default function SearchFilters() {
   const [minPrice, setMinPrice] = useState(params?.get("minPrice") || "");
   const [maxPrice, setMaxPrice] = useState(params?.get("maxPrice") || "");
   const [priceError, setPriceError] = useState("");
+  const [verifiedOnly, setVerifiedOnly] = useState(params?.get("verified") === "true");
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+
+  const cityLabel = language === "en" ? "City" : "Qyteti";
+  const verifiedLabel = language === "en" ? "Verified only" : "Vetëm Verified";
+  const verifiedHint =
+    language === "en" ? "Show only admin-verified businesses." : "Shfaq vetëm bizneset e verifikuara.";
 
   const subcategories = useMemo(() => {
     return categories.find((item) => item.value === selectedCategory)?.subcategories || [];
@@ -78,6 +84,12 @@ export default function SearchFilters() {
     if (debouncedLocation !== (params?.get("location") || "")) applyFilters({ location: debouncedLocation });
   }, [debouncedLocation, applyFilters, params]);
 
+  const toggleVerified = useCallback(() => {
+    const next = !verifiedOnly;
+    setVerifiedOnly(next);
+    applyFilters({ verified: next ? "true" : "" });
+  }, [verifiedOnly, applyFilters]);
+
   const handleReset = () => {
     setKeyword("");
     setLocation("");
@@ -86,6 +98,7 @@ export default function SearchFilters() {
     setMinPrice("");
     setMaxPrice("");
     setPriceError("");
+    setVerifiedOnly(false);
     router.push('/services');
   };
 
@@ -128,12 +141,14 @@ export default function SearchFilters() {
     const sub = params?.get("subcategory");
     const minP = params?.get("minPrice");
     const maxP = params?.get("maxPrice");
+    const onlyVerified = params?.get("verified") === "true";
 
     if (q) chips.push({ key: "q", label: `"${q}"` });
     if (loc) chips.push({ key: "location", label: loc });
     if (cat) chips.push({ key: "category", label: getCategoryLabel(cat, cat) });
     if (sub) chips.push({ key: "subcategory", label: getSubcategoryLabel(cat || "", sub, sub) });
     if (minP || maxP) chips.push({ key: "price", label: formatPriceChip(minP, maxP) });
+    if (onlyVerified) chips.push({ key: "verified", label: "Verified" });
     return chips;
   }, [params, getCategoryLabel, getSubcategoryLabel, formatPriceChip]);
 
@@ -161,6 +176,10 @@ export default function SearchFilters() {
         setMaxPrice("");
         setPriceError("");
         applyFilters({ minPrice: "", maxPrice: "" });
+        break;
+      case "verified":
+        setVerifiedOnly(false);
+        applyFilters({ verified: "" });
         break;
     }
   }, [applyFilters]);
@@ -262,7 +281,7 @@ export default function SearchFilters() {
         <div className="space-y-3">
           <label className="text-[10px] font-black uppercase tracking-widest text-slate-900 ml-2 flex items-center gap-2">
             <MapPin className="w-3 h-3" />
-            {language === 'en' ? 'Location' : 'Vendndodhja'}
+            {cityLabel}
           </label>
           <input
             type="text"
@@ -393,6 +412,35 @@ export default function SearchFilters() {
             <p className="text-xs font-semibold text-rose-600 ml-2">{priceError}</p>
           )}
         </div>
+
+        {/* Verified */}
+        <div className="space-y-3 pt-1 border-t border-slate-100">
+          <label className="text-[10px] font-black uppercase tracking-widest text-slate-900 ml-2 flex items-center gap-2 pt-6">
+            <BadgeCheck className="w-3 h-3" />
+            Verified
+          </label>
+          <button
+            type="button"
+            onClick={toggleVerified}
+            aria-pressed={verifiedOnly}
+            className={`w-full h-12 px-4 rounded-xl text-xs font-bold inline-flex items-center justify-between transition-all ${
+              verifiedOnly ? "bg-brand-600 text-white shadow-md" : "bg-slate-50 text-slate-600 hover:bg-slate-100"
+            }`}
+          >
+            <span className="inline-flex items-center gap-2">
+              <BadgeCheck className="w-4 h-4" />
+              {verifiedLabel}
+            </span>
+            <span
+              className={`flex h-5 w-5 items-center justify-center rounded-md border ${
+                verifiedOnly ? "border-white/70 bg-white/20" : "border-slate-300 bg-white"
+              }`}
+            >
+              {verifiedOnly && <Check className="w-3 h-3" />}
+            </span>
+          </button>
+          <p className="text-[11px] font-medium text-slate-400 ml-2">{verifiedHint}</p>
+        </div>
       </div>
 
       {/* Sticky footer search */}
@@ -451,7 +499,7 @@ export default function SearchFilters() {
 
           <div className="space-y-6">
             <div className="space-y-2">
-              <label className="text-[10px] font-black uppercase tracking-widest text-slate-900 ml-1">{t.common.location}</label>
+              <label className="text-[10px] font-black uppercase tracking-widest text-slate-900 ml-1">{cityLabel}</label>
               <input type="text" value={location} onChange={(e) => setLocation(e.target.value)} placeholder={t.common.anyCity} className="w-full h-12 px-4 rounded-xl bg-slate-50 border border-slate-200 focus:border-brand-500 outline-none text-sm font-semibold" />
             </div>
             <div className="space-y-2">
@@ -503,6 +551,29 @@ export default function SearchFilters() {
               {priceError && (
                 <p className="text-xs font-semibold text-rose-600 ml-1">{priceError}</p>
               )}
+            </div>
+            <div className="space-y-2">
+              <label className="text-[10px] font-black uppercase tracking-widest text-slate-900 ml-1">Verified</label>
+              <button
+                type="button"
+                onClick={toggleVerified}
+                aria-pressed={verifiedOnly}
+                className={`w-full h-12 px-4 rounded-xl text-xs font-bold inline-flex items-center justify-between transition ${
+                  verifiedOnly ? "bg-brand-600 text-white" : "bg-slate-50 text-slate-600"
+                }`}
+              >
+                <span className="inline-flex items-center gap-2">
+                  <BadgeCheck className="w-4 h-4" />
+                  {verifiedLabel}
+                </span>
+                <span
+                  className={`flex h-5 w-5 items-center justify-center rounded-md border ${
+                    verifiedOnly ? "border-white/70 bg-white/20" : "border-slate-300 bg-white"
+                  }`}
+                >
+                  {verifiedOnly && <Check className="w-3 h-3" />}
+                </span>
+              </button>
             </div>
           </div>
 

@@ -19,6 +19,14 @@ export interface IListing extends Document {
   price?: number;
   priceFrom?: number;
   currency?: string;
+  /** Restaurants: € / €€ / €€€ */
+  priceRange?: string;
+  /** Attractions & tourism services: how long the visit/tour takes */
+  duration?: string;
+  /** Restaurants: cuisine types */
+  cuisines: string[];
+  /** Tourism services: languages the service is offered in */
+  languages: string[];
   amenities: string[];
   tags: string[];
   highlights: string[];
@@ -78,6 +86,10 @@ const ListingSchema = new Schema<IListing>(
     price: { type: Number },
     priceFrom: { type: Number },
     currency: { type: String, default: "USD" },
+    priceRange: { type: String },
+    duration: { type: String },
+    cuisines: { type: [String], default: [] },
+    languages: { type: [String], default: [] },
     amenities: { type: [String], default: [] },
     tags: { type: [String], default: [] },
     highlights: { type: [String], default: [] },

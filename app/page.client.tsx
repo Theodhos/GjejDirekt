@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import SafeImage from "@/components/ui/SafeImage";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -12,6 +12,17 @@ import { albaniaCities } from "@/lib/albania-cities";
 import { categories } from "@/lib/constants";
 import { useLanguage } from "@/context/LanguageContext";
 import { translations } from "@/lib/dictionary";
+
+/** "Tiranë", "TIRANE" and the slug "tirane" all collapse to the same key. */
+function cityKey(value: unknown) {
+  return (
+    String(value || "")
+      .toLowerCase()
+      // NFD splits "ë" into "e" + combining mark, which the filter below drops.
+      .normalize("NFD")
+      .replace(/[^a-z0-9]/g, "")
+  );
+}
 
 function HomePageClient() {
   const { language } = useLanguage();
@@ -55,6 +66,31 @@ function HomePageClient() {
     };
     fetchData();
   }, []);
+
+  // Popular destinations rank by how many approved listings each city has,
+  // with the alphabet only used to break ties.
+  const citiesByListingCount = useMemo(() => {
+    const counts = new Map<string, number>();
+    listings.forEach((listing: any) => {
+      const raw = String(listing?.location || "");
+      // "Voskopoje, Korce" counts for both cities; the Set stops double counting.
+      const keys = new Set([cityKey(raw), ...raw.split(/[\s,/|-]+/).map(cityKey)]);
+      keys.forEach((key) => {
+        if (key) counts.set(key, (counts.get(key) || 0) + 1);
+      });
+    });
+
+    return [...dynamicCities]
+      .map((city: any) => {
+        const keys = new Set([cityKey(city.label), cityKey(city.value)]);
+        let listingCount = 0;
+        keys.forEach((key) => {
+          if (key) listingCount += counts.get(key) || 0;
+        });
+        return { ...city, listingCount };
+      })
+      .sort((a, b) => b.listingCount - a.listingCount || String(a.label).localeCompare(String(b.label)));
+  }, [dynamicCities, listings]);
 
   // Handle search results filtering
   useEffect(() => {
@@ -209,7 +245,7 @@ function HomePageClient() {
         
         {/* 1. POPULAR DESTINATIONS (CITIES) - Logical First Step */}
         <HorizontalRail title={t.home.popularDestinations}>
-          {dynamicCities.map((city) => (
+          {citiesByListingCount.map((city) => (
             <Link
               key={city.value}
               href={`/city/${city.value}`}

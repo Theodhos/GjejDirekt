@@ -61,7 +61,7 @@ export default function Header() {
 
   const publicLinks = [
     { href: "/", label: t.nav.home },
-    { href: "/packet", label: t.nav.packet || (language === "en" ? "Packets" : "Paketat") },
+    { href: "/packet", label: t.nav.packet || (language === "en" ? "Boost Bookings" : "Rrit Rezervimet") },
     { href: "/blog", label: t.nav.blog },
     { href: "/create-listing", label: t.nav.addListing }
   ];

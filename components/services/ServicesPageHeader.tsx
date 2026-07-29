@@ -1,22 +1,17 @@
 "use client";
 
-import { CheckCircle, MapPin } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 
 const copy = {
   al: {
-    eyebrow: "Listime te verifikuara",
-    title: "Gjeni pervojen tuaj te radhes",
+    title: "Eksploro shërbimet turistike në Shqipëri",
     description:
-      "Zbuloni hotele, restorante, atraksione dhe sherbime direkt nga hoste lokale te verifikuara ne Shqiperi.",
-    badges: ["Ne te gjithe Shqiperine", "Hoste te verifikuara", "Pa komision"]
+      "Gjeni hotele, restorante, atraksione, aktivitete dhe më shumë. Kontakt direkt, pa komision."
   },
   en: {
-    eyebrow: "Verified listings",
-    title: "Find your next experience",
+    title: "Explore tourism services in Albania",
     description:
-      "Discover hotels, restaurants, attractions and services directly from verified local hosts in Albania.",
-    badges: ["Albania wide", "Verified hosts", "No commission"]
+      "Find hotels, restaurants, attractions, activities and more. Direct contact, no commission."
   }
 };
 
@@ -32,37 +27,20 @@ export default function ServicesPageHeader() {
         borderBottom: "1px solid var(--border-soft)"
       }}
     >
-      <div className="page-shell relative z-10 pb-14 pt-14">
-        <p className="eyebrow mb-4">{text.eyebrow}</p>
+      <div className="page-shell relative z-10 py-10 sm:py-14">
         <h1
-          className="mb-4 font-bold tracking-tight"
+          className="mb-3 font-bold tracking-tight"
           style={{
-            fontSize: "clamp(2rem, 5vw, 3rem)",
+            fontSize: "clamp(1.75rem, 5vw, 3rem)",
             color: "var(--text-primary)",
             lineHeight: 1.1
           }}
         >
           {text.title}
         </h1>
-        <p className="max-w-md text-sm leading-relaxed" style={{ color: "var(--text-secondary)" }}>
+        <p className="max-w-xl text-sm leading-relaxed sm:text-base" style={{ color: "var(--text-secondary)" }}>
           {text.description}
         </p>
-
-        <div className="mt-6 flex flex-wrap items-center gap-5">
-          {text.badges.map((label, index) => {
-            const Icon = index === 0 ? MapPin : CheckCircle;
-            return (
-              <span
-                key={label}
-                className="flex items-center gap-1.5 text-sm font-medium"
-                style={{ color: "var(--text-secondary)" }}
-              >
-                <Icon className="h-4 w-4" style={{ color: "var(--brand-accent)" }} />
-                {label}
-              </span>
-            );
-          })}
-        </div>
       </div>
     </section>
   );

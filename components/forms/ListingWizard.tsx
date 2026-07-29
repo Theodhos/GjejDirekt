@@ -13,18 +13,24 @@ import {
   ChevronRight,
   Clock,
   Facebook,
+  FileText,
+  FileType,
   Globe,
+  Hourglass,
   ImagePlus,
   Instagram,
+  Languages,
   Loader2,
   Lock,
   MapPin,
+  Music,
   Phone,
   Plus,
+  SlidersHorizontal,
   Sparkles,
   Tag,
   Trash2,
-  Wallet,
+  Utensils,
   X
 } from "lucide-react";
 import Input from "@/components/ui/Input";
@@ -47,6 +53,10 @@ export type WizardListing = {
   currency?: string;
   price?: number;
   priceFrom?: number;
+  priceRange?: string;
+  duration?: string;
+  cuisines?: string[];
+  languages?: string[];
   tags?: string[];
   amenities?: string[];
   highlights?: string[];
@@ -162,15 +172,48 @@ const SUBCATEGORY_DEFAULT_TAGS: Record<string, Record<string, string[]>> = {
   }
 };
 
+const CUISINE_OPTIONS = [
+  "Tradicionale",
+  "Mesdhetare",
+  "Italiane",
+  "Ushqime deti",
+  "Grill / BBQ",
+  "Pizza",
+  "Fast food",
+  "Vegjetariane",
+  "Vegane",
+  "Aziatike",
+  "Turke",
+  "Greke",
+  "Ëmbëltore",
+  "Kafe & Bar"
+];
+
+const LANGUAGE_OPTIONS = [
+  "Shqip",
+  "Anglisht",
+  "Italisht",
+  "Gjermanisht",
+  "Frëngjisht",
+  "Greqisht",
+  "Spanjisht",
+  "Turqisht",
+  "Rusisht"
+];
+
+const PRICE_RANGE_OPTIONS = ["€", "€€", "€€€"];
+
 /** All wizard copy lives here so the whole flow can be re-worded in one place. */
 const COPY = {
   al: {
     stepWord: "Hapi",
     ofWord: "nga",
     steps: [
-      { title: "Informacioni bazë", desc: "Titulli, kategoria, qyteti dhe fotoja kryesore." },
-      { title: "Kontakti", desc: "Si mund t'ju gjejnë dhe kontaktojnë turistët." },
-      { title: "Detajet", desc: "Çmimi, orari dhe karakteristikat e shërbimit." },
+      { title: "Informacioni bazë", desc: "Emri, kategoria, qyteti dhe përshkrimi." },
+      { title: "Detajet e kategorisë", desc: "Fushat specifike për këtë lloj shërbimi." },
+      { title: "Kontakti", desc: "Si mund t'ju kontaktojnë turistët." },
+      { title: "Vendndodhja", desc: "Adresa e saktë dhe linku i Google Maps." },
+      { title: "Media", desc: "Fotoja kryesore që shfaqet në krye të listimit." },
       { title: "Opsione Verified", desc: "Funksione shtesë që aktivizohen pas verifikimit." }
     ],
     category: "Kategoria",
@@ -178,8 +221,10 @@ const COPY = {
     changeCategory: "Ndrysho",
     selectCategory: "Zgjidhni një kategori",
     subcategory: "Nënkategoria",
-    selectSubcategory: "Zgjidhni një nënkategori",
-    title: "Titulli i listimit",
+    subcategoryType: "Lloji",
+    subcategoryCategory: "Kategoria",
+    selectSubcategory: "Zgjidhni një opsion",
+    title: "Emri i listimit",
     titlePlaceholder: "p.sh. Vila Panorama — Dhërmi",
     titleHint: "Përdorni emrin e biznesit dhe zonën. Shmangni shkronjat e mëdha të tepërta.",
     city: "Qyteti",
@@ -199,7 +244,7 @@ const COPY = {
     phone: "Telefon",
     whatsapp: "WhatsApp",
     whatsappHint: "Lëreni bosh nëse përdorni të njëjtin numër si telefoni.",
-    address: "Adresa",
+    address: "Adresa / Vendndodhja",
     addressPlaceholder: "Rruga, numri i ndërtesës, zona",
     maps: "Google Maps — linku i vendndodhjes",
     mapsPlaceholder: "https://maps.app.goo.gl/...",
@@ -211,15 +256,23 @@ const COPY = {
     perPerson: "për person",
     currency: "Valuta",
     priceHint: "Opsionale — por listimet me çmim marrin dukshëm më shumë klikime.",
+    priceRange: "Interval çmimesh",
+    priceRangeHint: "€ ekonomik · €€ mesatar · €€€ premium",
+    cuisines: "Kuzhinat",
+    cuisinesHint: "Zgjidhni llojet e kuzhinës që ofroni.",
+    languagesLabel: "Gjuhët",
+    languagesHint: "Gjuhët në të cilat ofrohet shërbimi.",
+    duration: "Kohëzgjatja",
+    durationVisit: "Kohëzgjatja e vizitës",
+    durationPlaceholder: "p.sh. 2 orë",
     checkTimes: "Check-in / Check-out",
     checkIn: "Check-in",
     checkOut: "Check-out",
-    businessHours: "Orari i punës",
+    businessHours: "Orari",
     eventDate: "Data e eventit",
     eventTime: "Ora e eventit",
     transportType: "Lloji i transportit",
     transportPlaceholder: "p.sh. Taksi, Varkë, Makinë me qira...",
-    menuLink: "Linku i menusë (opsionale)",
     tips: "Këshilla / Informacion shtesë (opsionale)",
     tipsPlaceholder: "p.sh. Koha më e mirë për vizitë, biletat, parkimi...",
     features: "Karakteristikat",
@@ -231,8 +284,13 @@ const COPY = {
     verifiedActiveSubtitle: "Të gjitha opsionet e mëposhtme janë aktive — plotësojini për të marrë më shumë kontakte.",
     website: "Website",
     bookNow: "Book Now — linku i rezervimit",
+    bookTable: "Book Table — rezervo tavolinë",
+    bookTickets: "Link për bileta (Book Now)",
+    bookShop: "Dyqan online",
+    menuPdf: "Menu PDF / linku i menusë",
     instagram: "Instagram",
     facebook: "Facebook",
+    tiktok: "TikTok",
     gallery: "Galeria",
     galleryLocked: "Galeri deri në 10 foto",
     galleryFree: "Falas: 1 foto kryesore",
@@ -266,9 +324,11 @@ const COPY = {
     stepWord: "Step",
     ofWord: "of",
     steps: [
-      { title: "Basic information", desc: "Title, category, city and the cover photo." },
-      { title: "Contact", desc: "How travellers find and reach you." },
-      { title: "Details", desc: "Price, opening times and features." },
+      { title: "Basic information", desc: "Name, category, city and description." },
+      { title: "Category details", desc: "The fields specific to this type of service." },
+      { title: "Contact", desc: "How travellers reach you." },
+      { title: "Location", desc: "Exact address and the Google Maps link." },
+      { title: "Media", desc: "The main photo shown at the top of the listing." },
       { title: "Verified options", desc: "Extra features unlocked after verification." }
     ],
     category: "Category",
@@ -276,8 +336,10 @@ const COPY = {
     changeCategory: "Change",
     selectCategory: "Select a category",
     subcategory: "Subcategory",
-    selectSubcategory: "Select a subcategory",
-    title: "Listing title",
+    subcategoryType: "Type",
+    subcategoryCategory: "Category",
+    selectSubcategory: "Select an option",
+    title: "Listing name",
     titlePlaceholder: "e.g. Villa Panorama — Dhermi",
     titleHint: "Use your business name and the area. Avoid ALL CAPS.",
     city: "City",
@@ -297,7 +359,7 @@ const COPY = {
     phone: "Phone",
     whatsapp: "WhatsApp",
     whatsappHint: "Leave empty if it is the same as the phone number.",
-    address: "Address",
+    address: "Address / Location",
     addressPlaceholder: "Street, building number, area",
     maps: "Google Maps — location link",
     mapsPlaceholder: "https://maps.app.goo.gl/...",
@@ -309,6 +371,15 @@ const COPY = {
     perPerson: "per person",
     currency: "Currency",
     priceHint: "Optional — but listings with a price get noticeably more clicks.",
+    priceRange: "Price range",
+    priceRangeHint: "€ budget · €€ mid-range · €€€ premium",
+    cuisines: "Cuisines",
+    cuisinesHint: "Pick the cuisine types you serve.",
+    languagesLabel: "Languages",
+    languagesHint: "The languages this service is offered in.",
+    duration: "Duration",
+    durationVisit: "Visit duration",
+    durationPlaceholder: "e.g. 2 hours",
     checkTimes: "Check-in / Check-out",
     checkIn: "Check-in",
     checkOut: "Check-out",
@@ -317,7 +388,6 @@ const COPY = {
     eventTime: "Event time",
     transportType: "Type of transport",
     transportPlaceholder: "e.g. Taxi, Boat, Rental car...",
-    menuLink: "Menu link (optional)",
     tips: "Tips / Additional information (optional)",
     tipsPlaceholder: "e.g. Best time to visit, tickets, parking...",
     features: "Features",
@@ -329,8 +399,13 @@ const COPY = {
     verifiedActiveSubtitle: "Every option below is active — fill them in to get more contacts.",
     website: "Website",
     bookNow: "Book Now — booking link",
+    bookTable: "Book Table — table reservation",
+    bookTickets: "Ticket link (Book Now)",
+    bookShop: "Online shop",
+    menuPdf: "Menu PDF / menu link",
     instagram: "Instagram",
     facebook: "Facebook",
+    tiktok: "TikTok",
     gallery: "Gallery",
     galleryLocked: "Gallery up to 10 photos",
     galleryFree: "Free: 1 main photo",
@@ -365,8 +440,8 @@ const COPY = {
 const MAX_COVER_SIZE = 5 * 1024 * 1024;
 const MAX_GALLERY = 10;
 const MIN_DESCRIPTION = 30;
-const STEP_ICONS = [MapPin, Phone, Wallet, Lock];
-const TOTAL_STEPS = 4;
+const STEP_ICONS = [FileText, SlidersHorizontal, Phone, MapPin, Camera, Lock];
+const TOTAL_STEPS = 6;
 
 const emptyForm = {
   title: "",
@@ -380,19 +455,22 @@ const emptyForm = {
   priceFrom: "",
   price: "",
   currency: "€",
+  priceRange: "",
+  duration: "",
   checkIn: "",
   checkOut: "",
   businessHours: "",
   eventDate: "",
   eventTime: "",
   transportType: "",
-  menuLink: "",
   tips: "",
   // Verified-only fields — editable once the listing is verified by an admin.
   website: "",
   bookingLink: "",
+  menuLink: "",
   instagram: "",
-  facebook: ""
+  facebook: "",
+  tiktok: ""
 };
 
 type FormState = typeof emptyForm;
@@ -413,18 +491,21 @@ function initialForm(listing?: WizardListing): FormState {
     priceFrom: listing.priceFrom ? String(listing.priceFrom) : "",
     price: listing.price ? String(listing.price) : "",
     currency: listing.currency || "€",
+    priceRange: listing.priceRange || "",
+    duration: listing.duration || "",
     checkIn: listing.checkIn || "",
     checkOut: listing.checkOut || "",
     businessHours: listing.businessHours || "",
     eventDate: listing.eventDate || "",
     eventTime: listing.eventTime || "",
     transportType: listing.transportType || "",
-    menuLink: listing.menuLink || "",
     tips: listing.tips || "",
     website: listing.website || listing.contactInfo?.website || "",
     bookingLink: listing.bookingLink || "",
+    menuLink: listing.menuLink || "",
     instagram: listing.socialLinks?.instagram || "",
-    facebook: listing.socialLinks?.facebook || ""
+    facebook: listing.socialLinks?.facebook || "",
+    tiktok: listing.socialLinks?.tiktok || ""
   };
 }
 
@@ -435,7 +516,7 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
   const searchParams = useSearchParams();
 
   const isEdit = Boolean(listing?._id);
-  /** Verified is granted by an admin, so it only ever unlocks step 4 while editing. */
+  /** Verified is granted by an admin, so it only ever unlocks the last step while editing. */
   const verifiedUnlocked = isEdit && Boolean(listing?.verified);
 
   const [step, setStep] = useState(1);
@@ -450,6 +531,8 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
     listing ? getSubcategoryFormValue(listing.category, listing.subcategory) : ""
   );
   const [activeTags, setActiveTags] = useState<string[]>(listing?.tags || []);
+  const [cuisines, setCuisines] = useState<string[]>(listing?.cuisines || []);
+  const [spokenLanguages, setSpokenLanguages] = useState<string[]>(listing?.languages || []);
   const [customTag, setCustomTag] = useState("");
   // Edit mode keeps the saved tags; create mode seeds them from the category.
   const [tagsTouched, setTagsTouched] = useState(isEdit);
@@ -540,6 +623,23 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
     return names?.[value] || subcategories.find((item) => item.value === value)?.label || value;
   };
 
+  // "Nënkategoria" reads oddly for some categories — transport picks a type, events a category.
+  const subcategoryFieldLabel =
+    selectedCategory === "transport"
+      ? c.subcategoryType
+      : selectedCategory === "evente" || selectedCategory === "produkte-lokale"
+        ? c.subcategoryCategory
+        : c.subcategory;
+
+  const bookingFieldLabel =
+    selectedCategory === "restorante"
+      ? c.bookTable
+      : selectedCategory === "evente"
+        ? c.bookTickets
+        : selectedCategory === "produkte-lokale"
+          ? c.bookShop
+          : c.bookNow;
+
   const suggestedTags = useMemo(() => {
     if (!selectedCategory) return [] as string[];
     if (selectedSubcategory && SUBCATEGORY_DEFAULT_TAGS[selectedCategory]?.[selectedSubcategory]) {
@@ -568,6 +668,11 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
   const showCheckTimes = selectedCategory === "akomodim";
   const showBusinessHours = selectedCategory !== "akomodim" && selectedCategory !== "evente";
   const showEventFields = selectedCategory === "evente";
+  const showPriceRange = selectedCategory === "restorante";
+  const showCuisines = selectedCategory === "restorante";
+  const showDuration = selectedCategory === "atraksione" || selectedCategory === "sherbime-turistike";
+  const showLanguages = selectedCategory === "sherbime-turistike";
+  const showMenuLink = selectedCategory === "restorante";
   const galleryTotal = galleryUrls.length + newPhotos.length;
 
   const update = (key: FormKey, value: string) => {
@@ -631,23 +736,14 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
     const next: Record<string, string> = {};
 
     if (target === 1) {
-      if (!form.title.trim()) next.title = c.required;
       if (!selectedCategory) next.category = c.required;
       if (!selectedSubcategory) next.subcategory = c.required;
+      if (!form.title.trim()) next.title = c.required;
       if (!form.location.trim()) next.location = c.required;
       if (form.description.trim().length < MIN_DESCRIPTION) next.description = c.descriptionShort;
-      if (!coverFile && !coverUrl) next.cover = c.coverRequired;
     }
 
     if (target === 2) {
-      if (!form.contactPhone.trim()) next.contactPhone = c.required;
-      if (!form.address.trim()) next.address = c.required;
-      if (form.googleMapsLink.trim() && !/^https?:\/\//i.test(form.googleMapsLink.trim())) {
-        next.googleMapsLink = c.invalidUrl;
-      }
-    }
-
-    if (target === 3) {
       if (showEventFields) {
         if (!form.eventDate) next.eventDate = c.required;
         if (!form.eventTime) next.eventTime = c.required;
@@ -660,8 +756,23 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
       }
     }
 
-    if (target === 4 && verifiedUnlocked) {
-      (["website", "bookingLink", "instagram", "facebook"] as const).forEach((key) => {
+    if (target === 3 && !form.contactPhone.trim()) {
+      next.contactPhone = c.required;
+    }
+
+    if (target === 4) {
+      if (!form.address.trim()) next.address = c.required;
+      if (form.googleMapsLink.trim() && !/^https?:\/\//i.test(form.googleMapsLink.trim())) {
+        next.googleMapsLink = c.invalidUrl;
+      }
+    }
+
+    if (target === 5 && !coverFile && !coverUrl) {
+      next.cover = c.coverRequired;
+    }
+
+    if (target === 6 && verifiedUnlocked) {
+      (["website", "bookingLink", "menuLink", "instagram", "facebook", "tiktok"] as const).forEach((key) => {
         if (form[key].trim() && !/^https?:\/\//i.test(form[key].trim())) next[key] = c.invalidUrl;
       });
     }
@@ -739,21 +850,26 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
         priceFrom: form.priceFrom,
         price: form.price,
         currency: form.currency,
+        priceRange: form.priceRange,
+        duration: form.duration.trim(),
+        cuisines,
+        languages: spokenLanguages,
         checkIn: form.checkIn,
         checkOut: form.checkOut,
         businessHours: form.businessHours.trim(),
         eventDate: form.eventDate,
         eventTime: form.eventTime,
         transportType: form.transportType.trim(),
-        menuLink: form.menuLink.trim(),
         tips: form.tips.trim(),
         // Verified-only values: editable when unlocked, sent unchanged otherwise.
         website: form.website.trim(),
         bookingLink: form.bookingLink.trim(),
+        menuLink: form.menuLink.trim(),
         instagram: form.instagram.trim(),
         instagramLink: form.instagram.trim(),
         facebook: form.facebook.trim(),
         facebookLink: form.facebook.trim(),
+        tiktok: form.tiktok.trim(),
         bannerImage: bannerUrl,
         photos: gallery,
         images: [bannerUrl, ...gallery],
@@ -764,7 +880,6 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
       if (isEdit && listing) {
         // Fields the wizard does not expose must be echoed back or PATCH clears them.
         payload.contactEmail = listing.contactInfo?.email || "";
-        payload.tiktok = listing.socialLinks?.tiktok || "";
         payload.x = listing.socialLinks?.x || "";
         payload.highlights = listing.highlights || [];
       }
@@ -831,10 +946,11 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
                 <button
                   type="button"
                   onClick={() => goToStep(number)}
-                  className="group flex items-center gap-3 text-left"
+                  className="group flex items-center gap-2 text-left"
+                  title={item.title}
                 >
                   <span
-                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border transition-all duration-200"
+                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border transition-all duration-200"
                     style={{
                       background: done || active ? "var(--brand-accent)" : "var(--surface-white)",
                       borderColor: done || active ? "var(--brand-accent)" : "var(--border-medium)",
@@ -843,15 +959,15 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
                   >
                     {done ? <Check className="h-4 w-4" /> : <Icon className="h-4 w-4" />}
                   </span>
-                  <span className="hidden lg:block">
+                  <span className="hidden xl:block">
                     <span
-                      className="block text-[11px] font-semibold uppercase tracking-wider"
+                      className="block text-[10px] font-semibold uppercase tracking-wider"
                       style={{ color: active ? "var(--brand-accent)" : "var(--text-tertiary)" }}
                     >
                       {c.stepWord} {number}
                     </span>
                     <span
-                      className="block text-sm font-semibold leading-tight"
+                      className="block text-xs font-semibold leading-tight"
                       style={{ color: active || done ? "var(--text-primary)" : "var(--text-tertiary)" }}
                     >
                       {item.title}
@@ -860,7 +976,7 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
                 </button>
                 {number < TOTAL_STEPS && (
                   <span
-                    className="mx-3 h-px flex-1 transition-colors duration-300"
+                    className="mx-2 h-px flex-1 transition-colors duration-300"
                     style={{ background: done ? "var(--brand-accent)" : "var(--border-soft)" }}
                   />
                 )}
@@ -888,7 +1004,7 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
         </div>
 
         <div className="space-y-5 px-5 py-6 sm:px-7">
-          {/* ===================== STEP 1 ===================== */}
+          {/* ===================== 1 · INFORMACIONI BAZË ===================== */}
           {step === 1 && (
             <>
               {categoryLocked ? (
@@ -948,7 +1064,7 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
               <div>
                 <Select
                   name="subcategory"
-                  label={`${c.subcategory} *`}
+                  label={`${subcategoryFieldLabel} *`}
                   className={inputClass}
                   disabled={!selectedCategory}
                   options={[
@@ -1044,168 +1160,96 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
                   </span>
                 </div>
               </div>
-
-              {/* Cover photo */}
-              <div className="space-y-2">
-                <span className="block text-sm font-semibold" style={{ color: "var(--text-primary)" }}>
-                  {c.cover} *
-                </span>
-
-                {showCoverPreview ? (
-                  <div
-                    className="overflow-hidden rounded-2xl border"
-                    style={{ borderColor: "var(--border-soft)" }}
-                  >
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={coverPreview || coverUrl} alt="cover" className="h-48 w-full object-cover sm:h-60" />
-                    <div className="flex items-center justify-between gap-3 px-4 py-3">
-                      <span className="truncate text-xs" style={{ color: "var(--text-tertiary)" }}>
-                        {coverFile?.name || c.coverCurrent}
-                      </span>
-                      <span className="flex shrink-0 items-center gap-2">
-                        <button
-                          type="button"
-                          onClick={() => coverInputRef.current?.click()}
-                          className="rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors"
-                          style={{ borderColor: "var(--border-medium)", color: "var(--text-secondary)" }}
-                        >
-                          {c.coverReplace}
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setCoverFile(null);
-                            setCoverUrl("");
-                          }}
-                          className="flex items-center gap-1 rounded-full px-3 py-1.5 text-xs font-semibold text-rose-600 transition-colors hover:bg-rose-50"
-                        >
-                          <Trash2 className="h-3.5 w-3.5" />
-                          {c.coverRemove}
-                        </button>
-                      </span>
-                    </div>
-                  </div>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={() => coverInputRef.current?.click()}
-                    className="flex w-full flex-col items-center justify-center gap-2 rounded-2xl border border-dashed px-6 py-10 text-center transition-colors hover:bg-[var(--brand-light)]"
-                    style={{
-                      borderColor: errors.cover ? "#fda4af" : "var(--border-medium)",
-                      background: "var(--surface-cream)"
-                    }}
-                  >
-                    <span
-                      className="flex h-11 w-11 items-center justify-center rounded-full"
-                      style={{ background: "var(--brand-light)", color: "var(--brand-accent)" }}
-                    >
-                      <Camera className="h-5 w-5" />
-                    </span>
-                    <span className="text-sm font-semibold" style={{ color: "var(--text-primary)" }}>
-                      {c.coverCta}
-                    </span>
-                    <span className="text-xs" style={{ color: "var(--text-tertiary)" }}>
-                      {c.coverHint}
-                    </span>
-                  </button>
-                )}
-
-                <input
-                  ref={coverInputRef}
-                  type="file"
-                  accept="image/*"
-                  className="hidden"
-                  onChange={(event) => {
-                    pickCover(event.target.files?.[0]);
-                    event.target.value = "";
-                  }}
-                />
-                {errors.cover && <p className="text-xs text-rose-600">{errors.cover}</p>}
-                <p className="text-xs" style={{ color: "var(--text-tertiary)" }}>
-                  {c.galleryFree} · {c.galleryVerified}
-                </p>
-              </div>
             </>
           )}
 
-          {/* ===================== STEP 2 ===================== */}
+          {/* ===================== 2 · DETAJET E KATEGORISË ===================== */}
           {step === 2 && (
             <>
-              <div className="grid gap-4 sm:grid-cols-2">
-                <Input
-                  name="contactPhone"
-                  label={`${c.phone} *`}
-                  className={inputClass}
-                  placeholder="+355 69 ..."
-                  inputMode="tel"
-                  value={form.contactPhone}
-                  onChange={(event) => update("contactPhone", event.target.value)}
-                  error={errors.contactPhone}
-                />
-                <div>
+              {showEventFields && (
+                <div className="grid gap-4 sm:grid-cols-2">
                   <Input
-                    name="whatsapp"
-                    label={c.whatsapp}
+                    name="eventDate"
+                    type="date"
+                    label={`${c.eventDate} *`}
                     className={inputClass}
-                    placeholder="+355 69 ..."
-                    inputMode="tel"
-                    value={form.whatsapp}
-                    onChange={(event) => update("whatsapp", event.target.value)}
+                    value={form.eventDate}
+                    onChange={(event) => update("eventDate", event.target.value)}
+                    error={errors.eventDate}
                   />
-                  <p className="mt-1 text-xs" style={{ color: "var(--text-tertiary)" }}>
-                    {c.whatsappHint}
-                  </p>
+                  <Input
+                    name="eventTime"
+                    type="time"
+                    label={`${c.eventTime} *`}
+                    className={inputClass}
+                    value={form.eventTime}
+                    onChange={(event) => update("eventTime", event.target.value)}
+                    error={errors.eventTime}
+                  />
                 </div>
-              </div>
+              )}
 
-              <Input
-                name="address"
-                label={`${c.address} *`}
-                className={inputClass}
-                placeholder={c.addressPlaceholder}
-                value={form.address}
-                onChange={(event) => update("address", event.target.value)}
-                error={errors.address}
-              />
-
-              <div>
+              {selectedCategory === "transport" && (
                 <Input
-                  name="googleMapsLink"
-                  label={c.maps}
+                  name="transportType"
+                  label={`${c.transportType} *`}
                   className={inputClass}
-                  placeholder={c.mapsPlaceholder}
-                  value={form.googleMapsLink}
-                  onChange={(event) => update("googleMapsLink", event.target.value)}
-                  error={errors.googleMapsLink}
-                  inputMode="url"
+                  placeholder={c.transportPlaceholder}
+                  value={form.transportType}
+                  onChange={(event) => update("transportType", event.target.value)}
+                  error={errors.transportType}
                 />
-                <div
-                  className="mt-2 flex flex-col gap-2 rounded-xl border px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
-                  style={{ borderColor: "var(--border-soft)", background: "var(--surface-cream)" }}
-                >
-                  <p className="flex items-start gap-2 text-xs" style={{ color: "var(--text-tertiary)" }}>
-                    <MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0" style={{ color: "var(--brand-accent)" }} />
-                    {c.mapsHint}
-                  </p>
-                  <a
-                    href={`https://www.google.com/maps/search/${encodeURIComponent(
-                      `${form.address} ${form.location}`.trim() || "Albania"
-                    )}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="shrink-0 text-xs font-semibold underline underline-offset-4"
-                    style={{ color: "var(--brand-accent)" }}
-                  >
-                    {c.mapsOpen}
-                  </a>
-                </div>
-              </div>
-            </>
-          )}
+              )}
 
-          {/* ===================== STEP 3 ===================== */}
-          {step === 3 && (
-            <>
+              {showBusinessHours && (
+                <Input
+                  name="businessHours"
+                  label={c.businessHours}
+                  className={inputClass}
+                  placeholder="08:00 - 22:00"
+                  value={form.businessHours}
+                  onChange={(event) => update("businessHours", event.target.value)}
+                />
+              )}
+
+              {showCheckTimes && (
+                <div className="space-y-2">
+                  <span className="flex items-center gap-2 text-sm font-semibold" style={{ color: "var(--text-primary)" }}>
+                    <Clock className="h-4 w-4" style={{ color: "var(--brand-accent)" }} />
+                    {c.checkTimes}
+                  </span>
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <Input
+                      name="checkIn"
+                      type="time"
+                      label={c.checkIn}
+                      className={inputClass}
+                      value={form.checkIn}
+                      onChange={(event) => update("checkIn", event.target.value)}
+                    />
+                    <Input
+                      name="checkOut"
+                      type="time"
+                      label={c.checkOut}
+                      className={inputClass}
+                      value={form.checkOut}
+                      onChange={(event) => update("checkOut", event.target.value)}
+                    />
+                  </div>
+                </div>
+              )}
+
+              {showDuration && (
+                <Input
+                  name="duration"
+                  label={selectedCategory === "atraksione" ? c.durationVisit : c.duration}
+                  className={inputClass}
+                  placeholder={c.durationPlaceholder}
+                  value={form.duration}
+                  onChange={(event) => update("duration", event.target.value)}
+                />
+              )}
+
               <div className="space-y-2">
                 <span className="block text-sm font-semibold" style={{ color: "var(--text-primary)" }}>
                   {c.price}
@@ -1251,87 +1295,64 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
                 </p>
               </div>
 
-              {showCheckTimes && (
+              {showPriceRange && (
                 <div className="space-y-2">
-                  <span className="flex items-center gap-2 text-sm font-semibold" style={{ color: "var(--text-primary)" }}>
-                    <Clock className="h-4 w-4" style={{ color: "var(--brand-accent)" }} />
-                    {c.checkTimes}
+                  <span className="block text-sm font-semibold" style={{ color: "var(--text-primary)" }}>
+                    {c.priceRange}
                   </span>
-                  <div className="grid gap-4 sm:grid-cols-2">
-                    <Input
-                      name="checkIn"
-                      type="time"
-                      label={c.checkIn}
-                      className={inputClass}
-                      value={form.checkIn}
-                      onChange={(event) => update("checkIn", event.target.value)}
-                    />
-                    <Input
-                      name="checkOut"
-                      type="time"
-                      label={c.checkOut}
-                      className={inputClass}
-                      value={form.checkOut}
-                      onChange={(event) => update("checkOut", event.target.value)}
-                    />
+                  <div className="flex gap-2">
+                    {PRICE_RANGE_OPTIONS.map((option) => {
+                      const isActive = form.priceRange === option;
+                      return (
+                        <button
+                          key={option}
+                          type="button"
+                          onClick={() => update("priceRange", isActive ? "" : option)}
+                          className="h-10 flex-1 rounded-xl border text-sm font-bold transition-all"
+                          style={{
+                            background: isActive ? "var(--brand-accent)" : "var(--surface-white)",
+                            borderColor: isActive ? "var(--brand-accent)" : "var(--border-medium)",
+                            color: isActive ? "#fff" : "var(--text-secondary)"
+                          }}
+                        >
+                          {option}
+                        </button>
+                      );
+                    })}
                   </div>
+                  <p className="text-xs" style={{ color: "var(--text-tertiary)" }}>
+                    {c.priceRangeHint}
+                  </p>
                 </div>
               )}
 
-              {showBusinessHours && (
-                <Input
-                  name="businessHours"
-                  label={c.businessHours}
-                  className={inputClass}
-                  placeholder="08:00 - 22:00"
-                  value={form.businessHours}
-                  onChange={(event) => update("businessHours", event.target.value)}
+              {showCuisines && (
+                <ChipGroup
+                  icon={Utensils}
+                  label={c.cuisines}
+                  hint={c.cuisinesHint}
+                  options={CUISINE_OPTIONS}
+                  selected={cuisines}
+                  onToggle={(value) =>
+                    setCuisines((prev) =>
+                      prev.includes(value) ? prev.filter((item) => item !== value) : [...prev, value]
+                    )
+                  }
                 />
               )}
 
-              {showEventFields && (
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <Input
-                    name="eventDate"
-                    type="date"
-                    label={`${c.eventDate} *`}
-                    className={inputClass}
-                    value={form.eventDate}
-                    onChange={(event) => update("eventDate", event.target.value)}
-                    error={errors.eventDate}
-                  />
-                  <Input
-                    name="eventTime"
-                    type="time"
-                    label={`${c.eventTime} *`}
-                    className={inputClass}
-                    value={form.eventTime}
-                    onChange={(event) => update("eventTime", event.target.value)}
-                    error={errors.eventTime}
-                  />
-                </div>
-              )}
-
-              {selectedCategory === "transport" && (
-                <Input
-                  name="transportType"
-                  label={`${c.transportType} *`}
-                  className={inputClass}
-                  placeholder={c.transportPlaceholder}
-                  value={form.transportType}
-                  onChange={(event) => update("transportType", event.target.value)}
-                  error={errors.transportType}
-                />
-              )}
-
-              {selectedCategory === "restorante" && (
-                <Input
-                  name="menuLink"
-                  label={c.menuLink}
-                  className={inputClass}
-                  placeholder="https://..."
-                  value={form.menuLink}
-                  onChange={(event) => update("menuLink", event.target.value)}
+              {showLanguages && (
+                <ChipGroup
+                  icon={Languages}
+                  label={c.languagesLabel}
+                  hint={c.languagesHint}
+                  options={LANGUAGE_OPTIONS}
+                  selected={spokenLanguages}
+                  onToggle={(value) =>
+                    setSpokenLanguages((prev) =>
+                      prev.includes(value) ? prev.filter((item) => item !== value) : [...prev, value]
+                    )
+                  }
                 />
               )}
 
@@ -1412,8 +1433,185 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
             </>
           )}
 
-          {/* ===================== STEP 4 ===================== */}
+          {/* ===================== 3 · KONTAKTI ===================== */}
+          {step === 3 && (
+            <div className="grid gap-4 sm:grid-cols-2">
+              <Input
+                name="contactPhone"
+                label={`${c.phone} *`}
+                className={inputClass}
+                placeholder="+355 69 ..."
+                inputMode="tel"
+                value={form.contactPhone}
+                onChange={(event) => update("contactPhone", event.target.value)}
+                error={errors.contactPhone}
+              />
+              <div>
+                <Input
+                  name="whatsapp"
+                  label={c.whatsapp}
+                  className={inputClass}
+                  placeholder="+355 69 ..."
+                  inputMode="tel"
+                  value={form.whatsapp}
+                  onChange={(event) => update("whatsapp", event.target.value)}
+                />
+                <p className="mt-1 text-xs" style={{ color: "var(--text-tertiary)" }}>
+                  {c.whatsappHint}
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* ===================== 4 · VENDNDODHJA ===================== */}
           {step === 4 && (
+            <>
+              <Input
+                name="address"
+                label={`${c.address} *`}
+                className={inputClass}
+                placeholder={c.addressPlaceholder}
+                value={form.address}
+                onChange={(event) => update("address", event.target.value)}
+                error={errors.address}
+              />
+
+              <div>
+                <Input
+                  name="googleMapsLink"
+                  label={c.maps}
+                  className={inputClass}
+                  placeholder={c.mapsPlaceholder}
+                  value={form.googleMapsLink}
+                  onChange={(event) => update("googleMapsLink", event.target.value)}
+                  error={errors.googleMapsLink}
+                  inputMode="url"
+                />
+                <div
+                  className="mt-2 flex flex-col gap-2 rounded-xl border px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
+                  style={{ borderColor: "var(--border-soft)", background: "var(--surface-cream)" }}
+                >
+                  <p className="flex items-start gap-2 text-xs" style={{ color: "var(--text-tertiary)" }}>
+                    <MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0" style={{ color: "var(--brand-accent)" }} />
+                    {c.mapsHint}
+                  </p>
+                  <a
+                    href={`https://www.google.com/maps/search/${encodeURIComponent(
+                      `${form.address} ${form.location}`.trim() || "Albania"
+                    )}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="shrink-0 text-xs font-semibold underline underline-offset-4"
+                    style={{ color: "var(--brand-accent)" }}
+                  >
+                    {c.mapsOpen}
+                  </a>
+                </div>
+              </div>
+            </>
+          )}
+
+          {/* ===================== 5 · MEDIA ===================== */}
+          {step === 5 && (
+            <div className="space-y-2">
+              <span className="block text-sm font-semibold" style={{ color: "var(--text-primary)" }}>
+                {c.cover} *
+              </span>
+
+              {showCoverPreview ? (
+                <div className="overflow-hidden rounded-2xl border" style={{ borderColor: "var(--border-soft)" }}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={coverPreview || coverUrl} alt="cover" className="h-48 w-full object-cover sm:h-60" />
+                  <div className="flex items-center justify-between gap-3 px-4 py-3">
+                    <span className="truncate text-xs" style={{ color: "var(--text-tertiary)" }}>
+                      {coverFile?.name || c.coverCurrent}
+                    </span>
+                    <span className="flex shrink-0 items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => coverInputRef.current?.click()}
+                        className="rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors"
+                        style={{ borderColor: "var(--border-medium)", color: "var(--text-secondary)" }}
+                      >
+                        {c.coverReplace}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setCoverFile(null);
+                          setCoverUrl("");
+                        }}
+                        className="flex items-center gap-1 rounded-full px-3 py-1.5 text-xs font-semibold text-rose-600 transition-colors hover:bg-rose-50"
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                        {c.coverRemove}
+                      </button>
+                    </span>
+                  </div>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => coverInputRef.current?.click()}
+                  className="flex w-full flex-col items-center justify-center gap-2 rounded-2xl border border-dashed px-6 py-10 text-center transition-colors hover:bg-[var(--brand-light)]"
+                  style={{
+                    borderColor: errors.cover ? "#fda4af" : "var(--border-medium)",
+                    background: "var(--surface-cream)"
+                  }}
+                >
+                  <span
+                    className="flex h-11 w-11 items-center justify-center rounded-full"
+                    style={{ background: "var(--brand-light)", color: "var(--brand-accent)" }}
+                  >
+                    <Camera className="h-5 w-5" />
+                  </span>
+                  <span className="text-sm font-semibold" style={{ color: "var(--text-primary)" }}>
+                    {c.coverCta}
+                  </span>
+                  <span className="text-xs" style={{ color: "var(--text-tertiary)" }}>
+                    {c.coverHint}
+                  </span>
+                </button>
+              )}
+
+              <input
+                ref={coverInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(event) => {
+                  pickCover(event.target.files?.[0]);
+                  event.target.value = "";
+                }}
+              />
+              {errors.cover && <p className="text-xs text-rose-600">{errors.cover}</p>}
+              <div
+                className="rounded-xl border px-4 py-3"
+                style={{ borderColor: "var(--border-soft)", background: "var(--surface-cream)" }}
+              >
+                <p className="text-xs font-semibold" style={{ color: "var(--text-primary)" }}>
+                  {c.gallery}
+                </p>
+                <ul className="mt-1.5 space-y-1 text-xs" style={{ color: "var(--text-secondary)" }}>
+                  <li className="flex items-center gap-2">
+                    <Check className="h-3.5 w-3.5" style={{ color: "var(--brand-accent)" }} />
+                    {c.galleryFree}
+                  </li>
+                  <li className="flex items-center gap-2">
+                    {verifiedUnlocked ? (
+                      <BadgeCheck className="h-3.5 w-3.5" style={{ color: "var(--brand-accent)" }} />
+                    ) : (
+                      <Lock className="h-3.5 w-3.5" style={{ color: "var(--text-tertiary)" }} />
+                    )}
+                    {c.galleryVerified}
+                  </li>
+                </ul>
+              </div>
+            </div>
+          )}
+
+          {/* ===================== 6 · OPSIONET VERIFIED ===================== */}
+          {step === 6 && (
             <div className="space-y-5">
               <div
                 className="flex items-start gap-3 rounded-2xl border px-4 py-4"
@@ -1443,12 +1641,22 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
                     />
                     <UnlockedField
                       icon={CalendarClock}
-                      label={c.bookNow}
+                      label={bookingFieldLabel}
                       placeholder="https://..."
                       value={form.bookingLink}
                       error={errors.bookingLink}
                       onChange={(value) => update("bookingLink", value)}
                     />
+                    {showMenuLink && (
+                      <UnlockedField
+                        icon={FileType}
+                        label={c.menuPdf}
+                        placeholder="https://..."
+                        value={form.menuLink}
+                        error={errors.menuLink}
+                        onChange={(value) => update("menuLink", value)}
+                      />
+                    )}
                     <UnlockedField
                       icon={Instagram}
                       label={c.instagram}
@@ -1464,6 +1672,14 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
                       value={form.facebook}
                       error={errors.facebook}
                       onChange={(value) => update("facebook", value)}
+                    />
+                    <UnlockedField
+                      icon={Music}
+                      label={c.tiktok}
+                      placeholder="https://tiktok.com/@..."
+                      value={form.tiktok}
+                      error={errors.tiktok}
+                      onChange={(value) => update("tiktok", value)}
                     />
                   </div>
 
@@ -1551,9 +1767,11 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
                   {/* Locked fields — kept visually muted so the limit is obvious at a glance. */}
                   <div className="grid gap-4 sm:grid-cols-2">
                     <LockedField icon={Globe} label={c.website} placeholder="https://..." />
-                    <LockedField icon={CalendarClock} label={c.bookNow} placeholder="https://..." />
+                    <LockedField icon={CalendarClock} label={bookingFieldLabel} placeholder="https://..." />
+                    {showMenuLink && <LockedField icon={FileType} label={c.menuPdf} placeholder="https://..." />}
                     <LockedField icon={Instagram} label={c.instagram} placeholder="https://instagram.com/..." />
                     <LockedField icon={Facebook} label={c.facebook} placeholder="https://facebook.com/..." />
+                    <LockedField icon={Music} label={c.tiktok} placeholder="https://tiktok.com/@..." />
                   </div>
 
                   <div className="space-y-2 opacity-60">
@@ -1668,6 +1886,60 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
         </div>
       )}
     </form>
+  );
+}
+
+function ChipGroup({
+  icon: Icon,
+  label,
+  hint,
+  options,
+  selected,
+  onToggle
+}: {
+  icon: React.ComponentType<{ className?: string; style?: React.CSSProperties }>;
+  label: string;
+  hint: string;
+  options: string[];
+  selected: string[];
+  onToggle: (value: string) => void;
+}) {
+  return (
+    <div className="space-y-2">
+      <span className="flex items-center gap-2 text-sm font-semibold" style={{ color: "var(--text-primary)" }}>
+        <Icon className="h-4 w-4" style={{ color: "var(--brand-accent)" }} />
+        {label}
+      </span>
+      <div
+        className="rounded-2xl border p-4"
+        style={{ borderColor: "var(--border-soft)", background: "var(--surface-cream)" }}
+      >
+        <div className="flex flex-wrap gap-2">
+          {options.map((option) => {
+            const isActive = selected.includes(option);
+            return (
+              <button
+                key={option}
+                type="button"
+                onClick={() => onToggle(option)}
+                className="flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-semibold transition-all"
+                style={{
+                  background: isActive ? "var(--brand-accent)" : "var(--surface-white)",
+                  borderColor: isActive ? "var(--brand-accent)" : "var(--border-soft)",
+                  color: isActive ? "#fff" : "var(--text-secondary)"
+                }}
+              >
+                {isActive && <Check className="h-3 w-3" />}
+                {option}
+              </button>
+            );
+          })}
+        </div>
+        <p className="mt-2 text-xs" style={{ color: "var(--text-tertiary)" }}>
+          {hint}
+        </p>
+      </div>
+    </div>
   );
 }
 

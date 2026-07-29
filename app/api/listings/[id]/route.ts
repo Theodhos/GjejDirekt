@@ -83,6 +83,10 @@ export async function PATCH(request: Request, { params }: { params: { id: string
     listing.price = parseMaybeNumber(body.price);
     listing.priceFrom = parseMaybeNumber(body.priceFrom);
     listing.currency = parseMaybeString(body.currency) || listing.currency;
+    listing.priceRange = parseMaybeString(body.priceRange);
+    listing.duration = parseMaybeString(body.duration);
+    listing.cuisines = parseList(body.cuisines);
+    listing.languages = parseList(body.languages);
     listing.amenities = parseList(body.amenities);
     listing.tags = parseList(body.tags);
     listing.highlights = parseList(body.highlights);

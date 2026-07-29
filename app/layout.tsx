@@ -17,7 +17,12 @@ export const metadata: Metadata = {
     default: "Tourism Platform",
     template: "%s | Tourism Platform"
   },
-  description: "A premium tourism marketplace for experiences, stays, transport, and travel stories."
+  description: "A premium tourism marketplace for experiences, stays, transport, and travel stories.",
+  icons: {
+    icon: [{ url: "/uploads/iconee.png", type: "image/png" }],
+    shortcut: [{ url: "/uploads/iconee.png", type: "image/png" }],
+    apple: [{ url: "/uploads/iconee.png", type: "image/png" }]
+  }
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

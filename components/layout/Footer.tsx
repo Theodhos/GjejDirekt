@@ -117,6 +117,7 @@ export default function Footer() {
             </p>
             {[
               { href: "/create-listing", label: t.footer.listBusiness },
+              { href: "/packet", label: t.nav.packet || (language === "en" ? "Boost Bookings" : "Rrit Rezervimet") },
               { href: "/register", label: t.nav.register },
               { href: "/login", label: t.nav.login }
             ].map((link) => (

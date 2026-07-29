@@ -49,6 +49,7 @@ function buildQuery(url: URL) {
   const maxPrice = url.searchParams.get("maxPrice")?.trim();
   const minRating = url.searchParams.get("minRating")?.trim();
   const featured = url.searchParams.get("featured") === "true";
+  const verifiedOnly = url.searchParams.get("verified") === "true";
   const sort = url.searchParams.get("sort") || "latest";
 
   const query: Record<string, unknown> = { status: "approved" };
@@ -57,6 +58,7 @@ function buildQuery(url: URL) {
   if (location) query.location = { $regex: location, $options: "i" };
   if (country) query.country = { $regex: country, $options: "i" };
   if (featured) query.featured = true;
+  if (verifiedOnly) query.verified = true;
   if (minPrice || maxPrice) {
     query.price = {};
     if (minPrice) (query.price as Record<string, number>).$gte = Number(minPrice);
@@ -86,19 +88,24 @@ function buildQuery(url: URL) {
   }
 
   const sortQuery: Record<string, 1 | -1> =
-    sort === "popular" ? { views: -1, createdAt: -1 } : { createdAt: -1 };
-  return { query, sortQuery };
+    sort === "popular"
+      ? { views: -1, createdAt: -1 }
+      : sort === "name"
+        ? { title: 1 }
+        : { createdAt: -1 };
+  return { query, sortQuery, sort };
 }
 
 export async function GET(request: Request) {
   try {
     await connectDB();
     const url = new URL(request.url);
-    const { query, sortQuery } = buildQuery(url);
+    const { query, sortQuery, sort } = buildQuery(url);
     const listings = await Listing.find(query).sort(sortQuery).populate("owner", "name email role").lean<any>();
 
-    // Paid packages rank first, then WhatsApp engagement, then newest.
-    const sorted = rankListings(listings);
+    // Paid packages rank first, then WhatsApp engagement, then newest — but an
+    // explicit sort choice from the user wins over the promotion ranking.
+    const sorted = sort === "popular" || sort === "name" ? listings : rankListings(listings);
 
     return NextResponse.json({ listings: sorted });
   } catch (error) {
@@ -141,6 +148,10 @@ export async function POST(request: Request) {
       price: parseMaybeNumber(body.price),
       priceFrom: parseMaybeNumber(body.priceFrom),
       currency: body.currency || "€",
+      priceRange: body.priceRange || "",
+      duration: body.duration || "",
+      cuisines: Array.isArray(body.cuisines) ? body.cuisines : parseList(body.cuisines),
+      languages: Array.isArray(body.languages) ? body.languages : parseList(body.languages),
       businessHours: body.businessHours || "",
       whatsapp: body.whatsapp || "",
       website: body.website || "",
@@ -160,6 +171,7 @@ export async function POST(request: Request) {
       socialLinks: {
         instagram: body.instagramLink || "",
         facebook: body.facebookLink || "",
+        tiktok: body.tiktok || "",
       },
       googleMapsLink: body.googleMapsLink || "",
       tags: Array.isArray(body.tags) ? body.tags : parseList(body.tags),
