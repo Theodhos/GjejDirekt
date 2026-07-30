@@ -42,6 +42,7 @@ const categoryDescriptions: Record<string, string> = {
   atraksione: "Zbuloni atraksione natyrore, histori dhe eksperienca unike per cdo vizitor.",
   evente: "Qendroni te informuar per evente, festivale dhe aktivitete kulturore ne qytet.",
   "sherbime-turistike": "Planifikoni udhetimin me guida dhe sherbime turistike te besueshme.",
+  aktivitete: "Rezervoni ture dhe aktivitete: hiking, rafting, tura me varkë dhe eksperienca lokale.",
   "produkte-lokale": "Gjeni produkte autentike lokale, suvenire dhe artizanat tradicional.",
   transport: "Levizni lehte me taksi, transferte, makina me qira dhe transport lokal."
 };

@@ -290,17 +290,17 @@ export default function ListingCard({ listing }: { listing: any }) {
       </div>
 
       {/* Content */}
-      <div className="relative flex flex-1 flex-col px-4 py-3.5">
-        {/* Title — reserves 2 lines so every card keeps the same height */}
+      <div className="relative flex flex-1 flex-col px-4 pb-2.5 pt-2.5">
+        {/* Title — capped at 2 lines; no reserved height so short titles sit tight */}
         <h3
-          className="mb-1 line-clamp-2 min-h-[2.7em] text-[15px] font-semibold leading-snug transition-colors duration-150 group-hover:text-brand-600"
+          className="mb-0.5 line-clamp-2 text-[15px] font-semibold leading-snug transition-colors duration-150 group-hover:text-brand-600"
           style={{ color: "var(--text-primary)" }}
         >
           {listing.title}
         </h3>
 
         {/* Location */}
-        <div className="mb-2.5 flex items-center gap-1.5 text-xs" style={{ color: "var(--text-tertiary)" }}>
+        <div className="mb-1.5 flex items-center gap-1.5 text-xs" style={{ color: "var(--text-tertiary)" }}>
           <MapPin className="h-3 w-3 shrink-0" />
           <span className="truncate">{listing.location}{listing.country ? `, ${listing.country}` : ""}</span>
         </div>
@@ -315,7 +315,7 @@ export default function ListingCard({ listing }: { listing: any }) {
         />
 
         {/* Contact Actions — flat brand-green icons, pinned to bottom, sit above the card link overlay */}
-        <div className="relative z-20 mt-auto grid grid-cols-3 gap-1.5 pt-1">
+        <div className="relative z-20 mt-auto grid grid-cols-3 gap-1.5 pt-0.5">
           {/* Call */}
           <a
             href={phone ? `tel:${phone}` : "#"}
@@ -326,7 +326,7 @@ export default function ListingCard({ listing }: { listing: any }) {
                 fetch(`/api/listings/${listing._id}/phone-click`, { method: "POST", keepalive: true }).catch(() => {});
               }
             }}
-            className={`flex flex-col items-center justify-center gap-1.5 rounded-lg py-1.5 ${phone ? "" : "pointer-events-none opacity-40"}`}
+            className={`flex flex-col items-center justify-center gap-1 rounded-lg py-1 ${phone ? "" : "pointer-events-none opacity-40"}`}
           >
             <div
               className="flex h-10 w-10 items-center justify-center rounded-full text-white shadow-sm transition-transform hover:scale-105"
@@ -334,7 +334,7 @@ export default function ListingCard({ listing }: { listing: any }) {
             >
               <Phone className="h-4 w-4 fill-current" />
             </div>
-            <span className="text-[10px] font-semibold uppercase tracking-wide text-white">{t.listing.call}</span>
+            <span className="text-[10px] font-semibold uppercase tracking-wide" style={{ color: "var(--text-secondary)" }}>{t.listing.call}</span>
           </a>
 
           {/* WhatsApp */}
@@ -349,7 +349,7 @@ export default function ListingCard({ listing }: { listing: any }) {
                 fetch(`/api/listings/${listing._id}/whatsapp-click`, { method: "POST", keepalive: true }).catch(() => {});
               }
             }}
-            className={`flex flex-col items-center justify-center gap-1.5 rounded-lg py-1.5 ${whatsappHref ? "" : "pointer-events-none opacity-40"}`}
+            className={`flex flex-col items-center justify-center gap-1 rounded-lg py-1 ${whatsappHref ? "" : "pointer-events-none opacity-40"}`}
           >
             <div
               className="flex h-10 w-10 items-center justify-center rounded-full text-white shadow-sm transition-transform hover:scale-105"
@@ -382,7 +382,7 @@ export default function ListingCard({ listing }: { listing: any }) {
                 }
               }
             }}
-            className="flex flex-col items-center justify-center gap-1.5 rounded-lg py-1.5"
+            className="flex flex-col items-center justify-center gap-1 rounded-lg py-1"
           >
             <div
               className="flex h-10 w-10 items-center justify-center rounded-full text-white shadow-sm transition-transform hover:scale-105"

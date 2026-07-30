@@ -21,6 +21,15 @@ export interface IListing extends Document {
   currency?: string;
   /** Restaurants: € / €€ / €€€ */
   priceRange?: string;
+  /** Activities: Lehtë / Mesatare / Vështirë */
+  difficulty?: string;
+  /** Activities: which season the tour runs in */
+  season?: string;
+  maxParticipants?: number;
+  minAge?: number;
+  childPrice?: number;
+  /** Activities: gear the guest should bring */
+  whatToBring: string[];
   /** Attractions & tourism services: how long the visit/tour takes */
   duration?: string;
   /** Restaurants: cuisine types */
@@ -39,6 +48,7 @@ export interface IListing extends Document {
     facebook?: string;
     instagram?: string;
     tiktok?: string;
+    youtube?: string;
     x?: string;
   };
   googleMapsLink?: string;
@@ -88,6 +98,12 @@ const ListingSchema = new Schema<IListing>(
     currency: { type: String, default: "USD" },
     priceRange: { type: String },
     duration: { type: String },
+    difficulty: { type: String },
+    season: { type: String },
+    maxParticipants: { type: Number },
+    minAge: { type: Number },
+    childPrice: { type: Number },
+    whatToBring: { type: [String], default: [] },
     cuisines: { type: [String], default: [] },
     languages: { type: [String], default: [] },
     amenities: { type: [String], default: [] },
@@ -102,6 +118,7 @@ const ListingSchema = new Schema<IListing>(
       facebook: String,
       instagram: String,
       tiktok: String,
+      youtube: String,
       x: String
     },
     googleMapsLink: { type: String },

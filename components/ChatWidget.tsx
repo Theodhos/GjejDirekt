@@ -74,7 +74,8 @@ const CATEGORY_OPTIONS: { value: string; al: string; en: string }[] = [
   { value: "atraksione", al: "Atraksione", en: "Attractions" },
   { value: "evente", al: "Evente", en: "Events" },
   { value: "sherbime-turistike", al: "Shërbime Turistike", en: "Tourism Services" },
-  { value: "produkte-lokale", al: "Produkte Lokale", en: "Local Products" },
+  { value: "aktivitete", al: "Aktivitete & Ture", en: "Activities & Tours" },
+  { value: "produkte-lokale", al: "Shopping & Produkte Lokale", en: "Shopping & Local Products" },
   { value: "transport", al: "Transport", en: "Transport" },
 ];
 

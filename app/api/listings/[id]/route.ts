@@ -85,6 +85,12 @@ export async function PATCH(request: Request, { params }: { params: { id: string
     listing.currency = parseMaybeString(body.currency) || listing.currency;
     listing.priceRange = parseMaybeString(body.priceRange);
     listing.duration = parseMaybeString(body.duration);
+    listing.difficulty = parseMaybeString(body.difficulty);
+    listing.season = parseMaybeString(body.season);
+    listing.maxParticipants = parseMaybeNumber(body.maxParticipants);
+    listing.minAge = parseMaybeNumber(body.minAge);
+    listing.childPrice = parseMaybeNumber(body.childPrice);
+    listing.whatToBring = parseList(body.whatToBring);
     listing.cuisines = parseList(body.cuisines);
     listing.languages = parseList(body.languages);
     listing.amenities = parseList(body.amenities);
@@ -103,6 +109,7 @@ export async function PATCH(request: Request, { params }: { params: { id: string
       instagram: parseMaybeString(body.instagram) || parseMaybeString(body.instagramLink) || "",
       facebook: parseMaybeString(body.facebook) || parseMaybeString(body.facebookLink) || "",
       tiktok: parseMaybeString(body.tiktok) || "",
+      youtube: parseMaybeString(body.youtube) || "",
       x: parseMaybeString(body.x) || ""
     };
     listing.whatsapp = parseMaybeString(body.whatsapp);

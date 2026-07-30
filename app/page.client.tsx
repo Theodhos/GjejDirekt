@@ -154,6 +154,7 @@ function HomePageClient() {
   const serviceCategory = categories.find(c => c.value === "sherbime-turistike");
   const localCategory = categories.find(c => c.value === "produkte-lokale");
   const attractionCategory = categories.find(c => c.value === "atraksione");
+  const activityCategory = categories.find(c => c.value === "aktivitete");
 
   const blogFallbacks = [
     { slug: "sample-guide-1", title: "Si të zgjidhni qytetin e duhur fillimisht", excerpt: "Filloni me vendndodhjen, pastaj kaloni te kategoria e duhur e shërbimit." },
@@ -327,6 +328,18 @@ function HomePageClient() {
             accent: 'bg-cyan-50 text-cyan-700',
             fallbackImage: 'https://images.unsplash.com/photo-1498654896293-37aacf113fd9?auto=format&fit=crop&w=600&q=80',
             buttonLabel: t.home.addProduct
+          },
+          {
+            id: "aktivitete",
+            category: activityCategory,
+            eyebrow: language === 'en' ? 'Activities & Tours' : 'Aktivitete & Ture',
+            title: language === 'en' ? 'Activities & Tours' : 'Aktivitete dhe Ture',
+            description: language === 'en'
+              ? 'Hiking, rafting, boat tours and guided experiences across Albania.'
+              : 'Hiking, rafting, tura me varkë dhe eksperienca me udhërrëfyes në të gjithë Shqipërinë.',
+            accent: 'bg-amber-50 text-amber-700',
+            fallbackImage: 'https://images.unsplash.com/photo-1551632811-561732d1e306?auto=format&fit=crop&w=600&q=80',
+            buttonLabel: t.home.addService
           },
           {
             id: "atraksione",

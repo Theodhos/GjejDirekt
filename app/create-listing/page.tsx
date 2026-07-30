@@ -3,23 +3,25 @@
 import React from "react";
 import { useRouter } from "next/navigation";
 import { categories } from "@/lib/constants";
-import { Briefcase, Calendar, Car, Compass, Home, MapPin, UtensilsCrossed } from "lucide-react";
+import { Briefcase, Calendar, Car, Compass, Home, MapPin, Mountain, ShoppingBag, UtensilsCrossed } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 
 const categoryIcons: Record<string, React.ReactNode> = {
-  akomodim: <Home className="h-12 w-12" />,
-  restorante: <UtensilsCrossed className="h-12 w-12" />,
-  atraksione: <Compass className="h-12 w-12" />,
-  evente: <Calendar className="h-12 w-12" />,
-  "sherbime-turistike": <Briefcase className="h-12 w-12" />,
-  "produkte-lokale": <MapPin className="h-12 w-12" />,
-  transport: <Car className="h-12 w-12" />
+  akomodim: <Home className="h-9 w-9" />,
+  restorante: <UtensilsCrossed className="h-9 w-9" />,
+  atraksione: <Compass className="h-9 w-9" />,
+  aktivitete: <Mountain className="h-9 w-9" />,
+  evente: <Calendar className="h-9 w-9" />,
+  "sherbime-turistike": <Briefcase className="h-9 w-9" />,
+  "produkte-lokale": <ShoppingBag className="h-9 w-9" />,
+  transport: <Car className="h-9 w-9" />
 };
 
 const categoryColors: Record<string, { bg: string; icon: string; border: string }> = {
   akomodim: { bg: "bg-purple-100 hover:bg-purple-200", icon: "bg-purple-600", border: "border-purple-200 hover:border-purple-300" },
   restorante: { bg: "bg-pink-100 hover:bg-pink-200", icon: "bg-pink-600", border: "border-pink-200 hover:border-pink-300" },
   atraksione: { bg: "bg-blue-100 hover:bg-blue-200", icon: "bg-blue-600", border: "border-blue-200 hover:border-blue-300" },
+  aktivitete: { bg: "bg-amber-100 hover:bg-amber-200", icon: "bg-amber-600", border: "border-amber-200 hover:border-amber-300" },
   evente: { bg: "bg-orange-100 hover:bg-orange-200", icon: "bg-orange-600", border: "border-orange-200 hover:border-orange-300" },
   "sherbime-turistike": { bg: "bg-teal-100 hover:bg-teal-200", icon: "bg-teal-600", border: "border-teal-200 hover:border-teal-300" },
   "produkte-lokale": { bg: "bg-green-100 hover:bg-green-200", icon: "bg-green-600", border: "border-green-200 hover:border-green-300" },
@@ -41,7 +43,7 @@ export default function CreateListingPage() {
         className="relative overflow-hidden"
         style={{ borderBottom: "1px solid var(--border-soft)", background: "var(--surface-cream)" }}
       >
-        <div className="page-shell py-10 text-center sm:py-14">
+        <div className="page-shell py-7 text-center sm:py-10">
           <p className="eyebrow mb-5">{en ? "Directory" : "Direktoria"}</p>
           <h1
             className="font-bold tracking-tight"
@@ -60,16 +62,16 @@ export default function CreateListingPage() {
         </div>
       </section>
 
-      <section className="page-shell py-6 sm:py-10">
+      <section className="page-shell py-5 sm:py-8">
         {/* Two cards per row on phones, then 3 from lg up. */}
-        <div className="grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-3">
+        <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
           {categories.map((category) => {
             const colors = categoryColors[category.value] || {
               bg: "bg-gray-50 hover:bg-gray-100",
               icon: "bg-gray-600",
               border: "border-gray-200 hover:border-gray-300"
             };
-            const icon = categoryIcons[category.value] || <MapPin className="h-12 w-12" />;
+            const icon = categoryIcons[category.value] || <MapPin className="h-9 w-9" />;
             const label = t.categories.names[category.value as keyof typeof t.categories.names] || category.label;
 
             return (
@@ -77,13 +79,13 @@ export default function CreateListingPage() {
                 key={category.value}
                 type="button"
                 onClick={() => handleCategoryClick(category.value)}
-                className={`${colors.bg} ${colors.border} rounded-2xl border p-5 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-xl sm:p-8`}
+                className={`${colors.bg} ${colors.border} rounded-2xl border p-4 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-xl sm:p-5`}
               >
                 <span className="flex flex-col items-center text-center">
-                  <span className={`${colors.icon} mb-3 rounded-full p-3.5 text-white shadow-lg sm:mb-4 sm:p-4`}>
+                  <span className={`${colors.icon} mb-2.5 rounded-full p-3 text-white shadow-lg sm:mb-3 sm:p-3.5`}>
                     {icon}
                   </span>
-                  <span className="text-base font-semibold text-gray-800 sm:text-xl">{label}</span>
+                  <span className="text-sm font-semibold text-gray-800 sm:text-base lg:text-lg">{label}</span>
                 </span>
               </button>
             );

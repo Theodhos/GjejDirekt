@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import toast from "react-hot-toast";
 import {
+  Backpack,
   BadgeCheck,
   CalendarClock,
   Camera,
@@ -25,6 +26,7 @@ import {
   MapPin,
   Music,
   Phone,
+  Play,
   Plus,
   SlidersHorizontal,
   Sparkles,
@@ -55,13 +57,19 @@ export type WizardListing = {
   priceFrom?: number;
   priceRange?: string;
   duration?: string;
+  difficulty?: string;
+  season?: string;
+  maxParticipants?: number;
+  minAge?: number;
+  childPrice?: number;
+  whatToBring?: string[];
   cuisines?: string[];
   languages?: string[];
   tags?: string[];
   amenities?: string[];
   highlights?: string[];
   contactInfo?: { phone?: string; email?: string; website?: string };
-  socialLinks?: { instagram?: string; facebook?: string; tiktok?: string; x?: string };
+  socialLinks?: { instagram?: string; facebook?: string; tiktok?: string; youtube?: string; x?: string };
   googleMapsLink?: string;
   businessHours?: string;
   whatsapp?: string;
@@ -100,6 +108,16 @@ const CATEGORY_DEFAULT_TAGS: Record<string, string[]> = {
   restorante: ["Wifi", "Outdoor Seating", "Vegan Options", "Rezervime", "Parking"],
   atraksione: ["Entry Fee", "Family Friendly", "Guide Available", "Parking", "Pamje piktoreske"],
   evente: ["Tickets Needed", "Outdoor", "Indoor", "Parking", "Muzikë live"],
+  aktivitete: [
+    "Guide i certifikuar",
+    "Pajisjet përfshihen",
+    "Transport i përfshirë",
+    "Ushqim i përfshirë",
+    "I përshtatshëm për familje",
+    "Lejohen kafshët",
+    "Parkim",
+    "Rezervim i nevojshëm"
+  ],
   "sherbime-turistike": ["English Speaking", "Licensed Guide", "Group Discount", "Tur privat", "Eksperiencë lokale"],
   "produkte-lokale": ["Handmade", "Organic", "Shipping Available", "Bio", "Tradicionale"],
   transport: ["AC", "English Speaking Driver", "Airport Pickup", "Shofer profesionist", "Taksi e licencuar"]
@@ -203,6 +221,33 @@ const LANGUAGE_OPTIONS = [
 
 const PRICE_RANGE_OPTIONS = ["€", "€€", "€€€"];
 
+/** Activity-only pick lists. */
+const DIFFICULTY_OPTIONS = [
+  { value: "lehte", al: "Lehtë", en: "Easy" },
+  { value: "mesatare", al: "Mesatare", en: "Moderate" },
+  { value: "veshtire", al: "Vështirë", en: "Hard" }
+];
+
+const SEASON_OPTIONS = [
+  { value: "gjithe-vitin", al: "Gjithë vitin", en: "All year" },
+  { value: "pranvere", al: "Pranverë", en: "Spring" },
+  { value: "vere", al: "Verë", en: "Summer" },
+  { value: "vjeshte", al: "Vjeshtë", en: "Autumn" },
+  { value: "dimer", al: "Dimër", en: "Winter" }
+];
+
+const WHAT_TO_BRING_OPTIONS = [
+  "Këpucë sportive",
+  "Rroba të ngrohta",
+  "Ujë",
+  "Krem dielli",
+  "Kostum banje",
+  "Peshqir",
+  "Kapelë",
+  "Syze dielli",
+  "Tjetër"
+];
+
 /** All wizard copy lives here so the whole flow can be re-worded in one place. */
 const COPY = {
   al: {
@@ -225,7 +270,9 @@ const COPY = {
     subcategoryCategory: "Kategoria",
     selectSubcategory: "Zgjidhni një opsion",
     title: "Emri i listimit",
+    titleActivity: "Emri i aktivitetit / turit",
     titlePlaceholder: "p.sh. Vila Panorama — Dhërmi",
+    titleActivityPlaceholder: "p.sh. Tur me varkë në Ksamil",
     titleHint: "Përdorni emrin e biznesit dhe zonën. Shmangni shkronjat e mëdha të tepërta.",
     city: "Qyteti",
     cityPlaceholder: "Tiranë",
@@ -265,6 +312,17 @@ const COPY = {
     duration: "Kohëzgjatja",
     durationVisit: "Kohëzgjatja e vizitës",
     durationPlaceholder: "p.sh. 2 orë",
+    difficulty: "Vështirësia",
+    selectDifficulty: "Zgjidhni nivelin",
+    maxParticipants: "Numri maksimal i pjesëmarrësve",
+    minAge: "Mosha minimale",
+    season: "Sezoni",
+    selectSeason: "Zgjidhni sezonin",
+    guideLanguages: "Gjuha e guidës",
+    childPrice: "Çmimi për fëmijë (opsional)",
+    whatToBring: "Çfarë duhet të marrë me vete?",
+    whatToBringHint: "Zgjidhni çfarë duhet të sjellë vizitori.",
+    email: "Email (opsionale)",
     checkTimes: "Check-in / Check-out",
     checkIn: "Check-in",
     checkOut: "Check-out",
@@ -291,6 +349,7 @@ const COPY = {
     instagram: "Instagram",
     facebook: "Facebook",
     tiktok: "TikTok",
+    youtube: "YouTube",
     gallery: "Galeria",
     galleryLocked: "Galeri deri në 10 foto",
     galleryFree: "Falas: 1 foto kryesore",
@@ -313,6 +372,7 @@ const COPY = {
     descriptionShort: "Përshkrimi duhet të ketë të paktën 30 karaktere.",
     coverRequired: "Fotoja kryesore është e detyrueshme.",
     invalidUrl: "Linku duhet të fillojë me http:// ose https://",
+    invalidEmail: "Email-i nuk është i vlefshëm.",
     invalidPriceRange: "Çmimi maksimal duhet të jetë më i madh se minimali.",
     fileTooLarge: "Fotoja është shumë e madhe (maksimumi 5MB).",
     galleryFull: "Mund të ngarkoni maksimumi 10 foto në galeri.",
@@ -340,7 +400,9 @@ const COPY = {
     subcategoryCategory: "Category",
     selectSubcategory: "Select an option",
     title: "Listing name",
+    titleActivity: "Activity / tour name",
     titlePlaceholder: "e.g. Villa Panorama — Dhermi",
+    titleActivityPlaceholder: "e.g. Boat tour in Ksamil",
     titleHint: "Use your business name and the area. Avoid ALL CAPS.",
     city: "City",
     cityPlaceholder: "Tirana",
@@ -380,6 +442,17 @@ const COPY = {
     duration: "Duration",
     durationVisit: "Visit duration",
     durationPlaceholder: "e.g. 2 hours",
+    difficulty: "Difficulty",
+    selectDifficulty: "Select a level",
+    maxParticipants: "Maximum participants",
+    minAge: "Minimum age",
+    season: "Season",
+    selectSeason: "Select a season",
+    guideLanguages: "Guide language",
+    childPrice: "Child price (optional)",
+    whatToBring: "What should guests bring?",
+    whatToBringHint: "Pick what the visitor needs to bring along.",
+    email: "Email (optional)",
     checkTimes: "Check-in / Check-out",
     checkIn: "Check-in",
     checkOut: "Check-out",
@@ -406,6 +479,7 @@ const COPY = {
     instagram: "Instagram",
     facebook: "Facebook",
     tiktok: "TikTok",
+    youtube: "YouTube",
     gallery: "Gallery",
     galleryLocked: "Gallery up to 10 photos",
     galleryFree: "Free: 1 main photo",
@@ -428,6 +502,7 @@ const COPY = {
     descriptionShort: "The description needs at least 30 characters.",
     coverRequired: "The cover photo is required.",
     invalidUrl: "The link must start with http:// or https://",
+    invalidEmail: "This email address is not valid.",
     invalidPriceRange: "The maximum price must be higher than the minimum.",
     fileTooLarge: "The photo is too large (max 5MB).",
     galleryFull: "You can upload a maximum of 10 gallery photos.",
@@ -450,6 +525,7 @@ const emptyForm = {
   description: "",
   contactPhone: "",
   whatsapp: "",
+  contactEmail: "",
   address: "",
   googleMapsLink: "",
   priceFrom: "",
@@ -457,6 +533,11 @@ const emptyForm = {
   currency: "€",
   priceRange: "",
   duration: "",
+  difficulty: "",
+  season: "",
+  maxParticipants: "",
+  minAge: "",
+  childPrice: "",
   checkIn: "",
   checkOut: "",
   businessHours: "",
@@ -470,7 +551,8 @@ const emptyForm = {
   menuLink: "",
   instagram: "",
   facebook: "",
-  tiktok: ""
+  tiktok: "",
+  youtube: ""
 };
 
 type FormState = typeof emptyForm;
@@ -486,6 +568,7 @@ function initialForm(listing?: WizardListing): FormState {
     description: listing.description || "",
     contactPhone: listing.contactInfo?.phone || "",
     whatsapp: listing.whatsapp || "",
+    contactEmail: listing.contactInfo?.email || "",
     address: listing.address || "",
     googleMapsLink: listing.googleMapsLink || "",
     priceFrom: listing.priceFrom ? String(listing.priceFrom) : "",
@@ -493,6 +576,11 @@ function initialForm(listing?: WizardListing): FormState {
     currency: listing.currency || "€",
     priceRange: listing.priceRange || "",
     duration: listing.duration || "",
+    difficulty: listing.difficulty || "",
+    season: listing.season || "",
+    maxParticipants: listing.maxParticipants ? String(listing.maxParticipants) : "",
+    minAge: listing.minAge ? String(listing.minAge) : "",
+    childPrice: listing.childPrice ? String(listing.childPrice) : "",
     checkIn: listing.checkIn || "",
     checkOut: listing.checkOut || "",
     businessHours: listing.businessHours || "",
@@ -505,7 +593,8 @@ function initialForm(listing?: WizardListing): FormState {
     menuLink: listing.menuLink || "",
     instagram: listing.socialLinks?.instagram || "",
     facebook: listing.socialLinks?.facebook || "",
-    tiktok: listing.socialLinks?.tiktok || ""
+    tiktok: listing.socialLinks?.tiktok || "",
+    youtube: listing.socialLinks?.youtube || ""
   };
 }
 
@@ -533,6 +622,7 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
   const [activeTags, setActiveTags] = useState<string[]>(listing?.tags || []);
   const [cuisines, setCuisines] = useState<string[]>(listing?.cuisines || []);
   const [spokenLanguages, setSpokenLanguages] = useState<string[]>(listing?.languages || []);
+  const [whatToBring, setWhatToBring] = useState<string[]>(listing?.whatToBring || []);
   const [customTag, setCustomTag] = useState("");
   // Edit mode keeps the saved tags; create mode seeds them from the category.
   const [tagsTouched, setTagsTouched] = useState(isEdit);
@@ -612,6 +702,7 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
   );
 
   const subcategories = categoryDef?.subcategories || [];
+  const isActivity = selectedCategory === "aktivitete";
 
   const categoryLabel =
     (selectedCategory && t.categories.names[selectedCategory as keyof typeof t.categories.names]) ||
@@ -640,6 +731,9 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
           ? c.bookShop
           : c.bookNow;
 
+  const titleFieldLabel = isActivity ? c.titleActivity : c.title;
+  const titleFieldPlaceholder = isActivity ? c.titleActivityPlaceholder : c.titlePlaceholder;
+
   const suggestedTags = useMemo(() => {
     if (!selectedCategory) return [] as string[];
     if (selectedSubcategory && SUBCATEGORY_DEFAULT_TAGS[selectedCategory]?.[selectedSubcategory]) {
@@ -652,6 +746,10 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
   useEffect(() => {
     if (tagsTouched) return;
     if (!selectedCategory) {
+      setActiveTags([]);
+      return;
+    }
+    if (selectedCategory === "aktivitete") {
       setActiveTags([]);
       return;
     }
@@ -670,8 +768,11 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
   const showEventFields = selectedCategory === "evente";
   const showPriceRange = selectedCategory === "restorante";
   const showCuisines = selectedCategory === "restorante";
-  const showDuration = selectedCategory === "atraksione" || selectedCategory === "sherbime-turistike";
-  const showLanguages = selectedCategory === "sherbime-turistike";
+  const showDuration =
+    selectedCategory === "atraksione" ||
+    selectedCategory === "aktivitete" ||
+    selectedCategory === "sherbime-turistike";
+  const showLanguages = selectedCategory === "sherbime-turistike" || selectedCategory === "aktivitete";
   const showMenuLink = selectedCategory === "restorante";
   const galleryTotal = galleryUrls.length + newPhotos.length;
 
@@ -756,8 +857,12 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
       }
     }
 
-    if (target === 3 && !form.contactPhone.trim()) {
-      next.contactPhone = c.required;
+    if (target === 3) {
+      if (!form.contactPhone.trim()) next.contactPhone = c.required;
+      if (isActivity && !form.whatsapp.trim()) next.whatsapp = c.required;
+      if (form.contactEmail.trim() && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(form.contactEmail.trim())) {
+        next.contactEmail = c.invalidEmail;
+      }
     }
 
     if (target === 4) {
@@ -772,7 +877,7 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
     }
 
     if (target === 6 && verifiedUnlocked) {
-      (["website", "bookingLink", "menuLink", "instagram", "facebook", "tiktok"] as const).forEach((key) => {
+      (["website", "bookingLink", "menuLink", "instagram", "facebook", "tiktok", "youtube"] as const).forEach((key) => {
         if (form[key].trim() && !/^https?:\/\//i.test(form[key].trim())) next[key] = c.invalidUrl;
       });
     }
@@ -845,6 +950,7 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
         country: listing?.country || "Albania",
         address: form.address.trim(),
         contactPhone: form.contactPhone.trim(),
+        contactEmail: form.contactEmail.trim(),
         whatsapp: form.whatsapp.trim(),
         googleMapsLink: form.googleMapsLink.trim(),
         priceFrom: form.priceFrom,
@@ -852,6 +958,12 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
         currency: form.currency,
         priceRange: form.priceRange,
         duration: form.duration.trim(),
+        difficulty: form.difficulty,
+        season: form.season,
+        maxParticipants: form.maxParticipants,
+        minAge: form.minAge,
+        childPrice: form.childPrice,
+        whatToBring,
         cuisines,
         languages: spokenLanguages,
         checkIn: form.checkIn,
@@ -870,6 +982,7 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
         facebook: form.facebook.trim(),
         facebookLink: form.facebook.trim(),
         tiktok: form.tiktok.trim(),
+        youtube: form.youtube.trim(),
         bannerImage: bannerUrl,
         photos: gallery,
         images: [bannerUrl, ...gallery],
@@ -879,7 +992,6 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
 
       if (isEdit && listing) {
         // Fields the wizard does not expose must be echoed back or PATCH clears them.
-        payload.contactEmail = listing.contactInfo?.email || "";
         payload.x = listing.socialLinks?.x || "";
         payload.highlights = listing.highlights || [];
       }
@@ -1083,9 +1195,9 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
               <div>
                 <Input
                   name="title"
-                  label={`${c.title} *`}
+                  label={`${titleFieldLabel} *`}
                   className={inputClass}
-                  placeholder={c.titlePlaceholder}
+                  placeholder={titleFieldPlaceholder}
                   value={form.title}
                   onChange={(event) => update("title", event.target.value)}
                   error={errors.title}
@@ -1250,6 +1362,58 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
                 />
               )}
 
+              {isActivity && (
+                <>
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <Select
+                      name="difficulty"
+                      label={c.difficulty}
+                      className={inputClass}
+                      options={[
+                        { label: c.selectDifficulty, value: "" },
+                        ...DIFFICULTY_OPTIONS.map((item) => ({ label: item[language], value: item.value }))
+                      ]}
+                      value={form.difficulty}
+                      onChange={(event) => update("difficulty", event.target.value)}
+                    />
+                    <Select
+                      name="season"
+                      label={c.season}
+                      className={inputClass}
+                      options={[
+                        { label: c.selectSeason, value: "" },
+                        ...SEASON_OPTIONS.map((item) => ({ label: item[language], value: item.value }))
+                      ]}
+                      value={form.season}
+                      onChange={(event) => update("season", event.target.value)}
+                    />
+                  </div>
+
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <Input
+                      name="maxParticipants"
+                      type="number"
+                      min={1}
+                      label={c.maxParticipants}
+                      className={inputClass}
+                      placeholder="12"
+                      value={form.maxParticipants}
+                      onChange={(event) => update("maxParticipants", event.target.value)}
+                    />
+                    <Input
+                      name="minAge"
+                      type="number"
+                      min={0}
+                      label={c.minAge}
+                      className={inputClass}
+                      placeholder="8"
+                      value={form.minAge}
+                      onChange={(event) => update("minAge", event.target.value)}
+                    />
+                  </div>
+                </>
+              )}
+
               <div className="space-y-2">
                 <span className="block text-sm font-semibold" style={{ color: "var(--text-primary)" }}>
                   {c.price}
@@ -1293,6 +1457,18 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
                 <p className="text-xs" style={{ color: "var(--text-tertiary)" }}>
                   {c.priceHint}
                 </p>
+                {isActivity && (
+                  <Input
+                    name="childPrice"
+                    type="number"
+                    min={0}
+                    label={c.childPrice}
+                    className={inputClass}
+                    placeholder="25"
+                    value={form.childPrice}
+                    onChange={(event) => update("childPrice", event.target.value)}
+                  />
+                )}
               </div>
 
               {showPriceRange && (
@@ -1344,7 +1520,7 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
               {showLanguages && (
                 <ChipGroup
                   icon={Languages}
-                  label={c.languagesLabel}
+                  label={isActivity ? c.guideLanguages : c.languagesLabel}
                   hint={c.languagesHint}
                   options={LANGUAGE_OPTIONS}
                   selected={spokenLanguages}
@@ -1430,6 +1606,21 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
                   </p>
                 </div>
               </div>
+
+              {isActivity && (
+                <ChipGroup
+                  icon={Backpack}
+                  label={c.whatToBring}
+                  hint={c.whatToBringHint}
+                  options={WHAT_TO_BRING_OPTIONS}
+                  selected={whatToBring}
+                  onToggle={(value) =>
+                    setWhatToBring((prev) =>
+                      prev.includes(value) ? prev.filter((item) => item !== value) : [...prev, value]
+                    )
+                  }
+                />
+              )}
             </>
           )}
 
@@ -1449,17 +1640,31 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
               <div>
                 <Input
                   name="whatsapp"
-                  label={c.whatsapp}
+                  label={isActivity ? `${c.whatsapp} *` : c.whatsapp}
                   className={inputClass}
                   placeholder="+355 69 ..."
                   inputMode="tel"
                   value={form.whatsapp}
                   onChange={(event) => update("whatsapp", event.target.value)}
+                  error={errors.whatsapp}
                 />
-                <p className="mt-1 text-xs" style={{ color: "var(--text-tertiary)" }}>
-                  {c.whatsappHint}
-                </p>
+                {!errors.whatsapp && (
+                  <p className="mt-1 text-xs" style={{ color: "var(--text-tertiary)" }}>
+                    {c.whatsappHint}
+                  </p>
+                )}
               </div>
+
+              <Input
+                name="contactEmail"
+                type="email"
+                label={c.email}
+                className={inputClass}
+                placeholder="info@example.com"
+                value={form.contactEmail}
+                onChange={(event) => update("contactEmail", event.target.value)}
+                error={errors.contactEmail}
+              />
             </div>
           )}
 
@@ -1681,6 +1886,14 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
                       error={errors.tiktok}
                       onChange={(value) => update("tiktok", value)}
                     />
+                    <UnlockedField
+                      icon={Play}
+                      label={c.youtube}
+                      placeholder="https://youtube.com/@..."
+                      value={form.youtube}
+                      error={errors.youtube}
+                      onChange={(value) => update("youtube", value)}
+                    />
                   </div>
 
                   {/* Gallery manager — up to 10 photos next to the cover. */}
@@ -1772,6 +1985,7 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
                     <LockedField icon={Instagram} label={c.instagram} placeholder="https://instagram.com/..." />
                     <LockedField icon={Facebook} label={c.facebook} placeholder="https://facebook.com/..." />
                     <LockedField icon={Music} label={c.tiktok} placeholder="https://tiktok.com/@..." />
+                    <LockedField icon={Play} label={c.youtube} placeholder="https://youtube.com/@..." />
                   </div>
 
                   <div className="space-y-2 opacity-60">
