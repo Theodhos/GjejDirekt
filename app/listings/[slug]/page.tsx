@@ -17,6 +17,7 @@ import {
   Instagram,
   Facebook,
   Map as MapIcon,
+  Music,
   Navigation,
   Euro,
   Tag,
@@ -112,7 +113,9 @@ export default async function ListingDetailPage({ params }: { params: { slug: st
   return (
     <main
       style={{ background: "var(--surface-page)", minHeight: "100vh" }}
-      className="pb-4 lg:pb-8"
+      // The mobile contact bar is fixed to the bottom, so the page needs room
+      // underneath it or the last section sits behind the buttons.
+      className={hasStickyBar ? "pb-28 md:pb-8" : "pb-8"}
     >
 
       {/* ── GALLERY ── */}
@@ -363,6 +366,36 @@ export default async function ListingDetailPage({ params }: { params: { slug: st
 
 
 
+            {/* ── Social links (phones only — the sidebar card is desktop-only) ── */}
+            {(listing.socialLinks?.instagram || listing.socialLinks?.facebook || listing.socialLinks?.tiktok) && (
+              <div className="lg:hidden" style={{ borderTop: "1px solid var(--border-soft)", paddingTop: "1.5rem" }}>
+                <h2 className="text-lg font-semibold mb-3" style={{ color: "var(--text-primary)" }}>
+                  Social
+                </h2>
+                <div className="flex flex-wrap gap-2.5">
+                  {[
+                    { href: listing.socialLinks?.instagram, label: "Instagram", Icon: Instagram },
+                    { href: listing.socialLinks?.facebook, label: "Facebook", Icon: Facebook },
+                    { href: listing.socialLinks?.tiktok, label: "TikTok", Icon: Music }
+                  ]
+                    .filter((item) => Boolean(item.href))
+                    .map(({ href, label, Icon }) => (
+                      <a
+                        key={label}
+                        href={href}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex h-11 min-w-[7.5rem] flex-1 items-center justify-center gap-2 rounded-xl text-sm font-medium transition-colors hover:bg-neutral-100"
+                        style={{ border: "1px solid var(--border-medium)", color: "var(--text-secondary)" }}
+                      >
+                        <Icon className="w-4 h-4" />
+                        {label}
+                      </a>
+                    ))}
+                </div>
+              </div>
+            )}
+
             {/* ── Edit (if allowed) ── */}
             {canEdit && (
               <div style={{ borderTop: "1px solid var(--border-soft)", paddingTop: "1.5rem" }}>
@@ -441,8 +474,8 @@ export default async function ListingDetailPage({ params }: { params: { slug: st
                 </div>
 
                 {/* Social links */}
-                {(listing.socialLinks?.instagram || listing.socialLinks?.facebook) && (
-                  <div className="flex gap-2.5 pt-1">
+                {(listing.socialLinks?.instagram || listing.socialLinks?.facebook || listing.socialLinks?.tiktok) && (
+                  <div className="flex flex-wrap gap-2.5 pt-1">
                     {listing.socialLinks?.instagram && (
                       <a
                         href={listing.socialLinks.instagram}
@@ -494,7 +527,7 @@ export default async function ListingDetailPage({ params }: { params: { slug: st
       {/* ── RELATED LISTINGS ── */}
       {relatedListings.length > 0 && (
         <section className="page-shell mt-8 lg:mt-10">
-          <div className="flex items-end justify-between mb-8">
+          <div className="mb-5 flex flex-wrap items-end justify-between gap-3 sm:mb-8">
             <div>
               <p className="eyebrow mb-2">More like this</p>
               <h2 className="text-xl font-bold" style={{ color: "var(--text-primary)" }}>

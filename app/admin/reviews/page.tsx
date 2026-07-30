@@ -20,7 +20,7 @@ export default async function AdminReviewsPage() {
 
   return (
     <section className="page-shell py-10">
-      <div className="flex items-center justify-between gap-4 mb-10">
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-4 sm:mb-10">
         <div className="flex items-center gap-4">
             <Link href="/admin" className="w-10 h-10 rounded-full border border-slate-200 flex items-center justify-center hover:bg-slate-50 transition">
                 <ArrowLeft className="w-5 h-5 text-slate-600" />
@@ -38,7 +38,7 @@ export default async function AdminReviewsPage() {
             <div key={review._id.toString()} className="surface p-6 border-none shadow-lg hover:shadow-xl transition-all">
                 <div className="flex flex-col md:flex-row gap-6">
                     <div className="flex-1 min-w-0">
-                        <div className="flex items-center justify-between gap-4 mb-4">
+                        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
                             <div className="flex items-center gap-3">
                                 <div className="w-10 h-10 rounded-full bg-brand-50 flex items-center justify-center text-brand-600">
                                     <User className="w-5 h-5" />
@@ -59,7 +59,7 @@ export default async function AdminReviewsPage() {
                             &quot;{review.comment}&quot;
                         </div>
 
-                        <div className="flex items-center justify-between gap-4 pt-4 border-t border-slate-100">
+                        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 pt-4">
                             <div className="flex items-center gap-2">
                                 <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Regarding:</span>
                                 <Link href={`/listings/${review.listing?.slug}`} className="text-xs font-black text-slate-950 hover:text-brand-600 flex items-center gap-1.5 underline underline-offset-4 decoration-slate-200">

@@ -154,7 +154,7 @@ export default function FAQPage() {
         </div>
       </section>
 
-      <section className="page-shell py-12 max-w-3xl mx-auto">
+      <section className="page-shell mx-auto max-w-3xl py-8 sm:py-12">
 
         {/* Search */}
         <div className="relative mb-7">
@@ -287,7 +287,7 @@ export default function FAQPage() {
 
         {/* Contact Box — similar to Stay Directory's CTA section */}
         <div
-          className="rounded-2xl p-8 text-center"
+          className="rounded-2xl p-5 text-center sm:p-8"
           style={{
             background: "var(--surface-cream)",
             border: "1px solid var(--border-soft)"

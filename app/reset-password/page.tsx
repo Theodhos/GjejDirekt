@@ -41,7 +41,7 @@ function ResetPasswordForm() {
 
 export default function ResetPasswordPage() {
   return (
-    <main className="page-shell py-16 min-h-[60vh] flex items-center justify-center">
+    <main className="page-shell py-12 sm:py-16 min-h-[60vh] flex items-center justify-center">
       <Suspense fallback={
         <div className="w-full max-w-md rounded-3xl border border-slate-200 bg-white p-6 text-center">
           <p className="text-slate-600 font-medium">Loading password reset form...</p>

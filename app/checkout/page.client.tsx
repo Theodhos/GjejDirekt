@@ -334,7 +334,7 @@ function CheckoutPageClient() {
                 )}
               </PayPalScriptProvider>
 
-              <div className="flex items-center justify-center gap-10 py-8" style={{ borderTop: "1px solid var(--border-soft)" }}>
+              <div className="flex flex-wrap items-center justify-center gap-5 py-6 sm:gap-10 sm:py-8" style={{ borderTop: "1px solid var(--border-soft)" }}>
                 <div className="flex items-center gap-3 text-[10px] font-bold uppercase tracking-widest" style={{ color: "var(--text-tertiary)" }}>
                   <ShieldCheck className="w-5 h-5" style={{ color: "var(--brand-accent)" }} /> {c.sslSecure}
                 </div>
@@ -347,7 +347,7 @@ function CheckoutPageClient() {
             {/* Order Summary */}
             <aside>
               <div
-                className="overflow-hidden sticky top-24"
+                className="overflow-hidden lg:sticky lg:top-24"
                 style={{ background: "var(--surface-white)", border: "1px solid var(--border-soft)", borderRadius: "18px", boxShadow: "var(--shadow-card)" }}
               >
                 <div className="p-10" style={{ background: "var(--text-primary)" }}>
@@ -397,7 +397,7 @@ function CheckoutPageClient() {
           onClick={() => setShowNoServiceModal(false)}
         >
           <div
-            className="w-full max-w-md rounded-2xl p-8 text-center animate-in fade-in zoom-in duration-300"
+            className="w-full max-w-md rounded-2xl p-5 text-center animate-in fade-in zoom-in duration-300 sm:p-8"
             style={{ background: "var(--surface-white)", boxShadow: "var(--shadow-card)" }}
             onClick={(e) => e.stopPropagation()}
           >

@@ -44,7 +44,7 @@ export default async function ListingsPage() {
             ))}
           </div>
         ) : (
-          <div className="rounded-[2.5rem] border border-dashed border-slate-300 bg-white p-16 text-center">
+          <div className="rounded-[2.5rem] border border-dashed border-slate-300 bg-white p-8 text-center sm:p-16">
             <p className="text-2xl font-black text-slate-900 mb-4">{t.listings.noApprovedFound}</p>
             <p className="text-slate-500">{t.listings.noApprovedFoundSub}</p>
           </div>

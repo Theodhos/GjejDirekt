@@ -35,9 +35,9 @@ export default function DashboardClient({ listings, activities, profileUser, isA
 
   return (
     <main style={{ background: "var(--surface-page)" }}>
-      <div className="py-12 sm:py-20" style={{ borderBottom: "1px solid var(--border-soft)", background: "var(--surface-cream)" }}>
+      <div className="py-8 sm:py-20" style={{ borderBottom: "1px solid var(--border-soft)", background: "var(--surface-cream)" }}>
         <div className="page-shell">
-          <div className="grid gap-12 lg:grid-cols-2 lg:gap-16 xl:gap-24 lg:items-center">
+          <div className="grid gap-8 lg:grid-cols-2 lg:items-center lg:gap-16 xl:gap-24">
             <div className="flex flex-col items-start text-left">
               <p className="eyebrow mb-4">{en ? "Your area" : "Zona juaj"}</p>
               <h1

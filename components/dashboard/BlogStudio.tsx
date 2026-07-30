@@ -83,7 +83,7 @@ export default function BlogStudio({ recentPosts }: { recentPosts: BlogPreview[]
           <h2 className="mt-2 text-2xl font-black text-slate-950 sm:text-3xl">{t.admin.blogPublishTitle || 'Publish blog content directly from admin'}</h2>
           <p className="mt-3 text-sm text-slate-600">{t.admin.blogPublishDesc || 'Add destination guides, travel stories, and editorial content without leaving the control panel.'}</p>
         </div>
-        <div className="grid gap-3 grid-cols-1 sm:grid-cols-3 lg:min-w-[340px]">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 lg:min-w-[340px]">
           {stats.map((item) => (
             <div key={item.label} className="rounded-[1.4rem] border border-slate-200 bg-slate-50 p-4 text-center">
               <p className="text-xs uppercase tracking-[0.18em] text-slate-500">{item.label}</p>

@@ -23,8 +23,8 @@ export default async function AdminReportsPage() {
 
   return (
     <section className="page-shell py-8 sm:py-10">
-      <div className="surface p-8 sm:p-10 shadow-2xl border-none bg-red-50/20 border-red-100">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-10 pb-10 border-b border-red-100/50">
+      <div className="surface border-none border-red-100 bg-red-50/20 p-5 shadow-2xl sm:p-8 lg:p-10">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-5 mb-6 pb-6 border-b border-red-100/50 sm:mb-10 sm:pb-10">
           <div className="flex items-start gap-4">
             <Link href="/admin" className="w-10 h-10 rounded-full border border-slate-200 flex items-center justify-center hover:bg-slate-50 transition shrink-0">
               <ArrowLeft className="w-5 h-5 text-slate-600" />

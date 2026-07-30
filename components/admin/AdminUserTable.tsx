@@ -16,7 +16,7 @@ export default function AdminUserTable({ initialUsers }: { initialUsers: any[] }
 
   return (
     <div className="surface overflow-hidden border-none shadow-xl rounded-[2rem] bg-white">
-      <div className="p-6 border-b border-slate-100 flex items-center justify-between gap-4">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 p-4 sm:p-6">
         <h2 className="text-lg font-black text-slate-950">Registered Users</h2>
         <div className="relative w-full max-w-xs">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />

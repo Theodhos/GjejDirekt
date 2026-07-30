@@ -47,7 +47,7 @@ export default async function AdminUsersPage() {
 
   return (
     <section className="page-shell py-10">
-      <div className="flex items-center justify-between gap-4 mb-10">
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-4 sm:mb-10">
         <div className="flex items-center gap-4">
             <Link href="/admin" className="w-10 h-10 rounded-full border border-slate-200 flex items-center justify-center hover:bg-slate-50 transition">
                 <ArrowLeft className="w-5 h-5 text-slate-600" />

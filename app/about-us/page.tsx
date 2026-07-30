@@ -173,7 +173,7 @@ export default function AboutUsPage() {
       {/* ── BROWSE BY COLLECTION ── */}
       <section style={{ borderBottom: "1px solid var(--border-soft)" }}>
         <div className="page-shell" style={{ paddingTop: "3.5rem", paddingBottom: "3.5rem" }}>
-          <div className="flex items-end justify-between mb-8">
+          <div className="mb-6 flex flex-wrap items-end justify-between gap-3 sm:mb-8">
             <div>
               <p className="eyebrow mb-2">{language === "en" ? "Discovery Hub" : "Qendra e Zbulimit"}</p>
               <h2

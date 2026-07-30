@@ -249,7 +249,7 @@ function HomePageClient() {
             <Link
               key={city.value}
               href={`/city/${city.value}`}
-              className="travel-card group min-w-[260px] overflow-hidden transition-all duration-250 hover:-translate-y-1" 
+              className="travel-card group w-[260px] min-w-[260px] shrink-0 snap-start overflow-hidden transition-all duration-250 hover:-translate-y-1" 
             >
               <div className="relative aspect-[16/10] overflow-hidden" style={{ borderRadius: "16px 16px 0 0" }}>
                 <SafeImage src={city.image} fallbackSrc="https://images.unsplash.com/photo-1512917774080-9991f1c4c750" alt={city.label} fill className="object-cover transition duration-500 group-hover:scale-105" />
@@ -357,7 +357,7 @@ function HomePageClient() {
                   <Link
                     key={sub.value}
                     href={`/categories/${section.category?.value}/${sub.value}`}
-                    className="travel-card min-w-[300px] max-w-[300px] shrink-0 snap-start group relative overflow-hidden transition hover:-translate-y-1"
+                    className="travel-card group relative aspect-[16/11] w-[280px] min-w-[280px] shrink-0 snap-start overflow-hidden transition hover:-translate-y-1 sm:w-[300px] sm:min-w-[300px]"
                   >
                     <SafeImage
                       src={section.fallbackImage}
@@ -376,7 +376,7 @@ function HomePageClient() {
                 ))
               ) : (
                 categoryListings.map((listing) => (
-                  <div key={listing._id} className="min-w-[280px] max-w-[280px] shrink-0 snap-start">
+                  <div key={listing._id} className="w-[280px] min-w-[280px] shrink-0 snap-start">
                     <ListingCard listing={listing} />
                   </div>
                 ))
@@ -387,7 +387,7 @@ function HomePageClient() {
 
         {/* 9. TRUST / WHY CHOOSE US */}
         <section
-          className="rounded-2xl p-8 sm:p-14 overflow-hidden"
+          className="overflow-hidden rounded-2xl p-5 sm:p-10 lg:p-14"
           style={{ background: "var(--surface-cream)", border: "1px solid var(--border-soft)" }}
         >
             <div className="grid gap-8 lg:grid-cols-3">
@@ -423,7 +423,7 @@ function HomePageClient() {
                     ].map((benefit, i) => (
                         <div
                           key={i}
-                          className="group p-7 rounded-2xl transition-all duration-250"
+                          className="group rounded-2xl p-5 transition-all duration-250 sm:p-7"
                           style={{ background: "var(--surface-white)", border: "1px solid var(--border-soft)", boxShadow: "var(--shadow-card)" }}
                           onMouseEnter={e => { (e.currentTarget as HTMLElement).style.boxShadow = "var(--shadow-hover)"; (e.currentTarget as HTMLElement).style.borderColor = "rgba(34,153,120,0.25)"; }}
                           onMouseLeave={e => { (e.currentTarget as HTMLElement).style.boxShadow = "var(--shadow-card)"; (e.currentTarget as HTMLElement).style.borderColor = "var(--border-soft)"; }}
@@ -461,7 +461,7 @@ function HomePageClient() {
               opts it out of the rail's items-stretch, so cards ended up sized to their
               own text. Letting it stretch keeps every card the same height. */}
           {(blogPosts.length > 0 ? blogPosts : blogFallbacks).map((post: any) => (
-            <div key={post._id?.toString?.() || post.slug} className="min-w-[320px] max-w-[320px] shrink-0 snap-start">
+            <div key={post._id?.toString?.() || post.slug} className="w-[290px] min-w-[290px] shrink-0 snap-start sm:w-[320px] sm:min-w-[320px]">
               <Link
                   href={`/blog/${post.slug}`}
                   className="group flex h-full flex-col transition-all duration-250 hover:-translate-y-1"

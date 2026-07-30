@@ -20,7 +20,7 @@ function LegacyAuthResetRedirect() {
 
 export default function LegacyAuthResetRedirectPage() {
   return (
-    <main className="page-shell min-h-[50vh] flex items-center justify-center py-16">
+    <main className="page-shell min-h-[50vh] flex items-center justify-center py-12 sm:py-16">
       <Suspense fallback={<p className="text-slate-600 font-medium">Redirecting to password reset...</p>}>
         <LegacyAuthResetRedirect />
       </Suspense>

@@ -54,7 +54,7 @@ export default function AdminReports({ reports: initialReports }: { reports: any
 
   if (reports.length === 0) {
     return (
-      <div className="py-20 text-center">
+      <div className="py-12 text-center sm:py-20">
         <CheckCircle className="w-12 h-12 text-emerald-500 mx-auto mb-4 opacity-20" />
         <p className="text-slate-400 font-bold uppercase tracking-widest text-xs">No pending reports</p>
       </div>

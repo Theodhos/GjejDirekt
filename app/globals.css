@@ -69,6 +69,8 @@ body {
   width: 100%;
   font-size: 15px;
   line-height: 1.6;
+  /* Long emails, URLs and slugs must wrap instead of widening the layout. */
+  overflow-wrap: break-word;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -388,11 +390,17 @@ a { transition: color 0.15s ease, opacity 0.15s ease; }
 
   img, video, canvas, svg { max-width: 100%; height: auto; }
 
+  /* Embeds (Google Maps, YouTube) must never push the page sideways. */
+  iframe, embed, object { max-width: 100%; }
+
   .surface, .travel-card, .glass { border-radius: 14px !important; }
 
   .chip { font-size: 0.75rem; padding: 0.35rem 0.75rem; }
 
   table { display: block; overflow-x: auto; white-space: nowrap; }
+
+  /* Code/pre blocks scroll on their own instead of stretching the page. */
+  pre, code { max-width: 100%; overflow-x: auto; }
 
   /* Ensure minimum tap target sizes on mobile */
   input, textarea, select { 

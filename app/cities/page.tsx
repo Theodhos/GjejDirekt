@@ -55,13 +55,13 @@ export default function CitiesPage() {
                   className="object-cover transition duration-700 group-hover:scale-110"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/20 to-transparent" />
-                <div className="absolute top-6 left-6">
+                <div className="absolute left-4 top-4 sm:left-6 sm:top-6">
                   <div className="rounded-full bg-white/20 backdrop-blur-md px-4 py-1.5 text-[10px] font-black uppercase tracking-widest text-white border border-white/30">
                     {city.region}
                   </div>
                 </div>
               </div>
-              <div className="p-8">
+              <div className="p-5 sm:p-8">
                 <div className="flex items-center gap-2 mb-4">
                   <MapPin className="w-5 h-5 text-brand-600" />
                   <h3 className="text-3xl font-black text-slate-950">{city.label}</h3>

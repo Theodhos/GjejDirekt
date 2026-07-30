@@ -36,7 +36,7 @@ function MagicLinkVerify() {
   }, [router, searchParams]);
 
   return (
-    <div className="max-w-lg w-full rounded-[2rem] border border-slate-200 bg-white p-8 text-center shadow-soft">
+    <div className="max-w-lg w-full rounded-[2rem] border border-slate-200 bg-white p-6 text-center shadow-soft sm:p-8">
       <h1 className="text-2xl font-black text-slate-950">Magic Link Sign In</h1>
       <p className="mt-4 text-slate-600 font-medium">{message}</p>
     </div>
@@ -45,9 +45,9 @@ function MagicLinkVerify() {
 
 export default function MagicLinkPage() {
   return (
-    <main className="min-h-[60vh] page-shell flex items-center justify-center py-16">
+    <main className="min-h-[60vh] page-shell flex items-center justify-center py-12 sm:py-16">
       <Suspense fallback={
-        <div className="max-w-lg w-full rounded-[2rem] border border-slate-200 bg-white p-8 text-center shadow-soft">
+        <div className="max-w-lg w-full rounded-[2rem] border border-slate-200 bg-white p-6 text-center shadow-soft sm:p-8">
           <h1 className="text-2xl font-black text-slate-950">Magic Link Sign In</h1>
           <p className="mt-4 text-slate-600 font-medium">Verifying sign-in link...</p>
         </div>

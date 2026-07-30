@@ -74,14 +74,14 @@ export default async function SubcategoryPage({
       </section>
 
       <section className="page-shell -mt-16 relative z-20 pb-10">
-        <div className="surface p-6 sm:p-12 mb-12 flex flex-col md:flex-row items-center justify-between gap-8 border-none shadow-2xl">
+        <div className="surface mb-8 flex flex-col items-center justify-between gap-6 border-none p-5 shadow-2xl sm:p-8 md:mb-12 md:flex-row md:gap-8 lg:p-12">
             <div className="max-w-2xl text-center md:text-left">
                 <h2 className="text-2xl sm:text-3xl font-black text-slate-950 mb-4">Explore {listings.length} premium {subcategoryLabel.toLowerCase()}</h2>
                 <p className="text-slate-600 leading-relaxed">
                     We&apos;ve curated the best {subcategoryLabel.toLowerCase()} across Albania. Each listing is verified for quality and trust to ensure you have the best experience.
                 </p>
             </div>
-            <div className="flex flex-col items-center gap-2 rounded-[2rem] bg-brand-50 border border-brand-100 px-10 py-6 min-w-[180px]">
+            <div className="flex min-w-[150px] flex-1 flex-col items-center gap-2 rounded-[2rem] border border-brand-100 bg-brand-50 px-6 py-5 sm:min-w-[180px] sm:px-10 sm:py-6">
                 <span className="text-5xl font-black text-brand-900 leading-none">{listings.length}</span>
                 <span className="text-xs font-bold text-brand-700 uppercase tracking-widest">Total Results</span>
             </div>
@@ -89,7 +89,7 @@ export default async function SubcategoryPage({
 
         {/* Quick City Filters */}
         <div className="mb-12">
-            <div className="flex items-center justify-between mb-6">
+            <div className="mb-5 flex flex-wrap items-center justify-between gap-3 sm:mb-6">
                 <h3 className="text-lg font-black text-slate-950 flex items-center gap-2">
                     <MapPin className="w-5 h-5 text-brand-600" />
                     Browse by Popular Destinations
@@ -118,7 +118,7 @@ export default async function SubcategoryPage({
         </div>
           
         <div className="space-y-8">
-            <div className="flex items-center justify-between border-b border-slate-200 pb-6">
+            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 pb-5 sm:pb-6">
                 <div className="flex items-center gap-4">
                     <div className="w-12 h-12 rounded-2xl bg-slate-950 flex items-center justify-center text-white">
                         <Sparkles className="w-6 h-6" />

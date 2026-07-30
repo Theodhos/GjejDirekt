@@ -70,7 +70,7 @@ export default function ServicesContent() {
       {!loading && featuredListings.length > 0 && (
           <section className="page-shell mt-8 sm:mt-10">
             <div className="surface p-6 sm:p-8 border-none shadow-2xl">
-                <div className="flex items-center justify-between gap-4 mb-6">
+                <div className="mb-5 flex flex-wrap items-center justify-between gap-3 sm:mb-6">
                     <div>
                         <p className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-600 mb-2">Editor&apos;s Picks</p>
                         <h2 className="text-3xl font-black text-slate-950 tracking-tight">Hand-picked Services</h2>
@@ -93,7 +93,7 @@ export default function ServicesContent() {
                         <Link 
                             key={listing._id} 
                             href={`/listings/${listing.slug}`}
-                            className="min-w-[320px] sm:min-w-[400px] snap-start group"
+                            className="group w-[290px] min-w-[290px] snap-start sm:w-[400px] sm:min-w-[400px]"
                         >
                             <div className="relative aspect-[16/10] rounded-[2.5rem] overflow-hidden mb-4 shadow-xl">
                                 <SafeImage src={listing.images?.[0]} alt={listing.title} fill className="object-cover transition duration-700 group-hover:scale-110" />

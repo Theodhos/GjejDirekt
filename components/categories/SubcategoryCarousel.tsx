@@ -25,7 +25,7 @@ export default function SubcategoryCarousel({ category }: { category: CategoryDe
 
   return (
     <section className="relative overflow-hidden">
-      <div className="mb-8 flex items-center justify-between gap-4">
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-3 sm:mb-8">
         <div>
           <p className="eyebrow">{category.label}</p>
           <h2 className="mt-2 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">{t.common.explore} {categoryLabel}</h2>
@@ -56,7 +56,7 @@ export default function SubcategoryCarousel({ category }: { category: CategoryDe
           <Link
             key={sub.value}
             href={`/categories/${category.value}/${sub.value}`}
-            className="min-w-[280px] flex-shrink-0 overflow-hidden rounded-[2.2rem] border border-slate-200 bg-white shadow-lg transition hover:-translate-y-1 hover:shadow-2xl"
+            className="w-[250px] min-w-[250px] flex-shrink-0 overflow-hidden rounded-[2.2rem] border border-slate-200 bg-white shadow-lg transition hover:-translate-y-1 hover:shadow-2xl sm:w-[280px] sm:min-w-[280px]"
           >
             <div className="relative h-60 overflow-hidden bg-slate-100">
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(15,23,42,0.05),_transparent_45%)]" />

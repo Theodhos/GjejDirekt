@@ -5,7 +5,7 @@ export default function AdminLoginPage() {
   return (
     <section className="page-shell flex min-h-[70vh] items-center py-10">
       <div className="mx-auto grid w-full max-w-5xl gap-8 lg:grid-cols-2">
-        <div className="surface-strong overflow-hidden p-8">
+        <div className="surface-strong overflow-hidden p-6 sm:p-8">
           <p className="text-sm uppercase tracking-[0.2em] text-brand-100">Administrator access</p>
           <h1 className="display-font mt-4 text-4xl font-black leading-tight">
             Sign in to moderate listings, users, and platform activity.
@@ -20,7 +20,7 @@ export default function AdminLoginPage() {
             </p>
           </div>
         </div>
-        <div className="surface p-8">
+        <div className="surface p-5 sm:p-8">
           <h2 className="text-2xl font-bold text-slate-950">Admin Login</h2>
           <p className="mt-2 text-sm text-slate-600">Access moderation tools and platform analytics.</p>
           <div className="mt-6">

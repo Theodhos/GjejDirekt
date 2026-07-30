@@ -99,11 +99,11 @@ export default function PackagesPage() {
   const PackageIcon = pkg?.icon;
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 py-12 px-4 sm:px-6 lg:px-8">
+    <main className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8 sm:mb-10">
-          <h1 className="text-5xl sm:text-6xl font-black text-slate-950 mb-4">{labels.title}</h1>
+          <h1 className="mb-4 text-3xl font-black text-slate-950 sm:text-5xl lg:text-6xl">{labels.title}</h1>
           <p className="text-xl text-slate-600 max-w-2xl mx-auto">{labels.subtitle}</p>
         </div>
 
@@ -149,11 +149,11 @@ export default function PackagesPage() {
                       <Icon className="w-8 h-8" />
                     </div>
 
-                    <h3 className="text-3xl font-black text-slate-950 mb-2">{plan.name}</h3>
+                    <h3 className="mb-2 text-2xl font-black text-slate-950 sm:text-3xl">{plan.name}</h3>
                     <p className="text-slate-600 text-sm mb-6">{plan.description}</p>
 
                     <div className="mb-8">
-                      <span className="text-5xl font-black text-slate-950">${plan.price}</span>
+                      <span className="text-4xl font-black text-slate-950 sm:text-5xl">${plan.price}</span>
                       <span className="text-slate-600 ml-2">{language === "en" ? "one-time" : "njëherë"}</span>
                     </div>
 

@@ -62,7 +62,7 @@ export default function SubcategoryPage() {
 
       <div className="page-shell -mt-20 relative z-20">
         {/* Results Info */}
-        <div className="surface mb-12 p-8 border-none flex flex-col md:flex-row md:items-center justify-between gap-6 shadow-2xl">
+        <div className="surface mb-8 flex flex-col justify-between gap-5 border-none p-5 shadow-2xl sm:p-8 md:mb-12 md:flex-row md:items-center md:gap-6">
             <div className="flex items-center gap-4">
                 <div className="w-12 h-12 rounded-2xl bg-brand-50 flex items-center justify-center text-brand-600">
                     <Sparkles className="w-6 h-6" />
