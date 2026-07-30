@@ -2,23 +2,15 @@
 import { connectDB } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth";
 import { getVillagesForCity, normalizeCityName, seedCities } from "@/lib/cities-catalog";
+import { loadRankedCities } from "@/lib/cities-server";
 import City from "@/models/City";
 import Listing from "@/models/Listing";
 import HiddenCity from "@/models/HiddenCity";
 
 export async function GET() {
   try {
-    await connectDB();
-    const hidden = await HiddenCity.find().lean<any[]>();
-    const hiddenSet = new Set(hidden.map((h) => String(h.value).toLowerCase()));
-    const customCities = await City.find().sort({ label: 1 }).lean<any[]>();
-    const visibleCustom = customCities.filter((c) => !hiddenSet.has(String(c.value).toLowerCase()));
-    const customByValue = new Map(visibleCustom.map((c) => [String(c.value).toLowerCase(), c]));
-
-    const merged = [
-      ...seedCities.filter((c) => !customByValue.has(c.value.toLowerCase()) && !hiddenSet.has(c.value.toLowerCase())),
-      ...visibleCustom
-    ].sort((a, b) => String(a.label).localeCompare(String(b.label)));
+    // Ranked by listing count so "Popular destinations" is ordered everywhere.
+    const merged = await loadRankedCities();
 
     return NextResponse.json({ cities: merged });
   } catch (error) {

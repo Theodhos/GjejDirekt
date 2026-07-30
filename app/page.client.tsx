@@ -9,22 +9,12 @@ import HomeSearchHero from "@/components/home/HomeSearchHero";
 import HorizontalRail from "@/components/home/HorizontalRail";
 import ListingCard from "@/components/ListingCard";
 import { albaniaCities } from "@/lib/albania-cities";
+import { countListingsByCity, rankCitiesByListings } from "@/lib/city-listing-counts";
 import { categories } from "@/lib/constants";
 import { useLanguage } from "@/context/LanguageContext";
 import { translations } from "@/lib/dictionary";
 
-/** "Tiranë", "TIRANE" and the slug "tirane" all collapse to the same key. */
-function cityKey(value: unknown) {
-  return (
-    String(value || "")
-      .toLowerCase()
-      // NFD splits "ë" into "e" + combining mark, which the filter below drops.
-      .normalize("NFD")
-      .replace(/[^a-z0-9]/g, "")
-  );
-}
-
-function HomePageClient() {
+function HomePageClient({ initialCities = [] }: { initialCities?: any[] }) {
   const { language } = useLanguage();
   const t = translations[language];
   const searchParams = useSearchParams();
@@ -34,7 +24,7 @@ function HomePageClient() {
   const [loading, setLoading] = useState(true);
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [showSearchResults, setShowSearchResults] = useState(false);
-  const [dynamicCities, setDynamicCities] = useState<any[]>(albaniaCities);
+  const [dynamicCities, setDynamicCities] = useState<any[]>(initialCities.length ? initialCities : albaniaCities);
 
   // Get search parameters
   const category = searchParams.get('category');
@@ -70,26 +60,10 @@ function HomePageClient() {
   // Popular destinations rank by how many approved listings each city has,
   // with the alphabet only used to break ties.
   const citiesByListingCount = useMemo(() => {
-    const counts = new Map<string, number>();
-    listings.forEach((listing: any) => {
-      const raw = String(listing?.location || "");
-      // "Voskopoje, Korce" counts for both cities; the Set stops double counting.
-      const keys = new Set([cityKey(raw), ...raw.split(/[\s,/|-]+/).map(cityKey)]);
-      keys.forEach((key) => {
-        if (key) counts.set(key, (counts.get(key) || 0) + 1);
-      });
-    });
-
-    return [...dynamicCities]
-      .map((city: any) => {
-        const keys = new Set([cityKey(city.label), cityKey(city.value)]);
-        let listingCount = 0;
-        keys.forEach((key) => {
-          if (key) listingCount += counts.get(key) || 0;
-        });
-        return { ...city, listingCount };
-      })
-      .sort((a, b) => b.listingCount - a.listingCount || String(a.label).localeCompare(String(b.label)));
+    // Before the listings arrive, keep the order the server already computed.
+    if (!listings.length) return dynamicCities;
+    const counts = countListingsByCity(listings.map((listing: any) => listing?.location));
+    return rankCitiesByListings(dynamicCities, counts);
   }, [dynamicCities, listings]);
 
   // Handle search results filtering
