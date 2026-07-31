@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, ArrowRight, Rocket, BadgeCheck, Megaphone, Crown } from "lucide-react";
+import { Check, X, ArrowRight, Rocket, BadgeCheck, Megaphone, Crown } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
@@ -48,8 +48,8 @@ function PacketPageClient() {
     const userName = user?.name || user?.email || "N/A";
     const userEmail = user?.email || "N/A";
     const requestText = language === "en"
-      ? `Hello TripShqip! I want to buy the ${pkg.name} package.\nPrice: €${pkg.price} ${pkg.priceSuffix}.\nDescription: ${pkg.description}.\nFeatures:\n- ${pkg.features.join("\n- ")}\nUser: ${userName}\nEmail: ${userEmail}\nListing ID: ${listingId || "N/A"}`
-      : `Përshëndetje TripShqip! Dua të blej paketën ${pkg.name}.\nÇmimi: €${pkg.price} ${pkg.priceSuffix}.\nPërshkrimi: ${pkg.description}.\nKarakteristikat:\n- ${pkg.features.join("\n- ")}\nPërdoruesi: ${userName}\nEmail: ${userEmail}\nListing ID: ${listingId || "N/A"}`;
+      ? `Hello TripShqip! I want to buy the ${pkg.name} package.\nPrice: €${pkg.price} ${pkg.priceSuffix}.\nDescription: ${pkg.description}.\nFeatures:\n- ${pkg.features.map((f: any) => (f.included ? "✅ " : "❌ ") + f.text).join("\n- ")}\nUser: ${userName}\nEmail: ${userEmail}\nListing ID: ${listingId || "N/A"}`
+      : `Përshëndetje TripShqip! Dua të blej paketën ${pkg.name}.\nÇmimi: €${pkg.price} ${pkg.priceSuffix}.\nPërshkrimi: ${pkg.description}.\nKarakteristikat:\n- ${pkg.features.map((f: any) => (f.included ? "✅ " : "❌ ") + f.text).join("\n- ")}\nPërdoruesi: ${userName}\nEmail: ${userEmail}\nListing ID: ${listingId || "N/A"}`;
 
     const whatsappUrl = `https://wa.me/355695429998?text=${encodeURIComponent(requestText)}`;
     window.open(whatsappUrl, "_blank");
@@ -92,21 +92,26 @@ function PacketPageClient() {
       price: "0",
       priceSuffix: language === "en" ? "free" : "falas",
       subtitle: language === "en"
-        ? "Perfect for businesses that want to be present on TripShqip."
-        : "Perfekte për bizneset që duan të jenë të pranishme në TripShqip.",
+        ? "Basic online presence"
+        : "Prezenca bazë online",
       description: language === "en"
         ? "Start at no cost and become part of Albania's tourism database."
         : "Filloni pa asnjë kosto dhe bëhuni pjesë e databazës turistike të Shqipërisë.",
       features: [
-        language === "en" ? "1 business listing" : "1 listing biznesi",
-        language === "en" ? "Business name and description" : "Emrin dhe përshkrimin e biznesit",
-        language === "en" ? "Photo gallery" : "Galeri fotosh",
-        language === "en" ? "Phone number" : "Numër telefoni",
-        "WhatsApp",
-        language === "en" ? "Website & social media" : "Website & rrjete sociale",
-        language === "en" ? "Location and Directions" : "Vendndodhje dhe Directions",
-        "Tags",
-        language === "en" ? "Appear in search results" : "Shfaqje në rezultatet e kërkimit",
+        { text: language === "en" ? "Free listing" : "Listim falas", included: true },
+        { text: language === "en" ? "1 cover photo" : "1 foto cover", included: true },
+        { text: language === "en" ? "Description" : "Përshkrimi", included: true },
+        { text: language === "en" ? "Phone number" : "Telefon", included: true },
+        { text: "WhatsApp", included: true },
+        { text: "Google Maps", included: true },
+        { text: language === "en" ? "Working hours (if applicable)" : "Orari (kur aplikohet)", included: true },
+        { text: language === "en" ? "Basic features" : "Karakteristikat bazë", included: true },
+        { text: language === "en" ? "Tags" : "Tag-et", included: true },
+        { text: "Website", included: false },
+        { text: language === "en" ? "Social media" : "Rrjetet sociale", included: false },
+        { text: "Book Now", included: false },
+        { text: language === "en" ? "Verified Badge" : "Badge Verified", included: false },
+        { text: "Ads / Ads Pro", included: false },
       ],
       cta: language === "en" ? "Start Free" : "Fillo Falas",
     },
@@ -117,17 +122,23 @@ function PacketPageClient() {
       price: "50",
       priceSuffix: language === "en" ? "one-time" : "një herë",
       subtitle: language === "en"
-        ? "Increase your business credibility."
-        : "Rrit besueshmërinë e biznesit tuaj.",
+        ? "Only Verified businesses can use Ads and Ads Pro."
+        : "Vetëm bizneset Verified mund të përdorin Ads dhe Ads Pro.",
       description: language === "en"
-        ? "The Verified badge shows tourists that the business has a verified profile on TripShqip and builds more trust."
-        : "Badge Verified u tregon turistëve se biznesi ka një profil të verifikuar në TripShqip dhe krijon më shumë besim.",
+        ? "The Verified badge shows tourists that the business has a verified profile."
+        : "Badge Verified u tregon turistëve se biznesi ka një profil të verifikuar.",
       features: [
-        language === "en" ? "Verified badge" : "Badge Verified",
-        language === "en" ? "More credibility" : "Më shumë besueshmëri",
-        language === "en" ? "Easier identification in listings" : "Identifikim më i lehtë në listime",
-        language === "en" ? "Access to Ads and Ads Pro" : "Akses për Ads dhe Ads Pro",
-        language === "en" ? "Priority in verifying profile changes" : "Prioritet në verifikimin e ndryshimeve të profilit",
+        { text: language === "en" ? "Everything in Free +" : "Gjithçka nga Falas +", included: true },
+        { text: language === "en" ? "Verified Badge" : "Badge Verified", included: true },
+        { text: language === "en" ? "Up to 10 photos" : "Deri në 10 foto", included: true },
+        { text: "Website", included: true },
+        { text: "Facebook", included: true },
+        { text: "Instagram", included: true },
+        { text: "TikTok", included: true },
+        { text: "YouTube", included: true },
+        { text: "Book Now", included: true },
+        { text: language === "en" ? "Eligible for Ads" : "E drejtë për Ads", included: true },
+        { text: language === "en" ? "Eligible for Ads Pro" : "E drejtë për Ads Pro", included: true },
       ],
       cta: language === "en" ? "Become Verified" : "Bëhu Verified",
     },
@@ -135,8 +146,8 @@ function PacketPageClient() {
       id: "ads",
       name: "Ads",
       icon: Megaphone,
-      price: "10",
-      priceSuffix: language === "en" ? "/ month" : "/ muaj",
+      price: "50",
+      priceSuffix: language === "en" ? "/ year" : "/ vit",
       subtitle: language === "en"
         ? "Increase your business visibility."
         : "Rrit shikueshmërinë e biznesit tuaj.",
@@ -144,11 +155,11 @@ function PacketPageClient() {
         ? "For Verified businesses that want to appear more often and get more visits."
         : "Për bizneset Verified që duan të shfaqen më shpesh dhe të marrin më shumë vizita.",
       features: [
-        language === "en" ? "Ad badge" : "Badge Ad",
-        language === "en" ? "More frequent display in categories" : "Shfaqje më e shpeshtë në kategori",
-        language === "en" ? "Higher priority in search results" : "Prioritet më i lartë në rezultatet e kërkimit",
-        language === "en" ? "More exposure to visitors" : "Më shumë ekspozim te vizitorët",
-        language === "en" ? "More clicks and contacts" : "Më shumë klikime dhe kontakte",
+        { text: language === "en" ? "Everything in Verified +" : "Gjithçka nga Verified +", included: true },
+        { text: language === "en" ? "Ad Badge" : "Badge Ad", included: true },
+        { text: language === "en" ? "More visibility in category" : "Më shumë shikueshmëri në kategori", included: true },
+        { text: language === "en" ? "Priority in search results" : "Prioritet në rezultatet e kërkimit", included: true },
+        { text: language === "en" ? "More exposure for a year" : "Më shumë ekspozim për një vit", included: true },
       ],
       note: language === "en" ? "Only for Verified businesses." : "Vetëm për bizneset Verified.",
       cta: language === "en" ? "Activate Ads" : "Aktivizo Ads",
@@ -157,7 +168,7 @@ function PacketPageClient() {
       id: "ads-pro",
       name: "Ads Pro",
       icon: Crown,
-      price: "15",
+      price: "30",
       priceSuffix: language === "en" ? "/ month" : "/ muaj",
       popular: true,
       subtitle: language === "en"
@@ -167,11 +178,11 @@ function PacketPageClient() {
         ? "For Verified businesses that want to always be visible."
         : "Për bizneset Verified që duan të jenë gjithmonë të dukshme.",
       features: [
-        language === "en" ? "Ad badge" : "Badge Ad",
-        language === "en" ? "Highlighted listing" : "Listing i Highlighted",
-        language === "en" ? "Always displayed at the top of the category" : "Shfaqje gjithmonë në krye të kategorisë",
-        language === "en" ? "Maximum priority in searches" : "Prioritet maksimal në kërkime",
-        language === "en" ? "Premium exposure on the platform" : "Ekspozim premium në platformë",
+        { text: language === "en" ? "Everything in Ads +" : "Gjithçka nga Ads +", included: true },
+        { text: language === "en" ? "Highlighted (underlined background)" : "Highlighted (sfond i nenvizuar)", included: true },
+        { text: language === "en" ? "Always on top of the category" : "Gjithmonë në krye të kategorisë", included: true },
+        { text: language === "en" ? "Maximum priority in search" : "Prioritet maksimal në kërkim", included: true },
+        { text: language === "en" ? "Highest exposure on the platform" : "Ekspozimi më i lartë në platformë", included: true },
       ],
       note: language === "en" ? "Only for Verified businesses." : "Vetëm për bizneset Verified.",
       cta: language === "en" ? "Activate Ads Pro" : "Aktivizo Ads Pro",
@@ -209,7 +220,7 @@ function PacketPageClient() {
 
       {/* ── PRICING CARDS ── */}
       <section className="page-shell py-14">
-        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-2 auto-rows-fr max-w-7xl mx-auto">
+        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-2 max-w-7xl mx-auto">
           {packages.map((pkg) => (
             <div
               key={pkg.id}
@@ -273,16 +284,23 @@ function PacketPageClient() {
 
               {/* Features */}
               <ul className="space-y-3 mb-8 flex-grow">
-                {pkg.features.map((feature, i) => (
+                {pkg.features.map((feature: any, i: number) => (
                   <li key={i} className="flex items-start gap-2.5">
                     <div
                       className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full mt-0.5"
-                      style={{ background: "var(--brand-light)" }}
+                      style={{ background: feature.included ? "var(--brand-light)" : "var(--surface-cream)" }}
                     >
-                      <Check className="w-3 h-3" style={{ color: "var(--brand-accent)" }} />
+                      {feature.included ? (
+                        <Check className="w-3 h-3" style={{ color: "var(--brand-accent)" }} />
+                      ) : (
+                        <X className="w-3 h-3" style={{ color: "var(--text-tertiary)" }} />
+                      )}
                     </div>
-                    <span className="text-[14px] leading-snug" style={{ color: "var(--text-secondary)" }}>
-                      {feature}
+                    <span
+                      className="text-[14px] leading-snug"
+                      style={{ color: feature.included ? "var(--text-secondary)" : "var(--text-tertiary)", textDecoration: feature.included ? "none" : "line-through" }}
+                    >
+                      {feature.text}
                     </span>
                   </li>
                 ))}
