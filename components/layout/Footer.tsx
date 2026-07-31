@@ -47,13 +47,13 @@ export default function Footer() {
           </div>
           <div className="flex flex-wrap gap-3 shrink-0">
             <Link
-              href="/services"
+              href="/create-listing"
               className="btn-primary"
             >
               {t.footer.exploreServices}
             </Link>
             <Link
-              href="/create-listing"
+              href="/faq"
               className="inline-flex items-center justify-center rounded-full border px-5 py-2.5 text-sm font-semibold text-white transition-all hover:bg-white/10 active:scale-95"
               style={{ borderColor: "rgba(255,255,255,0.2)" }}
             >
