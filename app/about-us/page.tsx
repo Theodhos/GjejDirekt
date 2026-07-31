@@ -51,7 +51,7 @@ export default function AboutUsPage() {
             pointerEvents: "none"
           }}
         />
-        <div className="page-shell" style={{ position: "relative", zIndex: 10, paddingTop: "3.5rem", paddingBottom: "3.5rem" }}>
+        <div className="page-shell" style={{ position: "relative", zIndex: 10, paddingTop: "2rem", paddingBottom: "2rem" }}>
           {/* Breadcrumb */}
           <div className="flex items-center gap-2 mb-8" style={{ fontSize: "12px", fontWeight: 500, color: "var(--text-tertiary)" }}>
             <Link href="/" style={{ color: "var(--text-tertiary)" }} className="hover:text-brand-600 transition-colors">

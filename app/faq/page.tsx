@@ -127,7 +127,7 @@ export default function FAQPage() {
         <div className="pointer-events-none absolute -top-20 -right-20 w-[400px] h-[400px] rounded-full" style={{ background: "rgba(31,138,112,0.06)", filter: "blur(100px)" }} />
         <div className="pointer-events-none absolute -bottom-12 -left-12 w-[300px] h-[300px] rounded-full" style={{ background: "rgba(31,138,112,0.05)", filter: "blur(80px)" }} />
 
-        <div className="page-shell relative z-10 pt-14 pb-14 text-center max-w-2xl mx-auto">
+        <div className="page-shell relative z-10 py-8 text-center max-w-2xl mx-auto">
           {/* Breadcrumb */}
           <div className="flex items-center justify-center gap-2 mb-6 text-xs font-medium" style={{ color: "var(--text-tertiary)" }}>
             <Link href="/" className="hover:text-brand-600 transition-colors">

@@ -51,7 +51,7 @@ export default function BlogPage() {
         <div className="pointer-events-none absolute -top-24 -right-24 w-[480px] h-[480px] rounded-full" style={{ background: "rgba(34,153,120,0.05)", filter: "blur(100px)" }} />
         <div className="pointer-events-none absolute -bottom-16 -left-16 w-[360px] h-[360px] rounded-full" style={{ background: "rgba(34,153,120,0.04)", filter: "blur(80px)" }} />
 
-        <div className="page-shell relative z-10 pt-20 pb-20 text-center">
+        <div className="page-shell relative z-10 py-8 text-center">
           <p className="eyebrow mb-4">{t.blog.journalLabel}</p>
           <h1
             className="font-bold tracking-tight mb-5"
@@ -69,7 +69,7 @@ export default function BlogPage() {
       </section>
 
       {/* ── ARTICLES GRID ── */}
-      <section className="page-shell py-8 sm:py-12">
+      <section className="page-shell py-10 sm:py-14">
         {/* Section header */}
         <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-6">
           <div>
