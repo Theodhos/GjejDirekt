@@ -147,18 +147,31 @@ function HomePageClient({ initialCities = [] }: { initialCities?: any[] }) {
 
   const normalizeValue = (value: unknown) => String(value || "").toLowerCase();
 
-  const getCategoryListings = (category: any) => {
+  const getCategoryListings = (category: any, subcategoryValue?: string) => {
     if (!category) return [];
     const normalizedCategory = normalizeValue(category.value);
     const normalizedLabel = normalizeValue(category.label);
 
     return listings.filter((listing: any) => {
       const listingCategory = normalizeValue(listing.category);
-      return (
+      const isCategoryMatch = (
         listingCategory === normalizedCategory ||
         listingCategory === normalizedLabel ||
         category.aliases.some((alias: string) => alias === listingCategory)
       );
+      if (!isCategoryMatch) return false;
+      if (subcategoryValue) {
+        const normalizedSub = normalizeValue(subcategoryValue);
+        const listingSub = normalizeValue(listing.subcategory);
+        const subDef = category.subcategories?.find((s: any) => s.value === normalizedSub);
+        const subAliases = subDef?.aliases || [];
+        return (
+          listingSub === normalizedSub ||
+          listingSub === normalizeValue(subDef?.label) ||
+          subAliases.some((alias: string) => normalizeValue(alias) === listingSub)
+        );
+      }
+      return true;
     }).slice(0, 12);
   };
 
