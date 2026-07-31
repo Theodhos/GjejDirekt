@@ -348,7 +348,6 @@ function HomePageClient({ initialCities = [] }: { initialCities?: any[] }) {
             <HorizontalRail
               key={section.id}
               id={section.id}
-              eyebrow={section.eyebrow}
               title={section.title}
               description={section.description}
             >
