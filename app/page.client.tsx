@@ -255,9 +255,10 @@ function HomePageClient({ initialCities = [] }: { initialCities?: any[] }) {
           {
             id: "akomodim",
             category: accommodationCategory,
-            eyebrow: language === 'en' ? 'Accommodation' : 'Akomodimi',
-            title: t.home.whereToSleepTitle,
-            description: t.home.whereToSleepDesc,
+            title: language === 'en' ? 'Where to Sleep' : 'Akomodim',
+            description: language === 'en'
+              ? 'Hotels, guesthouses, villas and apartments for every travel style in Albania.'
+              : 'Hotele, bujtina, vila dhe apartamente për çdo stil udhëtimi në Shqipëri.',
             accent: 'bg-blue-50 text-blue-700',
             fallbackImage: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80',
             buttonLabel: t.home.addAccommodation
@@ -265,19 +266,43 @@ function HomePageClient({ initialCities = [] }: { initialCities?: any[] }) {
           {
             id: "restorante",
             category: foodCategory,
-            eyebrow: language === 'en' ? 'Food & Drink' : 'Ushqimi dhe pija',
-            title: t.home.whereToEatTitle,
-            description: t.home.whereToEatDesc,
+            title: language === 'en' ? 'Where to Eat' : 'Restorante',
+            description: language === 'en'
+              ? 'Enjoy traditional and modern cuisine in the best restaurants in Albania.'
+              : 'Shijoni kuzhinën tradicionale dhe moderne në restorantet më të mira të Shqipërisë.',
             accent: 'bg-orange-50 text-orange-700',
             fallbackImage: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=600&q=80',
             buttonLabel: t.home.addPlaceToEat
           },
           {
+            id: "atraksione",
+            category: attractionCategory,
+            title: language === 'en' ? 'Attractions' : 'Atraksione',
+            description: language === 'en'
+              ? 'Discover nature, history and culture through the most unique attractions.'
+              : 'Zbuloni natyrën, historinë dhe kulturën përmes atraksioneve më të veçanta.',
+            accent: 'bg-violet-50 text-violet-700',
+            fallbackImage: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=600&q=80',
+            buttonLabel: t.home.addAttraction
+          },
+          {
+            id: "aktivitete",
+            category: activityCategory,
+            title: language === 'en' ? 'Activities & Tours' : 'Aktivitete & Ture',
+            description: language === 'en'
+              ? 'Experience adventures, tours and unique experiences with local operators.'
+              : 'Përjetoni aventura, ture dhe eksperienca unike me operatorë lokalë.',
+            accent: 'bg-amber-50 text-amber-700',
+            fallbackImage: 'https://images.unsplash.com/photo-1551632811-561732d1e306?auto=format&fit=crop&w=600&q=80',
+            buttonLabel: t.home.addService
+          },
+          {
             id: "evente",
             category: eventCategory,
-            eyebrow: language === 'en' ? 'Events' : 'Eventet',
-            title: t.home.eventsTitle,
-            description: t.home.eventsDesc,
+            title: language === 'en' ? 'Events' : 'Evente',
+            description: language === 'en'
+              ? 'Do not miss the festivals, concerts and activities happening in Albania.'
+              : 'Mos humbisni festivalet, koncertet dhe aktivitetet që zhvillohen në Shqipëri.',
             accent: 'bg-brand-50 text-brand-700',
             fallbackImage: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=600&q=80',
             buttonLabel: t.home.addEvent
@@ -285,60 +310,35 @@ function HomePageClient({ initialCities = [] }: { initialCities?: any[] }) {
           {
             id: "transport",
             category: transportCategory,
-            eyebrow: language === 'en' ? 'Transportation' : 'Transporti',
-            title: t.home.transportTitle,
-            description: t.home.transportDesc,
+            title: language === 'en' ? 'Transportation' : 'Transport',
+            description: language === 'en'
+              ? 'Move easily with rental cars, taxis, transfers and transport services.'
+              : 'Lëvizni lehtësisht me makina me qira, taksi, transferta dhe shërbime transporti.',
             accent: 'bg-brand-50 text-brand-700',
             fallbackImage: 'https://images.unsplash.com/photo-1504215680853-026ed2a45def?auto=format&fit=crop&w=600&q=80',
             buttonLabel: t.home.addTransport
           },
           {
-            id: "sherbime-turistike",
-            category: serviceCategory,
-            eyebrow: language === 'en' ? 'Tourism Services' : 'Shërbime Turistike',
-            title: language === 'en' ? 'Local Tourism Services' : 'Shërbimet Turistike Lokale',
-            description: language === 'en'
-              ? 'Browse local tourism services in a design that matches the rest of the homepage.'
-              : 'Shfletoni shërbimet turistike lokale me stil të njëjtë si pjesët e tjera.',
-            accent: 'bg-emerald-50 text-emerald-700',
-            fallbackImage: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=600&q=80',
-            buttonLabel: t.home.addService
-          },
-          {
             id: "produkte-lokale",
             category: localCategory,
-            eyebrow: language === 'en' ? 'Local Products' : 'Produkte Lokale',
-            title: language === 'en' ? 'Shop Local Products' : 'Produkte Lokale',
+            title: language === 'en' ? 'Local Products' : 'Produkte Lokale',
             description: language === 'en'
-              ? 'Discover artisan products, souvenirs and local specialties.'
-              : 'Zbuloni produkte artizanale, suvenire dhe specialitete lokale.',
+              ? 'Discover Albanian flavors and traditions through authentic local products.'
+              : 'Zbuloni shijet dhe traditat shqiptare përmes produkteve autentike lokale.',
             accent: 'bg-cyan-50 text-cyan-700',
             fallbackImage: 'https://images.unsplash.com/photo-1498654896293-37aacf113fd9?auto=format&fit=crop&w=600&q=80',
             buttonLabel: t.home.addProduct
           },
           {
-            id: "aktivitete",
-            category: activityCategory,
-            eyebrow: language === 'en' ? 'Activities & Tours' : 'Aktivitete & Ture',
-            title: language === 'en' ? 'Activities & Tours' : 'Aktivitete dhe Ture',
+            id: "sherbime-turistike",
+            category: serviceCategory,
+            title: language === 'en' ? 'Tourism Services' : 'Shërbime Turistike',
             description: language === 'en'
-              ? 'Hiking, rafting, boat tours and guided experiences across Albania.'
-              : 'Hiking, rafting, tura me varkë dhe eksperienca me udhërrëfyes në të gjithë Shqipërinë.',
-            accent: 'bg-amber-50 text-amber-700',
-            fallbackImage: 'https://images.unsplash.com/photo-1551632811-561732d1e306?auto=format&fit=crop&w=600&q=80',
+              ? 'Agencies, guides and services that make your trip easier and organized.'
+              : 'Agjenci, guida dhe shërbime që e bëjnë udhëtimin tuaj më të lehtë dhe të organizuar.',
+            accent: 'bg-emerald-50 text-emerald-700',
+            fallbackImage: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=600&q=80',
             buttonLabel: t.home.addService
-          },
-          {
-            id: "atraksione",
-            category: attractionCategory,
-            eyebrow: language === 'en' ? 'Attractions' : 'Atraksione',
-            title: language === 'en' ? 'Explore Attractions' : 'Atraksione për të Eksploruar',
-            description: language === 'en'
-              ? 'Find top places, museums, and outdoor activities.'
-              : 'Gjeni vendet kryesore, muzeun dhe aktivitete jashtë.',
-            accent: 'bg-violet-50 text-violet-700',
-            fallbackImage: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=600&q=80',
-            buttonLabel: t.home.addAttraction
           }
         ].map((section) => {
           const categoryListings = getCategoryListings(section.category);
