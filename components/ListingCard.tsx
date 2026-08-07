@@ -6,6 +6,7 @@ import Card from "@/components/ui/Card";
 import SafeImage from "@/components/ui/SafeImage";
 import { FALLBACK_IMAGE } from "@/lib/images";
 import { getCategoryLabel, getSubcategoryLabel } from "@/lib/constants";
+import { PRICE_CURRENCY, fromPriceShort, priceUnitLabel, startingPrice } from "@/lib/pricing";
 import { translations } from "@/lib/dictionary";
 import { useLanguage } from "@/context/LanguageContext";
 import { useState, useRef, useLayoutEffect } from "react";
@@ -158,17 +159,9 @@ export default function ListingCard({ listing }: { listing: any }) {
   // Ads only affects ranking. The visual border is reserved for Ads Pro.
   const isAdsProPackage = listing.package === "features";
 
-  const priceSuffix =
-    listing.category === "akomodim"
-      ? `/${t.listing.nightSuffix}`
-      : listing.category === "restorante"
-      ? `/${t.listing.personSuffix}`
-      : "";
-
-  const currencySymbol =
-    listing.currency === "ALL" || listing.currency === "LEK"
-      ? "L"
-      : listing.currency || "€";
+  // Prices are always announced as a starting price in euro, with the unit of the category.
+  const priceValue = startingPrice(listing);
+  const priceSuffix = `/${priceUnitLabel(listing.category, language)}`;
 
   return (
     <Card 
@@ -224,41 +217,22 @@ export default function ListingCard({ listing }: { listing: any }) {
             className="rounded-tl-xl px-3.5 py-1.5"
             style={{ background: "rgba(15,20,25,0.85)", backdropFilter: "blur(8px)" }}
           >
-            {(() => {
-              if (listing.priceFrom && listing.price) {
-                if (listing.priceFrom === listing.price) {
-                  return (
-                    <div className="flex items-baseline gap-0.5">
-                      <span className="text-lg font-bold text-white leading-none">{currencySymbol}{listing.priceFrom}</span>
-                      {priceSuffix && <span className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.55)" }}>{priceSuffix}</span>}
-                    </div>
-                  );
-                }
-                return (
-                  <div className="flex items-baseline gap-0.5">
-                    <span className="text-base font-bold text-white leading-none">{currencySymbol}{listing.priceFrom} – {currencySymbol}{listing.price}</span>
-                    {priceSuffix && <span className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.55)" }}>{priceSuffix}</span>}
-                  </div>
-                );
-              }
-              if (listing.priceFrom) {
-                return (
-                  <div className="flex items-baseline gap-0.5">
-                    <span className="text-lg font-bold text-white leading-none">{currencySymbol}{listing.priceFrom}</span>
-                    {priceSuffix && <span className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.55)" }}>{priceSuffix}</span>}
-                  </div>
-                );
-              }
-              if (listing.price) {
-                return (
-                  <div className="flex items-baseline gap-0.5">
-                    <span className="text-lg font-bold text-white leading-none">{currencySymbol}{listing.price}</span>
-                    {priceSuffix && <span className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.55)" }}>{priceSuffix}</span>}
-                  </div>
-                );
-              }
-              return <span className="text-xs font-semibold text-white">{t.listing.request}</span>;
-            })()}
+            {priceValue !== null ? (
+              <div className="flex items-baseline gap-1">
+                <span className="text-[11px] font-semibold" style={{ color: "rgba(255,255,255,0.7)" }}>
+                  {fromPriceShort(language)}
+                </span>
+                <span className="text-lg font-bold text-white leading-none">
+                  {PRICE_CURRENCY}
+                  {priceValue}
+                </span>
+                <span className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.55)" }}>
+                  {priceSuffix}
+                </span>
+              </div>
+            ) : (
+              <span className="text-xs font-semibold text-white">{t.listing.request}</span>
+            )}
           </div>
         </div>
 

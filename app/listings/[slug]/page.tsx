@@ -19,7 +19,6 @@ import {
   Map as MapIcon,
   Music,
   Navigation,
-  Euro,
   Tag,
   Clock,
   Wifi,
@@ -34,8 +33,10 @@ import { getAuthUser } from "@/lib/auth";
 import Listing from "@/models/Listing";
 import ListingCard from "@/components/ListingCard";
 import { getCategoryLabel, getSubcategoryLabel } from "@/lib/constants";
+import { startingPrice } from "@/lib/pricing";
 import ReportListing from "@/components/ReportListing";
 import ListingGallery from "@/components/listings/ListingGallery";
+import ListingPriceTile from "@/components/listings/ListingPriceTile";
 import ListingStickyBottom from "@/components/listings/ListingStickyBottom";
 import ListingContactButtons from "@/components/listings/ListingContactButtons";
 
@@ -97,14 +98,8 @@ export default async function ListingDetailPage({ params }: { params: { slug: st
     ? `https://wa.me/${phoneDigits}?text=${encodeURIComponent(`Hello, I'm interested in ${listing.title} from Tourism Platform.`)}`
     : "";
 
-  const currencySymbol = listing.currency === "ALL" || listing.currency === "LEK" ? "L" : (listing.currency || "€");
-  const priceDisplay = (() => {
-    if (listing.priceFrom && listing.price && listing.priceFrom !== listing.price)
-      return `${currencySymbol}${listing.priceFrom} – ${currencySymbol}${listing.price}`;
-    if (listing.priceFrom) return `${currencySymbol}${listing.priceFrom}`;
-    if (listing.price) return `${currencySymbol}${listing.price}`;
-    return null;
-  })();
+  // Listings advertise a starting price in euro; the unit comes from the category.
+  const priceValue = startingPrice(listing);
 
   const tags = [...(listing.tags || []), ...(listing.amenities || [])].filter((v, i, self) => self.indexOf(v) === i);
 
@@ -203,17 +198,8 @@ export default async function ListingDetailPage({ params }: { params: { slug: st
                     </div>
                   )}
 
-                  {priceDisplay && (
-                    <div
-                      className="flex items-start gap-3 rounded-xl p-4"
-                      style={{ background: "var(--surface-cream)", border: "1px solid var(--border-soft)" }}
-                    >
-                      <Euro className="w-4 h-4 mt-0.5 shrink-0" style={{ color: "var(--brand-accent)" }} />
-                      <div>
-                        <p className="eyebrow mb-0.5">Price</p>
-                        <p className="text-sm font-semibold" style={{ color: "var(--text-primary)" }}>{priceDisplay}</p>
-                      </div>
-                    </div>
+                  {priceValue !== null && (
+                    <ListingPriceTile price={priceValue} category={listing.category} />
                   )}
 
                   {listing.website && (
@@ -554,9 +540,6 @@ export default async function ListingDetailPage({ params }: { params: { slug: st
       <ListingStickyBottom
         phone={phone}
         whatsappHref={whatsappHref}
-        priceFrom={listing.priceFrom}
-        currency={listing.currency}
-        categoryLabel={categoryLabel}
         listingId={listing._id.toString()}
       />
     </main>

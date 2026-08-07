@@ -39,6 +39,7 @@ import Input from "@/components/ui/Input";
 import Textarea from "@/components/ui/Textarea";
 import Select from "@/components/ui/Select";
 import { categories, getCategoryFormValue, getSubcategoryFormValue } from "@/lib/constants";
+import { PRICE_CURRENCY, priceUnitSuffix, startingPrice } from "@/lib/pricing";
 import { albaniaCities } from "@/lib/albania-cities";
 import { useLanguage } from "@/context/LanguageContext";
 
@@ -297,12 +298,8 @@ const COPY = {
     mapsPlaceholder: "https://maps.app.goo.gl/...",
     mapsHint: "Hapni Google Maps, gjeni vendin tuaj, shtypni «Share» → «Copy link» dhe ngjiteni këtu.",
     mapsOpen: "Hap Google Maps",
-    price: "Çmimi",
-    priceFrom: "Çmimi minimal",
-    priceTo: "Çmimi maksimal",
-    perPerson: "për person",
-    currency: "Valuta",
-    priceHint: "Opsionale — por listimet me çmim marrin dukshëm më shumë klikime.",
+    price: "Nga çmimi",
+    priceHint: "Opsionale — por listimet me çmim marrin dukshëm më shumë klikime. Çmimet janë gjithmonë në euro.",
     priceRange: "Interval çmimesh",
     priceRangeHint: "€ ekonomik · €€ mesatar · €€€ premium",
     cuisines: "Kuzhinat",
@@ -319,7 +316,7 @@ const COPY = {
     season: "Sezoni",
     selectSeason: "Zgjidhni sezonin",
     guideLanguages: "Gjuha e guidës",
-    childPrice: "Çmimi për fëmijë (opsional)",
+    childPrice: "Çmimi për fëmijë",
     whatToBring: "Çfarë duhet të marrë me vete?",
     whatToBringHint: "Zgjidhni çfarë duhet të sjellë vizitori.",
     email: "Email (opsionale)",
@@ -334,8 +331,9 @@ const COPY = {
     tips: "Këshilla / Informacion shtesë (opsionale)",
     tipsPlaceholder: "p.sh. Koha më e mirë për vizitë, biletat, parkimi...",
     features: "Karakteristikat",
-    featuresHint: "Zgjidhni ato që ju përshtaten ose shtoni tuajat me Enter.",
-    customTag: "Shto karakteristikë... (shtyp Enter)",
+    featuresHint: "Zgjidhni ato që ju përshtaten ose shkruani tuajat dhe shtypni +.",
+    customTag: "Shto karakteristikë...",
+    addTag: "Shto",
     verifiedTitle: "Opsione për Verified",
     verifiedSubtitle: "Këto fusha aktivizohen automatikisht kur listimi juaj verifikohet nga administratori.",
     verifiedActiveTitle: "Listimi juaj është Verified",
@@ -373,7 +371,6 @@ const COPY = {
     coverRequired: "Fotoja kryesore është e detyrueshme.",
     invalidUrl: "Linku duhet të fillojë me http:// ose https://",
     invalidEmail: "Email-i nuk është i vlefshëm.",
-    invalidPriceRange: "Çmimi maksimal duhet të jetë më i madh se minimali.",
     fileTooLarge: "Fotoja është shumë e madhe (maksimumi 5MB).",
     galleryFull: "Mund të ngarkoni maksimumi 10 foto në galeri.",
     fixErrors: "Ju lutem plotësoni fushat e detyrueshme.",
@@ -427,12 +424,8 @@ const COPY = {
     mapsPlaceholder: "https://maps.app.goo.gl/...",
     mapsHint: "Open Google Maps, find your place, tap “Share” → “Copy link” and paste it here.",
     mapsOpen: "Open Google Maps",
-    price: "Price",
-    priceFrom: "Minimum price",
-    priceTo: "Maximum price",
-    perPerson: "per person",
-    currency: "Currency",
-    priceHint: "Optional — but listings with a price get noticeably more clicks.",
+    price: "From price",
+    priceHint: "Optional — but listings with a price get noticeably more clicks. Prices are always in euro.",
     priceRange: "Price range",
     priceRangeHint: "€ budget · €€ mid-range · €€€ premium",
     cuisines: "Cuisines",
@@ -449,7 +442,7 @@ const COPY = {
     season: "Season",
     selectSeason: "Select a season",
     guideLanguages: "Guide language",
-    childPrice: "Child price (optional)",
+    childPrice: "Child price",
     whatToBring: "What should guests bring?",
     whatToBringHint: "Pick what the visitor needs to bring along.",
     email: "Email (optional)",
@@ -464,8 +457,9 @@ const COPY = {
     tips: "Tips / Additional information (optional)",
     tipsPlaceholder: "e.g. Best time to visit, tickets, parking...",
     features: "Features",
-    featuresHint: "Pick the ones that apply or add your own with Enter.",
-    customTag: "Add a feature... (press Enter)",
+    featuresHint: "Pick the ones that apply or type your own and press +.",
+    customTag: "Add a feature...",
+    addTag: "Add",
     verifiedTitle: "Verified options",
     verifiedSubtitle: "These fields unlock automatically once an admin verifies your listing.",
     verifiedActiveTitle: "Your listing is Verified",
@@ -503,7 +497,6 @@ const COPY = {
     coverRequired: "The cover photo is required.",
     invalidUrl: "The link must start with http:// or https://",
     invalidEmail: "This email address is not valid.",
-    invalidPriceRange: "The maximum price must be higher than the minimum.",
     fileTooLarge: "The photo is too large (max 5MB).",
     galleryFull: "You can upload a maximum of 10 gallery photos.",
     fixErrors: "Please complete the required fields.",
@@ -529,8 +522,6 @@ const emptyForm = {
   address: "",
   googleMapsLink: "",
   priceFrom: "",
-  price: "",
-  currency: "€",
   priceRange: "",
   duration: "",
   difficulty: "",
@@ -571,9 +562,8 @@ function initialForm(listing?: WizardListing): FormState {
     contactEmail: listing.contactInfo?.email || "",
     address: listing.address || "",
     googleMapsLink: listing.googleMapsLink || "",
-    priceFrom: listing.priceFrom ? String(listing.priceFrom) : "",
-    price: listing.price ? String(listing.price) : "",
-    currency: listing.currency || "€",
+    // Older listings could hold a min/max pair — the wizard now keeps only the starting price.
+    priceFrom: String(startingPrice(listing) ?? ""),
     priceRange: listing.priceRange || "",
     duration: listing.duration || "",
     difficulty: listing.difficulty || "",
@@ -762,7 +752,8 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
     }
   }, [selectedCategory, selectedSubcategory, tagsTouched]);
 
-  const isPerPersonCategory = selectedCategory === "akomodim" || selectedCategory === "restorante";
+  // "€/person", "€/natë" or "€/kg" — depends on the category being published.
+  const priceUnit = priceUnitSuffix(selectedCategory, language);
   const showCheckTimes = selectedCategory === "akomodim";
   const showBusinessHours = selectedCategory !== "akomodim" && selectedCategory !== "evente";
   const showEventFields = selectedCategory === "evente";
@@ -786,14 +777,19 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
     setActiveTags((prev) => (prev.includes(tag) ? prev.filter((item) => item !== tag) : [...prev, tag]));
   };
 
-  const addCustomTag = (event: React.KeyboardEvent) => {
-    if (event.key !== "Enter") return;
-    event.preventDefault();
+  // Mobile keyboards have no Enter on this field, so the "+" button is the primary way in.
+  const commitCustomTag = () => {
     const value = customTag.trim();
     if (!value) return;
     setTagsTouched(true);
     if (!activeTags.includes(value)) setActiveTags((prev) => [...prev, value]);
     setCustomTag("");
+  };
+
+  const addCustomTag = (event: React.KeyboardEvent) => {
+    if (event.key !== "Enter") return;
+    event.preventDefault();
+    commitCustomTag();
   };
 
   const pickCover = (file?: File | null) => {
@@ -851,9 +847,6 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
       }
       if (selectedCategory === "transport" && !form.transportType.trim()) {
         next.transportType = c.required;
-      }
-      if (form.priceFrom && form.price && Number(form.price) < Number(form.priceFrom)) {
-        next.price = c.invalidPriceRange;
       }
     }
 
@@ -954,8 +947,10 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
         whatsapp: form.whatsapp.trim(),
         googleMapsLink: form.googleMapsLink.trim(),
         priceFrom: form.priceFrom,
-        price: form.price,
-        currency: form.currency,
+        // Same value on both fields: listings show a starting price, while the search
+        // filters still query `price`.
+        price: form.priceFrom,
+        currency: PRICE_CURRENCY,
         priceRange: form.priceRange,
         duration: form.duration.trim(),
         difficulty: form.difficulty,
@@ -1415,45 +1410,17 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
               )}
 
               <div className="space-y-2">
-                <span className="block text-sm font-semibold" style={{ color: "var(--text-primary)" }}>
-                  {c.price}
-                  {isPerPersonCategory ? ` (${c.perPerson})` : ""}
-                </span>
-                <div className="grid grid-cols-2 gap-3 sm:grid-cols-[1fr_1fr_140px]">
-                  <Input
-                    name="priceFrom"
-                    type="number"
-                    min={0}
-                    className={inputClass}
-                    label={c.priceFrom}
-                    placeholder="50"
-                    value={form.priceFrom}
-                    onChange={(event) => update("priceFrom", event.target.value)}
-                  />
-                  <Input
-                    name="price"
-                    type="number"
-                    min={0}
-                    className={inputClass}
-                    label={c.priceTo}
-                    placeholder="150"
-                    value={form.price}
-                    onChange={(event) => update("price", event.target.value)}
-                    error={errors.price}
-                  />
-                  <Select
-                    name="currency"
-                    label={c.currency}
-                    className={`${inputClass} col-span-2 sm:col-span-1`}
-                    options={[
-                      { label: "€", value: "€" },
-                      { label: "LEK", value: "LEK" },
-                      { label: "$", value: "$" }
-                    ]}
-                    value={form.currency}
-                    onChange={(event) => update("currency", event.target.value)}
-                  />
-                </div>
+                <Input
+                  name="priceFrom"
+                  type="number"
+                  min={0}
+                  inputMode="decimal"
+                  className={inputClass}
+                  label={`${c.price} (${priceUnit})`}
+                  placeholder="50"
+                  value={form.priceFrom}
+                  onChange={(event) => update("priceFrom", event.target.value)}
+                />
                 <p className="text-xs" style={{ color: "var(--text-tertiary)" }}>
                   {c.priceHint}
                 </p>
@@ -1462,7 +1429,8 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
                     name="childPrice"
                     type="number"
                     min={0}
-                    label={c.childPrice}
+                    inputMode="decimal"
+                    label={`${c.childPrice} (${priceUnit})`}
                     className={inputClass}
                     placeholder="25"
                     value={form.childPrice}
@@ -1587,19 +1555,33 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
                         </button>
                       ))}
                   </div>
-                  <div className="relative">
-                    <Sparkles
-                      className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2"
-                      style={{ color: "var(--brand-accent)" }}
-                    />
-                    <input
-                      type="text"
-                      value={customTag}
-                      onChange={(event) => setCustomTag(event.target.value)}
-                      onKeyDown={addCustomTag}
-                      placeholder={c.customTag}
-                      className="input-base pl-9"
-                    />
+                  <div className="flex items-center gap-2">
+                    <div className="relative flex-1">
+                      <Sparkles
+                        className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2"
+                        style={{ color: "var(--brand-accent)" }}
+                      />
+                      <input
+                        type="text"
+                        value={customTag}
+                        onChange={(event) => setCustomTag(event.target.value)}
+                        onKeyDown={addCustomTag}
+                        placeholder={c.customTag}
+                        className="input-base pl-9"
+                        enterKeyHint="done"
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      onClick={commitCustomTag}
+                      disabled={!customTag.trim()}
+                      aria-label={c.addTag}
+                      title={c.addTag}
+                      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-white transition-opacity disabled:opacity-40"
+                      style={{ background: "var(--brand-accent)" }}
+                    >
+                      <Plus className="h-5 w-5" />
+                    </button>
                   </div>
                   <p className="mt-2 text-xs" style={{ color: "var(--text-tertiary)" }}>
                     {c.featuresHint}

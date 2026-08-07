@@ -95,7 +95,7 @@ const ListingSchema = new Schema<IListing>(
     images: [{ type: String, required: true }],
     price: { type: Number },
     priceFrom: { type: Number },
-    currency: { type: String, default: "USD" },
+    currency: { type: String, default: "€" },
     priceRange: { type: String },
     duration: { type: String },
     difficulty: { type: String },

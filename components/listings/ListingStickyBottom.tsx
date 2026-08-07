@@ -7,18 +7,12 @@ import { Phone, MessageCircle } from "lucide-react";
 interface ListingStickyBottomProps {
   phone: string;
   whatsappHref: string;
-  priceFrom?: number;
-  currency?: string;
-  categoryLabel?: string;
   listingId?: string;
 }
 
 export default function ListingStickyBottom({
   phone,
   whatsappHref,
-  priceFrom,
-  currency = "€",
-  categoryLabel,
   listingId
 }: ListingStickyBottomProps) {
   const { language } = useLanguage();
