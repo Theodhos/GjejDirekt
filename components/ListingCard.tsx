@@ -6,7 +6,7 @@ import Card from "@/components/ui/Card";
 import SafeImage from "@/components/ui/SafeImage";
 import { FALLBACK_IMAGE } from "@/lib/images";
 import { getCategoryLabel, getSubcategoryLabel } from "@/lib/constants";
-import { PRICE_CURRENCY, fromPriceShort, priceUnitLabel, startingPrice } from "@/lib/pricing";
+import { PRICE_CURRENCY, fromPriceShort, startingPrice } from "@/lib/pricing";
 import { translations } from "@/lib/dictionary";
 import { useLanguage } from "@/context/LanguageContext";
 import { useState, useRef, useLayoutEffect } from "react";
@@ -159,9 +159,8 @@ export default function ListingCard({ listing }: { listing: any }) {
   // Ads only affects ranking. The visual border is reserved for Ads Pro.
   const isAdsProPackage = listing.package === "features";
 
-  // Prices are always announced as a starting price in euro, with the unit of the category.
+  // Prices are always announced as a starting price in euro.
   const priceValue = startingPrice(listing);
-  const priceSuffix = `/${priceUnitLabel(listing.category, language)}`;
 
   return (
     <Card 
@@ -225,9 +224,6 @@ export default function ListingCard({ listing }: { listing: any }) {
                 <span className="text-lg font-bold text-white leading-none">
                   {PRICE_CURRENCY}
                   {priceValue}
-                </span>
-                <span className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.55)" }}>
-                  {priceSuffix}
                 </span>
               </div>
             ) : (

@@ -39,7 +39,7 @@ import Input from "@/components/ui/Input";
 import Textarea from "@/components/ui/Textarea";
 import Select from "@/components/ui/Select";
 import { categories, getCategoryFormValue, getSubcategoryFormValue } from "@/lib/constants";
-import { PRICE_CURRENCY, priceUnitSuffix, startingPrice } from "@/lib/pricing";
+import { PRICE_CURRENCY, startingPrice } from "@/lib/pricing";
 import { albaniaCities } from "@/lib/albania-cities";
 import { useLanguage } from "@/context/LanguageContext";
 
@@ -752,8 +752,6 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
     }
   }, [selectedCategory, selectedSubcategory, tagsTouched]);
 
-  // "€/person", "€/natë" or "€/kg" — depends on the category being published.
-  const priceUnit = priceUnitSuffix(selectedCategory, language);
   const showCheckTimes = selectedCategory === "akomodim";
   const showBusinessHours = selectedCategory !== "akomodim" && selectedCategory !== "evente";
   const showEventFields = selectedCategory === "evente";
@@ -1416,7 +1414,7 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
                   min={0}
                   inputMode="decimal"
                   className={inputClass}
-                  label={`${c.price} (${priceUnit})`}
+                  label={`${c.price} (${PRICE_CURRENCY})`}
                   placeholder="50"
                   value={form.priceFrom}
                   onChange={(event) => update("priceFrom", event.target.value)}
@@ -1430,7 +1428,7 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
                     type="number"
                     min={0}
                     inputMode="decimal"
-                    label={`${c.childPrice} (${priceUnit})`}
+                    label={`${c.childPrice} (${PRICE_CURRENCY})`}
                     className={inputClass}
                     placeholder="25"
                     value={form.childPrice}

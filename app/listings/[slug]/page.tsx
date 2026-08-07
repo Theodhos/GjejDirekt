@@ -98,7 +98,7 @@ export default async function ListingDetailPage({ params }: { params: { slug: st
     ? `https://wa.me/${phoneDigits}?text=${encodeURIComponent(`Hello, I'm interested in ${listing.title} from Tourism Platform.`)}`
     : "";
 
-  // Listings advertise a starting price in euro; the unit comes from the category.
+  // Listings advertise a single starting price in euro.
   const priceValue = startingPrice(listing);
 
   const tags = [...(listing.tags || []), ...(listing.amenities || [])].filter((v, i, self) => self.indexOf(v) === i);
@@ -198,9 +198,7 @@ export default async function ListingDetailPage({ params }: { params: { slug: st
                     </div>
                   )}
 
-                  {priceValue !== null && (
-                    <ListingPriceTile price={priceValue} category={listing.category} />
-                  )}
+                  {priceValue !== null && <ListingPriceTile price={priceValue} />}
 
                   {listing.website && (
                     <div
