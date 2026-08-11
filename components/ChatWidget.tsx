@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { usePathname } from "next/navigation";
 import { X, Send, Sparkles, ArrowRight, RotateCcw, MapPin, Mail } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 
@@ -115,6 +116,7 @@ function Bubble({ from, children }: { from: "user" | "bot"; children: React.Reac
 
 export default function ChatWidget() {
   const { language } = useLanguage();
+  const pathname = usePathname();
   const lang: Lang = language === "en" ? "en" : "al";
   const c = copy[lang];
 
@@ -181,6 +183,13 @@ export default function ChatWidget() {
     setLoading(false);
     setOffTopic(null);
   };
+
+  // The bubble floats right over the wizard buttons on phones, so it stays out of the
+  // listing form entirely.
+  const onListingForm = Boolean(
+    pathname && (pathname.startsWith("/listings/add") || /^\/listings\/[^/]+\/edit\/?$/.test(pathname))
+  );
+  if (onListingForm) return null;
 
   return (
     <>

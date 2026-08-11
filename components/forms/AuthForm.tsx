@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import Input from "@/components/ui/Input";
 import Button from "@/components/ui/Button";
+import { readRedirectParam } from "@/lib/auth-redirect";
 import { useLanguage } from "@/context/LanguageContext";
 
 export default function AuthForm({ mode = "login" }: { mode?: "login" | "register" }) {
@@ -77,7 +78,8 @@ export default function AuthForm({ mode = "login" }: { mode?: "login" | "registe
 
     toast.success(mode === "login" ? "Welcome back!" : "Account created!");
     window.dispatchEvent(new Event("auth-changed"));
-    router.push(data.user?.role === "admin" ? "/admin" : "/dashboard");
+    // Coming from "add a listing"? Continue there instead of the dashboard.
+    router.push(readRedirectParam(data.user?.role === "admin" ? "/admin" : "/dashboard"));
     router.refresh();
   }
 

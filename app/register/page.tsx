@@ -6,10 +6,14 @@ import Image from "next/image";
 import { useLanguage } from "@/context/LanguageContext";
 import { translations } from "@/lib/dictionary";
 import SocialLogin from "@/components/auth/SocialLogin";
+import { CREATE_LISTING_REDIRECT, redirectQuery, useRedirectParam } from "@/lib/auth-redirect";
 
 export default function RegisterPage() {
   const { language } = useLanguage();
   const t = translations[language];
+  // Set when the visitor tried to publish a service before having an account.
+  const redirect = useRedirectParam();
+  const fromListingFlow = redirect === CREATE_LISTING_REDIRECT;
 
   return (
     <section
@@ -67,6 +71,20 @@ export default function RegisterPage() {
                     ? "Fill in the details to create your new account."
                     : "Plotësoni detajet për të krijuar llogarinë tuaj të re."}
                 </p>
+                {fromListingFlow && (
+                  <p
+                    className="mt-3 rounded-xl border px-3 py-2 text-xs font-medium"
+                    style={{
+                      borderColor: "var(--brand-border)",
+                      background: "var(--brand-light)",
+                      color: "var(--brand-accent)"
+                    }}
+                  >
+                    {language === "en"
+                      ? "One quick step: create your account and you go straight to publishing your service."
+                      : "Vetëm një hap: krijoni llogarinë dhe vazhdoni direkt me shtimin e shërbimit tuaj."}
+                  </p>
+                )}
               </div>
 
               <AuthForm mode="register" />
@@ -88,7 +106,7 @@ export default function RegisterPage() {
               <p className="mt-7 text-center text-sm leading-relaxed" style={{ color: "var(--text-tertiary)" }}>
                 {t.register.alreadyAccount}{" "}
                 <Link
-                  href="/login"
+                  href={`/login${redirectQuery(redirect)}`}
                   className="font-semibold transition-colors text-[var(--brand-accent)] hover:text-[var(--brand-hover)]"
                 >
                   {t.nav.login}

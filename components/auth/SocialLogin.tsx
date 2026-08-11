@@ -6,6 +6,7 @@ import Image from "next/image";
 import toast from "react-hot-toast";
 import { auth, firebaseEnabled } from "@/lib/firebase";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { readRedirectParam } from "@/lib/auth-redirect";
 import { useLanguage } from "@/context/LanguageContext";
 import { translations } from "@/lib/dictionary";
 
@@ -46,8 +47,8 @@ export default function SocialLogin() {
       toast.success(translations[language].auth.signedInSuccess);
       window.dispatchEvent(new Event("auth-changed"));
       
-      // Redirect based on role
-      router.push(data.user?.role === "admin" ? "/admin" : "/dashboard");
+      // Coming from "add a listing"? Continue there, otherwise land on the role's home.
+      router.push(readRedirectParam(data.user?.role === "admin" ? "/admin" : "/dashboard"));
       router.refresh();
       
     } catch (error: any) {

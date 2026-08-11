@@ -7,10 +7,13 @@ import { Check } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { translations } from "@/lib/dictionary";
 import SocialLogin from "@/components/auth/SocialLogin";
+import { redirectQuery, useRedirectParam } from "@/lib/auth-redirect";
 
 export default function LoginPage() {
   const { language } = useLanguage();
   const t = translations[language];
+  // Carried over so "create an account" keeps the visitor inside the same flow.
+  const redirect = useRedirectParam();
 
   return (
     /* min-height (not a fixed height) lets the card grow with its content, so the
@@ -92,7 +95,7 @@ export default function LoginPage() {
               <p className="mt-7 text-center text-sm leading-relaxed" style={{ color: "var(--text-tertiary)" }}>
                 {t.login.noAccount} {t.login.listFreePitch}{" "}
                 <Link
-                  href="/register"
+                  href={`/register${redirectQuery(redirect)}`}
                   className="font-semibold transition-colors text-[var(--brand-accent)] hover:text-[var(--brand-hover)]"
                 >
                   {t.nav.register}

@@ -13,6 +13,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Clock,
+  Crop,
   Facebook,
   FileText,
   FileType,
@@ -38,8 +39,11 @@ import {
 import Input from "@/components/ui/Input";
 import Textarea from "@/components/ui/Textarea";
 import Select from "@/components/ui/Select";
+import ImageCropper from "@/components/ui/ImageCropper";
 import { categories, getCategoryFormValue, getSubcategoryFormValue } from "@/lib/constants";
 import { PRICE_CURRENCY, startingPrice } from "@/lib/pricing";
+import { compressImageFile, fileFromDataUrl, readFileAsDataUrl } from "@/lib/image-tools";
+import { clearDraft, readDraft, writeDraft } from "@/lib/listing-draft";
 import { albaniaCities } from "@/lib/albania-cities";
 import { useLanguage } from "@/context/LanguageContext";
 
@@ -285,8 +289,9 @@ const COPY = {
     descriptionHint: "Minimumi 30 karaktere. Përshkrimet e detajuara marrin më shumë kontakte.",
     cover: "Cover foto (fotoja kryesore)",
     coverCta: "Kliko për të ngarkuar foton kryesore",
-    coverHint: "JPG ose PNG · rekomandohet 1600×900 · maksimumi 5MB",
+    coverHint: "JPG ose PNG · e prisni dhe optimizohet automatikisht brenda platformës",
     coverReplace: "Ndrysho foton",
+    coverCrop: "Prit foton",
     coverRemove: "Hiq",
     coverCurrent: "Fotoja aktuale",
     phone: "Telefon",
@@ -324,6 +329,8 @@ const COPY = {
     checkIn: "Check-in",
     checkOut: "Check-out",
     businessHours: "Orari",
+    businessOpen: "Hapet",
+    businessClose: "Mbyllet",
     eventDate: "Data e eventit",
     eventTime: "Ora e eventit",
     transportType: "Lloji i transportit",
@@ -371,9 +378,10 @@ const COPY = {
     coverRequired: "Fotoja kryesore është e detyrueshme.",
     invalidUrl: "Linku duhet të fillojë me http:// ose https://",
     invalidEmail: "Email-i nuk është i vlefshëm.",
-    fileTooLarge: "Fotoja është shumë e madhe (maksimumi 5MB).",
+    fileTooLarge: "Fotoja nuk u përpunua dot. Provoni një foto tjetër.",
     galleryFull: "Mund të ngarkoni maksimumi 10 foto në galeri.",
     fixErrors: "Ju lutem plotësoni fushat e detyrueshme.",
+    draftRestored: "Vazhduam aty ku e latë — të dhënat tuaja u ruajtën.",
     success: "Listimi u dërgua për miratim",
     updated: "Shërbimi u përditësua"
   },
@@ -411,8 +419,9 @@ const COPY = {
     descriptionHint: "Minimum 30 characters. Detailed descriptions get more contacts.",
     cover: "Cover photo",
     coverCta: "Click to upload the main photo",
-    coverHint: "JPG or PNG · 1600×900 recommended · max 5MB",
+    coverHint: "JPG or PNG · you crop it and it is optimised inside the platform",
     coverReplace: "Replace photo",
+    coverCrop: "Crop photo",
     coverRemove: "Remove",
     coverCurrent: "Current photo",
     phone: "Phone",
@@ -450,6 +459,8 @@ const COPY = {
     checkIn: "Check-in",
     checkOut: "Check-out",
     businessHours: "Opening hours",
+    businessOpen: "Opens",
+    businessClose: "Closes",
     eventDate: "Event date",
     eventTime: "Event time",
     transportType: "Type of transport",
@@ -497,9 +508,10 @@ const COPY = {
     coverRequired: "The cover photo is required.",
     invalidUrl: "The link must start with http:// or https://",
     invalidEmail: "This email address is not valid.",
-    fileTooLarge: "The photo is too large (max 5MB).",
+    fileTooLarge: "The photo could not be processed. Try another one.",
     galleryFull: "You can upload a maximum of 10 gallery photos.",
     fixErrors: "Please complete the required fields.",
+    draftRestored: "Picked up where you left off — your details were kept.",
     success: "Listing submitted for approval",
     updated: "Listing updated"
   }
@@ -531,7 +543,8 @@ const emptyForm = {
   childPrice: "",
   checkIn: "",
   checkOut: "",
-  businessHours: "",
+  businessOpen: "",
+  businessClose: "",
   eventDate: "",
   eventTime: "",
   transportType: "",
@@ -549,6 +562,18 @@ const emptyForm = {
 type FormState = typeof emptyForm;
 type FormKey = keyof FormState;
 type NewPhoto = { id: string; file: File; preview: string };
+
+/** Opening hours are stored as "08:00 - 22:00"; the wizard edits them as two time pickers. */
+function parseBusinessHours(value?: string) {
+  const [open = "", close = ""] = String(value || "").split("-").map((part) => part.trim());
+  const asTime = (part: string) => (/^\d{1,2}:\d{2}$/.test(part) ? part.padStart(5, "0") : "");
+  return { open: asTime(open), close: asTime(close) };
+}
+
+function formatBusinessHours(open: string, close: string) {
+  if (open && close) return `${open} - ${close}`;
+  return open || close || "";
+}
 
 function initialForm(listing?: WizardListing): FormState {
   if (!listing) return emptyForm;
@@ -573,7 +598,8 @@ function initialForm(listing?: WizardListing): FormState {
     childPrice: listing.childPrice ? String(listing.childPrice) : "",
     checkIn: listing.checkIn || "",
     checkOut: listing.checkOut || "",
-    businessHours: listing.businessHours || "",
+    businessOpen: parseBusinessHours(listing.businessHours).open,
+    businessClose: parseBusinessHours(listing.businessHours).close,
     eventDate: listing.eventDate || "",
     eventTime: listing.eventTime || "",
     transportType: listing.transportType || "",
@@ -597,6 +623,13 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
   const isEdit = Boolean(listing?._id);
   /** Verified is granted by an admin, so it only ever unlocks the last step while editing. */
   const verifiedUnlocked = isEdit && Boolean(listing?.verified);
+
+  /** Free-text hours from older listings survive until the owner picks real times. */
+  const legacyBusinessHours = useMemo(() => {
+    const raw = listing?.businessHours || "";
+    const parsed = parseBusinessHours(raw);
+    return parsed.open || parsed.close ? "" : raw;
+  }, [listing?.businessHours]);
 
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -627,6 +660,11 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
   const [coverFile, setCoverFile] = useState<File | null>(null);
   const [coverPreview, setCoverPreview] = useState("");
   const coverInputRef = useRef<HTMLInputElement>(null);
+  // The freshly picked file waiting to be cropped, and the cropped result inlined in the draft.
+  const [cropSource, setCropSource] = useState<File | null>(null);
+  const [coverDataUrl, setCoverDataUrl] = useState("");
+  // Dimensions of the photo exactly as it will be uploaded.
+  const [coverSize, setCoverSize] = useState({ width: 0, height: 0 });
 
   const [galleryUrls, setGalleryUrls] = useState<string[]>(() =>
     listing ? (listing.photos?.length ? listing.photos : existingImages.slice(1)) : []
@@ -685,6 +723,112 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
     setCoverPreview(url);
     return () => URL.revokeObjectURL(url);
   }, [coverFile]);
+
+  // The cropped cover is small enough to travel with the draft, so it survives too.
+  useEffect(() => {
+    if (!coverFile) {
+      setCoverDataUrl("");
+      return;
+    }
+    let cancelled = false;
+    readFileAsDataUrl(coverFile)
+      .then((url) => {
+        if (!cancelled) setCoverDataUrl(url);
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [coverFile]);
+
+  /**
+   * Draft — leaving the wizard (most often through "Get Verified") or refreshing the page
+   * must never wipe what the owner already filled in.
+   */
+  const draftKey = isEdit ? `edit:${listing!._id}` : "new";
+  const [draftReady, setDraftReady] = useState(false);
+  const draftLoaded = useRef(false);
+
+  useEffect(() => {
+    if (draftLoaded.current) return;
+    draftLoaded.current = true;
+
+    const draft = readDraft<Record<string, any>>(draftKey);
+    if (!draft) {
+      setDraftReady(true);
+      return;
+    }
+
+    // A draft started for another category belongs to another listing.
+    const urlCategory = searchParams.get("category");
+    if (urlCategory && draft.selectedCategory && draft.selectedCategory !== urlCategory) {
+      clearDraft(draftKey);
+      setDraftReady(true);
+      return;
+    }
+
+    if (draft.form) setForm((prev) => ({ ...prev, ...draft.form }));
+    if (draft.selectedCategory) setSelectedCategory(draft.selectedCategory);
+    if (draft.selectedSubcategory) setSelectedSubcategory(draft.selectedSubcategory);
+    if (Array.isArray(draft.activeTags)) setActiveTags(draft.activeTags);
+    if (Array.isArray(draft.cuisines)) setCuisines(draft.cuisines);
+    if (Array.isArray(draft.spokenLanguages)) setSpokenLanguages(draft.spokenLanguages);
+    if (Array.isArray(draft.whatToBring)) setWhatToBring(draft.whatToBring);
+    if (Array.isArray(draft.galleryUrls)) setGalleryUrls(draft.galleryUrls);
+    if (draft.coverUrl) setCoverUrl(draft.coverUrl);
+    if (typeof draft.step === "number") setStep(Math.min(Math.max(draft.step, 1), TOTAL_STEPS));
+    setTagsTouched(Boolean(draft.tagsTouched));
+
+    if (draft.coverDataUrl) {
+      fileFromDataUrl(draft.coverDataUrl, draft.coverName || "cover.jpg")
+        .then(setCoverFile)
+        .catch(() => {});
+    }
+
+    toast.success(c.draftRestored);
+    setDraftReady(true);
+  }, [draftKey, searchParams, c.draftRestored]);
+
+  useEffect(() => {
+    if (!draftReady) return;
+    // Debounced: the inlined cover photo makes every write worth a few milliseconds.
+    const timer = setTimeout(
+      () =>
+        writeDraft(draftKey, {
+          step,
+          form,
+          selectedCategory,
+          selectedSubcategory,
+          activeTags,
+          cuisines,
+          spokenLanguages,
+          whatToBring,
+          tagsTouched,
+          coverUrl,
+          coverDataUrl,
+          coverName: coverFile?.name || "",
+          galleryUrls
+        }),
+      500
+    );
+    return () => clearTimeout(timer);
+  }, [
+    draftReady,
+    draftKey,
+    step,
+    form,
+    selectedCategory,
+    selectedSubcategory,
+    activeTags,
+    cuisines,
+    spokenLanguages,
+    whatToBring,
+    tagsTouched,
+    coverUrl,
+    coverDataUrl,
+    coverFile,
+    galleryUrls
+  ]);
 
   const categoryDef = useMemo(
     () => categories.find((item) => item.value === selectedCategory),
@@ -752,6 +896,8 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
     }
   }, [selectedCategory, selectedSubcategory, tagsTouched]);
 
+  // Events and attractions are often published by people without a public phone number.
+  const phoneRequired = selectedCategory !== "evente" && selectedCategory !== "atraksione";
   const showCheckTimes = selectedCategory === "akomodim";
   const showBusinessHours = selectedCategory !== "akomodim" && selectedCategory !== "evente";
   const showEventFields = selectedCategory === "evente";
@@ -790,32 +936,44 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
     commitCustomTag();
   };
 
+  // Any picked photo goes through the in-app cropper, so an oversized camera shot is
+  // cropped and compressed here instead of being rejected.
   const pickCover = (file?: File | null) => {
     if (!file) return;
-    if (file.size > MAX_COVER_SIZE) {
-      toast.error(c.fileTooLarge);
-      return;
-    }
+    setCropSource(file);
+  };
+
+  const applyCroppedCover = (file: File) => {
     setCoverFile(file);
+    setCoverUrl("");
+    setCropSource(null);
     setErrors((prev) => ({ ...prev, cover: "" }));
   };
 
-  const pickGallery = (files: FileList | null) => {
+  const pickGallery = async (files: FileList | null) => {
     if (!files?.length) return;
     const room = MAX_GALLERY - galleryTotal;
     if (room <= 0) {
       toast.error(c.galleryFull);
       return;
     }
+    const picked = Array.from(files);
     const accepted: NewPhoto[] = [];
-    for (const file of Array.from(files).slice(0, room)) {
-      if (file.size > MAX_COVER_SIZE) {
+    for (const file of picked.slice(0, room)) {
+      try {
+        // Gallery photos keep their framing — only oversized ones are downscaled.
+        const prepared =
+          file.size > MAX_COVER_SIZE ? await compressImageFile(file, { maxBytes: MAX_COVER_SIZE }) : file;
+        accepted.push({
+          id: `${prepared.name}-${prepared.size}-${accepted.length}`,
+          file: prepared,
+          preview: URL.createObjectURL(prepared)
+        });
+      } catch {
         toast.error(c.fileTooLarge);
-        continue;
       }
-      accepted.push({ id: `${file.name}-${file.size}-${accepted.length}`, file, preview: URL.createObjectURL(file) });
     }
-    if (Array.from(files).length > room) toast.error(c.galleryFull);
+    if (picked.length > room) toast.error(c.galleryFull);
     setNewPhotos((prev) => [...prev, ...accepted]);
   };
 
@@ -849,7 +1007,7 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
     }
 
     if (target === 3) {
-      if (!form.contactPhone.trim()) next.contactPhone = c.required;
+      if (phoneRequired && !form.contactPhone.trim()) next.contactPhone = c.required;
       if (isActivity && !form.whatsapp.trim()) next.whatsapp = c.required;
       if (form.contactEmail.trim() && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(form.contactEmail.trim())) {
         next.contactEmail = c.invalidEmail;
@@ -961,7 +1119,8 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
         languages: spokenLanguages,
         checkIn: form.checkIn,
         checkOut: form.checkOut,
-        businessHours: form.businessHours.trim(),
+        // Free-text hours from older listings are kept until the owner picks real times.
+        businessHours: formatBusinessHours(form.businessOpen, form.businessClose) || legacyBusinessHours,
         eventDate: form.eventDate,
         eventTime: form.eventTime,
         transportType: form.transportType.trim(),
@@ -998,6 +1157,8 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || "Something went wrong");
 
+      clearDraft(draftKey);
+
       if (isEdit) {
         toast.success(c.updated);
         router.push(`/listings/${data.listing?.slug || listing!.slug || ""}`);
@@ -1013,7 +1174,8 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
     }
   }
 
-  const inputClass = "rounded-xl py-2.5";
+  // 16px text on phones — smaller fonts make iOS zoom the whole page on focus.
+  const inputClass = "rounded-xl py-2.5 text-base sm:text-sm";
   const showCoverPreview = coverPreview || coverUrl;
 
   return (
@@ -1117,25 +1279,25 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
                   className="flex items-center justify-between gap-3 rounded-xl border px-4 py-3"
                   style={{ borderColor: "var(--brand-border)", background: "var(--brand-light)" }}
                 >
-                  <div className="flex items-center gap-3">
+                  <div className="flex min-w-0 items-center gap-3">
                     <span
-                      className="flex h-9 w-9 items-center justify-center rounded-full text-white"
+                      className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-white"
                       style={{ background: "var(--brand-accent)" }}
                     >
                       <Tag className="h-4 w-4" />
                     </span>
-                    <span>
+                    <span className="min-w-0">
                       <span className="block text-[11px] font-semibold uppercase tracking-wider" style={{ color: "var(--brand-accent)" }}>
                         {c.categorySelected}
                       </span>
-                      <span className="block text-sm font-bold" style={{ color: "var(--text-primary)" }}>
+                      <span className="block truncate text-sm font-bold" style={{ color: "var(--text-primary)" }}>
                         {categoryLabel}
                       </span>
                     </span>
                   </div>
                   <Link
                     href="/create-listing"
-                    className="text-xs font-semibold underline underline-offset-4"
+                    className="shrink-0 text-xs font-semibold underline underline-offset-4"
                     style={{ color: "var(--brand-accent)" }}
                   >
                     {c.changeCategory}
@@ -1242,7 +1404,7 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
                 <Textarea
                   name="description"
                   label={`${c.description} *`}
-                  className="rounded-xl"
+                  className="rounded-xl text-base sm:text-sm"
                   placeholder={c.descriptionPlaceholder}
                   value={form.description}
                   onChange={(event) => update("description", event.target.value)}
@@ -1307,14 +1469,30 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
               )}
 
               {showBusinessHours && (
-                <Input
-                  name="businessHours"
-                  label={c.businessHours}
-                  className={inputClass}
-                  placeholder="08:00 - 22:00"
-                  value={form.businessHours}
-                  onChange={(event) => update("businessHours", event.target.value)}
-                />
+                <div className="space-y-2">
+                  <span className="flex items-center gap-2 text-sm font-semibold" style={{ color: "var(--text-primary)" }}>
+                    <Clock className="h-4 w-4" style={{ color: "var(--brand-accent)" }} />
+                    {c.businessHours}
+                  </span>
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <Input
+                      name="businessOpen"
+                      type="time"
+                      label={c.businessOpen}
+                      className={inputClass}
+                      value={form.businessOpen}
+                      onChange={(event) => update("businessOpen", event.target.value)}
+                    />
+                    <Input
+                      name="businessClose"
+                      type="time"
+                      label={c.businessClose}
+                      className={inputClass}
+                      value={form.businessClose}
+                      onChange={(event) => update("businessClose", event.target.value)}
+                    />
+                  </div>
+                </div>
               )}
 
               {showCheckTimes && (
@@ -1502,7 +1680,7 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
                 <Textarea
                   name="tips"
                   label={c.tips}
-                  className="rounded-xl"
+                  className="rounded-xl text-base sm:text-sm"
                   placeholder={c.tipsPlaceholder}
                   value={form.tips}
                   onChange={(event) => update("tips", event.target.value)}
@@ -1609,7 +1787,7 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
             <div className="grid gap-4 sm:grid-cols-2">
               <Input
                 name="contactPhone"
-                label={`${c.phone} *`}
+                label={phoneRequired ? `${c.phone} *` : c.phone}
                 className={inputClass}
                 placeholder="+355 69 ..."
                 inputMode="tel"
@@ -1705,13 +1883,42 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
 
               {showCoverPreview ? (
                 <div className="overflow-hidden rounded-2xl border" style={{ borderColor: "var(--border-soft)" }}>
+                  {/* The uploaded file itself, filling the frame at its own proportions. */}
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={coverPreview || coverUrl} alt="cover" className="h-48 w-full object-cover sm:h-60" />
-                  <div className="flex items-center justify-between gap-3 px-4 py-3">
-                    <span className="truncate text-xs" style={{ color: "var(--text-tertiary)" }}>
+                  <img
+                    src={coverPreview || coverUrl}
+                    alt="cover"
+                    className="block h-auto w-full"
+                    onLoad={(event) =>
+                      setCoverSize({
+                        width: event.currentTarget.naturalWidth,
+                        height: event.currentTarget.naturalHeight
+                      })
+                    }
+                  />
+                  {/* Stacked on phones: three pills plus the file name never fit one row. */}
+                  <div className="flex flex-col gap-2 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
+                    <span className="block truncate text-xs" style={{ color: "var(--text-tertiary)" }}>
+                      {coverSize.width > 0 && (
+                        <span className="font-semibold" style={{ color: "var(--brand-accent)" }}>
+                          {coverSize.width} × {coverSize.height}
+                          {" · "}
+                        </span>
+                      )}
                       {coverFile?.name || c.coverCurrent}
                     </span>
-                    <span className="flex shrink-0 items-center gap-2">
+                    <span className="flex flex-wrap items-center gap-2 sm:shrink-0 sm:flex-nowrap">
+                      {coverFile && (
+                        <button
+                          type="button"
+                          onClick={() => setCropSource(coverFile)}
+                          className="flex items-center gap-1 rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors"
+                          style={{ borderColor: "var(--brand-border)", color: "var(--brand-accent)" }}
+                        >
+                          <Crop className="h-3.5 w-3.5" />
+                          {c.coverCrop}
+                        </button>
+                      )}
                       <button
                         type="button"
                         onClick={() => coverInputRef.current?.click()}
@@ -1725,6 +1932,7 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
                         onClick={() => {
                           setCoverFile(null);
                           setCoverUrl("");
+                          setCoverSize({ width: 0, height: 0 });
                         }}
                         className="flex items-center gap-1 rounded-full px-3 py-1.5 text-xs font-semibold text-rose-600 transition-colors hover:bg-rose-50"
                       >
@@ -2030,11 +2238,12 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
           className="flex flex-col gap-3 border-t px-5 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-7"
           style={{ borderColor: "var(--border-soft)" }}
         >
+          {/* On mobile "Continue" comes first — going forward is the common move. */}
           <button
             type="button"
             onClick={() => goToStep(step - 1)}
             disabled={step === 1 || loading}
-            className="inline-flex items-center justify-center gap-2 rounded-full border px-5 py-2.5 text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-40"
+            className="order-2 inline-flex items-center justify-center gap-2 rounded-full border px-5 py-2.5 text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-40 sm:order-1"
             style={{ borderColor: "var(--border-medium)", color: "var(--text-secondary)" }}
           >
             <ChevronLeft className="h-4 w-4" />
@@ -2042,12 +2251,16 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
           </button>
 
           {step < TOTAL_STEPS ? (
-            <button type="button" onClick={() => goToStep(step + 1)} className="btn-primary w-full sm:w-auto">
+            <button
+              type="button"
+              onClick={() => goToStep(step + 1)}
+              className="btn-primary order-1 w-full sm:order-2 sm:w-auto"
+            >
               {c.next}
               <ChevronRight className="h-4 w-4" />
             </button>
           ) : (
-            <span className="hidden text-xs sm:block" style={{ color: "var(--text-tertiary)" }}>
+            <span className="order-1 hidden text-xs sm:order-2 sm:block" style={{ color: "var(--text-tertiary)" }}>
               {isEdit ? c.reviewNoteEdit : c.reviewNote}
             </span>
           )}
@@ -2078,6 +2291,15 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
             {isEdit ? c.saveNote : c.publishNote}
           </p>
         </div>
+      )}
+
+      {cropSource && (
+        <ImageCropper
+          file={cropSource}
+          maxBytes={MAX_COVER_SIZE}
+          onCancel={() => setCropSource(null)}
+          onSave={applyCroppedCover}
+        />
       )}
     </form>
   );
@@ -2191,7 +2413,7 @@ function UnlockedField({
         <BadgeCheck className="h-3.5 w-3.5" style={{ color: "var(--brand-accent)" }} />
       </span>
       <Input
-        className="rounded-xl py-2.5"
+        className="rounded-xl py-2.5 text-base sm:text-sm"
         placeholder={placeholder}
         value={value}
         onChange={(event) => onChange(event.target.value)}
