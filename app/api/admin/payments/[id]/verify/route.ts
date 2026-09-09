@@ -5,6 +5,7 @@ import Payment from "@/models/Payment";
 import Listing from "@/models/Listing";
 import User from "@/models/User";
 import { PACKAGE_CATALOG } from "@/lib/packages";
+import { isObjectId } from "@/lib/utils";
 
 /** Marks the payment rows this admin flow owns, so they can be revoked cleanly. */
 const ADMIN_GRANT = "admin-grant";
@@ -54,6 +55,8 @@ export async function POST(request: Request, { params }: { params: { id: string 
   try {
     const admin = await requireAdmin();
     if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+    if (!isObjectId(params.id)) return NextResponse.json({ error: "Payment not found" }, { status: 404 });
 
     await connectDB();
 

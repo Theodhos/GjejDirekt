@@ -1,11 +1,12 @@
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
 import Listing from "@/models/Listing";
+import { isObjectId } from "@/lib/utils";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const id = searchParams.get("id");
-  const status = searchParams.get("status") as "approved" | "rejected";
+  const status = searchParams.get("status");
   const token = searchParams.get("token");
 
   const expectedToken = process.env.ADMIN_DELETE_SECRET || "super-secret-token";
@@ -14,15 +15,25 @@ export async function GET(request: Request) {
     return new NextResponse("Unauthorized or missing parameters", { status: 401 });
   }
 
+  // The status came straight off the query string. findByIdAndUpdate skips schema
+  // validators by default, so without this check any string would be persisted.
+  if (status !== "approved" && status !== "rejected") {
+    return new NextResponse("Invalid status", { status: 400 });
+  }
+
+  if (!isObjectId(id)) {
+    return new NextResponse("Listing not found", { status: 404 });
+  }
+
   try {
     await connectDB();
-    
+
     const listing = await Listing.findByIdAndUpdate(
       id,
       { $set: { status } },
-      { new: true }
+      { new: true, runValidators: true }
     );
-    
+
     if (!listing) {
       return new NextResponse("Listing not found", { status: 404 });
     }

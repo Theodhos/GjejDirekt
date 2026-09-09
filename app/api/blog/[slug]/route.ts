@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { apiError } from "@/lib/api";
 import { connectDB } from "@/lib/db";
 import BlogPost from "@/models/BlogPost";
 import { requireAdmin } from "@/lib/auth";
@@ -12,7 +13,7 @@ export async function GET(_: Request, { params }: { params: { slug: string } }) 
     if (!post) return NextResponse.json({ error: "Post not found" }, { status: 404 });
     return NextResponse.json({ post });
   } catch (error) {
-    return NextResponse.json({ error: error instanceof Error ? error.message : "Failed to load blog post" }, { status: 500 });
+    return apiError("Failed to load blog post", 500, error);
   }
 }
 
@@ -66,6 +67,6 @@ export async function PUT(request: Request, { params }: { params: { slug: string
 
     return NextResponse.json({ post: JSON.parse(JSON.stringify(post)) });
   } catch (error) {
-    return NextResponse.json({ error: error instanceof Error ? error.message : "Blog post update failed" }, { status: 500 });
+    return apiError("Blog post update failed", 500, error);
   }
 }

@@ -1,7 +1,7 @@
 import type { Language } from "@/lib/dictionary";
 
-/** Every listing on the platform is priced in euro — no other currency is offered. */
-export const PRICE_CURRENCY = "€";
+/** Every listing on GjejDirekt is priced in Albanian lek — no other currency is offered. */
+export const PRICE_CURRENCY = "Lekë";
 
 /** Label used wherever a price is announced — listings only ever show a starting price. */
 const FROM_LABEL: Record<Language, string> = { al: "Nga çmimi", en: "From price" };
@@ -26,7 +26,15 @@ export function startingPrice(listing: { priceFrom?: unknown; price?: unknown })
   return values.length ? Math.min(...values) : null;
 }
 
-/** "€50" */
+/**
+ * "1,500 Lekë". Lek is written after the amount, and amounts run large enough that
+ * the thousands separator is what keeps them readable.
+ */
+export function formatPrice(value: number) {
+  return `${Math.round(value).toLocaleString("de-DE")} ${PRICE_CURRENCY}`;
+}
+
+/** "1,500 Lekë" — kept as its own name because listings only ever show a starting price. */
 export function formatStartingPrice(value: number) {
-  return `${PRICE_CURRENCY}${value}`;
+  return formatPrice(value);
 }

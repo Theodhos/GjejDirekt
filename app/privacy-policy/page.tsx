@@ -9,24 +9,24 @@ const privacySections = {
     { title: "1. Informacioni që Mbledhim", body: "Ne mund të mbledhim informacion si: emrin dhe mbiemrin, email-in, numrin e telefonit, informacionet e biznesit, fotot dhe përmbajtjen e listing-eve, si dhe të dhëna teknike dhe analitike mbi përdorimin e platformës." },
     { title: "2. Si Përdoret Informacioni", body: "Informacioni përdoret për: krijimin dhe menaxhimin e listing-eve, komunikimin me përdoruesit, përmirësimin e platformës, moderimin dhe sigurinë e përmbajtjes, dhe analizimin e përdorimit të platformës." },
     { title: "3. Listing-et Publike", body: "Informacioni që publikoni në listing-e, si: emri i biznesit, telefoni, WhatsApp, Instagram, website, përshkrimet dhe fotot mund të jetë publikisht i aksesueshëm nga përdoruesit e platformës." },
-    { title: "4. Cookies dhe Analitika", body: "TripShqip mund të përdorë cookies dhe mjete analitike për: përmirësimin e eksperiencës së përdoruesit, analizimin e trafikut, dhe performancën e platformës. Përdoruesit mund të menaxhojnë cookies përmes shfletuesit të tyre." },
-    { title: "5. Ndarja e Informacionit", body: "TripShqip nuk shet të dhënat personale të përdoruesve. Informacioni mund të ndahet vetëm: kur kërkohet nga ligji, për arsye sigurie, ose me shërbime teknike të nevojshme për funksionimin e platformës." },
-    { title: "6. Linke të Jashtme", body: "Platforma mund të përmbajë linke drejt website-ve ose shërbimeve të palëve të treta. TripShqip nuk është përgjegjës për politikat e privatësisë së këtyre platformave." },
+    { title: "4. Cookies dhe Analitika", body: "GjejDirekt mund të përdorë cookies dhe mjete analitike për: përmirësimin e eksperiencës së përdoruesit, analizimin e trafikut, dhe performancën e platformës. Përdoruesit mund të menaxhojnë cookies përmes shfletuesit të tyre." },
+    { title: "5. Ndarja e Informacionit", body: "GjejDirekt nuk shet të dhënat personale të përdoruesve. Informacioni mund të ndahet vetëm: kur kërkohet nga ligji, për arsye sigurie, ose me shërbime teknike të nevojshme për funksionimin e platformës." },
+    { title: "6. Linke të Jashtme", body: "Platforma mund të përmbajë linke drejt website-ve ose shërbimeve të palëve të treta. GjejDirekt nuk është përgjegjës për politikat e privatësisë së këtyre platformave." },
     { title: "7. Siguria e të Dhënave", body: "Ne përpiqemi të mbrojmë informacionin e përdoruesve përmes masave të arsyeshme teknike dhe organizative. Megjithatë, asnjë platformë online nuk mund të garantojë siguri absolute." },
-    { title: "8. Të Drejtat e Përdoruesve", body: "Përdoruesit mund të: kërkojnë përditësimin e të dhënave, kërkojnë fshirjen e profilit ose listing-ut, ose të kontaktojnë TripShqip për çdo pyetje lidhur me privatësinë." },
-    { title: "9. Ndryshimet në Politikën e Privatësisë", body: "TripShqip rezervon të drejtën të përditësojë këtë politikë në çdo kohë. Ndryshimet hyjnë në fuqi pas publikimit në platformë." },
+    { title: "8. Të Drejtat e Përdoruesve", body: "Përdoruesit mund të: kërkojnë përditësimin e të dhënave, kërkojnë fshirjen e profilit ose listing-ut, ose të kontaktojnë GjejDirekt për çdo pyetje lidhur me privatësinë." },
+    { title: "9. Ndryshimet në Politikën e Privatësisë", body: "GjejDirekt rezervon të drejtën të përditësojë këtë politikë në çdo kohë. Ndryshimet hyjnë në fuqi pas publikimit në platformë." },
     { title: "10. Kontakt", body: "Për pyetje ose kërkesa lidhur me privatësinë dhe të dhënat personale, mund të na kontaktoni përmes faqes së Kontaktit." }
   ],
   en: [
     { title: "1. Information We Collect", body: "We may collect information such as: first name and last name, email, phone number, business information, photos and listing content, as well as technical and analytical data on platform usage." },
     { title: "2. How the Information is Used", body: "The information is used for: creating and managing listings, communicating with users, improving the platform, content moderation and security, and analyzing platform usage." },
     { title: "3. Public Listings", body: "The information you publish in listings, such as: business name, phone, WhatsApp, Instagram, website, descriptions, and photos can be publicly accessible to platform users." },
-    { title: "4. Cookies and Analytics", body: "TripShqip may use cookies and analytical tools for: improving the user experience, analyzing traffic, and platform performance. Users can manage cookies through their browser." },
-    { title: "5. Information Sharing", body: "TripShqip does not sell users' personal data. Information may only be shared: when required by law, for security reasons, or with technical services necessary for the functioning of the platform." },
-    { title: "6. External Links", body: "The platform may contain links to third-party websites or services. TripShqip is not responsible for the privacy policies of these platforms." },
+    { title: "4. Cookies and Analytics", body: "GjejDirekt may use cookies and analytical tools for: improving the user experience, analyzing traffic, and platform performance. Users can manage cookies through their browser." },
+    { title: "5. Information Sharing", body: "GjejDirekt does not sell users' personal data. Information may only be shared: when required by law, for security reasons, or with technical services necessary for the functioning of the platform." },
+    { title: "6. External Links", body: "The platform may contain links to third-party websites or services. GjejDirekt is not responsible for the privacy policies of these platforms." },
     { title: "7. Data Security", body: "We strive to protect user information through reasonable technical and organizational measures. However, no online platform can guarantee absolute security." },
-    { title: "8. User Rights", body: "Users can: request data updates, request deletion of profile or listing, or contact TripShqip for any questions regarding privacy." },
-    { title: "9. Changes to the Privacy Policy", body: "TripShqip reserves the right to update this policy at any time. Changes take effect upon publication on the platform." },
+    { title: "8. User Rights", body: "Users can: request data updates, request deletion of profile or listing, or contact GjejDirekt for any questions regarding privacy." },
+    { title: "9. Changes to the Privacy Policy", body: "GjejDirekt reserves the right to update this policy at any time. Changes take effect upon publication on the platform." },
     { title: "10. Contact", body: "For questions or requests regarding privacy and personal data, you can contact us through the \"Contact\" page." }
   ]
 };
@@ -49,7 +49,7 @@ export default function PrivacyPolicyPage() {
         className="relative overflow-hidden"
         style={{ background: "var(--surface-cream)", borderBottom: "1px solid var(--border-soft)" }}
       >
-        <div className="pointer-events-none absolute -top-20 -right-20 w-[400px] h-[400px] rounded-full" style={{ background: "rgba(31,138,112,0.06)", filter: "blur(100px)" }} />
+        <div className="pointer-events-none absolute -top-20 -right-20 w-[400px] h-[400px] rounded-full" style={{ background: "rgba(225,29,46,0.06)", filter: "blur(100px)" }} />
         <div className="page-shell relative z-10 py-8 max-w-3xl mx-auto">
           <div className="flex items-center gap-2 mb-6 text-xs font-medium" style={{ color: "var(--text-tertiary)" }}>
             <Link href="/" className="hover:text-brand-600 transition-colors">{language === "en" ? "Home" : "Kreu"}</Link>
@@ -65,8 +65,8 @@ export default function PrivacyPolicyPage() {
           </h1>
           <p className="text-base leading-relaxed" style={{ color: "var(--text-secondary)" }}>
             {language === "en"
-              ? "At TripShqip, your privacy and data protection are important to us."
-              : "Në TripShqip, privatësia dhe mbrojtja e të dhënave tuaja janë të rëndësishme për ne."}
+              ? "At GjejDirekt, your privacy and data protection are important to us."
+              : "Në GjejDirekt, privatësia dhe mbrojtja e të dhënave tuaja janë të rëndësishme për ne."}
           </p>
         </div>
       </section>

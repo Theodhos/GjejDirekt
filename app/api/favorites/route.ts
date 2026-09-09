@@ -1,8 +1,10 @@
 import { NextResponse } from "next/server";
+import { apiError } from "@/lib/api";
 import { connectDB } from "@/lib/db";
 import { getAuthUser } from "@/lib/auth";
 import User from "@/models/User";
 import Listing from "@/models/Listing";
+import { isObjectId } from "@/lib/utils";
 
 export async function GET() {
   try {
@@ -13,7 +15,7 @@ export async function GET() {
     const user = await User.findById(auth.id).populate("favorites").lean<any>();
     return NextResponse.json({ favorites: Array.isArray(user?.favorites) ? user.favorites : [] });
   } catch (error) {
-    return NextResponse.json({ error: error instanceof Error ? error.message : "Failed to load favorites" }, { status: 500 });
+    return apiError("Failed to load favorites", 500, error);
   }
 }
 
@@ -23,6 +25,8 @@ export async function POST(request: Request) {
     if (!auth) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
     const { listingId } = await request.json();
+    if (!isObjectId(listingId)) return NextResponse.json({ error: "Not found" }, { status: 404 });
+
     await connectDB();
     const user = await User.findById(auth.id);
     const listing = await Listing.findById(listingId);
@@ -40,6 +44,6 @@ export async function POST(request: Request) {
     await user.save();
     return NextResponse.json({ ok: true, favorited: !existing });
   } catch (error) {
-    return NextResponse.json({ error: error instanceof Error ? error.message : "Failed to update favorites" }, { status: 500 });
+    return apiError("Failed to update favorites", 500, error);
   }
 }

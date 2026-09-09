@@ -82,7 +82,7 @@ export default function ListingGallery({ images, listing }: ListingGalleryProps)
     e.stopPropagation();
     
     const baseUrl = typeof window !== "undefined" && !window.location.hostname.includes("localhost")
-      ? "https://www.tripshqip.com"
+      ? "https://www.gjejdirekt.com"
       : "http://localhost:3000";
     const url = `${baseUrl}/listings/${listing?.slug}`;
     

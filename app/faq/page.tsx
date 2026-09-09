@@ -14,18 +14,18 @@ interface FAQItem {
 const FAQ_DATA: FAQItem[] = [
   {
     category: "travelers",
-    question: { en: "What is TripShqip?", al: "Çfarë është TripShqip?" },
-    answer: { en: "TripShqip is a tourism platform that helps users discover hotels, restaurants, attractions, events, and tourism businesses across Albania.", al: "TripShqip është një platformë turistike që ndihmon përdoruesit të zbulojnë hotele, restorante, atraksione, evente dhe biznese turistike në Shqipëri." }
+    question: { en: "What is GjejDirekt?", al: "Çfarë është GjejDirekt?" },
+    answer: { en: "GjejDirekt is a tourism platform that helps users discover hotels, restaurants, attractions, events, and tourism businesses across Albania.", al: "GjejDirekt është një platformë turistike që ndihmon përdoruesit të zbulojnë hotele, restorante, atraksione, evente dhe biznese turistike në Shqipëri." }
   },
   {
     category: "travelers",
-    question: { en: "How does TripShqip work?", al: "Si funksionon TripShqip?" },
+    question: { en: "How does GjejDirekt work?", al: "Si funksionon GjejDirekt?" },
     answer: { en: "Users can search by categories, destinations, or tags and contact businesses directly via phone, WhatsApp, Instagram, or their website.", al: "Përdoruesit mund të kërkojnë sipas kategorive, destinacioneve ose tags dhe të kontaktojnë bizneset direkt përmes telefonit, WhatsApp, Instagramit ose website-it të tyre." }
   },
   {
     category: "payments",
-    question: { en: "Can I book directly through TripShqip?", al: "A mund të rezervoj direkt nga TripShqip?" },
-    answer: { en: "For now, TripShqip focuses on the direct connection between tourists and businesses. Reservations are made directly with the business or through external links.", al: "Për momentin TripShqip fokusohet te lidhja direkte midis turistëve dhe bizneseve. Rezervimet realizohen direkt me biznesin ose përmes linkeve të jashtme." }
+    question: { en: "Can I book directly through GjejDirekt?", al: "A mund të rezervoj direkt nga GjejDirekt?" },
+    answer: { en: "For now, GjejDirekt focuses on the direct connection between tourists and businesses. Reservations are made directly with the business or through external links.", al: "Për momentin GjejDirekt fokusohet te lidhja direkte midis turistëve dhe bizneseve. Rezervimet realizohen direkt me biznesin ose përmes linkeve të jashtme." }
   },
   {
     category: "hosts",
@@ -41,8 +41,8 @@ const FAQ_DATA: FAQItem[] = [
     category: "hosts",
     question: { en: "What benefits do Verified businesses get?", al: "Çfarë përfitimesh kanë bizneset Verified?" },
     answer: {
-      en: "Verified businesses can have: (1) Verified Badge — a visual ✅ Verified badge that instantly builds trust; (2) \"Business checked by TripShqip\" on the listing page, which is psychologically very strong in Albania; (3) Priority support — faster changes and direct assistance; (4) More credibility in search — the badge naturally increases CTR (not a ranking boost, but an indirect advantage); (5) Protection against fake listings — users understand who is real and active.",
-      al: "Bizneset Verified mund të kenë: (1) Verified Badge — një badge vizual ✅ Verified që rrit besimin menjëherë; (2) “Business checked by TripShqip” tek faqja e listing-ut, shumë e fortë psikologjikisht në Shqipëri; (3) Prioritet në support — ndryshime më të shpejta dhe asistencë direkte; (4) Më shumë kredibilitet në kërkim — badge rrit CTR natyralisht (jo ranking boost, por avantazh indirekt); (5) Mbrojtje nga listings fake — useri kupton kush është real dhe aktiv."
+      en: "Verified businesses can have: (1) Verified Badge — a visual ✅ Verified badge that instantly builds trust; (2) \"Business checked by GjejDirekt\" on the listing page, which is psychologically very strong in Albania; (3) Priority support — faster changes and direct assistance; (4) More credibility in search — the badge naturally increases CTR (not a ranking boost, but an indirect advantage); (5) Protection against fake listings — users understand who is real and active.",
+      al: "Bizneset Verified mund të kenë: (1) Verified Badge — një badge vizual ✅ Verified që rrit besimin menjëherë; (2) “Business checked by GjejDirekt” tek faqja e listing-ut, shumë e fortë psikologjikisht në Shqipëri; (3) Prioritet në support — ndryshime më të shpejta dhe asistencë direkte; (4) Më shumë kredibilitet në kërkim — badge rrit CTR natyralisht (jo ranking boost, por avantazh indirekt); (5) Mbrojtje nga listings fake — useri kupton kush është real dhe aktiv."
     }
   },
   {
@@ -58,12 +58,12 @@ const FAQ_DATA: FAQItem[] = [
   {
     category: "travelers",
     question: { en: "Can I contact the business directly?", al: "A mund të kontaktoj direkt biznesin?" },
-    answer: { en: "Yes. TripShqip is built for direct contact between tourists and businesses.", al: "Po. TripShqip është ndërtuar për kontakt të drejtpërdrejtë midis turistëve dhe bizneseve." }
+    answer: { en: "Yes. GjejDirekt is built for direct contact between tourists and businesses.", al: "Po. GjejDirekt është ndërtuar për kontakt të drejtpërdrejtë midis turistëve dhe bizneseve." }
   },
   {
     category: "travelers",
-    question: { en: "What categories can I find on TripShqip?", al: "Çfarë kategorish mund të gjej në TripShqip?" },
-    answer: { en: "On TripShqip you can find: Accommodation, Restaurants, Attractions, Events & Activities, Tourism Services, Local Products, and Transport & Taxi.", al: "Në TripShqip mund të gjeni: Akomodime, Restorante, Atraksione, Evente & Aktivitete, Shërbime Turistike, Produkte Lokale dhe Transport & Taxi." }
+    question: { en: "What categories can I find on GjejDirekt?", al: "Çfarë kategorish mund të gjej në GjejDirekt?" },
+    answer: { en: "On GjejDirekt you can find: Accommodation, Restaurants, Attractions, Events & Activities, Tourism Services, Local Products, and Transport & Taxi.", al: "Në GjejDirekt mund të gjeni: Akomodime, Restorante, Atraksione, Evente & Aktivitete, Shërbime Turistike, Produkte Lokale dhe Transport & Taxi." }
   },
   {
     category: "payments",
@@ -77,12 +77,12 @@ const FAQ_DATA: FAQItem[] = [
   },
   {
     category: "travelers",
-    question: { en: "Does TripShqip work on mobile?", al: "A funksionon TripShqip në mobile?" },
-    answer: { en: "Yes, TripShqip is built mobile-first for a fast and simple experience.", al: "Po, TripShqip është ndërtuar me fokus mobile-first për një eksperiencë të shpejtë dhe të thjeshtë." }
+    question: { en: "Does GjejDirekt work on mobile?", al: "A funksionon GjejDirekt në mobile?" },
+    answer: { en: "Yes, GjejDirekt is built mobile-first for a fast and simple experience.", al: "Po, GjejDirekt është ndërtuar me fokus mobile-first për një eksperiencë të shpejtë dhe të thjeshtë." }
   },
   {
     category: "travelers",
-    question: { en: "How can I contact TripShqip?", al: "Si mund të kontaktoj TripShqip?" },
+    question: { en: "How can I contact GjejDirekt?", al: "Si mund të kontaktoj GjejDirekt?" },
     answer: { en: "You can contact us through the \"Contact\" page or our social networks.", al: "Mund të na kontaktoni përmes faqes “Kontakt” ose rrjeteve tona sociale." }
   }
 ];
@@ -124,8 +124,8 @@ export default function FAQPage() {
         className="relative overflow-hidden"
         style={{ background: "var(--surface-cream)", borderBottom: "1px solid var(--border-soft)" }}
       >
-        <div className="pointer-events-none absolute -top-20 -right-20 w-[400px] h-[400px] rounded-full" style={{ background: "rgba(31,138,112,0.06)", filter: "blur(100px)" }} />
-        <div className="pointer-events-none absolute -bottom-12 -left-12 w-[300px] h-[300px] rounded-full" style={{ background: "rgba(31,138,112,0.05)", filter: "blur(80px)" }} />
+        <div className="pointer-events-none absolute -top-20 -right-20 w-[400px] h-[400px] rounded-full" style={{ background: "rgba(225,29,46,0.06)", filter: "blur(100px)" }} />
+        <div className="pointer-events-none absolute -bottom-12 -left-12 w-[300px] h-[300px] rounded-full" style={{ background: "rgba(225,29,46,0.05)", filter: "blur(80px)" }} />
 
         <div className="page-shell relative z-10 py-8 text-center max-w-2xl mx-auto">
           {/* Breadcrumb */}
@@ -310,7 +310,7 @@ export default function FAQPage() {
           <a
             href="mailto:infoturizemalbania@gmail.com"
             className="inline-flex items-center gap-2 rounded-full px-6 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90"
-            style={{ background: "var(--brand-accent)", boxShadow: "0 2px 10px rgba(34,153,120,0.22)" }}
+            style={{ background: "var(--brand-accent)", boxShadow: "0 2px 10px rgba(225,29,46,0.22)" }}
           >
             infoturizemalbania@gmail.com
           </a>

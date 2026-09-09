@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
 import Listing from "@/models/Listing";
 import { getAuthUser } from "@/lib/auth";
+import { isObjectId } from "@/lib/utils";
 
 export async function DELETE(
   request: Request,
@@ -11,6 +12,10 @@ export async function DELETE(
     const auth = await getAuthUser();
     if (!auth || auth.role !== "admin") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    if (!isObjectId(params.id)) {
+      return NextResponse.json({ error: "Listing not found" }, { status: 404 });
     }
 
     await connectDB();

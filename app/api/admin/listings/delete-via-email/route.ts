@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
 import Listing from "@/models/Listing";
 import Report from "@/models/Report";
+import { isObjectId } from "@/lib/utils";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -12,6 +13,10 @@ export async function GET(request: Request) {
 
   if (!id || !token || token !== expectedToken) {
     return new NextResponse("Unauthorized or missing parameters", { status: 401 });
+  }
+
+  if (!isObjectId(id)) {
+    return new NextResponse("Listing not found or already deleted", { status: 404 });
   }
 
   try {

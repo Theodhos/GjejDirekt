@@ -3,7 +3,8 @@ import { connectDB } from "@/lib/db";
 import { getAuthUser } from "@/lib/auth";
 import { sendMail } from "@/lib/mailer";
 import { logActivity } from "@/lib/activity";
-import { slugify } from "@/lib/utils";
+import { escapeRegex, slugify } from "@/lib/utils";
+import { apiError } from "@/lib/api";
 import { categories, getCategorySearchValues, getSubcategorySearchValues } from "@/lib/constants";
 import Listing from "@/models/Listing";
 import User from "@/models/User";
@@ -35,10 +36,6 @@ function parseCoordinates(body: Record<string, unknown>) {
   return { lat, lng };
 }
 
-function escapeRegex(value: string) {
-  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-}
-
 function buildQuery(url: URL) {
   const search = url.searchParams.get("q")?.trim();
   const category = url.searchParams.get("category")?.trim();
@@ -55,8 +52,8 @@ function buildQuery(url: URL) {
   const query: Record<string, unknown> = { status: "approved" };
   if (category) query.category = { $in: getCategorySearchValues(category) };
   if (subcategory) query.subcategory = { $in: getSubcategorySearchValues(category || undefined, subcategory) };
-  if (location) query.location = { $regex: location, $options: "i" };
-  if (country) query.country = { $regex: country, $options: "i" };
+  if (location) query.location = { $regex: escapeRegex(location), $options: "i" };
+  if (country) query.country = { $regex: escapeRegex(country), $options: "i" };
   if (featured) query.featured = true;
   if (verifiedOnly) query.verified = true;
   if (minPrice || maxPrice) {
@@ -109,7 +106,7 @@ export async function GET(request: Request) {
 
     return NextResponse.json({ listings: sorted });
   } catch (error) {
-    return NextResponse.json({ error: error instanceof Error ? error.message : "Failed to load listings" }, { status: 500 });
+    return apiError("Failed to load listings", 500, error);
   }
 }
 
@@ -215,6 +212,6 @@ export async function POST(request: Request) {
     const owner = await User.findById(auth.id).lean<any>();
     return NextResponse.json({ listing, owner });
   } catch (error) {
-    return NextResponse.json({ error: error instanceof Error ? error.message : "Failed to create listing" }, { status: 500 });
+    return apiError("Failed to create listing", 500, error);
   }
 }

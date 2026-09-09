@@ -1,13 +1,14 @@
 import SafeImage from "@/components/ui/SafeImage";
 import Link from "next/link";
-import { Sparkles, MapPin, ArrowLeft } from "lucide-react";
-import SearchFilters from "@/components/SearchFilters";
-import ListingCard from "@/components/ListingCard";
+import { MapPin, SearchX } from "lucide-react";
+import BusinessCard from "@/components/home/BusinessCard";
+import EmptyState from "@/components/ui/EmptyState";
 import { albaniaCities } from "@/lib/albania-cities";
 import { categories, getCategorySearchValues, getSubcategorySearchValues } from "@/lib/constants";
 import { connectDB } from "@/lib/db";
 import Listing from "@/models/Listing";
 import { sortByPackageTier } from "@/lib/ranking";
+import { escapeRegex } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
@@ -21,19 +22,18 @@ export default async function SubcategoryPage({
   await connectDB();
 
   const { category, subcategory } = params;
-  
-  // Find category label
+
   const categoryObj = categories.find(c => c.value === category);
   const subcategoryObj = categoryObj?.subcategories.find(s => s.value === subcategory);
   const subcategoryLabel = subcategoryObj?.label || subcategory.charAt(0).toUpperCase() + subcategory.slice(1);
 
-  const query: Record<string, unknown> = { 
+  const query: Record<string, unknown> = {
     status: "approved",
     category: { $in: getCategorySearchValues(category) },
     subcategory: { $in: getSubcategorySearchValues(category, subcategory) }
   };
 
-  if (typeof searchParams.location === "string" && searchParams.location) query.location = { $regex: searchParams.location, $options: "i" };
+  if (typeof searchParams.location === "string" && searchParams.location) query.location = { $regex: escapeRegex(searchParams.location), $options: "i" };
   if (typeof searchParams.q === "string" && searchParams.q) query.$text = { $search: searchParams.q };
 
   const sort: Record<string, 1 | -1> =
@@ -46,112 +46,123 @@ export default async function SubcategoryPage({
   const found = await Listing.find(query).sort(sort).lean<any>();
   const listings = sortByPackageTier(found);
 
+  const activeLocation = typeof searchParams.location === "string" ? searchParams.location : "";
+  const basePath = `/services/${category}/${subcategory}`;
+
   return (
-    <main className="min-h-screen bg-slate-50/50">
-      {/* Category Banner */}
-      <section className="relative h-[40vh] min-h-[350px] w-full overflow-hidden">
+    <div className="min-h-screen" style={{ background: "var(--surface-page)" }}>
+      {/* Compact photo band, same proportions as the city page. */}
+      <section className="relative overflow-hidden" style={{ background: "#171A1F" }}>
         <SafeImage
           src={categoryObj?.image}
           alt={subcategoryLabel}
-          fallbackSrc="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=2000&q=80"
           fill
-          className="object-cover scale-105"
+          priority
+          className="object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-slate-950/40 via-slate-950/20 to-slate-950/80" />
-        <div className="absolute inset-0 flex flex-col items-center justify-center text-center text-white px-4">
-            <p className="text-xs uppercase tracking-[0.4em] font-black text-brand-400 mb-4">{categoryObj?.label || "Discovery"}</p>
-            <h1 className="display-font text-5xl sm:text-7xl font-black tracking-tighter mb-6">
-                {subcategoryLabel} <span className="italic font-light text-slate-300">in Albania</span>
-            </h1>
-            <div className="flex items-center gap-2 text-sm font-bold text-slate-200">
-                <Link href="/" className="hover:text-white transition">Home</Link>
-                <span className="opacity-40">/</span>
-                <Link href="/services" className="hover:text-white transition">Services</Link>
-                <span className="opacity-40">/</span>
-                <span className="text-brand-400">{subcategoryLabel}</span>
-            </div>
-        </div>
-      </section>
-
-      <section className="page-shell -mt-16 relative z-20 pb-10">
-        <div className="surface mb-8 flex flex-col items-center justify-between gap-6 border-none p-5 shadow-2xl sm:p-8 md:mb-12 md:flex-row md:gap-8 lg:p-12">
-            <div className="max-w-2xl text-center md:text-left">
-                <h2 className="text-2xl sm:text-3xl font-black text-slate-950 mb-4">Explore {listings.length} premium {subcategoryLabel.toLowerCase()}</h2>
-                <p className="text-slate-600 leading-relaxed">
-                    We&apos;ve curated the best {subcategoryLabel.toLowerCase()} across Albania. Each listing is verified for quality and trust to ensure you have the best experience.
-                </p>
-            </div>
-            <div className="flex min-w-[150px] flex-1 flex-col items-center gap-2 rounded-[2rem] border border-brand-100 bg-brand-50 px-6 py-5 sm:min-w-[180px] sm:px-10 sm:py-6">
-                <span className="text-5xl font-black text-brand-900 leading-none">{listings.length}</span>
-                <span className="text-xs font-bold text-brand-700 uppercase tracking-widest">Total Results</span>
-            </div>
-        </div>
-
-        {/* Quick City Filters */}
-        <div className="mb-12">
-            <div className="mb-5 flex flex-wrap items-center justify-between gap-3 sm:mb-6">
-                <h3 className="text-lg font-black text-slate-950 flex items-center gap-2">
-                    <MapPin className="w-5 h-5 text-brand-600" />
-                    Browse by Popular Destinations
-                </h3>
-            </div>
-            <div className="flex flex-wrap gap-3">
-                <Link
-                    href={`/services/${category}/${subcategory}`}
-                    className={`inline-flex items-center rounded-full px-6 py-2.5 text-sm font-bold transition ${!searchParams.location ? 'bg-slate-950 text-white shadow-lg' : 'bg-white text-slate-700 border border-slate-200 hover:border-brand-300'}`}
-                >
-                    All Regions
+        <div
+          className="absolute inset-0"
+          style={{ background: "linear-gradient(180deg, rgba(12,14,18,0.55) 0%, rgba(12,14,18,0.82) 100%)" }}
+        />
+        <div className="page-shell relative z-10 py-7 sm:py-10">
+          <p
+            className="mb-1.5 flex flex-wrap items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.16em]"
+            style={{ color: "rgba(255,255,255,0.75)" }}
+          >
+            <Link href="/" className="hover:text-white">Kreu</Link>
+            <span className="opacity-50">/</span>
+            <Link href="/services" className="hover:text-white">Shërbime</Link>
+            {categoryObj && (
+              <>
+                <span className="opacity-50">/</span>
+                <Link href={`/categories/${categoryObj.value}`} className="hover:text-white">
+                  {categoryObj.label}
                 </Link>
-                {albaniaCities.slice(0, 10).map((city) => {
-                    const isActive = searchParams.location === city.label;
-                    return (
-                        <Link
-                            key={city.value}
-                            href={`/services/${category}/${subcategory}?location=${encodeURIComponent(city.label)}`}
-                            className={`inline-flex items-center rounded-full px-6 py-2.5 text-sm font-bold transition ${isActive ? 'bg-brand-600 text-white shadow-lg shadow-brand-600/20' : 'bg-white text-slate-700 border border-slate-200 hover:border-brand-300'}`}
-                        >
-                            {city.label}
-                        </Link>
-                    );
-                })}
-            </div>
-        </div>
-          
-        <div className="space-y-8">
-            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 pb-5 sm:pb-6">
-                <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-2xl bg-slate-950 flex items-center justify-center text-white">
-                        <Sparkles className="w-6 h-6" />
-                    </div>
-                    <div>
-                        <h2 className="text-xl font-black text-slate-950 uppercase tracking-tight">Verified Listings</h2>
-                        <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">Hand-picked by our editors</p>
-                    </div>
-                </div>
-                <div className="hidden sm:flex items-center gap-2 text-sm text-slate-500 font-medium">
-                    Showing <span className="text-slate-950 font-black">{listings.length}</span> results found
-                </div>
-            </div>
-
-            <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              {listings.length ? (
-                listings.map((listing: any) => <ListingCard key={listing._id.toString()} listing={listing} />)
-              ) : (
-                <div className="col-span-full py-32 flex flex-col items-center justify-center surface border-dashed bg-white/50">
-                    <div className="w-24 h-24 bg-slate-100 rounded-full flex items-center justify-center mb-6">
-                        <Sparkles className="w-10 h-10 text-slate-300" />
-                    </div>
-                    <p className="text-slate-500 text-lg font-bold">No results found for your selection.</p>
-                    <p className="text-slate-400 text-sm mt-2">Try clearing your location filter to see all {subcategoryLabel.toLowerCase()}.</p>
-                    <Link href={`/services/${category}/${subcategory}`} className="mt-8 px-8 py-3 bg-slate-950 text-white rounded-full font-black text-sm hover:bg-brand-600 transition shadow-xl">
-                        Clear all filters
-                    </Link>
-                </div>
-              )}
-            </div>
+              </>
+            )}
+          </p>
+          <h1
+            className="text-[26px] font-bold text-white sm:text-[2.25rem]"
+            style={{ letterSpacing: "-0.025em", lineHeight: 1.15 }}
+          >
+            {subcategoryLabel}
+          </h1>
+          <p className="mt-1.5 max-w-lg text-[13px] sm:text-[15px]" style={{ color: "rgba(255,255,255,0.75)" }}>
+            {listings.length} biznese të verifikuara — porosit ose rezervo direkt.
+          </p>
         </div>
       </section>
-    </main>
+
+      <div className="page-shell space-y-4 py-4 sm:py-6">
+        {/* City filter — the one filter that matters on a subcategory page. */}
+        <div className="gd-rail -mx-4 px-4 sm:-mx-6 sm:px-6 lg:mx-0 lg:px-0">
+          <Link
+            href={basePath}
+            className="gd-quick-pill"
+            style={
+              !activeLocation
+                ? { background: "var(--text-primary)", color: "#fff", borderColor: "var(--text-primary)" }
+                : undefined
+            }
+          >
+            <MapPin className="h-4 w-4" />
+            Të gjitha
+          </Link>
+          {albaniaCities.slice(0, 10).map((city) => {
+            const active = activeLocation === city.label;
+            return (
+              <Link
+                key={city.value}
+                href={`${basePath}?location=${encodeURIComponent(city.label)}`}
+                className="gd-quick-pill"
+                style={
+                  active
+                    ? { background: "var(--text-primary)", color: "#fff", borderColor: "var(--text-primary)" }
+                    : undefined
+                }
+              >
+                {city.label}
+              </Link>
+            );
+          })}
+        </div>
+
+        <p className="text-[13px]" style={{ color: "var(--text-secondary)" }}>
+          <strong style={{ color: "var(--text-primary)" }}>{listings.length}</strong>{" "}
+          {listings.length === 1 ? "biznes" : "biznese"}
+          {activeLocation && ` në ${activeLocation}`}
+        </p>
+
+        {listings.length ? (
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+            {listings.map((listing: any) => (
+              <BusinessCard key={listing._id.toString()} listing={listing} />
+            ))}
+          </div>
+        ) : (
+          <EmptyState
+            icon={SearchX}
+            title={`Ende asnjë biznes te ${subcategoryLabel}`}
+            description={
+              activeLocation
+                ? `Nuk ka biznese në ${activeLocation}. Provo një qytet tjetër.`
+                : "Bëhu i pari që regjistrohet në këtë kategori."
+            }
+            action={
+              <div className="flex flex-wrap items-center justify-center gap-2">
+                <Link href="/create-listing" className="btn-primary">
+                  Regjistro biznesin tënd
+                </Link>
+                {activeLocation && (
+                  <Link href={basePath} className="btn-secondary">
+                    Pastro filtrat
+                  </Link>
+                )}
+              </div>
+            }
+          />
+        )}
+      </div>
+    </div>
   );
 }
-

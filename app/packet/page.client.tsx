@@ -48,8 +48,8 @@ function PacketPageClient() {
     const userName = user?.name || user?.email || "N/A";
     const userEmail = user?.email || "N/A";
     const requestText = language === "en"
-      ? `Hello TripShqip! I want to buy the ${pkg.name} package.\nPrice: €${pkg.price} ${pkg.priceSuffix}.\nDescription: ${pkg.description}.\nFeatures:\n- ${pkg.features.map((f: any) => (f.included ? "✅ " : "❌ ") + f.text).join("\n- ")}\nUser: ${userName}\nEmail: ${userEmail}\nListing ID: ${listingId || "N/A"}`
-      : `Përshëndetje TripShqip! Dua të blej paketën ${pkg.name}.\nÇmimi: €${pkg.price} ${pkg.priceSuffix}.\nPërshkrimi: ${pkg.description}.\nKarakteristikat:\n- ${pkg.features.map((f: any) => (f.included ? "✅ " : "❌ ") + f.text).join("\n- ")}\nPërdoruesi: ${userName}\nEmail: ${userEmail}\nListing ID: ${listingId || "N/A"}`;
+      ? `Hello GjejDirekt! I want to buy the ${pkg.name} package.\nPrice: €${pkg.price} ${pkg.priceSuffix}.\nDescription: ${pkg.description}.\nFeatures:\n- ${pkg.features.map((f: any) => (f.included ? "✅ " : "❌ ") + f.text).join("\n- ")}\nUser: ${userName}\nEmail: ${userEmail}\nListing ID: ${listingId || "N/A"}`
+      : `Përshëndetje GjejDirekt! Dua të blej paketën ${pkg.name}.\nÇmimi: €${pkg.price} ${pkg.priceSuffix}.\nPërshkrimi: ${pkg.description}.\nKarakteristikat:\n- ${pkg.features.map((f: any) => (f.included ? "✅ " : "❌ ") + f.text).join("\n- ")}\nPërdoruesi: ${userName}\nEmail: ${userEmail}\nListing ID: ${listingId || "N/A"}`;
 
     const whatsappUrl = `https://wa.me/355695429998?text=${encodeURIComponent(requestText)}`;
     window.open(whatsappUrl, "_blank");
@@ -197,8 +197,8 @@ function PacketPageClient() {
         className="relative overflow-hidden"
         style={{ background: "var(--surface-cream)", borderBottom: "1px solid var(--border-soft)" }}
       >
-        <div className="pointer-events-none absolute -top-20 -right-20 w-[400px] h-[400px] rounded-full" style={{ background: "rgba(31,138,112,0.06)", filter: "blur(100px)" }} />
-        <div className="pointer-events-none absolute -bottom-12 -left-12 w-[300px] h-[300px] rounded-full" style={{ background: "rgba(31,138,112,0.05)", filter: "blur(80px)" }} />
+        <div className="pointer-events-none absolute -top-20 -right-20 w-[400px] h-[400px] rounded-full" style={{ background: "rgba(225,29,46,0.06)", filter: "blur(100px)" }} />
+        <div className="pointer-events-none absolute -bottom-12 -left-12 w-[300px] h-[300px] rounded-full" style={{ background: "rgba(225,29,46,0.05)", filter: "blur(80px)" }} />
 
         <div className="page-shell relative z-10 py-8 text-center max-w-2xl mx-auto">
           <p className="eyebrow mb-4">
@@ -231,7 +231,7 @@ function PacketPageClient() {
                   ? "2px solid var(--brand-accent)"
                   : "1px solid var(--border-soft)",
                 borderRadius: "16px",
-                boxShadow: pkg.popular ? "0 8px 32px rgba(31,138,112,0.18)" : "var(--shadow-card)",
+                boxShadow: pkg.popular ? "0 8px 32px rgba(225,29,46,0.18)" : "var(--shadow-card)",
                 padding: "2rem"
               }}
             >
@@ -327,7 +327,7 @@ function PacketPageClient() {
                   className="flex w-full items-center justify-center gap-2 rounded-full py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90 active:scale-95"
                   style={{
                     background: pkg.popular ? "var(--brand-accent)" : "var(--text-primary)",
-                    boxShadow: pkg.popular ? "0 4px 16px rgba(31,138,112,0.18)" : "none"
+                    boxShadow: pkg.popular ? "0 4px 16px rgba(225,29,46,0.18)" : "none"
                   }}
                 >
                   {pkg.cta}

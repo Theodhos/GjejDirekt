@@ -4,6 +4,7 @@ import CategoryClient from "@/components/categories/CategoryClient";
 import { connectDB } from "@/lib/db";
 import Listing from "@/models/Listing";
 import { rankListings } from "@/lib/ranking";
+import { safeJson } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
@@ -23,10 +24,9 @@ export default async function CategoryPage({ params }: { params: { category: str
   if (!category) notFound();
 
   const listings = await getListingsByCategory(category.value);
-  const serializedListings = listings.map((l) => ({
-    ...l,
-    _id: l._id.toString(),
-  }));
+  // Converting only _id left ObjectId/Date values (owner, createdAt) in the tree,
+  // which React cannot hand to a Client Component. safeJson flattens all of them.
+  const serializedListings = safeJson(listings);
 
   return <CategoryClient category={category} categories={categories} initialListings={serializedListings} />;
 }

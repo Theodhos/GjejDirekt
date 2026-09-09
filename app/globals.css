@@ -3,40 +3,73 @@
 @tailwind utilities;
 
 /* ============================================================
-   DESIGN TOKENS — Premium Minimalist (The Stay Directory style)
+   DESIGN TOKENS — GjejDirekt
+   Local business directory: white surfaces, red accent, round
+   category pills, and a persistent mobile tab bar.
    ============================================================ */
 :root {
   color-scheme: light;
-  /* Logo (h-7/h-8) + the "Platformë Turistike" line + the bar's py-2.5.
-     Keep in sync with components/layout/Header.tsx — the fixed header is offset
-     by this value, so an undersized value hides page content behind the bar. */
-  --header-height: 64px;
+  /* Logo row height + the bar's vertical padding. Keep in sync with
+     components/layout/Header.tsx — the fixed header is offset by this value,
+     so an undersized value hides page content behind the bar. */
+  --header-height: 56px;
+  /* Height of the fixed mobile tab bar (components/layout/BottomNav.tsx).
+     Pages add it as bottom padding so the last row is never covered. */
+  --bottom-nav-height: 62px;
 
   /* Surface Colors */
-  --surface-page:    #F5F7F8;
-  --surface-cream:   #F5F7F8;
+  --surface-page:    #F6F7F9;
+  --surface-cream:   #F6F7F9;
   --surface-white:   #FFFFFF;
-  --surface-subtle:  #EEF1F3;
+  --surface-subtle:  #EEF1F4;
 
   /* Text */
-  --text-primary:    #1F2937;
-  --text-secondary:  #374151;
-  --text-tertiary:   #6B7280;
+  --text-primary:    #16181D;
+  --text-secondary:  #4B5563;
+  --text-tertiary:   #8A919E;
 
-  /* Brand */
-  --brand-accent:    #1F8A70;
-  --brand-hover:     #176B5A;
-  --brand-light:     rgba(31, 138, 112, 0.08);
-  --brand-ring:      rgba(31, 138, 112, 0.18);
-  --brand-border:    rgba(31, 138, 112, 0.22);
+  /* Brand — GjejDirekt red */
+  --brand-accent:    #E11D2E;
+  --brand-hover:     #C0111F;
+  --brand-light:     rgba(225, 29, 46, 0.08);
+  --brand-ring:      rgba(225, 29, 46, 0.18);
+  --brand-border:    rgba(225, 29, 46, 0.22);
+
+  /* Secondary signals */
+  --verified-blue:   #1D74E0;
+  --whatsapp-green:  #25D366;
+
+  /* Category accents — one per top-level category tile */
+  --cat-ushqim-pije:           #E11D2E;
+  --cat-hotele:                #2563EB;
+  --cat-shopping:              #F5A524;
+  --cat-supermarkete:          #16A34A;
+  --cat-bukuri:                #EC4899;
+  --cat-shendet:               #10B981;
+  --cat-auto:                  #243B53;
+  --cat-shtepi-ndertim:        #7C3AED;
+  --cat-sherbime-shtepi:       #F97316;
+  --cat-sherbime-profesionale: #0F766E;
+  --cat-evente:                #C026D3;
+  --cat-turizem:               #06B6D4;
+  --cat-arsim:                 #4F46E5;
+  --cat-sport-fitness:         #65A30D;
+  --cat-kafshe:                #D97706;
+  --cat-biznese-industri:      #475569;
+  --cat-all:                   #334155;
+
+  /* Retired category names — kept so any older markup still resolves a colour. */
+  --cat-restorante:  var(--cat-ushqim-pije);
+  --cat-imobiliare:  var(--cat-shtepi-ndertim);
+  --cat-sherbime:    var(--cat-sherbime-shtepi);
 
   /* Borders */
-  --border-soft:     #E5E7EB;
-  --border-medium:   #D1D5DB;
-  --border-strong:   #9CA3AF;
+  --border-soft:     #E9EBEF;
+  --border-medium:   #D8DBE1;
+  --border-strong:   #A9AFBA;
 
   /* Shadows */
-  --shadow-card:     0 1px 3px rgba(15, 20, 25, 0.05), 0 4px 16px rgba(15, 20, 25, 0.05);
+  --shadow-card:     0 1px 2px rgba(15, 20, 25, 0.04), 0 4px 14px rgba(15, 20, 25, 0.05);
   --shadow-hover:    0 4px 12px rgba(15, 20, 25, 0.07), 0 12px 32px rgba(15, 20, 25, 0.08);
   --shadow-float:    0 8px 32px rgba(15, 20, 25, 0.12);
   --shadow-nav:      0 1px 0 rgba(15, 20, 25, 0.07);
@@ -44,11 +77,15 @@
 }
 
 @media (min-width: 640px) {
-  :root { --header-height: 70px; }
+  :root { --header-height: 56px; }
 }
 
-@media (min-width: 768px) {
-  :root { --header-height: 74px; }
+@media (min-width: 1024px) {
+  :root {
+    --header-height: 56px;
+    /* The tab bar is phone-only, so desktop pages reclaim the space. */
+    --bottom-nav-height: 0px;
+  }
 }
 
 /* ============================================================
@@ -56,7 +93,6 @@
    ============================================================ */
 html {
   scroll-behavior: smooth;
-  overflow-x: hidden;
 }
 
 body {
@@ -89,7 +125,7 @@ p {
 a { transition: color 0.15s ease, opacity 0.15s ease; }
 
 ::selection {
-  background: rgba(31, 138, 112, 0.15);
+  background: var(--brand-light);
   color: var(--text-primary);
 }
 
@@ -282,18 +318,139 @@ a { transition: color 0.15s ease, opacity 0.15s ease; }
   color: #fff;
   font-size: 0.875rem;
   font-weight: 600;
-  border-radius: 999px;
+  border-radius: 12px;
   border: none;
   cursor: pointer;
   transition: background 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
-  box-shadow: 0 2px 8px rgba(31, 138, 112, 0.2);
+  box-shadow: 0 2px 8px rgba(225, 29, 46, 0.22);
 }
 .btn-primary:hover {
   background: var(--brand-hover);
-  box-shadow: 0 4px 16px rgba(31, 138, 112, 0.28);
+  box-shadow: 0 4px 16px rgba(225, 29, 46, 0.3);
   transform: translateY(-1px);
 }
 .btn-primary:active { transform: translateY(0); }
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.25rem;
+  background: var(--surface-white);
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  font-weight: 600;
+  border-radius: 12px;
+  border: 1px solid var(--border-medium);
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+.btn-secondary:hover {
+  background: var(--surface-subtle);
+  border-color: var(--border-strong);
+}
+
+/* ============================================================
+   GJEJDIREKT PATTERN LIBRARY
+   The homepage defines these; every other page reuses them so the
+   whole product reads as one design.
+   ============================================================ */
+
+/* Section header: bold title on the left, red "see all" link on the right */
+.gd-section-head {
+  @apply mb-3 flex items-end justify-between gap-3;
+}
+.gd-section-title {
+  font-size: 1.0625rem;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  color: var(--text-primary);
+  line-height: 1.25;
+}
+@media (min-width: 640px) {
+  .gd-section-title { font-size: 1.25rem; }
+}
+.gd-section-link {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--brand-accent);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.gd-section-link:hover { color: var(--brand-hover); }
+
+/* White panel that groups a block of content, as on the homepage */
+.gd-panel {
+  background: var(--surface-white);
+  border: 1px solid var(--border-soft);
+  border-radius: 16px;
+  box-shadow: var(--shadow-card);
+}
+
+/* Card used for businesses and products */
+.gd-card {
+  background: var(--surface-white);
+  border: 1px solid var(--border-soft);
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+  transition: box-shadow 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
+}
+.gd-card:hover {
+  box-shadow: var(--shadow-hover);
+  transform: translateY(-2px);
+  border-color: var(--border-medium);
+}
+
+/* Blue VERIFIED ribbon shown on approved businesses */
+.gd-verified {
+  @apply inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-[0.08em] text-white;
+  background: var(--verified-blue);
+  letter-spacing: 0.08em;
+}
+
+/* Round quick-filter pill under the hero search */
+.gd-quick-pill {
+  @apply inline-flex shrink-0 items-center gap-1.5 rounded-full px-3.5 py-2 text-[13px] font-semibold;
+  background: var(--surface-white);
+  color: var(--text-primary);
+  border: 1px solid var(--border-soft);
+  box-shadow: 0 1px 3px rgba(15, 20, 25, 0.08);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.gd-quick-pill:active { transform: scale(0.96); }
+
+/* Circular category tile in the icon grid */
+.gd-cat-tile {
+  @apply flex h-12 w-12 items-center justify-center rounded-full text-white;
+  box-shadow: 0 3px 10px rgba(15, 20, 25, 0.14);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+.gd-cat-link:hover .gd-cat-tile,
+.gd-cat-link:focus-visible .gd-cat-tile {
+  transform: translateY(-2px) scale(1.04);
+  box-shadow: 0 6px 16px rgba(15, 20, 25, 0.18);
+}
+@media (min-width: 640px) {
+  .gd-cat-tile { @apply h-14 w-14; }
+}
+
+/* Price, always in Lekë, always red */
+.gd-price {
+  font-weight: 700;
+  color: var(--brand-accent);
+}
+
+/* Rail that scrolls sideways on phones without a visible scrollbar */
+.gd-rail {
+  @apply flex snap-x snap-mandatory gap-3 overflow-x-auto pb-1;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  /* Cards must be able to bleed to the screen edge, matching the mock. */
+  scroll-padding-left: 0;
+}
+.gd-rail::-webkit-scrollbar { display: none; }
 
 /* ============================================================
    SECTION BACKGROUNDS
@@ -400,7 +557,7 @@ a { transition: color 0.15s ease, opacity 0.15s ease; }
   /* Embeds (Google Maps, YouTube) must never push the page sideways. */
   iframe, embed, object { max-width: 100%; }
 
-  .surface, .travel-card, .glass { border-radius: 14px !important; }
+  .surface, .travel-card, .glass, .gd-panel { border-radius: 14px !important; }
 
   .chip { font-size: 0.75rem; padding: 0.35rem 0.75rem; }
 

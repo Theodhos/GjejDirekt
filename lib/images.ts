@@ -22,6 +22,21 @@ const OPTIMIZED_HOSTS = [
   "www.gstatic.com"
 ];
 
+/**
+ * Google Maps photo paths on the googleusercontent CDN. They come from right-clicking
+ * a photo on a Maps result → "Copy image address", so they look like a direct image
+ * link, but they are signed and expire: Google then answers 403 to every client. The
+ * optimizer turns that into a 500 on /_next/image (after a slow retry), so these are
+ * rejected up front like a share link. Profile pictures (/a/…) are stable and stay.
+ */
+const EXPIRING_GOOGLE_PHOTO_PREFIXES = ["/grass-cs/", "/gps-cs/", "/gps-cs-s/", "/gps-proxy/"];
+
+function isExpiringGooglePhoto(url: URL): boolean {
+  const host = url.hostname.toLowerCase();
+  if (host !== "googleusercontent.com" && !host.endsWith(".googleusercontent.com")) return false;
+  return EXPIRING_GOOGLE_PHOTO_PREFIXES.some((prefix) => url.pathname.startsWith(prefix));
+}
+
 /** Shorteners and share links — they resolve to an HTML page, never to an image. */
 const NON_IMAGE_HOSTS = [
   "share.google",
@@ -56,6 +71,7 @@ export function isUsableImageSrc(src?: string | null): src is string {
   const url = parse(value);
   if (!url) return false;
   if (url.protocol !== "https:" && url.protocol !== "http:") return false;
+  if (isExpiringGooglePhoto(url)) return false;
   return !NON_IMAGE_HOSTS.includes(url.hostname.toLowerCase());
 }
 
@@ -72,6 +88,16 @@ export function resolveImageSrc(src?: string | null, fallback: string = FALLBACK
 export function imageUrlError(value: string | null | undefined, english: boolean): string | undefined {
   const raw = (value ?? "").trim();
   if (!raw || isUsableImageSrc(raw)) return undefined;
+
+  // "Copy image address" on a Google Maps photo is what the generic hint below asks
+  // for, so that advice would send the user in a circle — those links just expire.
+  const url = parse(raw);
+  if (url && isExpiringGooglePhoto(url)) {
+    return english
+      ? "Google Maps photo links expire after a few days. Upload the photo instead, or use a link to an image you host."
+      : "Linket e fotove nga Google Maps skadojnë pas disa ditësh. Ngarko foton, ose përdor një link të një imazhi që e ke ti.";
+  }
+
   return english
     ? "Not a direct image link. Open the image, right-click → “Copy image address”, then paste that URL."
     : "Nuk është link i drejtpërdrejtë i imazhit. Hap imazhin, klik i djathtë → “Kopjo adresën e imazhit”, pastaj ngjite atë link.";

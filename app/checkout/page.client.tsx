@@ -163,7 +163,7 @@ function CheckoutPageClient() {
     return (
       <main className="min-h-screen flex items-center justify-center p-4" style={{ background: "var(--surface-page)" }}>
         <div className="text-center max-w-md animate-in fade-in zoom-in duration-700">
-          <div className="w-28 h-28 rounded-full flex items-center justify-center mx-auto mb-10" style={{ background: "rgba(34,153,120,0.1)" }}>
+          <div className="w-28 h-28 rounded-full flex items-center justify-center mx-auto mb-10" style={{ background: "rgba(225,29,46,0.1)" }}>
             <CheckCircle2 className="w-14 h-14" style={{ color: "var(--brand-accent)" }} />
           </div>
           <h1

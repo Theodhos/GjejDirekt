@@ -1,5 +1,6 @@
 import bcrypt from "bcryptjs";
 import { NextResponse } from "next/server";
+import { apiError } from "@/lib/api";
 import { AUTH_COOKIE, getAuthUser, signToken } from "@/lib/auth";
 import { connectDB } from "@/lib/db";
 import { logActivity } from "@/lib/activity";
@@ -95,6 +96,6 @@ export async function PATCH(request: Request) {
 
     return response;
   } catch (error) {
-    return NextResponse.json({ error: error instanceof Error ? error.message : "Profile update failed" }, { status: 500 });
+    return apiError("Profile update failed", 500, error);
   }
 }

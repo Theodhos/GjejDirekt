@@ -1,6 +1,7 @@
 import crypto from "crypto";
 import bcrypt from "bcryptjs";
 import { NextResponse } from "next/server";
+import { apiError } from "@/lib/api";
 import { connectDB } from "@/lib/db";
 import User from "@/models/User";
 
@@ -25,6 +26,6 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ message: "Password updated successfully." });
   } catch (error) {
-    return NextResponse.json({ error: error instanceof Error ? error.message : "Failed to reset password" }, { status: 500 });
+    return apiError("Failed to reset password", 500, error);
   }
 }

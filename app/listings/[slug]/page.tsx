@@ -31,14 +31,18 @@ import {
 import { connectDB } from "@/lib/db";
 import { getAuthUser } from "@/lib/auth";
 import Listing from "@/models/Listing";
+import Product from "@/models/Product";
 import ListingCard from "@/components/ListingCard";
-import { getCategoryLabel, getSubcategoryLabel } from "@/lib/constants";
+import { buildWhatsappActions, getCategoryLabel, getSubcategoryLabel } from "@/lib/constants";
+import { safeJson } from "@/lib/utils";
 import { startingPrice } from "@/lib/pricing";
 import ReportListing from "@/components/ReportListing";
 import ListingGallery from "@/components/listings/ListingGallery";
 import ListingPriceTile from "@/components/listings/ListingPriceTile";
 import ListingStickyBottom from "@/components/listings/ListingStickyBottom";
 import ListingContactButtons from "@/components/listings/ListingContactButtons";
+import ListingProducts from "@/components/listings/ListingProducts";
+import ListingCart from "@/components/listings/ListingCart";
 
 export const dynamic = "force-dynamic";
 
@@ -47,28 +51,37 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   const listing = await Listing.findOne({ slug: params.slug, status: "approved" }).lean<any>();
   if (!listing) return {};
   return {
-    title: `${listing.title} | Tourism Platform`,
+    title: `${listing.title} | GjejDirekt`,
     description: listing.description.slice(0, 160)
   };
 }
 
 export default async function ListingDetailPage({ params }: { params: { slug: string } }) {
   await connectDB();
-  const listing = await Listing.findOne({ slug: params.slug }).populate("owner", "name email role").lean<any>();
-  if (!listing) notFound();
+  const rawListing = await Listing.findOne({ slug: params.slug }).populate("owner", "name email role").lean<any>();
+  if (!rawListing) notFound();
+  // Several children below are Client Components; mongoose hands back ObjectId and
+  // Date instances, which React refuses to serialize across that boundary.
+  const listing = safeJson(rawListing);
 
   const viewer = await getAuthUser();
   const canEdit = Boolean(viewer && (viewer.role === "admin" || viewer.id === listing.owner?._id?.toString()));
   const isPublic = listing.status === "approved";
   if (!isPublic && !canEdit) notFound();
 
-  await Listing.updateOne({ _id: listing._id }, { $inc: { views: 1 } });
-
-  const relatedListings = await Listing.find({
-    category: listing.category,
-    _id: { $ne: listing._id },
-    status: "approved"
-  }).limit(4).lean<any>();
+  // Three independent round-trips — running them together instead of one after
+  // another is the difference between one DB latency hop and three on every load.
+  const [relatedListingsRaw, productsRaw] = await Promise.all([
+    Listing.find({
+      category: listing.category,
+      _id: { $ne: listing._id },
+      status: "approved"
+    }).limit(4).lean<any>(),
+    Product.find({ listing: listing._id, available: true }).sort({ order: 1, createdAt: 1 }).lean<any>(),
+    Listing.updateOne({ _id: listing._id }, { $inc: { views: 1 } })
+  ]);
+  const relatedListings = safeJson(relatedListingsRaw);
+  const products = safeJson(productsRaw);
 
   const allImages = listing.images?.length > 0
     ? listing.images
@@ -94,16 +107,27 @@ export default async function ListingDetailPage({ params }: { params: { slug: st
 
   const phone = listing.contactInfo?.phone?.trim() || listing.contactPhone?.trim() || "";
   const phoneDigits = phone.replace(/\D/g, "");
-  const whatsappHref = phoneDigits
-    ? `https://wa.me/${phoneDigits}?text=${encodeURIComponent(`Hello, I'm interested in ${listing.title} from Tourism Platform.`)}`
-    : "";
+  // One link per action the business takes — a restaurant gets both "porosit" and
+  // "rezervo", a hotel only "rezervo". Each carries its own opening message.
+  const whatsappActions = buildWhatsappActions(listing, phoneDigits);
+  const whatsappHref = whatsappActions[0]?.href || "";
 
-  // Listings advertise a single starting price in euro.
+  // Listings advertise a single starting price in lek.
   const priceValue = startingPrice(listing);
 
   const tags = [...(listing.tags || []), ...(listing.amenities || [])].filter((v, i, self) => self.indexOf(v) === i);
 
   const hasStickyBar = Boolean(phone || whatsappHref);
+
+  // Only the fields the local "Porositë" list needs — the full document must not be
+  // handed to a client component.
+  const orderHistoryListing = {
+    slug: String(listing.slug),
+    title: String(listing.title),
+    images: (listing.images || listing.photos || []).slice(0, 1).map(String),
+    location: listing.location ? String(listing.location) : undefined,
+    category: listing.category ? String(listing.category) : undefined
+  };
 
   return (
     <main
@@ -165,6 +189,10 @@ export default async function ListingDetailPage({ params }: { params: { slug: st
                 </span>
               </div>
             </div>
+
+            {/* ── Menu / Products — a food business's page leads with what it sells, ── */}
+            {/* not its photos, so this renders first, right under the title.      ── */}
+            <ListingProducts listingSlug={listing.slug} products={products} />
 
             {/* ── About this service ── */}
             <div style={{ borderTop: "1px solid var(--border-soft)", paddingTop: "1.5rem" }}>
@@ -406,7 +434,7 @@ export default async function ListingDetailPage({ params }: { params: { slug: st
           {/* ════ RIGHT SIDEBAR ════ */}
           <aside className="lg:sticky lg:top-24 h-fit space-y-4">
 
-            {/* Contact / CTA Card — "Book directly with the host" style */}
+            {/* Contact / CTA Card — order straight from the business, no middleman */}
             <div
               className="hidden lg:block overflow-hidden"
               style={{
@@ -425,7 +453,7 @@ export default async function ListingDetailPage({ params }: { params: { slug: st
                 }}
               >
                 <p className="text-xs font-semibold uppercase tracking-[0.18em] text-center" style={{ color: "var(--text-secondary)" }}>
-                  Contact directly with the host
+                  Kontakto direkt me biznesin
                 </p>
               </div>
 
@@ -433,8 +461,9 @@ export default async function ListingDetailPage({ params }: { params: { slug: st
                 {/* Phone + WhatsApp — clicks counted for ranking */}
                 <ListingContactButtons
                   phone={phone}
-                  whatsappHref={whatsappHref}
+                  whatsappActions={whatsappActions}
                   listingId={listing._id.toString()}
+                  listing={orderHistoryListing}
                 />
 
                 {!phone && (
@@ -537,8 +566,18 @@ export default async function ListingDetailPage({ params }: { params: { slug: st
       {/* Sticky Bottom Bar (mobile) */}
       <ListingStickyBottom
         phone={phone}
-        whatsappHref={whatsappHref}
+        whatsappActions={whatsappActions}
         listingId={listing._id.toString()}
+        listing={orderHistoryListing}
+      />
+
+      {/* Floating order basket — only renders once something is in the cart */}
+      <ListingCart
+        listingSlug={listing.slug}
+        listingId={listing._id.toString()}
+        businessName={listing.title}
+        phoneDigits={phoneDigits}
+        listing={orderHistoryListing}
       />
     </main>
   );

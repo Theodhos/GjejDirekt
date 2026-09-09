@@ -1,12 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { MessageCircle, Phone, MapPin, Share2, CheckCircle, ChevronLeft, ChevronRight, Tag, Crown } from "lucide-react";
+import { MessageCircle, Phone, MapPin, Share2, BadgeCheck, ChevronLeft, ChevronRight, Tag } from "lucide-react";
 import Card from "@/components/ui/Card";
 import SafeImage from "@/components/ui/SafeImage";
 import { FALLBACK_IMAGE } from "@/lib/images";
-import { getCategoryLabel, getSubcategoryLabel } from "@/lib/constants";
-import { PRICE_CURRENCY, fromPriceShort, startingPrice } from "@/lib/pricing";
+import { buildWhatsappActions, getCategoryLabel, getSubcategoryLabel } from "@/lib/constants";
+import { fromPriceShort, formatPrice, startingPrice } from "@/lib/pricing";
+import { recordOrderContact } from "@/lib/order-history";
 import { translations } from "@/lib/dictionary";
 import { useLanguage } from "@/context/LanguageContext";
 import { useState, useRef, useLayoutEffect } from "react";
@@ -147,9 +148,9 @@ export default function ListingCard({ listing }: { listing: any }) {
   const subcategoryLabel = getSubcategoryLabel(listing.category, listing.subcategory);
   const phone = listing.contactInfo?.phone || listing.contactPhone || "";
   const phoneDigits = phone.replace(/\D/g, "");
-  const whatsappHref = phoneDigits
-    ? `https://wa.me/${phoneDigits}?text=${encodeURIComponent(`Hello, I am interested in ${listing.title}.`)}`
-    : "";
+  // The card has room for one WhatsApp tap, so it opens the listing's primary
+  // action; the detail page is where a business that does both offers both.
+  const whatsappHref = buildWhatsappActions(listing, phoneDigits, language === "en" ? "en" : "sq")[0]?.href || "";
 
   const isVerified = listing.verified === true;
   const t = translations[language];
@@ -169,10 +170,10 @@ export default function ListingCard({ listing }: { listing: any }) {
       }`}
       style={isAdsProPackage ? {
         border: "3px solid transparent",
-        backgroundImage: "linear-gradient(var(--surface-white), var(--surface-white)), linear-gradient(135deg, var(--brand-accent) 0%, #2aa889 50%, #176b59 100%)",
+        backgroundImage: "linear-gradient(var(--surface-white), var(--surface-white)), linear-gradient(135deg, var(--brand-accent) 0%, #F06171 50%, #9E0D19 100%)",
         backgroundOrigin: "border-box",
         backgroundClip: "padding-box, border-box",
-        boxShadow: "0 12px 35px rgba(31, 138, 112, 0.28)",
+        boxShadow: "0 12px 35px rgba(225, 29, 46, 0.28)",
         ...(listing.package === "features" ? { transform: "translateY(-4px)" } : {})
       } : undefined}
     >
@@ -197,23 +198,18 @@ export default function ListingCard({ listing }: { listing: any }) {
 
         {/* Package Badge — Verified */}
         {showVerifiedBadge && (
-          <div className="pointer-events-none absolute left-3 top-3 z-20">
-            <div
-              className="flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold text-white backdrop-blur-sm"
-              style={{ background: "rgba(22,163,74,0.92)" }}
-            >
-              <CheckCircle className="h-3 w-3" />
+          <div className="pointer-events-none absolute left-2.5 top-2.5 z-20">
+            <span className="gd-verified !px-2 !py-1 !text-[10px]">
+              <BadgeCheck className="h-3 w-3" />
               {t.listing.verified}
-            </div>
+            </span>
           </div>
         )}
-
-
 
         {/* Price Badge */}
         <div className="pointer-events-none absolute bottom-0 right-0 z-20">
           <div
-            className="rounded-tl-xl px-3.5 py-1.5"
+            className="rounded-tl-xl px-3 py-1.5"
             style={{ background: "rgba(15,20,25,0.85)", backdropFilter: "blur(8px)" }}
           >
             {priceValue !== null ? (
@@ -221,10 +217,7 @@ export default function ListingCard({ listing }: { listing: any }) {
                 <span className="text-[11px] font-semibold" style={{ color: "rgba(255,255,255,0.7)" }}>
                   {fromPriceShort(language)}
                 </span>
-                <span className="text-lg font-bold text-white leading-none">
-                  {PRICE_CURRENCY}
-                  {priceValue}
-                </span>
+                <span className="text-[15px] font-bold leading-none text-white">{formatPrice(priceValue)}</span>
               </div>
             ) : (
               <span className="text-xs font-semibold text-white">{t.listing.request}</span>
@@ -284,7 +277,9 @@ export default function ListingCard({ listing }: { listing: any }) {
           ].filter((v, i, self) => v && self.indexOf(v) === i)}
         />
 
-        {/* Contact Actions — flat brand-green icons, pinned to bottom, sit above the card link overlay */}
+        {/* Contact Actions — pinned to bottom, sitting above the card link overlay.
+            WhatsApp keeps its own green so it reads as the ordering channel; the rest
+            of the card is brand red. */}
         <div className="relative z-20 mt-auto grid grid-cols-3 gap-1.5 pt-0.5">
           {/* Call */}
           <a
@@ -315,6 +310,7 @@ export default function ListingCard({ listing }: { listing: any }) {
             onClick={(e) => {
               e.stopPropagation();
               if (!whatsappHref) { e.preventDefault(); return; }
+              recordOrderContact(listing);
               if (listing._id) {
                 fetch(`/api/listings/${listing._id}/whatsapp-click`, { method: "POST", keepalive: true }).catch(() => {});
               }
@@ -323,7 +319,7 @@ export default function ListingCard({ listing }: { listing: any }) {
           >
             <div
               className="flex h-10 w-10 items-center justify-center rounded-full text-white shadow-sm transition-transform hover:scale-105"
-              style={{ background: "var(--brand-accent)" }}
+              style={{ background: "var(--whatsapp-green)" }}
             >
               <MessageCircle className="h-4 w-4 fill-current" />
             </div>

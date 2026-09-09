@@ -1,5 +1,6 @@
 import crypto from "crypto";
 import { NextResponse } from "next/server";
+import { apiError } from "@/lib/api";
 import { AUTH_COOKIE, signToken, setAuthCookie } from "@/lib/auth";
 import { connectDB } from "@/lib/db";
 import User from "@/models/User";
@@ -55,6 +56,6 @@ export async function POST(request: Request) {
 
     return response;
   } catch (error) {
-    return NextResponse.json({ error: error instanceof Error ? error.message : "Magic link verification failed" }, { status: 500 });
+    return apiError("Magic link verification failed", 500, error);
   }
 }

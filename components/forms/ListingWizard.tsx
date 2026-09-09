@@ -40,7 +40,7 @@ import Input from "@/components/ui/Input";
 import Textarea from "@/components/ui/Textarea";
 import Select from "@/components/ui/Select";
 import ImageCropper from "@/components/ui/ImageCropper";
-import { categories, getCategoryFormValue, getSubcategoryFormValue } from "@/lib/constants";
+import { categories, getCategoryActions, getCategoryFormValue, getSubcategoryFormValue } from "@/lib/constants";
 import { PRICE_CURRENCY, startingPrice } from "@/lib/pricing";
 import { compressImageFile, fileFromDataUrl, readFileAsDataUrl } from "@/lib/image-tools";
 import { clearDraft, readDraft, writeDraft } from "@/lib/listing-draft";
@@ -836,7 +836,7 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
   );
 
   const subcategories = categoryDef?.subcategories || [];
-  const isActivity = selectedCategory === "aktivitete";
+  const isActivity = selectedCategory === "turizem";
 
   const categoryLabel =
     (selectedCategory && t.categories.names[selectedCategory as keyof typeof t.categories.names]) ||
@@ -848,20 +848,22 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
     return names?.[value] || subcategories.find((item) => item.value === value)?.label || value;
   };
 
-  // "Nënkategoria" reads oddly for some categories — transport picks a type, events a category.
+  // "Nënkategoria" reads oddly for some categories — vehicles pick a type, events a category.
   const subcategoryFieldLabel =
-    selectedCategory === "transport"
+    selectedCategory === "auto"
       ? c.subcategoryType
-      : selectedCategory === "evente" || selectedCategory === "produkte-lokale"
+      : selectedCategory === "evente" || selectedCategory === "supermarkete"
         ? c.subcategoryCategory
         : c.subcategory;
 
+  // The link label follows what the business actually takes: a table, a ticket, an
+  // order, or a plain appointment.
   const bookingFieldLabel =
-    selectedCategory === "restorante"
+    selectedCategory === "ushqim-pije"
       ? c.bookTable
       : selectedCategory === "evente"
         ? c.bookTickets
-        : selectedCategory === "produkte-lokale"
+        : !getCategoryActions(selectedCategory).includes("rezervim")
           ? c.bookShop
           : c.bookNow;
 
@@ -883,7 +885,7 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
       setActiveTags([]);
       return;
     }
-    if (selectedCategory === "aktivitete") {
+    if (selectedCategory === "turizem") {
       setActiveTags([]);
       return;
     }
@@ -896,19 +898,16 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
     }
   }, [selectedCategory, selectedSubcategory, tagsTouched]);
 
-  // Events and attractions are often published by people without a public phone number.
-  const phoneRequired = selectedCategory !== "evente" && selectedCategory !== "atraksione";
-  const showCheckTimes = selectedCategory === "akomodim";
-  const showBusinessHours = selectedCategory !== "akomodim" && selectedCategory !== "evente";
+  // Events and tourism entries are often published by people without a public phone number.
+  const phoneRequired = selectedCategory !== "evente" && selectedCategory !== "turizem";
+  const showCheckTimes = selectedCategory === "hotele";
+  const showBusinessHours = selectedCategory !== "hotele" && selectedCategory !== "evente";
   const showEventFields = selectedCategory === "evente";
-  const showPriceRange = selectedCategory === "restorante";
-  const showCuisines = selectedCategory === "restorante";
-  const showDuration =
-    selectedCategory === "atraksione" ||
-    selectedCategory === "aktivitete" ||
-    selectedCategory === "sherbime-turistike";
-  const showLanguages = selectedCategory === "sherbime-turistike" || selectedCategory === "aktivitete";
-  const showMenuLink = selectedCategory === "restorante";
+  const showPriceRange = selectedCategory === "ushqim-pije";
+  const showCuisines = selectedCategory === "ushqim-pije";
+  const showDuration = selectedCategory === "turizem";
+  const showLanguages = selectedCategory === "turizem";
+  const showMenuLink = selectedCategory === "ushqim-pije";
   const galleryTotal = galleryUrls.length + newPhotos.length;
 
   const update = (key: FormKey, value: string) => {
@@ -1001,7 +1000,7 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
         if (!form.eventDate) next.eventDate = c.required;
         if (!form.eventTime) next.eventTime = c.required;
       }
-      if (selectedCategory === "transport" && !form.transportType.trim()) {
+      if (selectedCategory === "auto" && !form.transportType.trim()) {
         next.transportType = c.required;
       }
     }
@@ -1456,7 +1455,7 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
                 </div>
               )}
 
-              {selectedCategory === "transport" && (
+              {selectedCategory === "auto" && (
                 <Input
                   name="transportType"
                   label={`${c.transportType} *`}
@@ -1525,7 +1524,7 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
               {showDuration && (
                 <Input
                   name="duration"
-                  label={selectedCategory === "atraksione" ? c.durationVisit : c.duration}
+                  label={selectedCategory === "turizem" ? c.durationVisit : c.duration}
                   className={inputClass}
                   placeholder={c.durationPlaceholder}
                   value={form.duration}
@@ -1676,7 +1675,7 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
                 />
               )}
 
-              {selectedCategory === "atraksione" && (
+              {selectedCategory === "turizem" && (
                 <Textarea
                   name="tips"
                   label={c.tips}
@@ -2274,7 +2273,7 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
             type="submit"
             disabled={loading}
             className="flex h-14 w-full items-center justify-center gap-2 rounded-2xl text-base font-bold text-white transition-all duration-150 disabled:cursor-not-allowed disabled:opacity-60"
-            style={{ background: "var(--brand-accent)", boxShadow: "0 6px 20px rgba(31, 138, 112, 0.28)" }}
+            style={{ background: "var(--brand-accent)", boxShadow: "0 6px 20px rgba(225, 29, 46, 0.28)" }}
           >
             {loading ? (
               <>

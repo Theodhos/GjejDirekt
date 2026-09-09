@@ -1,12 +1,32 @@
 "use client";
 
-import { useEffect, useMemo, useState, useCallback } from "react";
+import { useEffect, useMemo, useState, useCallback, type ReactNode } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Search, MapPin, Tag, SlidersHorizontal, RotateCcw, Loader2, Euro, X, Check, BadgeCheck } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import { categories } from "@/lib/constants";
 import { useLanguage } from "@/context/LanguageContext";
 import { translations } from "@/lib/dictionary";
 import { useDebounce } from "@/hooks/useDebounce";
+
+/** One field style for every input, select and number box in the panel. */
+const FIELD_CLASS =
+  "w-full h-11 px-3.5 rounded-xl text-[14px] font-medium outline-none transition-colors border";
+const FIELD_STYLE = {
+  background: "var(--surface-white)",
+  borderColor: "var(--border-medium)",
+  color: "var(--text-primary)"
+} as const;
+
+/** Section label — same weight and colour as the rest of the product. */
+function Label({ icon: Icon, children }: { icon?: LucideIcon; children: ReactNode }) {
+  return (
+    <label className="flex items-center gap-1.5 text-[12px] font-semibold" style={{ color: "var(--text-secondary)" }}>
+      {Icon && <Icon className="h-3.5 w-3.5" />}
+      {children}
+    </label>
+  );
+}
 
 export default function SearchFilters() {
   const { language } = useLanguage();
@@ -188,402 +208,325 @@ export default function SearchFilters() {
 
   const activeCount = activeFilters.length;
 
-  const inputBase =
-    "w-full h-14 px-5 rounded-2xl bg-slate-50 border-2 border-transparent focus:border-brand-500 focus:bg-white transition-all font-bold text-slate-950 text-sm shadow-inner outline-none";
-
-  return (
+  /** Removable chip for a filter that is currently applied. */
+  const chips = (
     <>
-    {/* Mobile trigger bar */}
-    <div className="lg:hidden sticky top-20 z-30 mb-5 rounded-3xl border border-slate-200 bg-white/95 backdrop-blur p-3 shadow-sm">
-      <div className="flex items-center gap-2">
-        <div className="relative flex-1">
-          <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-          <input
-            type="text"
-            value={keyword}
-            onChange={(e) => setKeyword(e.target.value)}
-            placeholder={t.hero.searchPlaceholder}
-            className="w-full h-11 rounded-2xl border border-slate-200 pl-9 pr-3 text-sm font-semibold text-slate-900 outline-none focus:border-brand-500"
-          />
-        </div>
+      {activeFilters.map((chip) => (
         <button
-          onClick={() => setMobileFiltersOpen(true)}
-          className="relative h-11 px-4 rounded-2xl bg-slate-950 text-white text-xs font-black uppercase tracking-widest inline-flex items-center gap-2"
+          key={chip.key}
+          onClick={() => removeFilter(chip.key)}
+          className="inline-flex items-center gap-1.5 rounded-full py-1.5 pl-3 pr-2 text-[12px] font-semibold transition-colors"
+          style={{ background: "var(--brand-light)", color: "var(--brand-accent)" }}
         >
-          <SlidersHorizontal className="w-4 h-4" />
-          {t.services.filters}
-          {activeCount > 0 && (
-            <span className="absolute -top-1.5 -right-1.5 min-w-5 h-5 px-1 rounded-full bg-brand-500 text-white text-[10px] font-black inline-flex items-center justify-center">
-              {activeCount}
-            </span>
-          )}
+          <span className="max-w-[150px] truncate">{chip.label}</span>
+          <X className="h-3.5 w-3.5 opacity-70" />
         </button>
-      </div>
-    </div>
+      ))}
+    </>
+  );
 
-    {/* Desktop panel */}
-    <div className="hidden lg:flex flex-col bg-white rounded-[2.5rem] border border-slate-100 shadow-soft sticky top-24 overflow-hidden">
-      {/* Header */}
-      <div className="flex items-center justify-between px-8 pt-7 pb-5">
-        <h3 className="text-xl font-black text-slate-950 flex items-center gap-2">
-          <SlidersHorizontal className="w-5 h-5 text-brand-600" />
-          {t.services.filters}
-          {activeCount > 0 && (
-            <span className="min-w-6 h-6 px-1.5 rounded-full bg-brand-50 text-brand-700 text-xs font-black inline-flex items-center justify-center">
-              {activeCount}
-            </span>
-          )}
-        </h3>
-        {activeCount > 0 && (
-          <button
-            onClick={handleReset}
-            className="text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-brand-600 transition flex items-center gap-1"
-          >
-            <RotateCcw className="w-3 h-3" />
-            {t.services.reset}
-          </button>
-        )}
+  /** The full set of controls — rendered in the desktop panel and the mobile sheet. */
+  const controls = (
+    <div className="space-y-5">
+      <div className="space-y-2">
+        <Label icon={Search}>{t.common.keyword}</Label>
+        <input
+          type="text"
+          value={keyword}
+          onChange={(e) => setKeyword(e.target.value)}
+          placeholder={t.hero.searchPlaceholder}
+          className={FIELD_CLASS}
+          style={FIELD_STYLE}
+        />
       </div>
 
-      {/* Active filter chips */}
-      {activeCount > 0 && (
-        <div className="px-8 pb-5 flex flex-wrap gap-2 border-b border-slate-100">
-          {activeFilters.map((chip) => (
-            <button
-              key={chip.key}
-              onClick={() => removeFilter(chip.key)}
-              className="group inline-flex items-center gap-1.5 pl-3 pr-2 py-1.5 rounded-full bg-brand-50 text-brand-700 text-xs font-bold hover:bg-brand-100 transition"
-            >
-              <span className="max-w-[150px] truncate">{chip.label}</span>
-              <X className="w-3.5 h-3.5 opacity-60 group-hover:opacity-100" />
-            </button>
+      <div className="space-y-2">
+        <Label icon={MapPin}>{cityLabel}</Label>
+        <input
+          type="text"
+          value={location}
+          onChange={(e) => setLocation(e.target.value)}
+          placeholder={t.common.anyCity}
+          className={FIELD_CLASS}
+          style={FIELD_STYLE}
+        />
+      </div>
+
+      <div className="space-y-2">
+        <Label icon={Tag}>{t.common.category}</Label>
+        <select
+          value={selectedCategory}
+          onChange={(e) => {
+            const val = e.target.value;
+            setSelectedCategory(val);
+            setSelectedSubcategory("");
+            applyFilters({ category: val, subcategory: "" });
+          }}
+          className={`${FIELD_CLASS} cursor-pointer`}
+          style={FIELD_STYLE}
+        >
+          <option value="">{t.services.allCategories}</option>
+          {categories.map((item) => (
+            <option key={item.value} value={item.value}>{getCategoryLabel(item.value, item.label)}</option>
           ))}
-        </div>
-      )}
+        </select>
+      </div>
 
-      <div className="px-8 py-7 space-y-7">
-        {/* Keyword */}
-        <div className="space-y-3">
-          <label className="text-[10px] font-black uppercase tracking-widest text-slate-900 ml-2 flex items-center gap-2">
-            <Search className="w-3 h-3" />
-            {t.common.keyword}
-          </label>
-          <input
-            type="text"
-            value={keyword}
-            onChange={(e) => setKeyword(e.target.value)}
-            placeholder={t.hero.searchPlaceholder}
-            className={inputBase}
-          />
-        </div>
-
-        {/* Location */}
-        <div className="space-y-3">
-          <label className="text-[10px] font-black uppercase tracking-widest text-slate-900 ml-2 flex items-center gap-2">
-            <MapPin className="w-3 h-3" />
-            {cityLabel}
-          </label>
-          <input
-            type="text"
-            value={location}
-            onChange={(e) => setLocation(e.target.value)}
-            placeholder={t.common.anyCity}
-            className={inputBase}
-          />
-        </div>
-
-        {/* Category */}
-        <div className="space-y-3 pt-1 border-t border-slate-100">
-          <label className="text-[10px] font-black uppercase tracking-widest text-slate-900 ml-2 flex items-center gap-2 pt-6">
-            <Tag className="w-3 h-3" />
-            {t.common.category}
-          </label>
-          <div className="relative">
-            <select
-              value={selectedCategory}
-              onChange={(e) => {
-                const val = e.target.value;
-                setSelectedCategory(val);
+      {selectedCategory && subcategories.length > 0 && (
+        <div className="space-y-2">
+          <Label>{t.common.subcategory}</Label>
+          <div className="flex flex-wrap gap-2">
+            <button
+              onClick={() => {
                 setSelectedSubcategory("");
-                applyFilters({ category: val, subcategory: "" });
+                applyFilters({ subcategory: "" });
               }}
-              className={`${inputBase} appearance-none cursor-pointer pr-12`}
+              className="gd-quick-pill !px-3 !py-1.5 !text-[12px]"
+              style={
+                !selectedSubcategory
+                  ? { background: "var(--text-primary)", color: "#fff", borderColor: "var(--text-primary)" }
+                  : undefined
+              }
             >
-              <option value="">{t.services.allCategories}</option>
-              {categories.map((item) => (
-                <option key={item.value} value={item.value}>{getCategoryLabel(item.value, item.label)}</option>
-              ))}
-            </select>
-            <svg className="w-4 h-4 text-slate-400 absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none" viewBox="0 0 20 20" fill="none">
-              <path d="M6 8l4 4 4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </div>
-        </div>
-
-        {/* Subcategory */}
-        {selectedCategory && (
-          <div className="space-y-2 animate-in slide-in-from-top-2 duration-300">
-            <label className="text-[10px] font-black uppercase tracking-widest text-slate-900 ml-2">
-              {t.common.subcategory}
-            </label>
-            <div className="flex flex-col gap-2 max-h-72 overflow-y-auto pr-1">
-              <button
-                onClick={() => {
-                  setSelectedSubcategory("");
-                  applyFilters({ subcategory: "" });
-                }}
-                className={`flex items-center justify-between text-left px-4 py-3 rounded-xl text-xs font-bold transition-all ${!selectedSubcategory ? 'bg-slate-950 text-white shadow-lg' : 'bg-slate-50 text-slate-500 hover:bg-slate-100'}`}
-              >
-                <span>
-                  {language === "en" ? "All" : "Te gjitha"}{" "}
-                  {getCategoryLabel(
-                    selectedCategory,
-                    categories.find((item) => item.value === selectedCategory)?.label || selectedCategory
-                  )}
-                </span>
-                {!selectedSubcategory && <Check className="w-3.5 h-3.5" />}
-              </button>
-              {subcategories.map((sub) => (
+              {language === "en" ? "All" : "Të gjitha"}
+            </button>
+            {subcategories.map((sub) => {
+              const active = selectedSubcategory === sub.value;
+              return (
                 <button
                   key={sub.value}
                   onClick={() => {
                     setSelectedSubcategory(sub.value);
                     applyFilters({ subcategory: sub.value });
                   }}
-                  className={`flex items-center justify-between text-left px-4 py-3 rounded-xl text-xs font-bold transition-all ${selectedSubcategory === sub.value ? 'bg-slate-950 text-white shadow-lg' : 'bg-slate-50 text-slate-500 hover:bg-slate-100'}`}
+                  className="gd-quick-pill !px-3 !py-1.5 !text-[12px]"
+                  style={
+                    active
+                      ? { background: "var(--text-primary)", color: "#fff", borderColor: "var(--text-primary)" }
+                      : undefined
+                  }
                 >
-                  <span>{getSubcategoryLabel(selectedCategory, sub.value, sub.label)}</span>
-                  {selectedSubcategory === sub.value && <Check className="w-3.5 h-3.5" />}
+                  {getSubcategoryLabel(selectedCategory, sub.value, sub.label)}
+                  {active && <Check className="h-3 w-3" />}
                 </button>
-              ))}
-            </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      <div className="space-y-2">
+        <Label icon={Euro}>{t.common.priceRange}</Label>
+        <div className="grid grid-cols-2 gap-2">
+          {pricePresets.map((preset) => (
+            <button
+              key={preset.label}
+              onClick={() => applyPreset(preset.min, preset.max)}
+              className="h-10 rounded-xl border text-[12px] font-semibold transition-colors"
+              style={
+                isPresetActive(preset.min, preset.max)
+                  ? { background: "var(--brand-accent)", color: "#fff", borderColor: "var(--brand-accent)" }
+                  : { background: "var(--surface-white)", color: "var(--text-secondary)", borderColor: "var(--border-medium)" }
+              }
+            >
+              {preset.label}
+            </button>
+          ))}
+        </div>
+
+        <div className="flex items-center gap-2 pt-1">
+          <input
+            type="number"
+            min={0}
+            value={minPrice}
+            onChange={(e) => setMinPrice(e.target.value)}
+            onKeyDown={(e) => { if (e.key === "Enter") handleSearch(); }}
+            placeholder={language === "en" ? "Min" : "Min."}
+            className={FIELD_CLASS}
+            style={FIELD_STYLE}
+          />
+          <span style={{ color: "var(--text-tertiary)" }}>—</span>
+          <input
+            type="number"
+            min={0}
+            value={maxPrice}
+            onChange={(e) => setMaxPrice(e.target.value)}
+            onKeyDown={(e) => { if (e.key === "Enter") handleSearch(); }}
+            placeholder={language === "en" ? "Max" : "Maks."}
+            className={FIELD_CLASS}
+            style={FIELD_STYLE}
+          />
+        </div>
+        {priceError && (
+          <p className="text-[12px] font-semibold" style={{ color: "var(--brand-accent)" }}>{priceError}</p>
+        )}
+      </div>
+
+      <div className="space-y-2">
+        <Label icon={BadgeCheck}>Verified</Label>
+        <button
+          type="button"
+          onClick={toggleVerified}
+          aria-pressed={verifiedOnly}
+          className="inline-flex h-11 w-full items-center justify-between rounded-xl border px-3.5 text-[13px] font-semibold transition-colors"
+          style={
+            verifiedOnly
+              ? { background: "var(--verified-blue)", color: "#fff", borderColor: "var(--verified-blue)" }
+              : { background: "var(--surface-white)", color: "var(--text-secondary)", borderColor: "var(--border-medium)" }
+          }
+        >
+          <span className="inline-flex items-center gap-2">
+            <BadgeCheck className="h-4 w-4" />
+            {verifiedLabel}
+          </span>
+          <span
+            className="flex h-5 w-5 items-center justify-center rounded-md border"
+            style={
+              verifiedOnly
+                ? { borderColor: "rgba(255,255,255,0.7)", background: "rgba(255,255,255,0.2)" }
+                : { borderColor: "var(--border-medium)", background: "var(--surface-white)" }
+            }
+          >
+            {verifiedOnly && <Check className="h-3 w-3" />}
+          </span>
+        </button>
+        <p className="text-[11.5px]" style={{ color: "var(--text-tertiary)" }}>{verifiedHint}</p>
+      </div>
+    </div>
+  );
+
+  return (
+    <>
+      {/* Mobile trigger bar — mirrors the search row on /listings */}
+      <div className="sticky top-[var(--header-height)] z-30 mb-4 lg:hidden">
+        <div className="flex items-center gap-2">
+          <div
+            className="flex flex-1 items-center gap-2.5 rounded-xl border px-3.5 py-2"
+            style={{ borderColor: "var(--border-medium)", background: "var(--surface-white)" }}
+          >
+            <Search className="h-[18px] w-[18px] shrink-0" style={{ color: "var(--text-tertiary)" }} />
+            <input
+              type="text"
+              value={keyword}
+              onChange={(e) => setKeyword(e.target.value)}
+              placeholder={t.hero.searchPlaceholder}
+              className="w-full bg-transparent py-1.5 text-[15px] font-medium outline-none"
+              style={{ color: "var(--text-primary)" }}
+            />
+          </div>
+          <button
+            onClick={() => setMobileFiltersOpen(true)}
+            className="relative inline-flex h-[42px] w-[42px] shrink-0 items-center justify-center rounded-xl border"
+            style={{
+              borderColor: activeCount ? "var(--brand-accent)" : "var(--border-medium)",
+              color: activeCount ? "var(--brand-accent)" : "var(--text-secondary)",
+              background: "var(--surface-white)"
+            }}
+            aria-label={t.services.filters}
+          >
+            <SlidersHorizontal className="h-[18px] w-[18px]" />
+            {activeCount > 0 && (
+              <span
+                className="absolute -right-1.5 -top-1.5 inline-flex h-5 min-w-5 items-center justify-center rounded-full px-1 text-[10px] font-bold text-white"
+                style={{ background: "var(--brand-accent)" }}
+              >
+                {activeCount}
+              </span>
+            )}
+          </button>
+        </div>
+      </div>
+
+      {/* Desktop panel */}
+      <div className="gd-panel sticky top-24 hidden flex-col overflow-hidden lg:flex">
+        <div className="flex items-center justify-between px-5 pb-4 pt-5">
+          <h3 className="gd-section-title flex items-center gap-2">
+            <SlidersHorizontal className="h-[18px] w-[18px]" style={{ color: "var(--brand-accent)" }} />
+            {t.services.filters}
+            {activeCount > 0 && (
+              <span
+                className="inline-flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-[11px] font-bold"
+                style={{ background: "var(--brand-light)", color: "var(--brand-accent)" }}
+              >
+                {activeCount}
+              </span>
+            )}
+          </h3>
+          {activeCount > 0 && (
+            <button onClick={handleReset} className="gd-section-link flex items-center gap-1">
+              <RotateCcw className="h-3 w-3" />
+              {t.services.reset}
+            </button>
+          )}
+        </div>
+
+        {activeCount > 0 && (
+          <div className="flex flex-wrap gap-2 border-b px-5 pb-4" style={{ borderColor: "var(--border-soft)" }}>
+            {chips}
           </div>
         )}
 
-        {/* Price Range */}
-        <div className="space-y-3 pt-1 border-t border-slate-100">
-          <label className="text-[10px] font-black uppercase tracking-widest text-slate-900 ml-2 flex items-center gap-2 pt-6">
-            <Euro className="w-3 h-3" />
-            {t.common.priceRange}
-          </label>
+        <div className="px-5 py-5">{controls}</div>
 
-          {/* Quick presets */}
-          <div className="grid grid-cols-2 gap-2">
-            {pricePresets.map((preset) => (
-              <button
-                key={preset.label}
-                onClick={() => applyPreset(preset.min, preset.max)}
-                className={`h-10 rounded-xl text-xs font-bold transition-all ${isPresetActive(preset.min, preset.max) ? 'bg-brand-600 text-white shadow-md' : 'bg-slate-50 text-slate-600 hover:bg-slate-100'}`}
-              >
-                {preset.label}
-              </button>
-            ))}
-          </div>
-
-          {/* Custom range */}
-          <div className="flex items-center gap-3 pt-1">
-            <div className="relative w-full">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm font-bold">€</span>
-              <input
-                type="number"
-                min={0}
-                value={minPrice}
-                onChange={(e) => setMinPrice(e.target.value)}
-                onKeyDown={(e) => { if (e.key === "Enter") handleSearch(); }}
-                placeholder={language === "en" ? "Min" : "Min."}
-                className="w-full h-12 pl-7 pr-3 rounded-xl bg-slate-50 border-2 border-transparent focus:border-brand-500 focus:bg-white transition-all font-bold text-slate-950 text-sm shadow-inner outline-none"
-              />
-            </div>
-            <span className="text-slate-300">—</span>
-            <div className="relative w-full">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm font-bold">€</span>
-              <input
-                type="number"
-                min={0}
-                value={maxPrice}
-                onChange={(e) => setMaxPrice(e.target.value)}
-                onKeyDown={(e) => { if (e.key === "Enter") handleSearch(); }}
-                placeholder={language === "en" ? "Max" : "Maks."}
-                className="w-full h-12 pl-7 pr-3 rounded-xl bg-slate-50 border-2 border-transparent focus:border-brand-500 focus:bg-white transition-all font-bold text-slate-950 text-sm shadow-inner outline-none"
-              />
-            </div>
-          </div>
-          {priceError && (
-            <p className="text-xs font-semibold text-rose-600 ml-2">{priceError}</p>
-          )}
-        </div>
-
-        {/* Verified */}
-        <div className="space-y-3 pt-1 border-t border-slate-100">
-          <label className="text-[10px] font-black uppercase tracking-widest text-slate-900 ml-2 flex items-center gap-2 pt-6">
-            <BadgeCheck className="w-3 h-3" />
-            Verified
-          </label>
-          <button
-            type="button"
-            onClick={toggleVerified}
-            aria-pressed={verifiedOnly}
-            className={`w-full h-12 px-4 rounded-xl text-xs font-bold inline-flex items-center justify-between transition-all ${
-              verifiedOnly ? "bg-brand-600 text-white shadow-md" : "bg-slate-50 text-slate-600 hover:bg-slate-100"
-            }`}
-          >
-            <span className="inline-flex items-center gap-2">
-              <BadgeCheck className="w-4 h-4" />
-              {verifiedLabel}
-            </span>
-            <span
-              className={`flex h-5 w-5 items-center justify-center rounded-md border ${
-                verifiedOnly ? "border-white/70 bg-white/20" : "border-slate-300 bg-white"
-              }`}
-            >
-              {verifiedOnly && <Check className="w-3 h-3" />}
-            </span>
+        <div className="px-5 pb-5">
+          <button onClick={handleSearch} disabled={isPending} className="btn-primary w-full disabled:opacity-60">
+            {isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
+            {language === "en" ? "Search" : "Kërko"}
           </button>
-          <p className="text-[11px] font-medium text-slate-400 ml-2">{verifiedHint}</p>
         </div>
       </div>
 
-      {/* Sticky footer search */}
-      <div className="px-8 pb-7 pt-1">
-        <button
-          onClick={handleSearch}
-          disabled={isPending}
-          className="w-full h-14 rounded-2xl bg-brand-600 text-white text-xs font-black uppercase tracking-widest inline-flex items-center justify-center gap-2 transition-all hover:bg-brand-700 disabled:opacity-60 disabled:cursor-not-allowed shadow-lg"
-        >
-          {isPending ? (
-            <Loader2 className="w-4 h-4 animate-spin" />
-          ) : (
-            <Search className="w-4 h-4" />
-          )}
-          {language === "en" ? "Search" : "Kërko"}
-        </button>
-      </div>
-    </div>
-
-    {/* Mobile sheet */}
-    {mobileFiltersOpen && (
-      <div className="lg:hidden fixed inset-0 z-50 bg-slate-950/55" onClick={() => setMobileFiltersOpen(false)}>
+      {/* Mobile sheet */}
+      {mobileFiltersOpen && (
         <div
-          className="absolute inset-x-0 bottom-0 max-h-[88vh] overflow-y-auto rounded-t-[2rem] bg-white p-5"
-          onClick={(e) => e.stopPropagation()}
+          className="fixed inset-0 z-50 lg:hidden"
+          style={{ background: "rgba(10,12,16,0.55)" }}
+          onClick={() => setMobileFiltersOpen(false)}
         >
-          <div className="mb-5 flex items-center justify-between">
-            <h3 className="text-lg font-black text-slate-950 flex items-center gap-2">
-              <SlidersHorizontal className="w-5 h-5 text-brand-600" />
-              {t.services.filters}
-              {activeCount > 0 && (
-                <span className="min-w-6 h-6 px-1.5 rounded-full bg-brand-50 text-brand-700 text-xs font-black inline-flex items-center justify-center">
-                  {activeCount}
-                </span>
-              )}
-            </h3>
-            <button onClick={() => setMobileFiltersOpen(false)} className="p-2 rounded-xl bg-slate-100 text-slate-700">
-              <X className="w-4 h-4" />
-            </button>
-          </div>
-
-          {activeCount > 0 && (
-            <div className="mb-5 flex flex-wrap gap-2">
-              {activeFilters.map((chip) => (
-                <button
-                  key={chip.key}
-                  onClick={() => removeFilter(chip.key)}
-                  className="inline-flex items-center gap-1.5 pl-3 pr-2 py-1.5 rounded-full bg-brand-50 text-brand-700 text-xs font-bold"
-                >
-                  <span className="max-w-[150px] truncate">{chip.label}</span>
-                  <X className="w-3.5 h-3.5 opacity-60" />
-                </button>
-              ))}
-            </div>
-          )}
-
-          <div className="space-y-6">
-            <div className="space-y-2">
-              <label className="text-[10px] font-black uppercase tracking-widest text-slate-900 ml-1">{cityLabel}</label>
-              <input type="text" value={location} onChange={(e) => setLocation(e.target.value)} placeholder={t.common.anyCity} className="w-full h-12 px-4 rounded-xl bg-slate-50 border border-slate-200 focus:border-brand-500 outline-none text-sm font-semibold" />
-            </div>
-            <div className="space-y-2">
-              <label className="text-[10px] font-black uppercase tracking-widest text-slate-900 ml-1">{t.common.category}</label>
-              <select value={selectedCategory} onChange={(e) => { const val = e.target.value; setSelectedCategory(val); setSelectedSubcategory(""); applyFilters({ category: val, subcategory: "" }); }} className="w-full h-12 px-4 rounded-xl bg-slate-50 border border-slate-200 focus:border-brand-500 outline-none text-sm font-semibold">
-                <option value="">{t.services.allCategories}</option>
-                {categories.map((item) => <option key={item.value} value={item.value}>{getCategoryLabel(item.value, item.label)}</option>)}
-              </select>
-            </div>
-            {selectedCategory && subcategories.length > 0 && (
-              <div className="space-y-2">
-                <label className="text-[10px] font-black uppercase tracking-widest text-slate-900 ml-1">{t.common.subcategory}</label>
-                <div className="flex flex-wrap gap-2">
-                  <button
-                    onClick={() => { setSelectedSubcategory(""); applyFilters({ subcategory: "" }); }}
-                    className={`px-3 py-2 rounded-lg text-xs font-bold transition ${!selectedSubcategory ? 'bg-slate-950 text-white' : 'bg-slate-50 text-slate-500'}`}
+          <div
+            className="absolute inset-x-0 bottom-0 max-h-[88vh] overflow-y-auto rounded-t-2xl p-4"
+            style={{ background: "var(--surface-white)" }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="mb-4 flex items-center justify-between">
+              <h3 className="gd-section-title flex items-center gap-2">
+                <SlidersHorizontal className="h-[18px] w-[18px]" style={{ color: "var(--brand-accent)" }} />
+                {t.services.filters}
+                {activeCount > 0 && (
+                  <span
+                    className="inline-flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-[11px] font-bold"
+                    style={{ background: "var(--brand-light)", color: "var(--brand-accent)" }}
                   >
-                    {language === "en" ? "All" : "Te gjitha"}
-                  </button>
-                  {subcategories.map((sub) => (
-                    <button
-                      key={sub.value}
-                      onClick={() => { setSelectedSubcategory(sub.value); applyFilters({ subcategory: sub.value }); }}
-                      className={`px-3 py-2 rounded-lg text-xs font-bold transition ${selectedSubcategory === sub.value ? 'bg-slate-950 text-white' : 'bg-slate-50 text-slate-500'}`}
-                    >
-                      {getSubcategoryLabel(selectedCategory, sub.value, sub.label)}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-            <div className="space-y-2">
-              <label className="text-[10px] font-black uppercase tracking-widest text-slate-900 ml-1">{t.common.priceRange}</label>
-              <div className="grid grid-cols-2 gap-2 mb-2">
-                {pricePresets.map((preset) => (
-                  <button
-                    key={preset.label}
-                    onClick={() => applyPreset(preset.min, preset.max)}
-                    className={`h-10 rounded-xl text-xs font-bold transition ${isPresetActive(preset.min, preset.max) ? 'bg-brand-600 text-white' : 'bg-slate-50 text-slate-600'}`}
-                  >
-                    {preset.label}
-                  </button>
-                ))}
-              </div>
-              <div className="flex items-center gap-2">
-                <input type="number" min={0} value={minPrice} onChange={(e) => setMinPrice(e.target.value)} placeholder={language === "en" ? "Min" : "Min."} className="w-full h-12 px-4 rounded-xl bg-slate-50 border border-slate-200 focus:border-brand-500 outline-none text-sm font-semibold" />
-                <input type="number" min={0} value={maxPrice} onChange={(e) => setMaxPrice(e.target.value)} placeholder={language === "en" ? "Max" : "Maks."} className="w-full h-12 px-4 rounded-xl bg-slate-50 border border-slate-200 focus:border-brand-500 outline-none text-sm font-semibold" />
-              </div>
-              {priceError && (
-                <p className="text-xs font-semibold text-rose-600 ml-1">{priceError}</p>
-              )}
-            </div>
-            <div className="space-y-2">
-              <label className="text-[10px] font-black uppercase tracking-widest text-slate-900 ml-1">Verified</label>
+                    {activeCount}
+                  </span>
+                )}
+              </h3>
               <button
-                type="button"
-                onClick={toggleVerified}
-                aria-pressed={verifiedOnly}
-                className={`w-full h-12 px-4 rounded-xl text-xs font-bold inline-flex items-center justify-between transition ${
-                  verifiedOnly ? "bg-brand-600 text-white" : "bg-slate-50 text-slate-600"
-                }`}
+                onClick={() => setMobileFiltersOpen(false)}
+                className="flex h-9 w-9 items-center justify-center rounded-xl border"
+                style={{ borderColor: "var(--border-soft)", color: "var(--text-secondary)" }}
+                aria-label={language === "en" ? "Close" : "Mbyll"}
               >
-                <span className="inline-flex items-center gap-2">
-                  <BadgeCheck className="w-4 h-4" />
-                  {verifiedLabel}
-                </span>
-                <span
-                  className={`flex h-5 w-5 items-center justify-center rounded-md border ${
-                    verifiedOnly ? "border-white/70 bg-white/20" : "border-slate-300 bg-white"
-                  }`}
-                >
-                  {verifiedOnly && <Check className="w-3 h-3" />}
-                </span>
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+
+            {activeCount > 0 && <div className="mb-4 flex flex-wrap gap-2">{chips}</div>}
+
+            {controls}
+
+            <div className="mt-5 grid grid-cols-2 gap-3">
+              <button onClick={handleReset} className="btn-secondary">{t.services.reset}</button>
+              <button
+                onClick={() => { if (handleSearch()) setMobileFiltersOpen(false); }}
+                className="btn-primary"
+              >
+                {t.common.showResults}
               </button>
             </div>
           </div>
-
-          <div className="mt-6 grid grid-cols-2 gap-3">
-            <button onClick={handleReset} className="h-11 rounded-xl bg-slate-100 text-slate-700 text-[10px] font-black uppercase tracking-widest">{t.services.reset}</button>
-            <button onClick={() => { if (handleSearch()) setMobileFiltersOpen(false); }} className="h-11 rounded-xl bg-slate-950 text-white text-xs font-black uppercase tracking-widest">{t.common.showResults}</button>
-          </div>
         </div>
-      </div>
-    )}
+      )}
     </>
   );
 }

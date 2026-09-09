@@ -1,11 +1,12 @@
 import crypto from "crypto";
 import { NextResponse } from "next/server";
+import { apiError } from "@/lib/api";
 import { connectDB } from "@/lib/db";
 import User from "@/models/User";
 import { sendMail } from "@/lib/mailer";
 
 // Reset links must ALWAYS point to the live site — never localhost, never the request origin.
-const APP_URL = "https://www.tripshqip.com";
+const APP_URL = "https://www.gjejdirekt.com";
 
 export async function POST(request: Request) {
   try {
@@ -34,6 +35,6 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ message: "If email exists, reset link was sent." });
   } catch (error) {
-    return NextResponse.json({ error: error instanceof Error ? error.message : "Failed to send reset link" }, { status: 500 });
+    return apiError("Failed to send reset link", 500, error);
   }
 }

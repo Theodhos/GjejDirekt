@@ -3,24 +3,41 @@
 import { useLanguage } from "@/context/LanguageContext";
 import { translations } from "@/lib/dictionary";
 import { Phone, MessageCircle } from "lucide-react";
+import { recordOrderContact } from "@/lib/order-history";
+import { actionLabels, type ListingAction } from "@/lib/constants";
 
 interface ListingStickyBottomProps {
   phone: string;
-  whatsappHref: string;
+  /** Kept for callers that only have a single link; ignored when whatsappActions is set. */
+  whatsappHref?: string;
+  /** One entry per action the business takes — see buildWhatsappActions. */
+  whatsappActions?: { action: ListingAction; href: string }[];
   listingId?: string;
+  /** Minimal listing data used for the local order history. */
+  listing?: { slug: string; title: string; images?: string[]; location?: string; category?: string };
 }
 
 export default function ListingStickyBottom({
   phone,
   whatsappHref,
-  listingId
+  whatsappActions,
+  listingId,
+  listing
 }: ListingStickyBottomProps) {
   const { language } = useLanguage();
   const t = translations[language];
 
-  if (!phone && !whatsappHref) return null;
+  const actions =
+    whatsappActions?.length
+      ? whatsappActions
+      : whatsappHref
+        ? [{ action: "porosi" as ListingAction, href: whatsappHref }]
+        : [];
+
+  if (!phone && !actions.length) return null;
 
   const trackWhatsapp = () => {
+    if (listing) recordOrderContact(listing);
     if (listingId) {
       fetch(`/api/listings/${listingId}/whatsapp-click`, { method: "POST", keepalive: true }).catch(() => {});
     }
@@ -33,27 +50,42 @@ export default function ListingStickyBottom({
   };
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-100 px-6 py-3.5 pb-[calc(14px+env(safe-area-inset-bottom,0px))] shadow-[0_-10px_40px_rgba(0,0,0,0.06)] md:hidden">
-      <div className={`grid gap-3 w-full ${whatsappHref && phone ? "grid-cols-2" : "grid-cols-1"}`}>
-        {whatsappHref && (
+    // Sits directly above the phone tab bar rather than over it — `--bottom-nav-height`
+    // is 0 from lg up, where this bar is hidden anyway.
+    <div
+      className="fixed inset-x-0 z-40 border-t bg-white/95 px-4 py-3 backdrop-blur-md md:hidden"
+      style={{
+        bottom: "var(--bottom-nav-height)",
+        borderColor: "var(--border-soft)",
+        boxShadow: "0 -8px 30px rgba(15,20,25,0.07)"
+      }}
+    >
+      <div
+        className="grid w-full gap-2.5"
+        style={{ gridTemplateColumns: `repeat(${actions.length + (phone ? 1 : 0)}, minmax(0, 1fr))` }}
+      >
+        {actions.map(({ action, href }) => (
           <a
-            href={whatsappHref}
+            key={action}
+            href={href}
             target="_blank"
             rel="noreferrer"
             onClick={trackWhatsapp}
-            className="flex items-center justify-center gap-2 h-12 w-full bg-[#25D366] text-white rounded-2xl font-black text-xs hover:scale-102 active:scale-98 transition-all shadow-md shadow-emerald-500/10"
+            className="flex h-12 w-full items-center justify-center gap-2 rounded-xl text-[13px] font-bold text-white transition-transform active:scale-95"
+            style={{ background: "var(--whatsapp-green)" }}
           >
-            <MessageCircle className="w-4.5 h-4.5 fill-current" />
-            <span>WhatsApp</span>
+            <MessageCircle className="h-[18px] w-[18px] fill-current" />
+            <span>{language === "en" ? actionLabels[action].enShort : actionLabels[action].sqShort}</span>
           </a>
-        )}
+        ))}
         {phone && (
           <a
             href={`tel:${phone}`}
             onClick={trackPhone}
-            className="flex items-center justify-center gap-2 h-12 w-full bg-brand-500 text-white rounded-2xl font-black text-xs hover:scale-102 active:scale-98 transition-all shadow-md"
+            className="flex h-12 w-full items-center justify-center gap-2 rounded-xl text-[13px] font-bold text-white transition-transform active:scale-95"
+            style={{ background: "var(--brand-accent)" }}
           >
-            <Phone className="w-4 h-4 fill-current" />
+            <Phone className="h-4 w-4 fill-current" />
             <span>{t.listing.call}</span>
           </a>
         )}

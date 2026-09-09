@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { apiError } from "@/lib/api";
 import bcrypt from "bcryptjs";
 import { connectDB } from "@/lib/db";
 import { AUTH_COOKIE, signToken } from "@/lib/auth";
@@ -52,9 +53,6 @@ export async function POST(request: Request) {
     }).catch((err) => console.error("Registration email send error:", err));
     return response;
   } catch (error) {
-    return NextResponse.json(
-      { error: error instanceof Error ? error.message : "Registration failed" },
-      { status: 500 }
-    );
+    return apiError("Registration failed", 500, error);
   }
 }

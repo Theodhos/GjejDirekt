@@ -1,5 +1,6 @@
 import crypto from "crypto";
 import { NextResponse } from "next/server";
+import { apiError } from "@/lib/api";
 import { connectDB } from "@/lib/db";
 import User from "@/models/User";
 import { sendMail } from "@/lib/mailer";
@@ -28,7 +29,7 @@ export async function POST(request: Request) {
     user.resetCodeExpires = expiresAt;
     await user.save();
 
-    const appUrl = "https://www.tripshqip.com";
+    const appUrl = "https://www.gjejdirekt.com";
     const verifyUrl = `${appUrl}/auth/magic-link?token=${rawToken}`;
 
     await sendMail({
@@ -94,6 +95,6 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ message: "If that email exists, a magic link was sent." });
   } catch (error) {
-    return NextResponse.json({ error: error instanceof Error ? error.message : "Failed to send magic link" }, { status: 500 });
+    return apiError("Failed to send magic link", 500, error);
   }
 }

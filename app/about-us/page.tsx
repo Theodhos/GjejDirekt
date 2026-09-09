@@ -47,7 +47,7 @@ export default function AboutUsPage() {
           style={{
             position: "absolute", top: "-80px", right: "-80px",
             width: "500px", height: "500px", borderRadius: "50%",
-            background: "rgba(34,153,120,0.05)", filter: "blur(110px)",
+            background: "rgba(225,29,46,0.05)", filter: "blur(110px)",
             pointerEvents: "none"
           }}
         />
@@ -66,27 +66,27 @@ export default function AboutUsPage() {
           <div className="grid gap-8 lg:grid-cols-[1fr_400px] items-center">
             <div>
               <p className="eyebrow mb-4">
-                {language === "en" ? "Welcome to TripShqip" : "Mirësevini në TripShqip"}
+                {language === "en" ? "Welcome to GjejDirekt" : "Mirësevini në GjejDirekt"}
               </p>
               <h1
                 className="font-bold tracking-tight mb-5 leading-tight"
                 style={{ fontSize: "clamp(2rem, 5vw, 3rem)", color: "var(--text-primary)" }}
               >
-                {language === "en" ? "Welcome to TripShqip 🇦🇱" : "Mirësevini në TripShqip 🇦🇱"}
+                {language === "en" ? "Welcome to GjejDirekt 🇦🇱" : "Mirësevini në GjejDirekt 🇦🇱"}
               </h1>
               <p
                 className="text-base leading-relaxed mb-7 max-w-lg"
                 style={{ color: "var(--text-secondary)" }}
               >
                 {language === "en"
-                  ? "TripShqip is a modern tourism platform that helps tourists discover Albania more easily and local businesses get found faster."
-                  : "TripShqip është një platformë moderne turistike që ndihmon turistët të zbulojnë Shqipërinë më lehtë dhe bizneset lokale të gjenden më shpejt."}
+                  ? "GjejDirekt is a modern tourism platform that helps tourists discover Albania more easily and local businesses get found faster."
+                  : "GjejDirekt është një platformë moderne turistike që ndihmon turistët të zbulojnë Shqipërinë më lehtë dhe bizneset lokale të gjenden më shpejt."}
               </p>
               <div className="flex flex-wrap gap-3">
                 <Link
                   href="/services"
                   className="inline-flex items-center gap-2 rounded-full px-6 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90"
-                  style={{ background: "var(--brand-accent)", boxShadow: "0 2px 10px rgba(34,153,120,0.22)" }}
+                  style={{ background: "var(--brand-accent)", boxShadow: "0 2px 10px rgba(225,29,46,0.22)" }}
                 >
                   {language === "en" ? "Explore Services" : "Eksploro Shërbimet"}
                   <ArrowRight className="w-4 h-4" />
@@ -180,7 +180,7 @@ export default function AboutUsPage() {
                 className="font-bold tracking-tight"
                 style={{ fontSize: "clamp(1.5rem, 4vw, 2.25rem)", color: "var(--text-primary)" }}
               >
-                {language === "en" ? "On TripShqip You Can Find:" : "Në TripShqip Mund Të Gjeni:"}
+                {language === "en" ? "On GjejDirekt You Can Find:" : "Në GjejDirekt Mund Të Gjeni:"}
               </h2>
             </div>
             <Link
@@ -227,7 +227,7 @@ export default function AboutUsPage() {
               style={{
                 position: "absolute", top: 0, left: 0,
                 width: "192px", height: "192px", borderRadius: "50%",
-                background: "rgba(34,153,120,0.12)", filter: "blur(60px)",
+                background: "rgba(225,29,46,0.12)", filter: "blur(60px)",
                 pointerEvents: "none"
               }}
             />
@@ -247,7 +247,7 @@ export default function AboutUsPage() {
             <div className="flex items-center gap-2 mt-6" style={{ position: "relative", zIndex: 10 }}>
               <Heart className="w-4 h-4 animate-pulse" style={{ color: "var(--brand-accent)", fill: "var(--brand-accent)" }} />
               <span className="text-xs font-semibold uppercase tracking-[0.15em]" style={{ color: "rgba(255,255,255,0.5)" }}>
-                {language === "en" ? "TripShqip Philosophy" : "Filozofia e TripShqip"}
+                {language === "en" ? "GjejDirekt Philosophy" : "Filozofia e GjejDirekt"}
               </span>
             </div>
           </div>
@@ -292,7 +292,7 @@ export default function AboutUsPage() {
                 className="font-bold tracking-tight mb-6"
                 style={{ fontSize: "clamp(1.5rem, 4vw, 2.25rem)", color: "var(--text-primary)" }}
               >
-                {language === "en" ? "TripShqip Supports:" : "TripShqip Mbështet:"}
+                {language === "en" ? "GjejDirekt Supports:" : "GjejDirekt Mbështet:"}
               </h2>
               <div className="space-y-3 mb-6">
                 {supports.map((s, i) => (

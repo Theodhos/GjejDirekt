@@ -12,7 +12,7 @@ const transporter = nodemailer.createTransport({
 
 // All email links must always point to the live site, never localhost or a preview URL.
 function getAppUrl() {
-  return "https://www.tripshqip.com";
+  return "https://www.gjejdirekt.com";
 }
 
 export async function sendReportEmail({
@@ -131,7 +131,7 @@ export async function sendPaymentNotificationEmail({
 
   const html = `
     <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee; border-radius: 20px;">
-      <h2 style="color: #1F8A70; font-size: 24px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px;">New Payment Received</h2>
+      <h2 style="color: #E11D2E; font-size: 24px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px;">New Payment Received</h2>
       <p style="color: #64748b; font-size: 16px;">A user just completed a package payment on the platform.</p>
       ${verifyNotice}
       <div style="background-color: #f8fafc; padding: 20px; border-radius: 15px; margin: 20px 0;">
@@ -142,7 +142,7 @@ export async function sendPaymentNotificationEmail({
         <p style="margin: 0;"><strong>Amount:</strong> €${amount}</p>
       </div>
       <div style="margin-top: 30px;">
-        <a href="${dashboardUrl}" style="background-color: #1F8A70; color: white; padding: 12px 25px; text-decoration: none; border-radius: 10px; font-weight: bold; font-size: 14px;">VIEW PAYMENTS</a>
+        <a href="${dashboardUrl}" style="background-color: #E11D2E; color: white; padding: 12px 25px; text-decoration: none; border-radius: 10px; font-weight: bold; font-size: 14px;">VIEW PAYMENTS</a>
       </div>
     </div>
   `;
@@ -179,27 +179,27 @@ export async function sendFreePackageInvoiceEmail({
     ? {
         subject: `Invoice — ${packageName} package`,
         heading: "Your Invoice",
-        intro: `Hi ${userName}, thank you for choosing TripShqip! Here is the invoice for your package.`,
+        intro: `Hi ${userName}, thank you for choosing GjejDirekt! Here is the invoice for your package.`,
         packageLabel: "Package",
         serviceLabel: "Service",
         priceLabel: "Price",
         free: "Free",
         includes: "What's included",
         total: "Total",
-        thanks: "Thank you for being part of TripShqip. 💚",
+        thanks: "Thank you for being part of GjejDirekt. ❤️",
         cta: "Go to your dashboard"
       }
     : {
         subject: `Faturë — paketa ${packageName}`,
         heading: "Fatura juaj",
-        intro: `Përshëndetje ${userName}, faleminderit që zgjodhët TripShqip! Kjo është fatura për paketën tuaj.`,
+        intro: `Përshëndetje ${userName}, faleminderit që zgjodhët GjejDirekt! Kjo është fatura për paketën tuaj.`,
         packageLabel: "Paketa",
         serviceLabel: "Shërbimi",
         priceLabel: "Çmimi",
         free: "Falas",
         includes: "Çfarë përfshihet",
         total: "Totali",
-        thanks: "Faleminderit që jeni pjesë e TripShqip. 💚",
+        thanks: "Faleminderit që jeni pjesë e GjejDirekt. ❤️",
         cta: "Shko te paneli yt"
       };
 
@@ -216,7 +216,7 @@ export async function sendFreePackageInvoiceEmail({
 
   const html = `
     <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee; border-radius: 20px;">
-      <h2 style="color: #1F8A70; font-size: 24px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px;">${t.heading}</h2>
+      <h2 style="color: #E11D2E; font-size: 24px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px;">${t.heading}</h2>
       <p style="color: #64748b; font-size: 16px;">${t.intro}</p>
       <div style="background-color: #f8fafc; padding: 20px; border-radius: 15px; margin: 20px 0;">
         <p style="margin: 0 0 10px 0;"><strong>${t.packageLabel}:</strong> ${packageName}</p>
@@ -228,9 +228,9 @@ export async function sendFreePackageInvoiceEmail({
           <p style="margin: 0; font-size: 16px;"><strong>${t.total}:</strong> ${priceText}</p>
         </div>
       </div>
-      <p style="color: #1F8A70; font-size: 15px; font-weight: bold;">${t.thanks}</p>
+      <p style="color: #E11D2E; font-size: 15px; font-weight: bold;">${t.thanks}</p>
       <div style="margin-top: 24px;">
-        <a href="${appUrl}/dashboard" style="background-color: #1F8A70; color: white; padding: 12px 25px; text-decoration: none; border-radius: 10px; font-weight: bold; font-size: 14px;">${t.cta}</a>
+        <a href="${appUrl}/dashboard" style="background-color: #E11D2E; color: white; padding: 12px 25px; text-decoration: none; border-radius: 10px; font-weight: bold; font-size: 14px;">${t.cta}</a>
       </div>
     </div>
   `;

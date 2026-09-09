@@ -6,6 +6,8 @@ import { loadRankedCities } from "@/lib/cities-server";
 import City from "@/models/City";
 import Listing from "@/models/Listing";
 import HiddenCity from "@/models/HiddenCity";
+import { escapeRegex } from "@/lib/utils";
+import { apiError } from "@/lib/api";
 
 export async function GET() {
   try {
@@ -14,7 +16,7 @@ export async function GET() {
 
     return NextResponse.json({ cities: merged });
   } catch (error) {
-    return NextResponse.json({ error: error instanceof Error ? error.message : "Failed to load cities" }, { status: 500 });
+    return apiError("Failed to load cities", 500, error);
   }
 }
 
@@ -45,7 +47,7 @@ export async function POST(request: Request) {
         normalizeCityName(c.label) === normalizedLabel
     );
     const existsCustom = await City.findOne({
-      $or: [{ value }, { label: new RegExp(`^${label}$`, "i") }]
+      $or: [{ value }, { label: new RegExp(`^${escapeRegex(label)}$`, "i") }]
     });
     if (existsInSeed || existsCustom) {
       return NextResponse.json({ error: "City already exists." }, { status: 409 });
@@ -64,7 +66,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ city }, { status: 201 });
   } catch (error) {
-    return NextResponse.json({ error: error instanceof Error ? error.message : "Failed to add city" }, { status: 500 });
+    return apiError("Failed to add city", 500, error);
   }
 }
 
@@ -92,7 +94,7 @@ export async function PUT(request: Request) {
 
     const duplicate = await City.findOne({
       value: { $ne: value },
-      label: new RegExp(`^${label}$`, "i")
+      label: new RegExp(`^${escapeRegex(label)}$`, "i")
     });
     if (duplicate) return NextResponse.json({ error: "Another city already uses this name." }, { status: 409 });
 
@@ -117,7 +119,7 @@ export async function PUT(request: Request) {
 
     return NextResponse.json({ city });
   } catch (error) {
-    return NextResponse.json({ error: error instanceof Error ? error.message : "Failed to update city" }, { status: 500 });
+    return apiError("Failed to update city", 500, error);
   }
 }
 
@@ -141,9 +143,14 @@ export async function DELETE(request: Request) {
     }
     await HiddenCity.updateOne({ value }, { $set: { value } }, { upsert: true });
 
-    const deletedListings = await Listing.deleteMany({
-      location: { $regex: `^${cityLabel}$`, $options: "i" }
-    });
+    // Escape the label before it becomes a regex: an unescaped name like
+    // "Tirana (Qendra)" would be read as a pattern and delete the wrong listings.
+    // With no resolvable label, delete nothing rather than matching blindly.
+    const deletedListings = cityLabel
+      ? await Listing.deleteMany({
+          location: { $regex: `^${escapeRegex(cityLabel)}$`, $options: "i" }
+        })
+      : { deletedCount: 0 };
 
     return NextResponse.json({
       success: true,
@@ -151,7 +158,7 @@ export async function DELETE(request: Request) {
       deletedListings: deletedListings.deletedCount || 0
     });
   } catch (error) {
-    return NextResponse.json({ error: error instanceof Error ? error.message : "Failed to delete city" }, { status: 500 });
+    return apiError("Failed to delete city", 500, error);
   }
 }
 

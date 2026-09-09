@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { apiError } from "@/lib/api";
 import bcrypt from "bcryptjs";
 import { connectDB } from "@/lib/db";
 import { AUTH_COOKIE, signToken } from "@/lib/auth";
@@ -47,6 +48,6 @@ export async function POST(request: Request) {
     });
     return response;
   } catch (error) {
-    return NextResponse.json({ error: error instanceof Error ? error.message : "Login failed" }, { status: 500 });
+    return apiError("Login failed", 500, error);
   }
 }

@@ -1,8 +1,10 @@
 import { NextResponse } from "next/server";
+import { apiError } from "@/lib/api";
 import { connectDB } from "@/lib/db";
 import { getAuthUser } from "@/lib/auth";
 import { sendMail } from "@/lib/mailer";
 import Listing from "@/models/Listing";
+import { isObjectId } from "@/lib/utils";
 
 function parseList(value: unknown) {
   if (Array.isArray(value)) {
@@ -40,7 +42,13 @@ function parseCoordinates(body: Record<string, unknown>) {
 export async function GET(_: Request, { params }: { params: { id: string } }) {
   try {
     await connectDB();
-    const listing = await Listing.findOne({ $or: [{ _id: params.id }, { slug: params.id }] })
+    // Only match on _id when the param actually looks like an ObjectId. Including
+    // { _id: "some-slug" } makes mongoose throw a CastError instead of just not
+    // matching, which used to turn every slug lookup into a 500.
+    const or: Record<string, string>[] = [{ slug: params.id }];
+    if (isObjectId(params.id)) or.unshift({ _id: params.id });
+
+    const listing = await Listing.findOne({ $or: or })
       .populate("owner", "name email role")
       .lean();
 
@@ -50,7 +58,7 @@ export async function GET(_: Request, { params }: { params: { id: string } }) {
 
     return NextResponse.json({ listing });
   } catch (error) {
-    return NextResponse.json({ error: error instanceof Error ? error.message : "Failed to load listing" }, { status: 500 });
+    return apiError("Failed to load listing", 500, error);
   }
 }
 
@@ -58,6 +66,8 @@ export async function PATCH(request: Request, { params }: { params: { id: string
   try {
     const auth = await getAuthUser();
     if (!auth) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+    if (!isObjectId(params.id)) return NextResponse.json({ error: "Listing not found" }, { status: 404 });
 
     await connectDB();
     const listing = await Listing.findById(params.id);
@@ -157,7 +167,7 @@ export async function PATCH(request: Request, { params }: { params: { id: string
 
     return NextResponse.json({ listing });
   } catch (error) {
-    return NextResponse.json({ error: error instanceof Error ? error.message : "Update failed" }, { status: 500 });
+    return apiError("Update failed", 500, error);
   }
 }
 
@@ -165,6 +175,8 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
   try {
     const auth = await getAuthUser();
     if (!auth) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+    if (!isObjectId(params.id)) return NextResponse.json({ error: "Listing not found" }, { status: 404 });
 
     await connectDB();
     const listing = await Listing.findById(params.id);
@@ -194,6 +206,6 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
 
     return NextResponse.json({ success: true, message: "Listing deleted successfully" });
   } catch (error) {
-    return NextResponse.json({ error: error instanceof Error ? error.message : "Deletion failed" }, { status: 500 });
+    return apiError("Deletion failed", 500, error);
   }
 }

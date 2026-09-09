@@ -2,11 +2,13 @@
 
 import SafeImage from "@/components/ui/SafeImage";
 import { useRouter } from "next/navigation";
-import { ArrowRight, Search, Compass, Sparkles, MapPin, Tag, X } from "lucide-react";
+import { Bed, Compass, LoaderCircle, MapPin, Search, Sparkles, Tag, UtensilsCrossed, X } from "lucide-react";
 import { useState, useMemo, useEffect, useRef } from "react";
+import toast from "react-hot-toast";
 import { useLanguage } from "@/context/LanguageContext";
 import { categories } from "@/lib/constants";
 import { albaniaCities } from "@/lib/albania-cities";
+import { nearestCity } from "@/lib/city-coordinates";
 import { useDebounce } from "@/hooks/useDebounce";
 
 export default function HomeSearchHero() {
@@ -16,11 +18,12 @@ export default function HomeSearchHero() {
   const [listingSuggestions, setListingSuggestions] = useState<any[]>([]);
   const [isLoadingListings, setIsLoadingListings] = useState(false);
   const [isMobileScreen, setIsMobileScreen] = useState(false);
+  const [locating, setLocating] = useState(false);
   const debouncedSearch = useDebounce(city, 300);
   const { language } = useLanguage();
   const searchRef = useRef<HTMLDivElement>(null);
   const [availableCities, setAvailableCities] = useState<any[]>(albaniaCities);
-  const popularCities = ["Tirane", "Durres", "Vlore", "Sarande", "Shkoder", "Berat", "Himare", "Ksamil", "Pogradec", "Korce"];
+  const popularCities = ["Tirane", "Durres", "Vlore", "Sarande", "Shkoder", "Berat"];
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -34,7 +37,7 @@ export default function HomeSearchHero() {
 
   useEffect(() => {
     const fetchListings = async () => {
-      if (!debouncedSearch.trim() || debouncedSearch.length < 1) {
+      if (!debouncedSearch.trim()) {
         setListingSuggestions([]);
         return;
       }
@@ -157,27 +160,13 @@ export default function HomeSearchHero() {
   }, [city, listingSuggestions, availableCities]);
 
   function handleSuggestionClick(suggestion: any) {
-    if (suggestion.type === "listing") {
-      router.push(`/listings/${suggestion.value}`);
-      setShowSuggestions(false);
-      return;
-    }
-    if (suggestion.type === "category") {
-      router.push(`/categories/${suggestion.value}`);
-      setShowSuggestions(false);
-      return;
-    } else if (suggestion.type === "subcategory") {
-      router.push(`/categories/${suggestion.categoryValue}?subcategory=${suggestion.value}`);
-      setShowSuggestions(false);
-      return;
-    } else if (suggestion.type === "city") {
-      router.push(`/city/${suggestion.value}`);
-      setShowSuggestions(false);
-      return;
-    }
-    const params = new URLSearchParams();
-    router.push(`/?${params.toString()}`);
     setShowSuggestions(false);
+    if (suggestion.type === "listing") return router.push(`/listings/${suggestion.value}`);
+    if (suggestion.type === "category") return router.push(`/categories/${suggestion.value}`);
+    if (suggestion.type === "subcategory") {
+      return router.push(`/categories/${suggestion.categoryValue}?subcategory=${suggestion.value}`);
+    }
+    if (suggestion.type === "city") return router.push(`/city/${suggestion.value}`);
   }
 
   function submit(event: React.FormEvent<HTMLFormElement>) {
@@ -186,22 +175,50 @@ export default function HomeSearchHero() {
     const matchedCity = availableCities.find(
       (c) => String(c.label).toLowerCase() === query || String(c.value).toLowerCase() === query
     );
-    if (matchedCity) {
-      router.push(`/city/${matchedCity.value}`);
-      setShowSuggestions(false);
-      return;
-    }
-    const params = new URLSearchParams();
-    if (query) params.set("q", query);
-    router.push(`/${params.toString() ? `?${params.toString()}` : ""}`);
     setShowSuggestions(false);
+    if (matchedCity) return router.push(`/city/${matchedCity.value}`);
+    router.push(query ? `/listings?q=${encodeURIComponent(query)}` : "/listings");
   }
 
+  /** "Pranë meje" — one geolocation fix, resolved to the closest city we cover. */
+  function findNearMe() {
+    if (!navigator.geolocation) {
+      toast.error(language === "en" ? "Location is not available" : "Vendndodhja nuk mbështetet");
+      return;
+    }
+    setLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setLocating(false);
+        const slug = nearestCity(
+          { lat: position.coords.latitude, lng: position.coords.longitude },
+          availableCities.map((c) => String(c.value))
+        );
+        if (slug) {
+          router.push(`/city/${slug}`);
+        } else {
+          toast(language === "en" ? "No city nearby — showing all" : "S'ka qytet afër — po shfaqim të gjitha");
+          router.push("/listings");
+        }
+      },
+      () => {
+        setLocating(false);
+        toast.error(language === "en" ? "Could not get your location" : "Nuk morëm dot vendndodhjen");
+      },
+      { timeout: 8000 }
+    );
+  }
+
+  const quickFilters = [
+    { icon: MapPin, label: language === "en" ? "Near me" : "Pranë meje", onClick: findNearMe, loading: locating },
+    { icon: UtensilsCrossed, label: language === "en" ? "Restaurants" : "Restorante", href: "/categories/restorante" },
+    { icon: Bed, label: language === "en" ? "Hotels" : "Hotele", href: "/categories/hotele" }
+  ];
+
   return (
-    <section className="relative flex min-h-[48vh] items-center justify-center py-10 sm:min-h-[52vh]" style={{ background: "#0b2319" }}>
-      {/* Background photo + overlay live in their own clipped layer so the section
-          itself keeps overflow visible — the desktop search dropdown must be able to
-          extend past the hero instead of being cut off by it. */}
+    <section className="relative overflow-visible" style={{ background: "#171A1F" }}>
+      {/* The photo sits in its own clipped layer so the desktop suggestion dropdown
+          can extend past the hero instead of being cut off by it. */}
       <div className="absolute inset-0 overflow-hidden">
         <SafeImage
           src="/uploads/1000068416.jpg.jpg"
@@ -211,285 +228,226 @@ export default function HomeSearchHero() {
           sizes="100vw"
           className="object-cover object-center"
         />
-        {/* Dark green overlay so the headline and search stay legible over any photo */}
         <div
           className="absolute inset-0"
-          style={{ background: "linear-gradient(180deg, rgba(6,18,13,0.55) 0%, rgba(8,24,17,0.62) 55%, rgba(6,18,13,0.78) 100%)" }}
+          style={{
+            background:
+              "linear-gradient(180deg, rgba(12,14,18,0.72) 0%, rgba(12,14,18,0.58) 45%, rgba(12,14,18,0.82) 100%)"
+          }}
         />
       </div>
-      <div className="page-shell relative z-10 w-full max-w-4xl px-4">
-        <div className="text-center mb-7">
-          <h1
-            className="mx-auto max-w-[52rem] text-balance font-bold text-white text-[1.75rem] sm:text-[2.5rem]"
-            style={{ lineHeight: 1.16, letterSpacing: "-0.02em" }}
-          >
-            {language === "en"
-              ? "Hotels, restaurants, attractions and activities across Albania."
-              : "Hotele, restorante, atraksione dhe aktivitete në të gjithë Shqipërinë."}
-          </h1>
-          <p
-            className="mx-auto mt-4 max-w-xl text-sm sm:text-base leading-relaxed"
-            style={{ color: "rgba(255,255,255,0.7)" }}
-          >
-            {language === "en"
-              ? "Find easily, contact directly, enjoy the journey."
-              : "Gjej lehtë, kontakto direkt, shijo udhëtimin."}
-          </p>
-        </div>
 
-        {/* Search Bar */}
-        <div
-          className="relative w-full max-w-3xl mx-auto z-[100]"
-          ref={searchRef}
+      <div className="page-shell relative z-10 pb-5 pt-6 sm:pb-7 sm:pt-10">
+        <h1
+          className="max-w-2xl text-[1.65rem] font-bold text-white sm:text-[2.4rem]"
+          style={{ lineHeight: 1.15, letterSpacing: "-0.025em" }}
         >
-          {/* Search form */}
-          <div className="relative z-20">
-            <div
-              className="rounded-2xl p-1.5"
-              style={{
-                background: "rgba(255,255,255,0.08)",
-                border: "1px solid rgba(255,255,255,0.16)",
-                backdropFilter: "blur(18px)",
-                WebkitBackdropFilter: "blur(18px)"
-              }}
-            >
-              <form onSubmit={submit}>
-                <div
-                  className="flex flex-col sm:flex-row items-center gap-2 p-2.5 pl-4 sm:pl-6 rounded-xl transition-all duration-300"
-                  style={{
-                    background: "var(--surface-white)",
-                    border: "1px solid rgba(15,20,25,0.08)"
-                  }}
-                >
-                  <div className="flex items-center gap-3 w-full">
-                    <Search className="h-5 w-5 shrink-0" style={{ color: "var(--brand-accent)" }} />
-                    <input
-                      value={city}
-                      onChange={(event) => {
-                        setCity(event.target.value);
-                        setShowSuggestions(true);
-                      }}
-                      onFocus={() => {
-                        setShowSuggestions(true);
-                        if (!isMobileScreen) {
-                          searchRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-                        }
-                      }}
-                      placeholder={language === "en" ? "Find a hotel, restaurant, attraction..." : "Gjej hotel, restorant, atraksion..."}
-                      className="w-full bg-transparent py-4 sm:py-3.5 text-lg sm:text-base outline-none font-medium"
-                      style={{ color: "var(--text-primary)" }}
-                    />
-                  </div>
-                  {/* Full-width button below the field on phones; inline from sm up.
-                      A hairline separates it from the input only on phones. */}
-                  <div className="flex w-full shrink-0 items-center border-t border-slate-100 pt-2 sm:w-auto sm:border-t-0 sm:pt-0 sm:pr-1">
-                    <button
-                      type="submit"
-                      className="btn-primary w-full sm:w-auto px-8 py-3.5 sm:py-3 rounded-xl flex items-center justify-center gap-2.5"
-                    >
-                      {language === "en" ? "Search" : "Kërko"}
-                      <ArrowRight className="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
-              </form>
-            </div>
-          </div>
+          {language === "en" ? (
+            <>
+              Find it easily.
+              <br />
+              <span style={{ color: "var(--brand-accent)" }}>Order</span> directly.
+            </>
+          ) : (
+            <>
+              Gjej lehtë.
+              <br />
+              <span style={{ color: "var(--brand-accent)" }}>Porosit</span> direkt.
+            </>
+          )}
+        </h1>
 
-          {/* Mobile search overlay */}
-          {isMobileScreen && showSuggestions && (
-            <div className="fixed inset-0 z-[9999] bg-white overflow-y-auto">
-              <div className="px-4 pt-4 pb-3 border-b" style={{ borderColor: "var(--border-soft)" }}>
-                <form onSubmit={submit} className="flex items-center gap-3">
-                  <div className="flex-1 rounded-2xl border bg-white px-4 py-3 flex items-center gap-3" style={{ borderColor: "var(--border-medium)" }}>
-                    <Search className="w-5 h-5 shrink-0" style={{ color: "var(--brand-accent)" }} />
-                    <input
-                      value={city}
-                      onChange={(event) => setCity(event.target.value)}
-                      placeholder={language === "en" ? "Find a hotel, restaurant, attraction..." : "Gjej hotel, restorant, atraksion..."}
-                      className="w-full bg-transparent text-base outline-none font-medium"
-                      style={{ color: "var(--text-primary)" }}
-                      autoFocus
-                    />
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => setShowSuggestions(false)}
-                    className="flex h-12 w-12 items-center justify-center rounded-2xl border bg-white text-slate-600"
-                    style={{ borderColor: "var(--border-soft)" }}
-                  >
-                    <X className="w-5 h-5" />
-                  </button>
-                </form>
-              </div>
-              <div className="p-4">
+        <p className="mt-2.5 max-w-lg text-[13px] leading-relaxed sm:text-[15px]" style={{ color: "rgba(255,255,255,0.75)" }}>
+          {language === "en"
+            ? "Find the best businesses near you and order or book directly on WhatsApp."
+            : "Gjej bizneset më të mira pranë teje dhe porosit ose rezervo direkt në WhatsApp."}
+        </p>
+
+        {/* Search */}
+        <div className="relative z-[100] mt-4 max-w-2xl" ref={searchRef}>
+          <form onSubmit={submit}>
+            <div
+              className="flex items-center gap-2 rounded-xl p-1.5 pl-3.5"
+              style={{ background: "var(--surface-white)", boxShadow: "0 8px 24px rgba(0,0,0,0.22)" }}
+            >
+              <Search className="h-[18px] w-[18px] shrink-0" style={{ color: "var(--text-tertiary)" }} />
+              <input
+                value={city}
+                onChange={(event) => {
+                  setCity(event.target.value);
+                  setShowSuggestions(true);
+                }}
+                onFocus={() => setShowSuggestions(true)}
+                placeholder={
+                  language === "en" ? "Search business, product, service..." : "Kërko biznes, produkt, shërbim..."
+                }
+                className="min-w-0 flex-1 bg-transparent py-2.5 text-[15px] font-medium outline-none sm:text-base"
+                style={{ color: "var(--text-primary)" }}
+                aria-label={language === "en" ? "Search" : "Kërko"}
+              />
+              <button type="submit" className="btn-primary shrink-0 !px-5 !py-2.5">
+                {language === "en" ? "Search" : "Kërko"}
+              </button>
+            </div>
+          </form>
+
+          {/* Desktop suggestions */}
+          {!isMobileScreen && showSuggestions && suggestions.length > 0 && (
+            <div
+              className="absolute inset-x-0 top-full z-[9999] mt-2 overflow-hidden rounded-xl border bg-white shadow-[0_18px_60px_rgba(15,23,42,0.18)]"
+              style={{ borderColor: "var(--border-soft)" }}
+            >
+              <div className="max-h-[60vh] overflow-y-auto custom-scrollbar">
                 {!city.trim() && (
-                  <div className="mb-4 flex flex-wrap gap-2">
-                    {popularCities.slice(0, 6).map((name) => (
+                  <div className="flex flex-wrap gap-2 border-b p-3" style={{ borderColor: "var(--border-soft)" }}>
+                    {popularCities.map((name) => (
                       <button
                         key={name}
+                        type="button"
                         onClick={() => {
-                          setCity(name);
-                          router.push(`/city/${encodeURIComponent(name.toLowerCase())}`);
                           setShowSuggestions(false);
+                          router.push(`/city/${name.toLowerCase()}`);
                         }}
-                        className="rounded-2xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-100"
+                        className="rounded-lg px-3 py-1.5 text-[13px] font-medium transition-colors hover:bg-[var(--surface-subtle)]"
+                        style={{ background: "var(--surface-cream)", color: "var(--text-secondary)" }}
                       >
                         {name}
                       </button>
                     ))}
                   </div>
                 )}
-                <div className="space-y-3">
-                  {suggestions.map((suggestion, index) => (
-                    <button
-                      key={index}
-                      onClick={() => handleSuggestionClick(suggestion)}
-                      className="w-full flex items-center gap-4 rounded-2xl border px-4 py-4 text-left transition hover:bg-slate-50"
-                      style={{ borderColor: "rgba(15,20,25,0.06)" }}
-                    >
-                      {suggestion.type === "listing" && suggestion.image ? (
-                        <div className="relative w-12 h-12 overflow-hidden rounded-2xl border shrink-0 shadow-sm" style={{ borderColor: "rgba(15,20,25,0.08)" }}>
-                          <SafeImage src={suggestion.image} alt={suggestion.label} fill className="object-cover" sizes="48px" />
-                        </div>
-                      ) : (
-                        <div
-                          className="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0"
-                          style={{
-                            background: "rgba(34,153,120,0.08)",
-                            color: "var(--brand-accent)",
-                            border: "1px solid rgba(34,153,120,0.12)"
-                          }}
-                        >
-                          <suggestion.icon className="w-5 h-5" strokeWidth={2.5} />
-                        </div>
-                      )}
-                      <div className="flex-grow min-w-0 pr-2">
-                        <p className="text-base font-semibold truncate leading-tight" style={{ color: "var(--text-primary)" }}>
-                          {suggestion.label}
-                        </p>
-                        <span className="mt-1 inline-flex items-center rounded-full bg-slate-100 px-2 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-600">
-                          {suggestion.type === "listing" ? suggestion.category : suggestion.type}
-                        </span>
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Suggestions Dropdown */}
-          {!isMobileScreen && showSuggestions && suggestions.length > 0 && (
-            <div
-              className="absolute top-full left-0 right-0 w-full bg-white overflow-hidden mt-3 rounded-2xl border z-[9999] shadow-[0_18px_60px_rgba(15,23,42,0.12)]"
-              style={{
-                borderColor: "var(--border-soft)"
-              }}
-            >
-              <div className="h-full p-2 overflow-y-auto custom-scrollbar sm:max-h-[calc(100vh-200px)]">
-                {/* Mobile & Desktop: popular cities as tags */}
-                {!city.trim() && (
-                  <div className="px-4 pt-3 pb-3 border-b mb-1" style={{ borderColor: "rgba(15,20,25,0.06)" }}>
-                    <div className="flex flex-wrap gap-2">
-                      {popularCities.slice(0, 6).map((name) => (
-                        <button
-                          key={name}
-                          onClick={() => {
-                            setCity(name);
-                            router.push(`/city/${encodeURIComponent(name.toLowerCase())}`);
-                            setShowSuggestions(false);
-                          }}
-                          className="rounded-lg px-3 py-1.5 text-[13px] font-medium transition-all hover:bg-[var(--surface-subtle)] active:scale-95"
-                          style={{
-                            background: "var(--surface-cream)",
-                            color: "var(--text-secondary)",
-                            border: "1px solid var(--border-soft)"
-                          }}
-                        >
-                          {name}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                )}
                 {isLoadingListings && (
-                  <div className="flex items-center gap-2 px-4 py-2.5 mb-1 rounded-xl" style={{ background: "var(--surface-cream)" }}>
-                    <div className="w-1.5 h-1.5 rounded-full animate-ping" style={{ background: "var(--brand-accent)" }} />
-                    <span className="text-[11px] font-semibold uppercase tracking-[0.18em]" style={{ color: "var(--text-tertiary)" }}>
-                      {language === "en" ? "Searching..." : "Duke kërkuar..."}
-                    </span>
-                  </div>
+                  <p className="px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.18em]" style={{ color: "var(--text-tertiary)" }}>
+                    {language === "en" ? "Searching..." : "Duke kërkuar..."}
+                  </p>
                 )}
-
-                <div className="grid grid-cols-1">
-                  {suggestions.map((suggestion, index) => (
-                    <button
-                      key={index}
-                      onClick={() => handleSuggestionClick(suggestion)}
-                      className="w-full flex items-center gap-4 px-4 sm:px-5 py-3.5 text-left transition-colors group relative"
-                      style={{ borderBottom: index < suggestions.length - 1 ? "1px solid rgba(15,20,25,0.06)" : "none" }}
-                      onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = "var(--surface-cream)")}
-                      onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = "transparent")}
-                    >
-                      {suggestion.type === "listing" && suggestion.image ? (
-                        <div className="relative w-12 h-12 overflow-hidden rounded-2xl border shrink-0 shadow-sm" style={{ borderColor: "rgba(15,20,25,0.08)" }}>
-                          <SafeImage src={suggestion.image} alt={suggestion.label} fill className="object-cover" sizes="48px" />
-                        </div>
-                      ) : (
-                        <div
-                          className="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 transition-colors shadow-sm"
-                          style={{
-                            background: "rgba(34,153,120,0.08)",
-                            color: "var(--brand-accent)",
-                            border: "1px solid rgba(34,153,120,0.12)"
-                          }}
-                        >
-                          <suggestion.icon className="w-5 h-5" strokeWidth={2.5} />
-                        </div>
-                      )}
-                      <div className="flex-grow min-w-0 pr-2">
-                        <p
-                          className="text-[15px] font-semibold truncate transition-colors leading-tight"
-                          style={{ color: "var(--text-primary)", letterSpacing: "-0.01em" }}
-                        >
-                          {suggestion.label}
-                        </p>
-                        <span
-                          className="mt-1 inline-flex items-center text-[10px] font-bold uppercase tracking-[0.12em] px-2 py-0.5 rounded-lg"
-                          style={{
-                            background: suggestion.type === "category"
-                              ? "rgba(34,153,120,0.12)"
-                              : suggestion.type === "city"
-                              ? "rgba(245,158,11,0.12)"
-                              : "var(--surface-cream)",
-                            color: suggestion.type === "category"
-                              ? "var(--brand-accent)"
-                              : suggestion.type === "city"
-                              ? "#b45309"
-                              : "var(--text-secondary)"
-                          }}
-                        >
-                          {suggestion.type === "listing" ? suggestion.category : suggestion.type}
-                        </span>
-                      </div>
-                      <ArrowRight 
-                        className="w-4 h-4 opacity-50 group-hover:opacity-100 group-hover:translate-x-1 transition-all shrink-0" 
-                        style={{ color: "var(--brand-accent)" }} 
-                      />
-                    </button>
-                  ))}
-                </div>
+                <SuggestionList suggestions={suggestions} onPick={handleSuggestionClick} />
               </div>
             </div>
           )}
         </div>
 
-        {/* Scroll indicator */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-25 animate-bounce pointer-events-none">
-          <div className="w-px h-10 bg-gradient-to-b from-white to-transparent" />
+        {/* Quick filters */}
+        <div className="gd-rail mt-3.5 -mx-4 px-4 sm:-mx-6 sm:px-6">
+          {quickFilters.map((filter) => {
+            const Icon = filter.icon;
+            const content = (
+              <>
+                {filter.loading ? (
+                  <LoaderCircle className="h-4 w-4 animate-spin" style={{ color: "var(--brand-accent)" }} />
+                ) : (
+                  <Icon className="h-4 w-4" style={{ color: "var(--brand-accent)" }} />
+                )}
+                {filter.label}
+              </>
+            );
+            return filter.href ? (
+              <a key={filter.label} href={filter.href} className="gd-quick-pill">
+                {content}
+              </a>
+            ) : (
+              <button key={filter.label} type="button" onClick={filter.onClick} className="gd-quick-pill">
+                {content}
+              </button>
+            );
+          })}
         </div>
       </div>
+
+      {/* Mobile full-screen search */}
+      {isMobileScreen && showSuggestions && (
+        <div className="fixed inset-0 z-[9999] overflow-y-auto bg-white">
+          <div className="border-b px-4 pb-3 pt-4" style={{ borderColor: "var(--border-soft)" }}>
+            <form onSubmit={submit} className="flex items-center gap-2.5">
+              <div
+                className="flex flex-1 items-center gap-2.5 rounded-xl border bg-white px-3.5 py-2.5"
+                style={{ borderColor: "var(--border-medium)" }}
+              >
+                <Search className="h-[18px] w-[18px] shrink-0" style={{ color: "var(--text-tertiary)" }} />
+                <input
+                  value={city}
+                  onChange={(event) => setCity(event.target.value)}
+                  placeholder={
+                    language === "en" ? "Search business, product, service..." : "Kërko biznes, produkt, shërbim..."
+                  }
+                  className="w-full bg-transparent text-base font-medium outline-none"
+                  style={{ color: "var(--text-primary)" }}
+                  autoFocus
+                />
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowSuggestions(false)}
+                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border"
+                style={{ borderColor: "var(--border-soft)", color: "var(--text-secondary)" }}
+                aria-label={language === "en" ? "Close" : "Mbyll"}
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </form>
+          </div>
+
+          {!city.trim() && (
+            <div className="flex flex-wrap gap-2 px-4 pt-3">
+              {popularCities.map((name) => (
+                <button
+                  key={name}
+                  type="button"
+                  onClick={() => {
+                    setShowSuggestions(false);
+                    router.push(`/city/${name.toLowerCase()}`);
+                  }}
+                  className="rounded-lg border px-3 py-2 text-sm font-medium"
+                  style={{ borderColor: "var(--border-soft)", background: "var(--surface-cream)", color: "var(--text-secondary)" }}
+                >
+                  {name}
+                </button>
+              ))}
+            </div>
+          )}
+
+          <SuggestionList suggestions={suggestions} onPick={handleSuggestionClick} />
+        </div>
+      )}
     </section>
+  );
+}
+
+/** Shared result rows — the mobile overlay and the desktop dropdown render the same list. */
+function SuggestionList({ suggestions, onPick }: { suggestions: any[]; onPick: (suggestion: any) => void }) {
+  return (
+    <ul>
+      {suggestions.map((suggestion, index) => (
+        <li key={`${suggestion.type}-${suggestion.value}-${index}`}>
+          <button
+            type="button"
+            onClick={() => onPick(suggestion)}
+            className="flex w-full items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-[var(--surface-cream)]"
+            style={{ borderTop: index ? "1px solid var(--border-soft)" : "none" }}
+          >
+            {suggestion.type === "listing" && suggestion.image ? (
+              <span className="relative h-10 w-10 shrink-0 overflow-hidden rounded-lg">
+                <SafeImage src={suggestion.image} alt={suggestion.label} fill className="object-cover" sizes="40px" />
+              </span>
+            ) : (
+              <span
+                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg"
+                style={{ background: "var(--brand-light)", color: "var(--brand-accent)" }}
+              >
+                <suggestion.icon className="h-[18px] w-[18px]" strokeWidth={2.2} />
+              </span>
+            )}
+            <span className="min-w-0 flex-1">
+              <span className="block truncate text-[14px] font-semibold" style={{ color: "var(--text-primary)" }}>
+                {suggestion.label}
+              </span>
+              <span className="block truncate text-[11px]" style={{ color: "var(--text-tertiary)" }}>
+                {suggestion.type === "listing" ? suggestion.category : suggestion.type}
+              </span>
+            </span>
+          </button>
+        </li>
+      ))}
+    </ul>
   );
 }

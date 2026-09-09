@@ -198,7 +198,7 @@ export default function ChatWidget() {
           onClick={() => setOpen(true)}
           aria-label={c.open}
           className="fixed bottom-28 right-6 z-50 flex items-center gap-2 rounded-full px-5 py-4 text-white font-bold text-sm shadow-lg transition-transform hover:scale-105 active:scale-95 md:bottom-6"
-          style={{ background: "var(--brand-accent)", boxShadow: "0 8px 24px rgba(34,153,120,0.35)" }}
+          style={{ background: "var(--brand-accent)", boxShadow: "0 8px 24px rgba(225,29,46,0.35)" }}
         >
           <Sparkles className="w-5 h-5" />
           <span className="hidden sm:inline">{c.open}</span>

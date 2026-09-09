@@ -3,8 +3,8 @@ export type Language = "en" | "al";
 export const translations = {
   en: {
     hero: {
-      title: "Search a city. Discover every service.",
-      description: "A city-first tourism marketplace for Albania where travelers can quickly find accommodation, food, things to do, events, transport, and local services.",
+      title: "Find it easily. Order directly.",
+      description: "The directory of Albanian businesses: find restaurants, hotels, shops, services and products near you, then order or book directly on WhatsApp.",
       discoverByCity: "Discover Albania by city",
       findEveryService: "Find every service in one place",
       verifiedListings: "Verified listings",
@@ -32,7 +32,7 @@ export const translations = {
       privacy: "Privacy Policy"
     },
     legal: {
-      intro: "Welcome to TripShqip. By using our platform, you accept these Terms of Use. Please read them carefully.",
+      intro: "Welcome to GjejDirekt. By using our platform, you accept these Terms of Use. Please read them carefully.",
       lastUpdated: "Last updated: May 17, 2026"
     },
     common: {
@@ -195,7 +195,7 @@ export const translations = {
     },
     addListing: {
         title: "Submit your Service",
-        subtitle: "Join the elite network of Albanian tourism providers.",
+        subtitle: "Join the businesses customers find on GjejDirekt.",
         proTips: "Pro Tips",
         tip1Title: "High Quality Photos",
         tip1Desc: "Listings with 5+ HD photos get 80% more bookings.",
@@ -241,33 +241,33 @@ export const translations = {
       description: "Access your personalized dashboard to manage listings, save favorites, and share your experiences.",
       featureLabel: "Feature",
       features: ["Saved trips", "Moderation tools", "Reviews", "Listing management"],
-      signInSubtitle: "Sign in to manage your business profile on TripShqip.",
+      signInSubtitle: "Sign in to manage your business profile on GjejDirekt.",
       noAccount: "Don't have an account?",
       listFreePitch: "List your business for free in just 5 minutes.",
-      perks: ["Free to list", "0% commission", "Direct contact with tourists"]
+      perks: ["Free to list", "0% commission", "Direct contact with customers"]
     },
     register: {
       start: "Start your journey",
       joinTitle: "Join the Community.",
-      description: "Create an account to list your services, interact with travelers, and help grow the Albanian tourism industry.",
+      description: "Create an account to list your business, receive orders, and be found by customers near you.",
       benefitLabel: "Benefit",
       benefits: ["Quick approval", "Free listing", "Direct contact", "Global reach"],
       alreadyAccount: "Already have an account?"
     },
     host: {
-        spotlight: "Host Spotlight",
-        title: "Become a host and share the beauty of Albania.",
-        description: "Join our community of trusted providers. List your stay, tour, or service and reach travelers from all over the world.",
-        button: "Start Hosting",
-        joined: "Join 500+ local hosts",
+        spotlight: "Business Spotlight",
+        title: "Put your business where customers are looking.",
+        description: "Join the businesses people already trust. List your shop, restaurant or service and start receiving orders.",
+        button: "List your business",
+        joined: "Join 500+ local businesses",
         feature1: "Quality Trust",
         feature2: "Fast Growth"
     },
     footer: {
-      platformName: "Use TripShqip",
-      tagline: "More tourists. More contacts. More bookings.",
-      description: "Built for travelers, hosts, and editors. A single platform for discovery, trust, and high-quality tourism listings.",
-      ctaDescription: "TripShqip lets tourism businesses build a professional online presence and receive calls, WhatsApp messages, and direct bookings — with zero commission on every reservation.",
+      platformName: "Use GjejDirekt",
+      tagline: "More customers. More orders. Zero commission.",
+      description: "One place to find a business you can trust and reach it in a single tap — by phone or on WhatsApp.",
+      ctaDescription: "GjejDirekt gives every local business a professional profile and sends calls, WhatsApp messages and orders straight to it — with zero commission.",
       exploreServices: "List for Free",
       addListing: "How it works?",
       getStarted: "Get started",
@@ -278,7 +278,7 @@ export const translations = {
       contactTitle: "Contact Us",
       follow: "Follow",
       rightsReserved: "All rights reserved.",
-      bottomTagline: "Find easily. Contact directly. Enjoy the journey"
+      bottomTagline: "Find easily. Order directly."
     },
     listing: {
       request: "Request",
@@ -298,7 +298,7 @@ export const translations = {
     },
     admin: {
       consoleTitle: "Admin Console",
-      heroTitle: "Control the tourism platform from one place.",
+      heroTitle: "Run the whole directory from one place.",
       addListing: "Add listing",
       viewServices: "View services",
       blogStudio: "Blog Studio",
@@ -400,25 +400,42 @@ export const translations = {
       description: "Explore the full range of services and experiences under {category}. Find the best local providers and book with confidence."
       ,
       names: {
-        akomodim: "Accommodation",
-        restorante: "Restaurants",
-        atraksione: "Attractions",
-        aktivitete: "Activities & Tours",
-        evente: "Events",
-        transport: "Transport",
-        "produkte-lokale": "Shopping & Local Products",
-        "sherbime-turistike": "Tourism Services"
+        "ushqim-pije": "Food & Drink",
+        hotele: "Hotels & Stays",
+        shopping: "Shopping",
+        supermarkete: "Supermarkets",
+        bukuri: "Beauty & Wellness",
+        shendet: "Health",
+        auto: "Vehicles",
+        "shtepi-ndertim": "Home & Construction",
+        "sherbime-shtepi": "Home Services",
+        "sherbime-profesionale": "Professional Services",
+        evente: "Events & Weddings",
+        turizem: "Tourism & Activities",
+        arsim: "Education & Training",
+        "sport-fitness": "Sport & Fitness",
+        kafshe: "Pets",
+        "biznese-industri": "Business & Industry"
       },
+      // Subcategory labels fall back to the Albanian names in lib/constants.ts when a
+      // translation is missing, so only the ones worth translating are listed here.
       subnames: {
-        akomodim: {
-          hotel: "Hotel",
-          guesthouse: "Guesthouse",
-          vila: "Villa",
-          apartament: "Apartment",
-          hostel: "Hostel",
-          resort: "Resort",
-          agroturizem: "Agrotourism",
-          camping: "Camping",
+        shopping: {
+          veshje: "Clothing",
+          "kepuce-canta": "Shoes & Bags",
+          aksesore: "Accessories & Jewellery",
+          elektronike: "Electronics",
+          mobilje: "Furniture & Home",
+          supermarket: "Supermarket & Grocery",
+          "djathe-bulmet": "Cheese & Dairy",
+          mjalte: "Honey & Organic",
+          "vere-raki": "Wine & Drinks",
+          embelsira: "Sweets & Bakery",
+          artizanat: "Crafts & Souvenirs",
+          "lodra-femije": "Toys & Kids",
+          "sport-hobi": "Sports & Hobby",
+          libraria: "Books & Stationery",
+          "lule-dhurata": "Flowers & Gifts",
           "te-tjera": "Other"
         },
         restorante: {
@@ -427,146 +444,163 @@ export const translations = {
           internacional: "International",
           "fast-food": "Fast Food",
           pizzeri: "Pizzeria",
-          kafene: "Café",
+          byrektore: "Byrek Shop",
+          kafene: "Cafe",
           "bar-lounge": "Bar / Lounge",
           "kafe-bar": "Cafe & Bar",
           embeltore: "Pastry Shop",
+          delivery: "Delivery / Online Order",
+          catering: "Catering",
           verari: "Winery",
           "te-tjera": "Other"
         },
-        atraksione: {
-          natyre: "Nature",
-          historike: "Historical",
-          kulturore: "Cultural",
-          fetare: "Religious",
-          muze: "Museum",
-          kala: "Castle",
-          park: "Park",
-          plazh: "Beach",
-          liqen: "Lake",
-          ujevare: "Waterfall",
-          kanion: "Canyon",
-          shpelle: "Cave",
-          "pike-panoramike": "Viewpoint",
+        hotele: {
+          hotel: "Hotel",
+          guesthouse: "Guesthouse",
+          vila: "Villa",
+          apartament: "Apartment Rental",
+          hostel: "Hostel",
+          resort: "Resort",
+          motel: "Motel",
+          agroturizem: "Agrotourism",
+          camping: "Camping & Glamping",
           "te-tjera": "Other"
         },
-        aktivitete: {
-          hiking: "Hiking",
-          "atv-buggy": "ATV / Buggy",
-          zipline: "Zipline",
-          rafting: "Rafting",
-          kayak: "Kayak",
-          "boat-tour": "Boat Tour",
-          zhytje: "Diving",
-          kalerim: "Horse Riding",
-          ski: "Skiing",
-          paragliding: "Paragliding",
-          "guide-turistik": "Tour Guide",
-          "tur-kulturor": "Cultural Tour",
-          "tur-gastronomik": "Food Tour",
-          "tur-me-vere": "Wine Tour",
-          "tur-me-biciklete": "Bike Tour",
+        bukuri: {
+          parukeri: "Hair Salon",
+          berber: "Barber",
+          thonj: "Nail Studio",
+          kozmetike: "Cosmetics & Facial",
+          makeup: "Make-up Artist",
+          "vetulla-qerpik": "Brows & Lashes",
+          "spa-masazh": "Spa & Massage",
+          epilim: "Waxing & Laser",
+          "tatuazh-piercing": "Tattoo & Piercing",
+          solarium: "Solarium",
           "te-tjera": "Other"
         },
-        evente: {
-          festivale: "Festival",
-          koncerte: "Concert",
-          "feste-tradicionale": "Traditional Feast",
-          "event-gastronomik": "Food Event",
-          "event-kulturor": "Cultural Event",
-          "event-sportiv": "Sports Event",
-          panaire: "Fair",
-          workshop: "Workshop",
-          ekspozite: "Exhibition",
-          dasma: "Weddings",
+        shendet: {
+          klinike: "Clinic",
+          dentist: "Dentist",
+          farmaci: "Pharmacy",
+          laborator: "Medical Laboratory",
+          optike: "Optician",
+          fizioterapi: "Physiotherapy",
+          psikolog: "Psychologist & Therapy",
+          nutricionist: "Nutritionist",
+          palester: "Gym & Fitness",
+          veteriner: "Veterinary",
           "te-tjera": "Other"
         },
-        transport: {
+        auto: {
+          "servis-auto": "Car Service",
+          gomiste: "Tyre Shop",
+          lavazh: "Car Wash",
+          "pjese-kembimi": "Spare Parts",
+          "shitje-makinash": "Car Dealer",
           "makine-me-qira": "Car Rental",
-          "motocikleta-me-qira": "Motorbike Rental",
-          "bicikleta-me-qira": "Bike Rental",
-          taksi: "Taxi",
-          shuttle: "Shuttle",
-          aeroport: "Airport Transfer",
-          minibus: "Minibus",
-          varka: "Sea Transport",
+          "motocikleta-me-qira": "Motorbike & Bike Rental",
+          taksi: "Taxi & Transfer",
+          "transport-mallrash": "Freight Transport",
+          autoshkolle: "Driving School",
+          elektroauto: "Auto Electrics & AC",
+          "karro-atrezzo": "Towing",
           "te-tjera": "Other"
         },
-        "produkte-lokale": {
-          ushqimore: "Traditional Food",
-          "djathe-bulmet": "Cheese & Dairy",
-          mjalte: "Honey",
-          "vere-raki": "Wine & Raki",
-          "embelsira-tradicionale": "Traditional Sweets",
-          artizanat: "Handicrafts",
-          suvenire: "Souvenirs",
-          agro: "Organic Products",
+        imobiliare: {
+          "apartament-shitje": "Apartments for Sale",
+          "apartament-qira": "Apartments for Rent",
+          "shtepi-vila": "Houses & Villas",
+          "ambiente-biznesi": "Commercial Space",
+          toka: "Land & Plots",
+          "garazh-magazine": "Garages & Warehouses",
+          "agjenci-imobiliare": "Real Estate Agency",
+          ndertim: "Construction & Investment",
           "te-tjera": "Other"
         },
-        "sherbime-turistike": {
-          agjenci: "Travel Agency",
-          "organizim-eventesh": "Event Organisation",
-          "foto-video": "Photographer / Videographer",
-          "exchange-office": "Exchange Office",
+        sherbime: {
+          hidraulik: "Plumber",
+          elektricist: "Electrician",
+          kondicioner: "AC & Heating",
+          bojatisje: "Painting & Plastering",
+          marangoz: "Carpenter",
+          pastrim: "Cleaning & Disinfection",
           lavanderi: "Laundry",
-          "ruajtje-bagazhesh": "Luggage Storage",
-          "qira-pajisjesh": "Equipment Rental",
+          "transport-mobiljesh": "Moving Services",
+          "it-web": "IT, Web & Marketing",
+          "foto-video": "Photo & Video",
+          "organizim-eventesh": "Events & Weddings",
+          "avokat-noter": "Lawyer & Notary",
+          kontabilist: "Accounting & Finance",
           perkthyes: "Translator",
-          concierge: "Concierge",
-          "sim-card": "SIM Card / eSIM",
-          "sigurime-udhetimi": "Travel Insurance",
-          guida: "Guides",
-          ekskursione: "Excursions",
-          rezervime: "Bookings",
+          sigurime: "Insurance",
+          "arsim-kurse": "Education & Courses",
+          "te-tjera": "Other"
+        },
+        turizem: {
+          "agjenci-udhetimi": "Travel Agency",
+          "guide-turistik": "Tour Guide",
+          "tur-ditor": "Day Tours & Excursions",
+          "atraksione-natyrore": "Natural Attractions",
+          "muze-kala": "Museums, Castles & History",
+          hiking: "Hiking",
+          "rafting-kayak": "Rafting & Kayak",
+          "boat-tour": "Boat Tours",
+          zhytje: "Diving & Snorkeling",
+          "atv-zipline": "ATV, Buggy & Zipline",
+          paragliding: "Paragliding",
+          "ski-kalerim": "Ski & Horse Riding",
+          "tur-gastronomik": "Food & Wine Tours",
+          "evente-festivale": "Events & Festivals",
           "te-tjera": "Other"
         }
       }
     },
     terms: [
         {
-          title: "1. About TripShqip",
+          title: "1. About GjejDirekt",
           body:
-            "TripShqip is a tourism platform that helps users discover and contact businesses, attractions, and tourism services in Albania. The platform serves as an informational and promotional space for businesses and users."
+            "GjejDirekt is a tourism platform that helps users discover and contact businesses, attractions, and tourism services in Albania. The platform serves as an informational and promotional space for businesses and users."
         },
         {
           title: "2. Use of the Platform",
           body:
-            "By using TripShqip, you agree to: use the platform lawfully, not publish false or misleading content, not infringe the rights of other users, and not use the platform for spam or unauthorized activities."
+            "By using GjejDirekt, you agree to: use the platform lawfully, not publish false or misleading content, not infringe the rights of other users, and not use the platform for spam or unauthorized activities."
         },
         {
           title: "3. Listings and Content",
           body:
-            "Businesses are responsible for the accuracy of the information they publish, including descriptions, contacts, photos, prices, links, and other information. TripShqip reserves the right to moderate, edit, refuse, or remove listings that are deemed inappropriate, inaccurate, or in conflict with these terms."
+            "Businesses are responsible for the accuracy of the information they publish, including descriptions, contacts, photos, prices, links, and other information. GjejDirekt reserves the right to moderate, edit, refuse, or remove listings that are deemed inappropriate, inaccurate, or in conflict with these terms."
         },
         {
           title: "4. Verified, Ads, Ads Pro",
           body:
-            "TripShqip may offer promotional options such as Verified, Ads, and Ads Pro. These options provide greater exposure for listings, but do not guarantee specific results or reservations."
+            "GjejDirekt may offer promotional options such as Verified, Ads, and Ads Pro. These options provide greater exposure for listings, but do not guarantee specific results or reservations."
         },
         {
           title: "5. Contacts and Reservations",
           body:
-            "TripShqip enables direct contact between users and businesses. TripShqip is not a party to the agreements, reservations, or payments made outside the platform between users and businesses."
+            "GjejDirekt enables direct contact between users and businesses. GjejDirekt is not a party to the agreements, reservations, or payments made outside the platform between users and businesses."
         },
         {
           title: "6. External Links",
           body:
-            "The platform may contain links to other websites or platforms. TripShqip is not responsible for the content or services provided by third parties."
+            "The platform may contain links to other websites or platforms. GjejDirekt is not responsible for the content or services provided by third parties."
         },
         {
           title: "7. Intellectual Property",
           body:
-            "The content, logo, design, and elements of the TripShqip platform are the property of TripShqip and may not be copied or used without permission."
+            "The content, logo, design, and elements of the GjejDirekt platform are the property of GjejDirekt and may not be copied or used without permission."
         },
         {
           title: "8. Limitation of Liability",
           body:
-            "TripShqip does not guarantee the absolute accuracy of every listing, the availability of services, or the quality of products or services offered by businesses. Use of the platform is at the user's own responsibility."
+            "GjejDirekt does not guarantee the absolute accuracy of every listing, the availability of services, or the quality of products or services offered by businesses. Use of the platform is at the user's own responsibility."
         },
         {
           title: "9. Changes to the Terms",
           body:
-            "TripShqip reserves the right to update these terms at any time. Changes take effect upon publication on the platform."
+            "GjejDirekt reserves the right to update these terms at any time. Changes take effect upon publication on the platform."
         },
         {
           title: "10. Contact",
@@ -577,8 +611,8 @@ export const translations = {
   },
   al: {
     hero: {
-      title: "Kërko një qytet. Zbulo çdo shërbim.",
-      description: "Një treg turistik i fokusuar te qytetet për Shqipërinë ku udhëtarët mund të gjejnë shpejt akomodim, ushqim, aktivitete, evente, transport dhe shërbime lokale.",
+      title: "Gjej lehtë. Porosit direkt.",
+      description: "Direktoria e bizneseve shqiptare: gjej restorante, hotele, dyqane, shërbime dhe produkte pranë teje dhe porosit ose rezervo direkt në WhatsApp.",
       discoverByCity: "Zbulo Shqipërinë sipas qytetit",
       findEveryService: "Gjej çdo shërbim në një vend",
       verifiedListings: "Listime të verifikuara",
@@ -606,7 +640,7 @@ export const translations = {
       privacy: "Privatesia"
     },
     legal: {
-      intro: "Mirë se vini në TripShqip. Duke përdorur platformën tonë, ju pranoni këto Kushte të Përdorimit. Ju lutemi lexojini me kujdes.",
+      intro: "Mirë se vini në GjejDirekt. Duke përdorur platformën tonë, ju pranoni këto Kushte të Përdorimit. Ju lutemi lexojini me kujdes.",
       lastUpdated: "Përditësuar më: 17 Maj 2026"
     },
     common: {
@@ -814,7 +848,7 @@ export const translations = {
       description: "Aksesoni panelin tuaj të personalizuar për të menaxhuar listimet, ruajtur të preferuarat dhe ndarë përvojat tuaja.",
       featureLabel: "Funksioni",
       features: ["Udhëtime të ruajtura", "Mjetet e moderimit", "Vlerësimet", "Menaxhimi i listimeve"],
-      signInSubtitle: "Hyni për të menaxhuar profilin e biznesit tuaj në TripShqip.",
+      signInSubtitle: "Hyni për të menaxhuar profilin e biznesit tuaj në GjejDirekt.",
       noAccount: "Nuk keni një llogari?",
       listFreePitch: "Listoni biznesin falas në vetëm 5 minuta.",
       perks: ["Falas për t'u listuar", "0% komision", "Kontakt direkt me turistët"]
@@ -837,10 +871,10 @@ export const translations = {
         feature2: "Rritje e Shpejtë"
     },
     footer: {
-      platformName: "Përdorni TripShqip",
-      tagline: "Më shumë turistë. Më shumë kontakte. Më shumë rezervime.",
-      description: "Ndertuar per udhetaret, hostet dhe editoret. Nje platforme e vetme per zbulim, besim dhe listime turistike cilesore.",
-      ctaDescription: "TripShqip u mundëson bizneseve turistike të krijojnë një prezencë profesionale online, të marrin telefonata, mesazhe në WhatsApp dhe rezervime direkte pa komision për çdo prenotim.",
+      platformName: "Përdorni GjejDirekt",
+      tagline: "Më shumë klientë. Më shumë porosi. Zero komision.",
+      description: "Një vend i vetëm për të gjetur biznesin që të duhet dhe për ta kontaktuar me një klikim — me telefon ose në WhatsApp.",
+      ctaDescription: "GjejDirekt i jep çdo biznesi lokal një profil profesional dhe i dërgon direkt telefonatat, mesazhet në WhatsApp dhe porositë — pa asnjë komision.",
       exploreServices: "Listo Falas",
       addListing: "Si funksionon?",
       getStarted: "Fillo tani",
@@ -851,7 +885,7 @@ export const translations = {
       contactTitle: "Na Kontaktoni",
       follow: "Na ndiqni",
       rightsReserved: "Te gjitha te drejtat e rezervuara.",
-      bottomTagline: "Gjej lehtë. Kontakto direkt. Shijo udhëtimin"
+      bottomTagline: "Gjej lehtë. Porosit direkt."
     },
     listing: {
       request: "Kërkesë",
@@ -872,7 +906,7 @@ export const translations = {
     ,
     admin: {
       consoleTitle: "Konsola e Administratorit",
-      heroTitle: "Kontrollo platformën turistike nga një vend.",
+      heroTitle: "Menaxho të gjithë direktorinë nga një vend.",
       addListing: "Shto listim",
       viewServices: "Shiko shërbimet",
       blogStudio: "Blog Studio",
@@ -976,25 +1010,40 @@ export const translations = {
       description: "Zbuloni gamën e plotë të shërbimeve dhe përvojave nën {category}. Gjeni ofruesit më të mirë lokalë dhe rezervoni me besim."
       ,
       names: {
-        akomodim: "Akomodim",
-        restorante: "Restorante",
-        atraksione: "Atraksione",
-        aktivitete: "Aktivitete & Ture",
-        evente: "Evente",
-        transport: "Transport",
-        "produkte-lokale": "Shopping & Produkte Lokale",
-        "sherbime-turistike": "Shërbime Turistike"
+        "ushqim-pije": "Ushqim & Pije",
+        hotele: "Hotele & Akomodim",
+        shopping: "Shopping",
+        supermarkete: "Supermarkete",
+        bukuri: "Bukuri & Wellness",
+        shendet: "Shëndet",
+        auto: "Automjete",
+        "shtepi-ndertim": "Shtëpi & Ndërtim",
+        "sherbime-shtepi": "Shërbime për Shtëpinë",
+        "sherbime-profesionale": "Shërbime Profesionale",
+        evente: "Evente & Dasma",
+        turizem: "Turizëm & Aktivitete",
+        arsim: "Arsim & Trajnime",
+        "sport-fitness": "Sport & Fitness",
+        kafshe: "Kafshë Shtëpiake",
+        "biznese-industri": "Biznese & Industri"
       },
       subnames: {
-        akomodim: {
-          hotel: "Hotel",
-          guesthouse: "Bujtinë",
-          vila: "Vila",
-          apartament: "Apartament",
-          hostel: "Hostel",
-          resort: "Resort",
-          agroturizem: "Agroturizëm",
-          camping: "Camping",
+        shopping: {
+          veshje: "Veshje",
+          "kepuce-canta": "Këpucë & Çanta",
+          aksesore: "Aksesorë & Bizhuteri",
+          elektronike: "Elektronikë",
+          mobilje: "Mobilje & Shtëpi",
+          supermarket: "Supermarket & Ushqimore",
+          "djathe-bulmet": "Djathë & Bulmet",
+          mjalte: "Mjaltë & Bio",
+          "vere-raki": "Verë & Pije",
+          embelsira: "Ëmbëlsira & Furra",
+          artizanat: "Artizanat & Suvenire",
+          "lodra-femije": "Lodra & Fëmijë",
+          "sport-hobi": "Sport & Hobi",
+          libraria: "Librari & Kancelari",
+          "lule-dhurata": "Lule & Dhurata",
           "te-tjera": "Tjetër"
         },
         restorante: {
@@ -1003,97 +1052,114 @@ export const translations = {
           internacional: "Internacional",
           "fast-food": "Fast Food",
           pizzeri: "Pizzeri",
+          byrektore: "Byrektore",
           kafene: "Kafene",
           "bar-lounge": "Bar / Lounge",
           "kafe-bar": "Kafe & Bar",
-          embeltore: "Ëmbëltore",
+          embeltore: "Ëmbëltore & Pastiçeri",
+          delivery: "Delivery / Porosi Online",
+          catering: "Catering",
           verari: "Verari",
           "te-tjera": "Tjetër"
         },
-        atraksione: {
-          natyre: "Natyrore",
-          historike: "Historike",
-          kulturore: "Kulturore",
-          fetare: "Fetare",
-          muze: "Muze",
-          kala: "Kala",
-          park: "Park",
-          plazh: "Plazh",
-          liqen: "Liqen",
-          ujevare: "Ujëvarë",
-          kanion: "Kanion",
-          shpelle: "Shpellë",
-          "pike-panoramike": "Pikë Panoramike",
+        hotele: {
+          hotel: "Hotel",
+          guesthouse: "Bujtinë",
+          vila: "Vila",
+          apartament: "Apartament me Qira",
+          hostel: "Hostel",
+          resort: "Resort",
+          motel: "Motel",
+          agroturizem: "Agroturizëm",
+          camping: "Camping & Glamping",
           "te-tjera": "Tjetër"
         },
-        aktivitete: {
-          hiking: "Hiking",
-          "atv-buggy": "ATV / Buggy",
-          zipline: "Zipline",
-          rafting: "Rafting",
-          kayak: "Kayak",
-          "boat-tour": "Boat Tour",
-          zhytje: "Zhytje",
-          kalerim: "Kalërim",
-          ski: "Ski",
-          paragliding: "Paragliding",
-          "guide-turistik": "Guide Turistik",
-          "tur-kulturor": "Tur Kulturor",
-          "tur-gastronomik": "Tur Gastronomik",
-          "tur-me-vere": "Tur me Verë",
-          "tur-me-biciklete": "Tur me Biçikletë",
+        bukuri: {
+          parukeri: "Parukeri",
+          berber: "Berber",
+          thonj: "Studio Thonjsh",
+          kozmetike: "Kozmetikë & Fytyrë",
+          makeup: "Make-up Artist",
+          "vetulla-qerpik": "Vetulla & Qerpikë",
+          "spa-masazh": "Spa & Masazh",
+          epilim: "Epilim & Laser",
+          "tatuazh-piercing": "Tatuazh & Piercing",
+          solarium: "Solarium",
           "te-tjera": "Tjetër"
         },
-        evente: {
-          festivale: "Festival",
-          koncerte: "Koncert",
-          "feste-tradicionale": "Festë Tradicionale",
-          "event-gastronomik": "Event Gastronomik",
-          "event-kulturor": "Event Kulturor",
-          "event-sportiv": "Event Sportiv",
-          panaire: "Panair",
-          workshop: "Workshop",
-          ekspozite: "Ekspozitë",
-          dasma: "Dasma",
+        shendet: {
+          klinike: "Klinikë & Poliklinikë",
+          dentist: "Dentist",
+          farmaci: "Farmaci",
+          laborator: "Laborator Analizash",
+          optike: "Optikë",
+          fizioterapi: "Fizioterapi",
+          psikolog: "Psikolog & Terapi",
+          nutricionist: "Nutricionist & Dietë",
+          palester: "Palestër & Fitnes",
+          veteriner: "Veteriner",
           "te-tjera": "Tjetër"
         },
-        transport: {
+        auto: {
+          "servis-auto": "Servis Auto",
+          gomiste: "Gomisteri",
+          lavazh: "Lavazh",
+          "pjese-kembimi": "Pjesë Këmbimi",
+          "shitje-makinash": "Shitje Makinash",
           "makine-me-qira": "Makina me Qira",
-          "motocikleta-me-qira": "Motoçikleta me Qira",
-          "bicikleta-me-qira": "Biçikleta me Qira",
-          taksi: "Taksi",
-          shuttle: "Shuttle",
-          aeroport: "Transfer Aeroporti",
-          minibus: "Minibus",
-          varka: "Transport Detar",
+          "motocikleta-me-qira": "Motoçikleta & Biçikleta me Qira",
+          taksi: "Taksi & Transfer",
+          "transport-mallrash": "Transport Mallrash",
+          autoshkolle: "Autoshkollë",
+          elektroauto: "Elektro-auto & Klimë",
+          "karro-atrezzo": "Karro-Atrezzo",
           "te-tjera": "Tjetër"
         },
-        "produkte-lokale": {
-          ushqimore: "Ushqime Tradicionale",
-          "djathe-bulmet": "Djathë & Bulmet",
-          mjalte: "Mjaltë",
-          "vere-raki": "Verë & Raki",
-          "embelsira-tradicionale": "Ëmbëlsira Tradicionale",
-          artizanat: "Artizanat",
-          suvenire: "Suvenire",
-          agro: "Produkte Bio",
+        imobiliare: {
+          "apartament-shitje": "Apartamente në Shitje",
+          "apartament-qira": "Apartamente me Qira",
+          "shtepi-vila": "Shtëpi & Vila",
+          "ambiente-biznesi": "Ambiente Biznesi",
+          toka: "Troje & Toka",
+          "garazh-magazine": "Garazhe & Magazina",
+          "agjenci-imobiliare": "Agjenci Imobiliare",
+          ndertim: "Ndërtim & Investim",
           "te-tjera": "Tjetër"
         },
-        "sherbime-turistike": {
-          agjenci: "Agjenci Turistike",
-          "organizim-eventesh": "Organizim Eventesh",
-          "foto-video": "Fotograf / Videograf",
-          "exchange-office": "Exchange Office",
+        sherbime: {
+          hidraulik: "Hidraulik",
+          elektricist: "Elektricist",
+          kondicioner: "Kondicionerë & Ngrohje",
+          bojatisje: "Bojatisje & Suvatim",
+          marangoz: "Marangoz & Mobilieri",
+          pastrim: "Pastrim & Dezinfektim",
           lavanderi: "Lavanderi",
-          "ruajtje-bagazhesh": "Ruajtje Bagazhesh",
-          "qira-pajisjesh": "Qira Pajisjesh",
+          "transport-mobiljesh": "Transport Mobiljesh",
+          "it-web": "IT, Web & Marketing",
+          "foto-video": "Fotograf & Videograf",
+          "organizim-eventesh": "Organizim Eventesh & Dasma",
+          "avokat-noter": "Avokat & Noter",
+          kontabilist: "Kontabilist & Financë",
           perkthyes: "Përkthyes",
-          concierge: "Concierge",
-          "sim-card": "SIM Card / eSIM",
-          "sigurime-udhetimi": "Sigurime Udhëtimi",
-          guida: "Guida",
-          ekskursione: "Ekskursione",
-          rezervime: "Rezervime",
+          sigurime: "Sigurime",
+          "arsim-kurse": "Arsim & Kurse",
+          "te-tjera": "Tjetër"
+        },
+        turizem: {
+          "agjenci-udhetimi": "Agjenci Udhëtimi",
+          "guide-turistik": "Guidë Turistike",
+          "tur-ditor": "Ture Ditore & Ekskursione",
+          "atraksione-natyrore": "Atraksione Natyrore",
+          "muze-kala": "Muze, Kala & Histori",
+          hiking: "Hiking & Malësi",
+          "rafting-kayak": "Rafting & Kayak",
+          "boat-tour": "Ture me Varkë",
+          zhytje: "Zhytje & Snorkeling",
+          "atv-zipline": "ATV, Buggy & Zipline",
+          paragliding: "Paragliding",
+          "ski-kalerim": "Ski & Kalërim",
+          "tur-gastronomik": "Ture Gastronomike & Verë",
+          "evente-festivale": "Evente & Festivale",
           "te-tjera": "Tjetër"
         }
       }
@@ -1101,49 +1167,49 @@ export const translations = {
       ,
       terms: [
         {
-          title: "1. Rreth TripShqip",
+          title: "1. Rreth GjejDirekt",
           body:
-            "TripShqip është një platformë turistike që ndihmon përdoruesit të zbulojnë dhe kontaktojnë biznese, atraksione dhe shërbime turistike në Shqipëri. Platforma shërben si një hapësirë informuese dhe promovuese për bizneset dhe përdoruesit."
+            "GjejDirekt është një platformë turistike që ndihmon përdoruesit të zbulojnë dhe kontaktojnë biznese, atraksione dhe shërbime turistike në Shqipëri. Platforma shërben si një hapësirë informuese dhe promovuese për bizneset dhe përdoruesit."
         },
         {
           title: "2. Përdorimi i Platformës",
           body:
-            "Duke përdorur TripShqip, ju pranoni të: përdorni platformën në mënyrë të ligjshme, mos publikoni përmbajtje të rreme ose mashtruese, mos cenoni të drejtat e përdoruesve të tjerë, dhe mos përdorni platformën për spam ose aktivitete të paautorizuara."
+            "Duke përdorur GjejDirekt, ju pranoni të: përdorni platformën në mënyrë të ligjshme, mos publikoni përmbajtje të rreme ose mashtruese, mos cenoni të drejtat e përdoruesve të tjerë, dhe mos përdorni platformën për spam ose aktivitete të paautorizuara."
         },
         {
           title: "3. Listing-et dhe Përmbajtja",
           body:
-            "Bizneset janë përgjegjëse për saktësinë e informacionit që publikojnë, përfshirë përshkrimet, kontaktet, fotot, çmimet, linket dhe informacionet e tjera. TripShqip rezervon të drejtën të moderojë, ndryshojë, refuzojë ose heqë listing-e që konsiderohen të papërshtatshme, të pasakta ose në kundërshtim me këto kushte."
+            "Bizneset janë përgjegjëse për saktësinë e informacionit që publikojnë, përfshirë përshkrimet, kontaktet, fotot, çmimet, linket dhe informacionet e tjera. GjejDirekt rezervon të drejtën të moderojë, ndryshojë, refuzojë ose heqë listing-e që konsiderohen të papërshtatshme, të pasakta ose në kundërshtim me këto kushte."
         },
         {
           title: "4. Verified, Ads, Ads Pro",
           body:
-            "TripShqip mund të ofrojë opsione promocionale si Verified, Ads dhe Ads Pro. Këto opsione ofrojnë ekspozim më të madh për listing-et, por nuk garantojnë rezultate specifike apo rezervime."
+            "GjejDirekt mund të ofrojë opsione promocionale si Verified, Ads dhe Ads Pro. Këto opsione ofrojnë ekspozim më të madh për listing-et, por nuk garantojnë rezultate specifike apo rezervime."
         },
         {
           title: "5. Kontaktet dhe Rezervimet",
           body:
-            "TripShqip mundëson kontakt direkt midis përdoruesve dhe bizneseve. TripShqip nuk është palë në marrëveshjet, rezervimet ose pagesat që realizohen jashtë platformës midis përdoruesve dhe bizneseve."
+            "GjejDirekt mundëson kontakt direkt midis përdoruesve dhe bizneseve. GjejDirekt nuk është palë në marrëveshjet, rezervimet ose pagesat që realizohen jashtë platformës midis përdoruesve dhe bizneseve."
         },
         {
           title: "6. Linke të Jashtme",
           body:
-            "Platforma mund të përmbajë linke drejt website-ve ose platformave të tjera. TripShqip nuk mban përgjegjësi për përmbajtjen ose shërbimet e ofruara nga palë të treta."
+            "Platforma mund të përmbajë linke drejt website-ve ose platformave të tjera. GjejDirekt nuk mban përgjegjësi për përmbajtjen ose shërbimet e ofruara nga palë të treta."
         },
         {
           title: "7. Pronësia Intelektuale",
           body:
-            "Përmbajtja, logoja, dizajni dhe elementët e platformës TripShqip janë pronë e TripShqip dhe nuk mund të kopjohen ose përdoren pa leje."
+            "Përmbajtja, logoja, dizajni dhe elementët e platformës GjejDirekt janë pronë e GjejDirekt dhe nuk mund të kopjohen ose përdoren pa leje."
         },
         {
           title: "8. Kufizimi i Përgjegjësisë",
           body:
-            "TripShqip nuk garanton saktësinë absolute të çdo listing-u, disponueshmërinë e shërbimeve, apo cilësinë e produkteve ose shërbimeve të ofruara nga bizneset. Përdorimi i platformës bëhet me përgjegjësinë e vetë përdoruesit."
+            "GjejDirekt nuk garanton saktësinë absolute të çdo listing-u, disponueshmërinë e shërbimeve, apo cilësinë e produkteve ose shërbimeve të ofruara nga bizneset. Përdorimi i platformës bëhet me përgjegjësinë e vetë përdoruesit."
         },
         {
           title: "9. Ndryshimet në Kushtet",
           body:
-            "TripShqip rezervon të drejtën të përditësojë këto kushte në çdo kohë. Ndryshimet hyjnë në fuqi pas publikimit në platformë."
+            "GjejDirekt rezervon të drejtën të përditësojë këto kushte në çdo kohë. Ndryshimet hyjnë në fuqi pas publikimit në platformë."
         },
         {
           title: "10. Kontakt",

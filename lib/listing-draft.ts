@@ -3,7 +3,9 @@
  * "Get Verified" call to action — must never cost the owner what they already typed.
  */
 
-const PREFIX = "tripshqip:listing-draft:";
+const PREFIX = "gjejdirekt:listing-draft:";
+/** Pre-rebrand key. Still read once so a draft in progress survives the rename. */
+const LEGACY_PREFIX = "tripshqip:listing-draft:";
 const MAX_AGE = 7 * 24 * 60 * 60 * 1000;
 
 type StoredDraft = Record<string, unknown> & { savedAt: number };
@@ -21,7 +23,7 @@ export function readDraft<T extends Record<string, unknown>>(key: string): T | n
   const store = storage();
   if (!store) return null;
   try {
-    const raw = store.getItem(PREFIX + key);
+    const raw = store.getItem(PREFIX + key) ?? store.getItem(LEGACY_PREFIX + key);
     if (!raw) return null;
     const parsed = JSON.parse(raw) as StoredDraft;
     if (!parsed || typeof parsed !== "object") return null;
@@ -58,6 +60,7 @@ export function clearDraft(key: string) {
   if (!store) return;
   try {
     store.removeItem(PREFIX + key);
+    store.removeItem(LEGACY_PREFIX + key);
   } catch {
     // ignore
   }

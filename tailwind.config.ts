@@ -10,17 +10,19 @@ const config: Config = {
     extend: {
       colors: {
         brand: {
-          50: "#ECF7F3",
-          100: "#D0EBE2",
-          200: "#A3D8C7",
-          300: "#6CC2A9",
-          400: "#3FA98C",
-          500: "#1F8A70",
-          600: "#176B5A",
-          700: "#145948",
-          800: "#11463A",
-          900: "#0D372D"
+          50: "#FEF2F3",
+          100: "#FDE3E5",
+          200: "#FBC7CC",
+          300: "#F79AA3",
+          400: "#F06171",
+          500: "#E11D2E",
+          600: "#C0111F",
+          700: "#9E0D19",
+          800: "#7D0B14",
+          900: "#620911"
         },
+        verified: "#1D74E0",
+        whatsapp: "#25D366",
         warm: {
           50: "#FAFBFC",
           100: "#F5F7F8",
@@ -58,7 +60,7 @@ const config: Config = {
       },
       backgroundImage: {
         "hero-grid":
-          "radial-gradient(circle at top, rgba(31,138,112,0.14), transparent 30%), linear-gradient(to bottom, rgba(255,255,255,1), rgba(245,247,248,1))"
+          "radial-gradient(circle at top, rgba(225,29,46,0.12), transparent 30%), linear-gradient(to bottom, rgba(255,255,255,1), rgba(246,247,249,1))"
       },
       fontFamily: {
         sans: ["var(--font-poppins)", "system-ui", "sans-serif"],

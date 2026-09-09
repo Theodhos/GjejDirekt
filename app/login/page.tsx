@@ -28,8 +28,8 @@ export default function LoginPage() {
           {/* Left — Image Panel */}
           <div className="relative hidden lg:block overflow-hidden">
             <Image
-              src="https://images.unsplash.com/photo-1527631746610-bca00a040d60?auto=format&fit=crop&w=1200&q=80"
-              alt="Travel inspiration"
+              src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=1200&q=80"
+              alt="GjejDirekt"
               fill
               className="object-cover"
               sizes="(min-width: 1024px) 50vw, 0px"
@@ -48,8 +48,8 @@ export default function LoginPage() {
               </h1>
               <p className="mt-3 text-sm xl:text-base text-white/80 leading-relaxed">
                 {language === "en"
-                  ? "Discover the hidden gems of Albania."
-                  : "Zbuloni perlat e fshehura të Shqipërisë."}
+                  ? "Manage your business and receive orders directly."
+                  : "Menaxho biznesin tënd dhe merr porositë direkt."}
               </p>
             </div>
           </div>

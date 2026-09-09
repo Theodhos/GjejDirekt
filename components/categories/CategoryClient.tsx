@@ -1,94 +1,152 @@
 "use client";
 
-import SafeImage from "@/components/ui/SafeImage";
 import Link from "next/link";
-import React from "react";
+import { useMemo, useState } from "react";
+import { LayoutGrid, SearchX } from "lucide-react";
 import { CategoryDefinition } from "@/lib/constants";
 import { useLanguage } from "@/context/LanguageContext";
-import ListingCard from "@/components/ListingCard";
-import { Sparkles } from "lucide-react";
+import { getCategoryIcon } from "@/lib/category-icons";
+import BusinessCard from "@/components/home/BusinessCard";
+import PageHeader from "@/components/layout/PageHeader";
+import EmptyState from "@/components/ui/EmptyState";
 
-export default function CategoryClient({ 
-  category, 
+export default function CategoryClient({
+  category,
   categories,
   initialListings = []
-}: { 
-  category: CategoryDefinition; 
+}: {
+  category: CategoryDefinition;
   categories: CategoryDefinition[];
   initialListings?: any[];
 }) {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+  const [activeSub, setActiveSub] = useState("");
 
   const categoryLabel = t.categories.names[category.value as keyof typeof t.categories.names] || category.label;
+  const subLabels = (t.categories.subnames as Record<string, Record<string, string>>)[category.value] || {};
+  const Icon = getCategoryIcon(category.value);
+
+  // Only offer subcategory chips that actually have businesses behind them.
+  const availableSubs = useMemo(() => {
+    const present = new Set(initialListings.map((listing: any) => String(listing.subcategory || "").toLowerCase()));
+    return category.subcategories.filter(
+      (sub) => present.has(sub.value) || sub.aliases?.some((alias) => present.has(alias))
+    );
+  }, [category.subcategories, initialListings]);
+
+  const listings = useMemo(() => {
+    if (!activeSub) return initialListings;
+    const sub = category.subcategories.find((item) => item.value === activeSub);
+    const values = new Set([activeSub, ...(sub?.aliases || [])]);
+    return initialListings.filter((listing: any) => values.has(String(listing.subcategory || "").toLowerCase()));
+  }, [activeSub, category.subcategories, initialListings]);
 
   return (
-    <main className="min-h-screen" style={{ background: "var(--surface-page)" }}>
-      <section className="relative flex min-h-[calc(62vh-var(--header-height))] items-center overflow-hidden bg-slate-950 py-16 sm:min-h-[calc(72vh-var(--header-height))] sm:py-20">
-        <div className="absolute inset-0">
-          <SafeImage src={category.image} alt={categoryLabel} fill className="object-cover opacity-90" priority />
-          <div
-            className="absolute inset-0"
-            style={{
-              background:
-                "linear-gradient(90deg, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.48) 46%, rgba(0,0,0,0.18) 100%)"
-            }}
-          />
+    <div className="min-h-screen" style={{ background: "var(--surface-page)" }}>
+      <PageHeader
+        title={categoryLabel}
+        description={t.categories.description.replace("{category}", categoryLabel)}
+        action={
+          <span
+            className="flex h-11 w-11 items-center justify-center rounded-full text-white sm:h-14 sm:w-14"
+            style={{ background: category.color, boxShadow: "0 3px 12px rgba(15,20,25,0.16)" }}
+          >
+            <Icon className="h-5 w-5 sm:h-6 sm:w-6" />
+          </span>
+        }
+      >
+        {/* Sibling categories keep the home grid reachable from any category page. */}
+        <div className="gd-rail -mx-4 mt-3.5 px-4 sm:-mx-6 sm:px-6">
+          <Link href="/listings" className="gd-quick-pill">
+            <LayoutGrid className="h-4 w-4" />
+            {language === "en" ? "All" : "Të gjitha"}
+          </Link>
+          {categories.map((item) => {
+            const ItemIcon = getCategoryIcon(item.value);
+            const active = item.value === category.value;
+            return (
+              <Link
+                key={item.value}
+                href={`/categories/${item.value}`}
+                className="gd-quick-pill"
+                style={active ? { background: item.color, color: "#fff", borderColor: item.color } : undefined}
+              >
+                <ItemIcon className="h-4 w-4" style={{ color: active ? "#fff" : item.color }} />
+                {t.categories.names[item.value as keyof typeof t.categories.names] || item.label}
+              </Link>
+            );
+          })}
         </div>
+      </PageHeader>
 
-        <div className="page-shell relative z-10">
-          <div
-            className="mb-5 inline-flex items-center gap-2 text-[11px] font-semibold uppercase"
-            style={{
-              color: "rgba(255,255,255,0.82)",
-              letterSpacing: "0.18em",
-              textShadow: "0 2px 8px rgba(0,0,0,0.45)"
-            }}
-          >
-            <Sparkles className="w-4 h-4" />
-            {t.categories.header}
-          </div>
-          <h1
-            className="mb-5 max-w-3xl font-bold capitalize text-white"
-            style={{
-              fontSize: "clamp(2.25rem, 6vw, 4rem)",
-              lineHeight: 1.08,
-              letterSpacing: "-0.025em",
-              textShadow: "0 3px 24px rgba(0,0,0,0.72)"
-            }}
-          >
-            {categoryLabel}
-          </h1>
-          <p
-            className="max-w-xl text-base font-semibold leading-relaxed sm:text-lg"
-            style={{ color: "rgba(255,255,255,0.96)", textShadow: "0 2px 12px rgba(0,0,0,0.86)" }}
-          >
-            {t.categories.description.replace("{category}", categoryLabel)}
-          </p>
-        </div>
-      </section>
-
-      <div className="page-shell py-6 sm:py-10">
-        {initialListings.length === 0 ? (
-          <div className="text-center py-10">
-            <div
-              className="mb-6 mx-auto inline-flex h-16 w-16 items-center justify-center rounded-2xl"
-              style={{ background: "var(--brand-light)", color: "var(--brand-accent)" }}
+      <div className="page-shell space-y-4 py-4 sm:py-6">
+        {availableSubs.length > 0 && (
+          <div className="gd-rail -mx-4 px-4 sm:-mx-6 sm:px-6 lg:mx-0 lg:px-0">
+            <button
+              type="button"
+              onClick={() => setActiveSub("")}
+              className="gd-quick-pill"
+              style={
+                !activeSub
+                  ? { background: "var(--text-primary)", color: "#fff", borderColor: "var(--text-primary)" }
+                  : undefined
+              }
             >
-              <Sparkles className="w-8 h-8" />
-            </div>
-            <h2 className="section-heading mb-3">Asnje sherbim nuk u gjet</h2>
-            <p className="mx-auto max-w-md text-sm leading-relaxed text-slate-500">
-              Nuk u gjet asnje sherbim per &quot;{categoryLabel}&quot; per momentin. Provoni te kerkoni diçka tjeter.
-            </p>
-          </div>
-        ) : (
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-            {initialListings.map((listing: any) => (
-              <ListingCard key={listing._id.toString()} listing={listing} />
-            ))}
+              {language === "en" ? "All" : "Të gjitha"}
+            </button>
+            {availableSubs.map((sub) => {
+              const active = activeSub === sub.value;
+              return (
+                <button
+                  key={sub.value}
+                  type="button"
+                  onClick={() => setActiveSub(active ? "" : sub.value)}
+                  className="gd-quick-pill"
+                  style={
+                    active
+                      ? { background: "var(--text-primary)", color: "#fff", borderColor: "var(--text-primary)" }
+                      : undefined
+                  }
+                >
+                  {subLabels[sub.value] || sub.label}
+                </button>
+              );
+            })}
           </div>
         )}
+
+        <p className="text-[13px]" style={{ color: "var(--text-secondary)" }}>
+          <strong style={{ color: "var(--text-primary)" }}>{listings.length}</strong>{" "}
+          {language === "en" ? (listings.length === 1 ? "business" : "businesses") : listings.length === 1 ? "biznes" : "biznese"}
+        </p>
+
+        {listings.length ? (
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+            {listings.map((listing: any) => (
+              <BusinessCard key={listing._id?.toString() || listing.slug} listing={listing} />
+            ))}
+          </div>
+        ) : (
+          <EmptyState
+            icon={SearchX}
+            title={
+              language === "en"
+                ? `No businesses in ${categoryLabel} yet`
+                : `Ende asnjë biznes te ${categoryLabel}`
+            }
+            description={
+              language === "en"
+                ? "Be the first one listed in this category."
+                : "Bëhu i pari që regjistrohet në këtë kategori."
+            }
+            action={
+              <Link href="/create-listing" className="btn-primary">
+                {language === "en" ? "List your business" : "Regjistro biznesin tënd"}
+              </Link>
+            }
+          />
+        )}
       </div>
-    </main>
+    </div>
   );
 }

@@ -28,8 +28,8 @@ export default function RegisterPage() {
           {/* Left — Image Panel */}
           <div className="relative hidden lg:block overflow-hidden">
             <Image
-              src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80"
-              alt="Travel registration"
+              src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=1200&q=80"
+              alt="GjejDirekt"
               fill
               className="object-cover"
               sizes="(min-width: 1024px) 50vw, 0px"
@@ -48,7 +48,7 @@ export default function RegisterPage() {
                 {t.register.joinTitle}
               </h1>
               <p className="mt-3 text-sm xl:text-base text-white/80 leading-relaxed">
-                {language === "en" ? "Create an account to start exploring." : "Krijoni një llogari për të filluar eksplorimin."}
+                {language === "en" ? "Create an account and get found by customers near you." : "Krijo llogari dhe bëhu i gjetshëm nga klientët pranë teje."}
               </p>
             </div>
           </div>

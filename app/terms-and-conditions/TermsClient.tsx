@@ -15,14 +15,14 @@ export default function TermsClient() {
     ? [
         "Use the platform lawfully and don't publish false content.",
         "Businesses are responsible for the accuracy of their listings.",
-        "TripShqip enables direct contact but is not a party to reservations.",
-        "TripShqip may moderate or remove inappropriate listings."
+        "GjejDirekt enables direct contact but is not a party to reservations.",
+        "GjejDirekt may moderate or remove inappropriate listings."
       ]
     : [
         "Përdorni platformën në mënyrë të ligjshme dhe pa përmbajtje të rreme.",
         "Bizneset janë përgjegjëse për saktësinë e listing-eve të tyre.",
-        "TripShqip mundëson kontakt direkt, por nuk është palë në rezervime.",
-        "TripShqip mund të moderojë ose heqë listing-e të papërshtatshme."
+        "GjejDirekt mundëson kontakt direkt, por nuk është palë në rezervime.",
+        "GjejDirekt mund të moderojë ose heqë listing-e të papërshtatshme."
       ];
 
   return (
@@ -33,7 +33,7 @@ export default function TermsClient() {
         className="relative overflow-hidden"
         style={{ background: "var(--surface-cream)", borderBottom: "1px solid var(--border-soft)" }}
       >
-        <div className="pointer-events-none absolute -top-20 -right-20 w-[400px] h-[400px] rounded-full" style={{ background: "rgba(31,138,112,0.06)", filter: "blur(100px)" }} />
+        <div className="pointer-events-none absolute -top-20 -right-20 w-[400px] h-[400px] rounded-full" style={{ background: "rgba(225,29,46,0.06)", filter: "blur(100px)" }} />
         <div className="page-shell relative z-10 py-8 max-w-3xl mx-auto">
           <div className="flex items-center gap-2 mb-6 text-xs font-medium" style={{ color: "var(--text-tertiary)" }}>
             <Link href="/" className="hover:text-brand-600 transition-colors">{language === "en" ? "Home" : "Kreu"}</Link>

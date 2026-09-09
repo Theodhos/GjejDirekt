@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { Facebook, Instagram, Linkedin, Youtube } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { translations } from "@/lib/dictionary";
+import Logo from "@/components/layout/Logo";
 
 export default function Footer() {
   const { language, t } = useLanguage();
@@ -68,12 +69,7 @@ export default function Footer() {
         <div className="grid grid-cols-2 gap-x-6 gap-y-8 md:grid-cols-5 md:gap-6 text-left">
           {/* Brand — hidden on phones to keep the footer compact there */}
           <div className="hidden md:col-span-1 md:block md:pr-4">
-            <p
-              className="text-base font-bold tracking-tight"
-              style={{ color: "var(--text-primary)" }}
-            >
-              Gjej Direkt
-            </p>
+            <Logo className="text-[19px]" />
             <p
               className="mt-2.5 text-sm leading-relaxed"
               style={{ color: "var(--text-secondary)" }}
@@ -183,7 +179,7 @@ export default function Footer() {
           style={{ borderTop: "1px solid var(--border-soft)" }}
         >
           <p className="text-xs" style={{ color: "var(--text-tertiary)" }}>
-            © {year} TripShqip.com – {t.footer.bottomTagline}
+            © {year} GjejDirekt.com – {t.footer.bottomTagline}
           </p>
           <div className="flex items-center justify-left gap-4">
             <Link

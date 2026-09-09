@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import Providers from "./providers";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+import BottomNav from "@/components/layout/BottomNav";
 import ChatWidget from "@/components/ChatWidget";
 import { Poppins } from "next/font/google";
 
@@ -14,15 +15,20 @@ const poppins = Poppins({
 
 export const metadata: Metadata = {
   title: {
-    default: "Tourism Platform",
-    template: "%s | Tourism Platform"
+    default: "GjejDirekt — Gjej biznese pranë teje dhe porosit direkt",
+    template: "%s | GjejDirekt"
   },
-  description: "A premium tourism marketplace for experiences, stays, transport, and travel stories.",
+  description:
+    "GjejDirekt është direktoria e bizneseve në Shqipëri: gjej restorante, hotele, shërbime dhe produkte pranë teje dhe porosit ose rezervo direkt në WhatsApp, pa komision.",
   icons: {
     icon: [{ url: "/uploads/iconee.png", type: "image/png" }],
     shortcut: [{ url: "/uploads/iconee.png", type: "image/png" }],
     apple: [{ url: "/uploads/iconee.png", type: "image/png" }]
   }
+};
+
+export const viewport = {
+  themeColor: "#E11D2E"
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -31,8 +37,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="font-sans antialiased">
         <Providers>
           <Header />
-          <main className="pt-[var(--header-height)]">{children}</main>
-          <Footer />
+          {/* The fixed header and the phone tab bar both overlap the page, so the
+              document reserves their height at either end — the padding wraps the
+              footer too, otherwise the tab bar would sit on top of it. */}
+          <div className="pt-[var(--header-height)] pb-[var(--bottom-nav-height)]">
+            <main>{children}</main>
+            <Footer />
+          </div>
+          <BottomNav />
           <ChatWidget />
         </Providers>
       </body>

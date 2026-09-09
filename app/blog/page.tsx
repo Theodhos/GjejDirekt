@@ -48,8 +48,8 @@ export default function BlogPage() {
         style={{ borderBottom: "1px solid var(--border-soft)", background: "var(--surface-cream)" }}
       >
         {/* Subtle ambient blobs – exactly like Stay Directory */}
-        <div className="pointer-events-none absolute -top-24 -right-24 w-[480px] h-[480px] rounded-full" style={{ background: "rgba(34,153,120,0.05)", filter: "blur(100px)" }} />
-        <div className="pointer-events-none absolute -bottom-16 -left-16 w-[360px] h-[360px] rounded-full" style={{ background: "rgba(34,153,120,0.04)", filter: "blur(80px)" }} />
+        <div className="pointer-events-none absolute -top-24 -right-24 w-[480px] h-[480px] rounded-full" style={{ background: "rgba(225,29,46,0.05)", filter: "blur(100px)" }} />
+        <div className="pointer-events-none absolute -bottom-16 -left-16 w-[360px] h-[360px] rounded-full" style={{ background: "rgba(225,29,46,0.04)", filter: "blur(80px)" }} />
 
         <div className="page-shell relative z-10 py-8 text-center">
           <p className="eyebrow mb-4">{t.blog.journalLabel}</p>
