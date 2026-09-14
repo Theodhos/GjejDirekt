@@ -89,29 +89,33 @@ export default function BusinessCard({ listing, className = "" }: { listing: any
           sizes="(max-width: 640px) 45vw, 220px"
           className="object-cover transition-transform duration-500 group-hover:scale-105"
         />
-        
-        {/* Heart Favorite Button */}
-        <button
-          onClick={toggleFavorite}
-          className="absolute right-2 top-2 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-black/30 text-white backdrop-blur-md transition-all hover:bg-black/50 active:scale-95"
-          aria-label="Toggle favorite"
-        >
-          <Heart 
-            className={`h-4 w-4 transition-colors ${favorited ? "fill-[var(--brand-accent)] text-[var(--brand-accent)]" : "text-white"}`} 
-          />
-        </button>
 
+        {/* VERIFIED badge — blue pill top-left exactly like the mockup */}
         {listing.verified && (
-          <span className="gd-verified absolute left-2 top-2">
+          <span
+            className="absolute left-2 top-2 inline-flex items-center gap-0.5 rounded-md px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-[0.08em] text-white"
+            style={{ background: "var(--verified-blue)" }}
+          >
             <BadgeCheck className="h-2.5 w-2.5" />
-            {language === "en" ? "Verified" : "Verified"}
+            Verified
           </span>
         )}
+
+        {/* Heart favourite button — top-right corner */}
+        <button
+          onClick={toggleFavorite}
+          className="absolute right-2 top-2 z-10 flex h-7 w-7 items-center justify-center rounded-full bg-black/30 text-white backdrop-blur-sm transition-all hover:bg-black/50 active:scale-95"
+          aria-label="Toggle favorite"
+        >
+          <Heart
+            className={`h-3.5 w-3.5 transition-colors ${favorited ? "fill-[var(--brand-accent)] text-[var(--brand-accent)]" : "text-white"}`}
+          />
+        </button>
       </div>
 
       <div className="flex flex-1 flex-col gap-0.5 p-2.5">
         <h3
-          className="line-clamp-1 text-[13px] font-bold leading-tight"
+          className="line-clamp-1 text-[12.5px] font-bold leading-tight"
           style={{ color: "var(--text-primary)" }}
         >
           {listing.title}
@@ -120,10 +124,10 @@ export default function BusinessCard({ listing, className = "" }: { listing: any
           {categoryLabel}
         </p>
         <p
-          className="mt-auto flex items-center gap-1 pt-1 text-[11px]"
+          className="mt-auto flex items-center gap-0.5 pt-1 text-[10.5px]"
           style={{ color: "var(--text-tertiary)" }}
         >
-          <MapPin className="h-3 w-3 shrink-0" />
+          <MapPin className="h-2.5 w-2.5 shrink-0" />
           <span className="truncate">{listing.location}</span>
         </p>
       </div>

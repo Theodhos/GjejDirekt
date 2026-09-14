@@ -56,14 +56,25 @@ export default function BottomNav() {
           const active = isActive(tab.href);
           const Icon = tab.icon;
           return (
-            <li key={tab.href} className="flex-1">
+            <li key={tab.href} className="relative flex-1">
+              {/* Active indicator line at the top */}
+              {active && (
+                <span
+                  className="absolute inset-x-0 top-0 mx-auto h-[2.5px] w-6 rounded-b-full"
+                  style={{ background: "var(--brand-accent)" }}
+                />
+              )}
               <Link
                 href={tab.href}
                 aria-current={active ? "page" : undefined}
                 className="flex h-full flex-col items-center justify-center gap-1 px-1 transition-colors"
                 style={{ color: active ? "var(--brand-accent)" : "var(--text-tertiary)" }}
               >
-                <Icon className="h-[21px] w-[21px]" strokeWidth={active ? 2.4 : 1.9} />
+                <Icon
+                  className="h-[21px] w-[21px] transition-transform"
+                  strokeWidth={active ? 2.4 : 1.9}
+                  style={{ transform: active ? "scale(1.05)" : "scale(1)" }}
+                />
                 <span
                   className="max-w-full truncate text-[10px] leading-none"
                   style={{ fontWeight: active ? 700 : 500 }}

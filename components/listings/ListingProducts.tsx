@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import SafeImage from "@/components/ui/SafeImage";
-import { ChevronDown, ChevronUp, Plus, UtensilsCrossed } from "lucide-react";
+import { ChevronDown, ChevronUp, Plus, UtensilsCrossed, BedDouble, Pizza, Coffee, GlassWater, Hash } from "lucide-react";
 import toast from "react-hot-toast";
 import { useLanguage } from "@/context/LanguageContext";
 import { formatPrice } from "@/lib/pricing";
@@ -71,25 +71,28 @@ export default function ListingProducts({
     setCollapsed((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
+  const getSectionIcon = (label: string) => {
+    const l = label.toLowerCase();
+    if (l.includes("dhom") || l.includes("room") || l.includes("suit")) return BedDouble;
+    if (l.includes("pije") || l.includes("drink")) return GlassWater;
+    if (l.includes("embel") || l.includes("ëmbël") || l.includes("sweet")) return Coffee;
+    if (l.includes("krip") || l.includes("savor") || l.includes("pizza") || l.includes("ushqim") || l.includes("food")) return Pizza;
+    return Hash;
+  };
+
   return (
-    <div style={{ borderTop: "1px solid var(--border-soft)", paddingTop: "1.5rem" }}>
-      <div className="mb-4 flex items-center gap-2.5">
-        <UtensilsCrossed className="h-5 w-5" style={{ color: "var(--brand-accent)" }} />
-        <h2 className="text-lg font-semibold" style={{ color: "var(--text-primary)" }}>
-          {en ? "Menu" : "Menuja"}
-        </h2>
-      </div>
+    <div className="mt-4">
 
       {isGrouped && (
         <div className="mb-5 flex gap-2 overflow-x-auto pb-1" style={{ scrollbarWidth: "none" }}>
           <button
             type="button"
             onClick={() => setActiveTab(ALL_TAB)}
-            className="shrink-0 rounded-full px-4 py-2 text-xs font-bold transition-colors"
+            className="shrink-0 rounded-full px-4 py-2 text-[13px] font-semibold transition-colors"
             style={
               activeTab === ALL_TAB
                 ? { background: "var(--brand-accent)", color: "#fff" }
-                : { background: "var(--surface-cream)", color: "var(--text-secondary)", border: "1px solid var(--border-soft)" }
+                : { background: "var(--surface-cream)", color: "var(--text-primary)" }
             }
           >
             {en ? "All" : "Të gjitha"}
@@ -99,13 +102,14 @@ export default function ListingProducts({
               key={section.key}
               type="button"
               onClick={() => setActiveTab(section.key)}
-              className="shrink-0 rounded-full px-4 py-2 text-xs font-bold transition-colors"
+              className="shrink-0 rounded-full px-4 py-2 text-[13px] font-semibold transition-colors"
               style={
                 activeTab === section.key
                   ? { background: "var(--brand-accent)", color: "#fff" }
-                  : { background: "var(--surface-cream)", color: "var(--text-secondary)", border: "1px solid var(--border-soft)" }
-              }
-            >
+                  : { background: "var(--surface-cream)", color: "var(--text-primary)" }
+            }
+          >
+
               {section.label}
             </button>
           ))}
@@ -113,17 +117,19 @@ export default function ListingProducts({
       )}
 
       <div className="space-y-6">
-        {visibleSections.map((section) => (
+        {visibleSections.map((section) => {
+          const SectionIcon = getSectionIcon(section.label);
+          return (
           <div key={section.key}>
             {isGrouped && (
               <button
                 type="button"
                 onClick={() => toggleCollapsed(section.key)}
-                className="mb-3 flex w-full items-center justify-between gap-2 text-left"
+                className="mb-4 flex w-full items-center justify-between gap-2 text-left"
               >
-                <span className="flex items-center gap-2">
-                  <UtensilsCrossed className="h-4 w-4" style={{ color: "var(--brand-accent)" }} />
-                  <span className="text-sm font-bold" style={{ color: "var(--text-primary)" }}>
+                <span className="flex items-center gap-2.5">
+                  <SectionIcon className="h-5 w-5" style={{ color: "var(--text-tertiary)" }} />
+                  <span className="text-[15px] font-bold" style={{ color: "var(--text-primary)" }}>
                     {section.label}
                   </span>
                 </span>
@@ -148,13 +154,13 @@ export default function ListingProducts({
                         <SafeImage src={product.image} alt={product.name} fill className="object-cover" />
                       ) : (
                         <div className="flex h-full w-full items-center justify-center">
-                          <UtensilsCrossed className="h-7 w-7" style={{ color: "var(--text-tertiary)" }} />
+                          <SectionIcon className="h-8 w-8" style={{ color: "var(--text-tertiary)" }} />
                         </div>
                       )}
                     </div>
 
-                    <div className="flex flex-1 flex-col p-3">
-                      <p className="text-sm font-semibold" style={{ color: "var(--text-primary)" }}>
+                    <div className="flex flex-1 flex-col p-2.5">
+                      <p className="text-[13px] font-bold leading-tight" style={{ color: "var(--text-primary)" }}>
                         {product.name}
                       </p>
                       {product.description && (
@@ -175,11 +181,11 @@ export default function ListingProducts({
                         <button
                           type="button"
                           onClick={() => handleAdd(product)}
-                          className="flex h-7 items-center gap-1 rounded-lg px-2.5 text-[11px] font-bold text-white transition-opacity hover:opacity-90 active:scale-95"
+                          className="flex h-8 items-center gap-1 rounded-lg px-3 text-[12px] font-semibold text-white transition-opacity hover:opacity-90 active:scale-95"
                           style={{ background: "var(--brand-accent)" }}
                         >
-                          <Plus className="h-3 w-3" />
-                          {en ? "Add" : "Shto"}
+                          <Plus className="h-3.5 w-3.5" />
+                          {SectionIcon === BedDouble ? (en ? "Add room" : "Shto rezervim") : (en ? "Add" : "Shto")}
                         </button>
                       </div>
                     </div>
@@ -188,7 +194,8 @@ export default function ListingProducts({
               </div>
             )}
           </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );

@@ -116,9 +116,9 @@ function HomePageClient({ initialCities = [] }: { initialCities?: any[] }) {
     <div style={{ background: "var(--surface-page)" }}>
       <HomeSearchHero />
 
-      <div className="page-shell space-y-6 py-5 sm:space-y-8 sm:py-7">
-        {/* Categories */}
-        <section className="gd-panel p-4 sm:p-6">
+      <div className="page-shell space-y-4 py-4 sm:space-y-6 sm:py-6">
+        {/* Categories — white card panel */}
+        <section className="gd-panel p-4 sm:p-5">
           <CategoryGrid />
         </section>
 

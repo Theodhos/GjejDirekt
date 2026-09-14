@@ -23,13 +23,13 @@ export default function ProductCard({ product, className = "" }: { product: Prod
       </div>
 
       <div className="flex flex-1 flex-col gap-0.5 p-2.5">
-        <h3 className="line-clamp-1 text-[13px] font-bold leading-tight" style={{ color: "var(--text-primary)" }}>
+        <h3 className="line-clamp-2 text-[12.5px] font-bold leading-tight" style={{ color: "var(--text-primary)" }}>
           {product.name}
         </h3>
         <p className="line-clamp-1 text-[11px]" style={{ color: "var(--text-tertiary)" }}>
           {product.businessName}
         </p>
-        <p className="gd-price mt-auto pt-1 text-[13px]">{formatPrice(product.price)}</p>
+        <p className="gd-price mt-auto pt-1 text-[13px] font-bold">{formatPrice(product.price)}</p>
       </div>
     </Link>
   );

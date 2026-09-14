@@ -43,6 +43,7 @@ import ListingStickyBottom from "@/components/listings/ListingStickyBottom";
 import ListingContactButtons from "@/components/listings/ListingContactButtons";
 import ListingProducts from "@/components/listings/ListingProducts";
 import ListingCart from "@/components/listings/ListingCart";
+import ListingMobileHeader from "@/components/listings/ListingMobileHeader";
 
 export const dynamic = "force-dynamic";
 
@@ -136,59 +137,15 @@ export default async function ListingDetailPage({ params }: { params: { slug: st
       // underneath it or the last section sits behind the buttons.
       className={hasStickyBar ? "pb-28 md:pb-8" : "pb-8"}
     >
-
-      {/* ── GALLERY ── */}
-      <section className="page-shell pb-0">
-        <ListingGallery images={allImages} listing={listing} />
-      </section>
+      {/* ── HEADER (Mobile-first app style) ── */}
+      <ListingMobileHeader listing={listing} />
 
       {/* ── MAIN CONTENT ── */}
-      <section className="page-shell mt-8">
+      <section className="page-shell mt-4">
         <div className="grid gap-8 lg:grid-cols-[1fr_340px]">
 
           {/* ════ LEFT COLUMN ════ */}
           <div className="min-w-0 space-y-6">
-
-            {/* Title Block — exactly like Stay Directory */}
-            <div>
-              {/* Category pill */}
-              <div className="mb-3">
-                <span
-                  className="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold"
-                  style={{ background: "var(--brand-light)", color: "var(--brand-accent)", border: "1px solid var(--brand-border)" }}
-                >
-                  {categoryLabel}
-                </span>
-                {listing.featured && (
-                  <span
-                    className="ml-2 inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold"
-                    style={{ background: "rgba(245,158,11,0.1)", color: "#b45309" }}
-                  >
-                    <Sparkles className="w-3 h-3" /> Featured
-                  </span>
-                )}
-              </div>
-
-              {/* Title */}
-              <h1
-                className="font-bold tracking-tight mb-3 leading-tight"
-                style={{ fontSize: "clamp(1.6rem, 4vw, 2.25rem)", color: "var(--text-primary)" }}
-              >
-                {listing.title}
-              </h1>
-
-              {/* Location + meta */}
-              <div className="flex flex-wrap items-center gap-4">
-                <span className="flex items-center gap-1.5 text-sm" style={{ color: "var(--text-secondary)" }}>
-                  <MapPin className="w-3.5 h-3.5 shrink-0" style={{ color: "var(--brand-accent)" }} />
-                  {[listing.location, listing.country].filter(Boolean).join(", ")}
-                </span>
-                <span className="flex items-center gap-1.5 text-sm" style={{ color: "var(--text-tertiary)" }}>
-                  <Eye className="w-3.5 h-3.5" />
-                  {listing.views || 0} views
-                </span>
-              </div>
-            </div>
 
             {/* ── Menu / Products — a food business's page leads with what it sells, ── */}
             {/* not its photos, so this renders first, right under the title.      ── */}
@@ -562,14 +519,6 @@ export default async function ListingDetailPage({ params }: { params: { slug: st
           </div>
         </section>
       )}
-
-      {/* Sticky Bottom Bar (mobile) */}
-      <ListingStickyBottom
-        phone={phone}
-        whatsappActions={whatsappActions}
-        listingId={listing._id.toString()}
-        listing={orderHistoryListing}
-      />
 
       {/* Floating order basket — only renders once something is in the cart */}
       <ListingCart

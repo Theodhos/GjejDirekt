@@ -423,7 +423,7 @@ a { transition: color 0.15s ease, opacity 0.15s ease; }
 
 /* Circular category tile in the icon grid */
 .gd-cat-tile {
-  @apply flex h-12 w-12 items-center justify-center rounded-full text-white;
+  @apply flex h-[52px] w-[52px] items-center justify-center rounded-full text-white;
   box-shadow: 0 3px 10px rgba(15, 20, 25, 0.14);
   transition: transform 0.18s ease, box-shadow 0.18s ease;
 }
@@ -578,4 +578,37 @@ a { transition: color 0.15s ease, opacity 0.15s ease; }
 
   .section-gap { padding-top: 3.5rem; padding-bottom: 3.5rem; }
   .section-gap-sm { padding-top: 2.5rem; padding-bottom: 2.5rem; }
+}
+
+/* ============================================================
+   PERFORMANCE OPTIMIZATIONS
+   ============================================================ */
+/* Use content-visibility to skip rendering off-screen sections */
+.gd-panel,
+.gd-card {
+  contain: layout style;
+}
+
+/* GPU-composite only animated properties */
+.gd-card {
+  will-change: transform;
+}
+
+/* Reduce layout recalc for rails */
+.gd-rail {
+  contain: inline-size;
+}
+
+/* ============================================================
+   BOTTOM NAV ACTIVE INDICATOR
+   ============================================================ */
+.bottom-nav-indicator {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 24px;
+  height: 2.5px;
+  border-radius: 0 0 2px 2px;
+  background: var(--brand-accent);
 }

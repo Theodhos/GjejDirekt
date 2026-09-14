@@ -217,8 +217,7 @@ export default function HomeSearchHero() {
 
   return (
     <section className="relative overflow-visible" style={{ background: "#171A1F" }}>
-      {/* The photo sits in its own clipped layer so the desktop suggestion dropdown
-          can extend past the hero instead of being cut off by it. */}
+      {/* Full-bleed background photo — clipped so the desktop dropdown isn't cut off */}
       <div className="absolute inset-0 overflow-hidden">
         <SafeImage
           src="/uploads/1000068416.jpg.jpg"
@@ -227,20 +226,23 @@ export default function HomeSearchHero() {
           priority
           sizes="100vw"
           className="object-cover object-center"
+          style={{ willChange: "auto" }}
         />
+        {/* Two-stop gradient: darker top for the header overlay, darker bottom for text legibility */}
         <div
           className="absolute inset-0"
           style={{
             background:
-              "linear-gradient(180deg, rgba(12,14,18,0.72) 0%, rgba(12,14,18,0.58) 45%, rgba(12,14,18,0.82) 100%)"
+              "linear-gradient(180deg, rgba(10,12,16,0.75) 0%, rgba(10,12,16,0.45) 40%, rgba(10,12,16,0.85) 100%)"
           }}
         />
       </div>
 
-      <div className="page-shell relative z-10 pb-5 pt-6 sm:pb-7 sm:pt-10">
+      <div className="page-shell relative z-10 pb-6 pt-7 sm:pb-8 sm:pt-12">
+        {/* Main headline — two lines exactly like the mockup */}
         <h1
-          className="max-w-2xl text-[1.65rem] font-bold text-white sm:text-[2.4rem]"
-          style={{ lineHeight: 1.15, letterSpacing: "-0.025em" }}
+          className="max-w-xs text-[1.85rem] font-bold text-white sm:max-w-2xl sm:text-[2.6rem]"
+          style={{ lineHeight: 1.12, letterSpacing: "-0.025em" }}
         >
           {language === "en" ? (
             <>
@@ -257,18 +259,25 @@ export default function HomeSearchHero() {
           )}
         </h1>
 
-        <p className="mt-2.5 max-w-lg text-[13px] leading-relaxed sm:text-[15px]" style={{ color: "rgba(255,255,255,0.75)" }}>
+        {/* Subtitle */}
+        <p
+          className="mt-2 max-w-xs text-[12.5px] leading-relaxed sm:max-w-lg sm:text-[14px]"
+          style={{ color: "rgba(255,255,255,0.78)" }}
+        >
           {language === "en"
             ? "Find the best businesses near you and order or book directly on WhatsApp."
             : "Gjej bizneset më të mira pranë teje dhe porosit ose rezervo direkt në WhatsApp."}
         </p>
 
-        {/* Search */}
+        {/* Search bar */}
         <div className="relative z-[100] mt-4 max-w-2xl" ref={searchRef}>
           <form onSubmit={submit}>
             <div
-              className="flex items-center gap-2 rounded-xl p-1.5 pl-3.5"
-              style={{ background: "var(--surface-white)", boxShadow: "0 8px 24px rgba(0,0,0,0.22)" }}
+              className="flex items-center gap-2 rounded-2xl p-1.5 pl-4"
+              style={{
+                background: "rgba(255,255,255,0.97)",
+                boxShadow: "0 8px 32px rgba(0,0,0,0.28), 0 2px 8px rgba(0,0,0,0.12)"
+              }}
             >
               <Search className="h-[18px] w-[18px] shrink-0" style={{ color: "var(--text-tertiary)" }} />
               <input
@@ -281,21 +290,31 @@ export default function HomeSearchHero() {
                 placeholder={
                   language === "en" ? "Search business, product, service..." : "Kërko biznes, produkt, shërbim..."
                 }
-                className="min-w-0 flex-1 bg-transparent py-2.5 text-[15px] font-medium outline-none sm:text-base"
+                className="min-w-0 flex-1 bg-transparent py-2 text-[14px] font-medium outline-none sm:text-[15px]"
                 style={{ color: "var(--text-primary)" }}
                 aria-label={language === "en" ? "Search" : "Kërko"}
               />
-              <button type="submit" className="btn-primary shrink-0 !px-5 !py-2.5">
+              <button
+                type="submit"
+                className="shrink-0 rounded-xl px-5 py-2.5 text-sm font-semibold text-white transition-all"
+                style={{
+                  background: "var(--brand-accent)",
+                  boxShadow: "0 2px 8px rgba(225,29,46,0.35)"
+                }}
+              >
                 {language === "en" ? "Search" : "Kërko"}
               </button>
             </div>
           </form>
 
-          {/* Desktop suggestions */}
+          {/* Desktop suggestions dropdown */}
           {!isMobileScreen && showSuggestions && suggestions.length > 0 && (
             <div
-              className="absolute inset-x-0 top-full z-[9999] mt-2 overflow-hidden rounded-xl border bg-white shadow-[0_18px_60px_rgba(15,23,42,0.18)]"
-              style={{ borderColor: "var(--border-soft)" }}
+              className="absolute inset-x-0 top-full z-[9999] mt-2 overflow-hidden rounded-2xl border bg-white"
+              style={{
+                borderColor: "var(--border-soft)",
+                boxShadow: "0 20px 60px rgba(15,23,42,0.18), 0 4px 16px rgba(15,23,42,0.08)"
+              }}
             >
               <div className="max-h-[60vh] overflow-y-auto custom-scrollbar">
                 {!city.trim() && (
@@ -327,26 +346,46 @@ export default function HomeSearchHero() {
           )}
         </div>
 
-        {/* Quick filters */}
-        <div className="gd-rail mt-3.5 -mx-4 px-4 sm:-mx-6 sm:px-6">
+        {/* Quick filter pills — Pranë meje · Restorante · Hotele */}
+        <div className="mt-3 flex flex-wrap gap-2">
           {quickFilters.map((filter) => {
             const Icon = filter.icon;
             const content = (
               <>
                 {filter.loading ? (
-                  <LoaderCircle className="h-4 w-4 animate-spin" style={{ color: "var(--brand-accent)" }} />
+                  <LoaderCircle className="h-[15px] w-[15px] animate-spin" style={{ color: "var(--brand-accent)" }} />
                 ) : (
-                  <Icon className="h-4 w-4" style={{ color: "var(--brand-accent)" }} />
+                  <Icon className="h-[15px] w-[15px]" style={{ color: "var(--brand-accent)" }} />
                 )}
-                {filter.label}
+                <span className="text-[12.5px] font-semibold" style={{ color: "var(--text-primary)" }}>
+                  {filter.label}
+                </span>
               </>
             );
+            const pillStyle = {
+              background: "rgba(255,255,255,0.95)",
+              backdropFilter: "blur(8px)",
+              WebkitBackdropFilter: "blur(8px)",
+              border: "1px solid rgba(255,255,255,0.6)",
+              boxShadow: "0 2px 8px rgba(0,0,0,0.15)"
+            };
             return filter.href ? (
-              <a key={filter.label} href={filter.href} className="gd-quick-pill">
+              <a
+                key={filter.label}
+                href={filter.href}
+                className="inline-flex shrink-0 items-center gap-1.5 rounded-full px-3.5 py-2 transition-all active:scale-95 hover:bg-white"
+                style={pillStyle}
+              >
                 {content}
               </a>
             ) : (
-              <button key={filter.label} type="button" onClick={filter.onClick} className="gd-quick-pill">
+              <button
+                key={filter.label}
+                type="button"
+                onClick={filter.onClick}
+                className="inline-flex shrink-0 items-center gap-1.5 rounded-full px-3.5 py-2 transition-all active:scale-95 hover:bg-white"
+                style={pillStyle}
+              >
                 {content}
               </button>
             );
@@ -354,7 +393,7 @@ export default function HomeSearchHero() {
         </div>
       </div>
 
-      {/* Mobile full-screen search */}
+      {/* Mobile full-screen search overlay */}
       {isMobileScreen && showSuggestions && (
         <div className="fixed inset-0 z-[9999] overflow-y-auto bg-white">
           <div className="border-b px-4 pb-3 pt-4" style={{ borderColor: "var(--border-soft)" }}>
