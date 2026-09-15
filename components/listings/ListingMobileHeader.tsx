@@ -109,7 +109,7 @@ export default function ListingMobileHeader({ listing }: { listing: any }) {
         </div>
       </div>
 
-      <div className="relative -mx-4 mb-4 h-[180px] overflow-hidden sm:-mx-6 sm:h-[250px]">
+      <div id="gallery" className="relative -mx-4 mb-4 h-[180px] overflow-hidden sm:-mx-6 sm:h-[250px]">
         <SafeImage
           src={listing.bannerImage || listing.images?.[1] || listing.photos?.[1] || listing.images?.[0]}
           alt={`${listing.title} cover`}

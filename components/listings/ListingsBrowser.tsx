@@ -83,7 +83,7 @@ export default function ListingsBrowser({ listings, cities }: ListingsBrowserPro
   const hasFilters = Boolean(activeCategory || activeSubcategory || activeCity || query);
   const foodCategory = getCategoryByValue(activeCategory)?.value === "ushqim-pije";
   const hotelCategory = getCategoryByValue(activeCategory)?.value === "hotele";
-  const directoryCategory = foodCategory ? getCategoryByValue("ushqim-pije") : hotelCategory ? getCategoryByValue("hotele") : undefined;
+  const directoryCategory = getCategoryByValue(activeCategory);
   const directorySubcategories = directoryCategory?.subcategories || [];
 
   return (

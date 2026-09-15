@@ -37,7 +37,6 @@ import { buildWhatsappActions, getListingHasCatalog, getListingActions, getCateg
 import { safeJson } from "@/lib/utils";
 import { startingPrice } from "@/lib/pricing";
 import ReportListing from "@/components/ReportListing";
-import ListingGallery from "@/components/listings/ListingGallery";
 import ListingPriceTile from "@/components/listings/ListingPriceTile";
 import ListingStickyBottom from "@/components/listings/ListingStickyBottom";
 import ListingContactButtons from "@/components/listings/ListingContactButtons";
@@ -85,13 +84,6 @@ export default async function ListingDetailPage({ params }: { params: { slug: st
   const relatedListings = safeJson(relatedListingsRaw);
   const products = safeJson(productsRaw);
 
-  const allImages = listing.images?.length > 0
-    ? listing.images
-    : listing.photos?.length > 0
-    ? listing.photos
-    : listing.bannerImage
-    ? [listing.bannerImage]
-    : [];
   const categoryLabel = getCategoryLabel(listing.category);
   const subcategoryLabel = getSubcategoryLabel(listing.category, listing.subcategory);
   const isHotel = categoryLabel === "Hotele & Akomodim";
@@ -158,10 +150,6 @@ export default async function ListingDetailPage({ params }: { params: { slug: st
           </div>
         </nav>
       )}
-
-      <div id="gallery" className="page-shell hidden pt-4 md:block">
-        <ListingGallery images={allImages} listing={listing} />
-      </div>
 
       <ListingUniversalNav isHotel={isHotel} hasCatalog={hasCatalog} hasReservation={hasReservation} externalMapUrl={externalMapUrl} />
 

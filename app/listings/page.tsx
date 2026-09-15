@@ -17,8 +17,6 @@ export default async function ListingsPage() {
   await connectDB();
   const found = await Listing.find({ status: "approved" }).sort({ createdAt: -1 }).lean<any>();
   const listings = JSON.parse(JSON.stringify(rankListings(found)));
-
-  // Only offer cities that actually have something to show.
   const cities = Array.from(
     new Map(
       listings
