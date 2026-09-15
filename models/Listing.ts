@@ -10,6 +10,8 @@ export interface IListing extends Document {
   description: string;
   category: string;
   subcategory: string;
+  /** Manual override of which WhatsApp flows this listing offers ("porosi"/"rezervim"); empty falls back to the category/subcategory default. */
+  actions: string[];
   location: string;
   country?: string;
   address?: string;
@@ -87,6 +89,7 @@ const ListingSchema = new Schema<IListing>(
     description: { type: String, required: true },
     category: { type: String, required: true },
     subcategory: { type: String, required: true },
+    actions: { type: [String], enum: ["porosi", "rezervim"], default: [] },
     location: { type: String, required: true, index: true },
     country: { type: String, index: true },
     address: { type: String },

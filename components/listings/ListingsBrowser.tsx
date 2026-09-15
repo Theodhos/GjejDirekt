@@ -2,10 +2,11 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { LayoutGrid, Search, SlidersHorizontal, X } from "lucide-react";
 import BusinessCard from "@/components/home/BusinessCard";
-import { categories, getCategoryByValue } from "@/lib/constants";
+import { categories, getCategoryByValue, getSubcategorySearchValues } from "@/lib/constants";
 import { getCategoryIcon } from "@/lib/category-icons";
 import { useLanguage } from "@/context/LanguageContext";
 
@@ -30,6 +31,7 @@ export default function ListingsBrowser({ listings, cities }: ListingsBrowserPro
   const [showFilters, setShowFilters] = useState(false);
 
   const activeCategory = params.get("category") || "";
+  const activeSubcategory = params.get("subcategory") || "";
   const activeCity = params.get("city") || "";
 
   /** Rewrites one search param while preserving the rest. */
@@ -48,6 +50,12 @@ export default function ListingsBrowser({ listings, cities }: ListingsBrowserPro
       if (category) {
         const value = String(listing.category || "").toLowerCase();
         if (value !== category.value && !category.aliases.includes(value)) return false;
+      }
+
+      if (activeSubcategory) {
+        const values = getSubcategorySearchValues(activeCategory, activeSubcategory);
+        const value = String(listing.subcategory || "").toLowerCase();
+        if (!values.map((item) => item.toLowerCase()).includes(value)) return false;
       }
 
       if (activeCity) {
@@ -70,9 +78,13 @@ export default function ListingsBrowser({ listings, cities }: ListingsBrowserPro
 
       return true;
     });
-  }, [listings, query, activeCategory, activeCity]);
+  }, [listings, query, activeCategory, activeSubcategory, activeCity]);
 
-  const hasFilters = Boolean(activeCategory || activeCity || query);
+  const hasFilters = Boolean(activeCategory || activeSubcategory || activeCity || query);
+  const foodCategory = getCategoryByValue(activeCategory)?.value === "ushqim-pije";
+  const hotelCategory = getCategoryByValue(activeCategory)?.value === "hotele";
+  const directoryCategory = foodCategory ? getCategoryByValue("ushqim-pije") : hotelCategory ? getCategoryByValue("hotele") : undefined;
+  const directorySubcategories = directoryCategory?.subcategories || [];
 
   return (
     <div className="page-shell space-y-4 py-4 sm:py-6">
@@ -126,8 +138,28 @@ export default function ListingsBrowser({ listings, cities }: ListingsBrowserPro
         </button>
       </form>
 
+      {directoryCategory && (
+        <section className="overflow-hidden rounded-2xl border" style={{ borderColor: "var(--border-soft)", background: "var(--surface-white)" }}>
+          <div className="relative h-28 overflow-hidden sm:h-36">
+            <Image src={directoryCategory.image} alt={directoryCategory.label} fill sizes="100vw" className="object-cover" />
+            <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/35 to-transparent" />
+            <div className="absolute inset-0 flex flex-col justify-center px-5 sm:px-7">
+              <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-white/75">GjejDirekt</span>
+              <h2 className="mt-1 text-2xl font-bold text-white sm:text-3xl">{directoryCategory.label}</h2>
+              <p className="mt-0.5 text-xs text-white/80 sm:text-sm">Gjej bizneset dhe shërbimet më të mira pranë teje</p>
+            </div>
+          </div>
+          <div className="gd-rail px-4 py-3 sm:px-5">
+            <button type="button" onClick={() => setParam("subcategory", "")} className="gd-quick-pill" style={!activeSubcategory ? { background: "var(--brand-accent)", color: "#fff", borderColor: "var(--brand-accent)" } : undefined}>Të gjitha</button>
+            {directorySubcategories.map((item) => (
+              <button key={item.value} type="button" onClick={() => setParam("subcategory", activeSubcategory === item.value ? "" : item.value)} className="gd-quick-pill" style={activeSubcategory === item.value ? { background: "var(--brand-accent)", color: "#fff", borderColor: "var(--brand-accent)" } : undefined}>{item.label}</button>
+            ))}
+          </div>
+        </section>
+      )}
+
       {/* Category strip — always visible on tablet up, behind the filter button on phones */}
-      <div className={showFilters ? "space-y-3" : "hidden space-y-3 sm:block"}>
+      <div className={activeCategory ? "hidden" : showFilters ? "space-y-3" : "hidden space-y-3 sm:block"}>
         <div className="gd-rail -mx-4 px-4 sm:-mx-6 sm:px-6 lg:mx-0 lg:px-0">
           <button
             type="button"

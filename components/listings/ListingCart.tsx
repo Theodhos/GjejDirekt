@@ -17,19 +17,25 @@ import {
   buildOrderWhatsappHref
 } from "@/lib/cart";
 import { recordOrderContact } from "@/lib/order-history";
+import { getCategoryByValue } from "@/lib/constants";
 
 export default function ListingCart({
   listingSlug,
   listingId,
   businessName,
   phoneDigits,
-  listing
+  phone,
+  listing,
+  isReservation = false
 }: {
   listingSlug: string;
   listingId?: string;
   businessName: string;
   phoneDigits: string;
+  /** Human-formatted phone shown in the WhatsApp message header (falls back to phoneDigits). */
+  phone?: string;
   listing?: { slug: string; title: string; images?: string[]; location?: string; category?: string };
+  isReservation?: boolean;
 }) {
   const { language } = useLanguage();
   const en = language === "en";
@@ -42,6 +48,10 @@ export default function ListingCart({
   const [persons, setPersons] = useState(2);
   const [specialRequest, setSpecialRequest] = useState("");
 
+  // Order note (non-hotel flow) — revealed by the "Add order note" button
+  const [noteOpen, setNoteOpen] = useState(false);
+  const [orderNote, setOrderNote] = useState("");
+
   useEffect(() => {
     setItems(readCart(listingSlug));
     return onCartChange(() => setItems(readCart(listingSlug)));
@@ -53,9 +63,21 @@ export default function ListingCart({
   const total = cartTotal(items);
   const hasAllPrices = items.every((item) => typeof item.price === "number");
   
-  const isHotel = listing?.category === "hotels" || listing?.category === "akomodim" || items.some(i => i.name.toLowerCase().includes("dhom"));
+  // Resolved through the category taxonomy (canonical value + every legacy alias:
+  // "akomodim", "hotel", "hotels", "resort", ...) rather than a raw string match,
+  // so any listing that actually belongs to Hotele & Akomodim is recognized. The
+  // item-name check stays as a fallback for listings still missing a category.
+  const isBooking = isReservation || getCategoryByValue(listing?.category)?.value === "hotele" || items.some(i => i.name.toLowerCase().includes("dhom"));
 
-  const whatsappHref = buildOrderWhatsappHref(phoneDigits, businessName, items, language);
+  const whatsappHref = buildOrderWhatsappHref(phoneDigits, businessName, items, language, {
+    location: listing?.location,
+    phone: phone || phoneDigits,
+    note: isBooking ? specialRequest : orderNote,
+    isHotel: isBooking,
+    checkIn: isBooking ? checkIn : undefined,
+    checkOut: isBooking ? checkOut : undefined,
+    persons: isBooking ? persons : undefined
+  });
 
   const handleSend = () => {
     if (listingId) {
@@ -63,6 +85,8 @@ export default function ListingCart({
     }
     if (listing) recordOrderContact(listing);
     clearCart(listingSlug);
+    setOrderNote("");
+    setNoteOpen(false);
     setOpen(false);
   };
 
@@ -71,12 +95,19 @@ export default function ListingCart({
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="fixed inset-x-4 z-40 flex items-center justify-between gap-3 rounded-[1.5rem] px-5 py-3 text-left shadow-lg transition-transform active:scale-[0.98] bottom-4 sm:inset-x-auto sm:right-6 sm:w-[22rem]"
-        style={{ background: "var(--surface-white)", border: "1px solid var(--border-soft)", boxShadow: "0 8px 32px rgba(15,20,25,0.12)" }}
+        className="fixed left-1/2 z-40 flex w-[calc(100%-2rem)] max-w-md -translate-x-1/2 items-center justify-between gap-3 rounded-[1.5rem] px-5 py-3 text-left shadow-lg transition-transform active:scale-[0.98]"
+        style={{
+          background: "var(--surface-white)",
+          border: "1px solid var(--border-soft)",
+          boxShadow: "0 8px 32px rgba(15,20,25,0.12)",
+          // Sits centered above the phone tab bar rather than under/behind it —
+          // `--bottom-nav-height` is 0 from lg up, where the tab bar is hidden anyway.
+          bottom: "calc(var(--bottom-nav-height) + 1rem)"
+        }}
       >
         <span className="flex min-w-0 items-center gap-3">
           <span className="relative flex h-10 w-10 shrink-0 items-center justify-center">
-            {isHotel ? (
+            {isBooking ? (
               <Calendar className="h-7 w-7 text-red-500" />
             ) : (
               <ShoppingCart className="h-7 w-7 text-red-500 fill-red-50" />
@@ -89,13 +120,13 @@ export default function ListingCart({
             </span>
           </span>
           <span className="truncate text-[15px] font-bold" style={{ color: "var(--text-primary)" }}>
-            {count} {isHotel ? (count === 1 ? (en ? "reservation" : "rezervim") : (en ? "reservations" : "rezervime")) : (count === 1 ? (en ? "item" : "artikull") : (en ? "items" : "artikuj"))}
+            {count} {isBooking ? (count === 1 ? (en ? "reservation" : "rezervim") : (en ? "reservations" : "rezervime")) : (count === 1 ? (en ? "item" : "artikull") : (en ? "items" : "artikuj"))}
             {hasAllPrices ? ` • ${formatPrice(total)}` : ""}
           </span>
         </span>
 
         <span className="flex shrink-0 items-center gap-0.5 text-[13px] font-bold" style={{ color: "var(--brand-accent)" }}>
-          {isHotel ? (en ? "View reservation" : "Shiko rezervimin") : (en ? "View order" : "Shiko kërkesën")}
+          {isBooking ? (en ? "View reservation" : "Shiko rezervimin") : (en ? "View order" : "Shiko kërkesën")}
           <ChevronRight className="h-4 w-4" />
         </span>
       </button>
@@ -117,7 +148,7 @@ export default function ListingCart({
               style={{ borderBottom: "1px solid var(--border-soft)" }}
             >
               <h3 className="text-xl font-bold" style={{ color: "var(--text-primary)" }}>
-                {isHotel ? (en ? "Your reservation" : "Rezervimi juaj") : (en ? "Your order" : "Kërkesa juaj")}
+                {isBooking ? (en ? "Your reservation" : "Rezervimi juaj") : (en ? "Your order" : "Kërkesa juaj")}
               </h3>
               <button type="button" onClick={() => setOpen(false)} style={{ color: "var(--text-primary)" }} className="p-1 hover:bg-neutral-100 rounded-full transition-colors">
                 <X className="h-6 w-6" />
@@ -126,17 +157,16 @@ export default function ListingCart({
 
             <div className="px-5 pt-4 pb-2 shrink-0">
               <span className="inline-flex rounded-full bg-red-50 text-red-600 px-3 py-1 text-xs font-bold">
-                {isHotel ? (en ? "Reservation" : "Rezervim") : (en ? "Order" : "Porosi")}
+                {isBooking ? (en ? "Reservation" : "Rezervim") : (en ? "Order" : "Porosi")}
               </span>
             </div>
 
             {/* Modal Body */}
             <div className="space-y-4 overflow-y-auto px-5 py-2 flex-1">
               {items.map((item) => (
-                <div key={item.productId} className="flex items-start gap-3 pb-4" style={isHotel ? {} : { borderBottom: "1px solid var(--border-soft)" }}>
-                  <div className="w-16 h-16 rounded-xl overflow-hidden shrink-0 bg-neutral-100 border border-neutral-200">
-                    {/* Placeholder or real image if item has one. The mockup shows images. */}
-                    <SafeImage src={null} fallbackSrc="/placeholder.png" alt={item.name} fill className="object-cover" />
+                <div key={item.productId} className="flex items-start gap-3 pb-4" style={isBooking ? {} : { borderBottom: "1px solid var(--border-soft)" }}>
+                  <div className="relative w-16 h-16 rounded-xl overflow-hidden shrink-0 bg-neutral-100 border border-neutral-200">
+                    <SafeImage src={item.image ?? null} alt={item.name} fill className="object-cover" />
                   </div>
 
                   <div className="min-w-0 flex-1">
@@ -155,11 +185,11 @@ export default function ListingCart({
                     
                     {typeof item.price === "number" && (
                       <p className="text-[12px] font-medium mt-1" style={{ color: "var(--text-secondary)" }}>
-                        {formatPrice(item.price)} {isHotel ? "/ natë" : ""}
+                        {formatPrice(item.price)} {isBooking ? "/ natë" : ""}
                       </p>
                     )}
 
-                    {!isHotel && (
+                    {!isBooking && (
                       <div className="flex items-center justify-between mt-3">
                         <div className="flex items-center gap-4">
                           <button
@@ -191,7 +221,7 @@ export default function ListingCart({
                 </div>
               ))}
 
-              {isHotel && (
+              {isBooking && (
                 <div className="space-y-5 pt-2">
                   <div className="grid grid-cols-1 gap-4">
                     <div>
@@ -223,9 +253,9 @@ export default function ListingCart({
                       <span className="w-4 h-4 flex items-center justify-center border border-current rounded-full text-[10px]">8</span> {en ? "Number of persons" : "Numri i personave"}
                     </label>
                     <div className="flex items-center gap-4">
-                      <button onClick={() => setPersons(p => Math.max(1, p-1))} className="w-10 h-10 rounded-xl bg-neutral-100 flex items-center justify-center text-neutral-600 hover:bg-neutral-200"><Minus className="w-4 h-4" /></button>
+                      <button type="button" onClick={() => setPersons(p => Math.max(1, p-1))} className="w-10 h-10 rounded-xl bg-neutral-100 flex items-center justify-center text-neutral-600 hover:bg-neutral-200"><Minus className="w-4 h-4" /></button>
                       <span className="text-[16px] font-bold w-4 text-center">{persons}</span>
-                      <button onClick={() => setPersons(p => p+1)} className="w-10 h-10 rounded-xl bg-neutral-100 flex items-center justify-center text-neutral-600 hover:bg-neutral-200"><Plus className="w-4 h-4" /></button>
+                      <button type="button" onClick={() => setPersons(p => p+1)} className="w-10 h-10 rounded-xl bg-neutral-100 flex items-center justify-center text-neutral-600 hover:bg-neutral-200"><Plus className="w-4 h-4" /></button>
                     </div>
                   </div>
 
@@ -255,10 +285,29 @@ export default function ListingCart({
                 </div>
               )}
 
-              {!isHotel && (
-                <button className="w-full flex items-center justify-center gap-2 py-3 mt-2 rounded-xl border border-red-100 bg-red-50/50 text-red-600 font-bold text-[13px] transition-colors hover:bg-red-50">
-                  <Plus className="w-4 h-4" /> {en ? "Add order note" : "Shto shënim për porosinë"}
-                </button>
+              {!isBooking && (
+                noteOpen ? (
+                  <div className="mt-2">
+                    <label className="flex items-center gap-2 text-[13px] font-bold mb-2 text-neutral-700">
+                      <MessageCircle className="w-4 h-4" /> {en ? "Order note" : "Shënim për porosinë"}
+                    </label>
+                    <textarea
+                      autoFocus
+                      className="w-full border border-neutral-200 rounded-xl p-3 text-[14px] outline-none focus:border-red-500 min-h-[70px]"
+                      placeholder={en ? "e.g. no onions, ring the bell..." : "p.sh. pa qepë, bjeri ziles..."}
+                      value={orderNote}
+                      onChange={(e) => setOrderNote(e.target.value)}
+                    />
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => setNoteOpen(true)}
+                    className="w-full flex items-center justify-center gap-2 py-3 mt-2 rounded-xl border border-red-100 bg-red-50/50 text-red-600 font-bold text-[13px] transition-colors hover:bg-red-50"
+                  >
+                    <Plus className="w-4 h-4" /> {en ? "Add order note" : "Shto shënim për porosinë"}
+                  </button>
+                )
               )}
             </div>
 
@@ -275,7 +324,7 @@ export default function ListingCart({
                 </div>
               )}
 
-              {isHotel && (
+              {isBooking && (
                 <div className="flex gap-2 items-start bg-red-50 text-red-600 p-3 rounded-xl mb-4 text-[12px] font-medium leading-tight">
                    <div className="w-4 h-4 shrink-0 border border-current rounded-full flex items-center justify-center text-[10px] font-bold">!</div>
                    {en ? "Reservation will be confirmed by business via WhatsApp." : "Rezervimi do të konfirmohet nga biznesi përmes WhatsApp."}
@@ -292,7 +341,7 @@ export default function ListingCart({
                   style={{ background: "var(--whatsapp-green)", boxShadow: "0 4px 14px rgba(37,211,102,0.3)" }}
                 >
                   <MessageCircle className="h-5 w-5" />
-                  {isHotel ? (en ? "Send reservation on WhatsApp" : "Dërgo rezervimin në WhatsApp") : (en ? "Send order on WhatsApp" : "Dërgo porosinë në WhatsApp")}
+                  {isBooking ? (en ? "Send reservation on WhatsApp" : "Dërgo rezervimin në WhatsApp") : (en ? "Send order on WhatsApp" : "Dërgo porosinë në WhatsApp")}
                 </a>
               ) : (
                 <p className="text-center text-sm" style={{ color: "var(--text-tertiary)" }}>

@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { Edit3, Eye, Loader2, Trash2, User, UtensilsCrossed } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
+import { getListingHasCatalog } from "@/lib/constants";
 
 export default function UserListingTable({
   listings,
@@ -124,15 +125,17 @@ export default function UserListingTable({
                   </div>
 
                   <div className="flex flex-wrap items-center gap-2 justify-start md:justify-end mt-2 md:mt-0">
-                    <Link
-                      href={`/listings/${listing.slug}/products`}
-                      className="inline-flex h-10 md:h-11 items-center justify-center gap-1.5 sm:gap-2 rounded-xl px-3 sm:px-4 text-[10px] sm:text-xs font-black uppercase tracking-[0.12em] transition-colors hover:bg-neutral-100"
-                      style={{ border: "1px solid var(--border-medium)", color: "var(--text-secondary)" }}
-                      title={en ? "Manage menu" : "Menaxho menunë"}
-                    >
-                      <UtensilsCrossed className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                      <span className="hidden xl:inline">{en ? "Menu" : "Menuja"}</span>
-                    </Link>
+                    {getListingHasCatalog(listing) && (
+                      <Link
+                        href={`/listings/${listing.slug}/products`}
+                        className="inline-flex h-10 md:h-11 items-center justify-center gap-1.5 sm:gap-2 rounded-xl px-3 sm:px-4 text-[10px] sm:text-xs font-black uppercase tracking-[0.12em] transition-colors hover:bg-neutral-100"
+                        style={{ border: "1px solid var(--border-medium)", color: "var(--text-secondary)" }}
+                        title={en ? "Manage menu" : "Menaxho menunë"}
+                      >
+                        <UtensilsCrossed className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                        <span className="hidden xl:inline">{en ? "Menu" : "Menuja"}</span>
+                      </Link>
+                    )}
                     <Link
                       href={`/listings/${listing.slug}/edit`}
                       className="inline-flex h-10 md:h-11 items-center justify-center gap-1.5 sm:gap-2 rounded-xl px-3 sm:px-4 text-[10px] sm:text-xs font-black uppercase tracking-[0.12em] text-white transition-all hover:-translate-y-0.5"

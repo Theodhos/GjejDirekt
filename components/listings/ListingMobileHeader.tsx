@@ -109,10 +109,21 @@ export default function ListingMobileHeader({ listing }: { listing: any }) {
         </div>
       </div>
 
+      <div className="relative -mx-4 mb-4 h-[180px] overflow-hidden sm:-mx-6 sm:h-[250px]">
+        <SafeImage
+          src={listing.bannerImage || listing.images?.[1] || listing.photos?.[1] || listing.images?.[0]}
+          alt={`${listing.title} cover`}
+          fill
+          className="object-cover"
+          sizes="100vw"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/35 to-transparent" />
+      </div>
+
       {/* Business Info */}
-      <div className="flex gap-4 items-center mb-6">
+      <div className="relative z-10 -mt-12 flex gap-4 items-center rounded-t-3xl bg-white px-2 pt-3 mb-6">
         {/* Circular Logo */}
-        <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-full overflow-hidden shrink-0 shadow-sm border border-[var(--border-soft)]">
+        <div className="relative w-24 h-24 sm:w-28 sm:h-28 rounded-full overflow-hidden shrink-0 shadow-md border-4 border-white">
           <SafeImage
             src={listing.logo || listing.images?.[0] || listing.photos?.[0] || listing.bannerImage}
             alt={listing.title}

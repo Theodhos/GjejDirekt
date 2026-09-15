@@ -5,7 +5,7 @@ import { sendMail } from "@/lib/mailer";
 import { logActivity } from "@/lib/activity";
 import { escapeRegex, slugify } from "@/lib/utils";
 import { apiError } from "@/lib/api";
-import { categories, getCategorySearchValues, getSubcategorySearchValues } from "@/lib/constants";
+import { categories, getCategorySearchValues, getSubcategorySearchValues, type ListingAction } from "@/lib/constants";
 import Listing from "@/models/Listing";
 import User from "@/models/User";
 import { rankListings } from "@/lib/ranking";
@@ -27,6 +27,14 @@ function parseMaybeNumber(value: unknown) {
   if (value === null || value === undefined || value === "") return undefined;
   const numberValue = Number(value);
   return Number.isFinite(numberValue) ? numberValue : undefined;
+}
+
+/** Keeps only valid action values, deduped — an empty result just falls back to the category default. */
+function parseActions(value: unknown): ListingAction[] {
+  const list = Array.isArray(value) ? value : [];
+  return Array.from(
+    new Set(list.filter((item): item is ListingAction => item === "porosi" || item === "rezervim"))
+  );
 }
 
 function parseCoordinates(body: Record<string, unknown>) {
@@ -136,6 +144,7 @@ export async function POST(request: Request) {
       description: body.description,
       category: body.category,
       subcategory: body.subcategory,
+      actions: parseActions(body.actions),
       location: body.location,
       country: body.country || "",
       address: body.address || "",

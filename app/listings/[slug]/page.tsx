@@ -33,7 +33,7 @@ import { getAuthUser } from "@/lib/auth";
 import Listing from "@/models/Listing";
 import Product from "@/models/Product";
 import ListingCard from "@/components/ListingCard";
-import { buildWhatsappActions, getCategoryLabel, getSubcategoryLabel } from "@/lib/constants";
+import { buildWhatsappActions, getListingHasCatalog, getListingActions, getCategoryLabel, getSubcategoryLabel } from "@/lib/constants";
 import { safeJson } from "@/lib/utils";
 import { startingPrice } from "@/lib/pricing";
 import ReportListing from "@/components/ReportListing";
@@ -44,6 +44,7 @@ import ListingContactButtons from "@/components/listings/ListingContactButtons";
 import ListingProducts from "@/components/listings/ListingProducts";
 import ListingCart from "@/components/listings/ListingCart";
 import ListingMobileHeader from "@/components/listings/ListingMobileHeader";
+import ListingUniversalNav from "@/components/listings/ListingUniversalNav";
 
 export const dynamic = "force-dynamic";
 
@@ -93,6 +94,8 @@ export default async function ListingDetailPage({ params }: { params: { slug: st
     : [];
   const categoryLabel = getCategoryLabel(listing.category);
   const subcategoryLabel = getSubcategoryLabel(listing.category, listing.subcategory);
+  const isHotel = categoryLabel === "Hotele & Akomodim";
+  const isShopping = categoryLabel === "Shopping";
 
   const googleMapsKey = process.env.GOOGLE_MAPS_API_KEY;
   const mapAddress = [listing.address, listing.location, listing.country].filter(Boolean).join(", ");
@@ -119,6 +122,8 @@ export default async function ListingDetailPage({ params }: { params: { slug: st
   const tags = [...(listing.tags || []), ...(listing.amenities || [])].filter((v, i, self) => self.indexOf(v) === i);
 
   const hasStickyBar = Boolean(phone || whatsappHref);
+  const hasCatalog = getListingHasCatalog(listing);
+  const hasReservation = getListingActions(listing).includes("rezervim");
 
   // Only the fields the local "Porositë" list needs — the full document must not be
   // handed to a client component.
@@ -140,19 +145,88 @@ export default async function ListingDetailPage({ params }: { params: { slug: st
       {/* ── HEADER (Mobile-first app style) ── */}
       <ListingMobileHeader listing={listing} />
 
+      {getCategoryLabel(listing.category) === "Ushqim & Pije" && (
+        <nav className="hidden sticky top-[56px] z-20 border-y bg-white/95 backdrop-blur-md" style={{ borderColor: "var(--border-soft)" }} aria-label="Navigimi i biznesit">
+          <div className="mx-auto flex max-w-[1200px] items-center justify-between px-3 sm:px-6 lg:px-8">
+            {["Përmbledhje", "Menu", "Vlerësime", "Foto", "Informacion"].map((item, index) => (
+              <a key={item} href={["#overview", "#menu", "#details", "#gallery", "#details"][index]} className={`relative flex min-w-0 flex-1 flex-col items-center gap-1 py-2 text-[10px] font-semibold ${index === 1 ? "text-[var(--brand-accent)]" : "text-[var(--text-tertiary)]"}`}>
+                <span className="text-[16px]">{["▣", "♧", "☆", "▧", "ⓘ"][index]}</span>
+                {item}
+                {index === 1 && <span className="absolute inset-x-3 bottom-0 h-0.5 rounded-full bg-[var(--brand-accent)]" />}
+              </a>
+            ))}
+          </div>
+        </nav>
+      )}
+
+      <div id="gallery" className="page-shell hidden pt-4 md:block">
+        <ListingGallery images={allImages} listing={listing} />
+      </div>
+
+      <ListingUniversalNav isHotel={isHotel} hasCatalog={hasCatalog} hasReservation={hasReservation} externalMapUrl={externalMapUrl} />
+
+      {isHotel && (
+        <nav className="hidden sticky top-[56px] z-20 border-y bg-white/95 backdrop-blur-md" style={{ borderColor: "var(--border-soft)" }} aria-label="Navigimi i akomodimit">
+          <div className="mx-auto flex max-w-[1200px] items-center justify-between px-3 sm:px-6 lg:px-8">
+            {["Përmbledhje", "Dhoma & Çmime", "Pajisjet", "Galeria", "Vlerësime", "Harta"].map((item, index) => (
+              <a key={item} href={index === 5 ? externalMapUrl : ["#overview", "#rooms", "#amenities", "#gallery", "#details"][index]} target={index === 5 ? "_blank" : undefined} rel={index === 5 ? "noreferrer" : undefined} className={`relative flex min-w-0 flex-1 flex-col items-center gap-1 py-2 text-[10px] font-semibold ${index === 1 ? "text-[var(--brand-accent)]" : "text-[var(--text-tertiary)]"}`}>
+                <span className="text-[15px]">{["▣", "▤", "♧", "▧", "☆", "⌖"][index]}</span>
+                <span className="truncate">{item}</span>
+                {index === 1 && <span className="absolute inset-x-2 bottom-0 h-0.5 rounded-full bg-[var(--brand-accent)]" />}
+              </a>
+            ))}
+          </div>
+        </nav>
+      )}
+
+      {isShopping && (
+        <nav className="hidden sticky top-[56px] z-20 border-y bg-white/95 backdrop-blur-md" style={{ borderColor: "var(--border-soft)" }} aria-label="Navigimi i dyqanit">
+          <div className="mx-auto flex max-w-[1200px] items-center justify-between px-3 sm:px-6 lg:px-8">
+            {["Përmbledhje", "Produktet", "Kategoritë", "Vlerësime", "Informacion"].map((item, index) => (
+              <a key={item} href={["#overview", "#products", "#products", "#details", "#details"][index]} className={`relative flex min-w-0 flex-1 flex-col items-center gap-1 py-2 text-[10px] font-semibold ${index === 1 ? "text-[var(--brand-accent)]" : "text-[var(--text-tertiary)]"}`}>
+                <span className="text-[15px]">{["▣", "▦", "♧", "☆", "ⓘ"][index]}</span>
+                <span className="truncate">{item}</span>
+                {index === 1 && <span className="absolute inset-x-3 bottom-0 h-0.5 rounded-full bg-[var(--brand-accent)]" />}
+              </a>
+            ))}
+          </div>
+        </nav>
+      )}
+
       {/* ── MAIN CONTENT ── */}
       <section className="page-shell mt-4">
         <div className="grid gap-8 lg:grid-cols-[1fr_340px]">
 
           {/* ════ LEFT COLUMN ════ */}
-          <div className="min-w-0 space-y-6">
+          <div id="overview" className="min-w-0 space-y-6">
+            <section className="rounded-2xl border bg-white p-5 shadow-sm sm:p-6" style={{ borderColor: "var(--border-soft)" }}>
+              <div className="flex items-center gap-2">
+                <span className="flex h-9 w-9 items-center justify-center rounded-xl text-lg" style={{ background: "var(--brand-light)", color: "var(--brand-accent)" }}>⌂</span>
+                <div><p className="eyebrow">Rreth biznesit</p><h2 className="mt-1 text-xl font-bold" style={{ color: "var(--text-primary)" }}>{listing.title}</h2></div>
+              </div>
+              <p className="mt-4 text-sm leading-relaxed whitespace-pre-line" style={{ color: "var(--text-secondary)" }}>{listing.description}</p>
+              {tags.length > 0 && <div className="mt-4 flex flex-wrap gap-2">{tags.slice(0, 6).map((tag: string) => <span key={tag} className="rounded-full px-3 py-1.5 text-xs font-semibold" style={{ background: "var(--brand-light)", color: "var(--brand-accent)" }}>{tag}</span>)}</div>}
+            </section>
 
             {/* ── Menu / Products — a food business's page leads with what it sells, ── */}
             {/* not its photos, so this renders first, right under the title.      ── */}
-            <ListingProducts listingSlug={listing.slug} products={products} />
+            {/* Gated by the category taxonomy: reservation-only categories (a lawyer, a  */}
+            {/* salon) never get an order cart, even if stray Product rows exist for them. */}
+            {getListingHasCatalog(listing) && (
+              <div id="primary">
+                <div className="mb-3 flex items-end justify-between gap-3">
+                  <div>
+                    <p className="eyebrow mb-1">{isHotel ? "Qëndrimi yt" : isShopping ? "Koleksioni" : "Menuja"}</p>
+                    <h2 className="text-xl font-bold" style={{ color: "var(--text-primary)" }}>{isHotel ? "Dhoma & Çmime" : isShopping ? "Produktet" : "Menuja e biznesit"}</h2>
+                  </div>
+                  {isHotel && <span className="text-xs" style={{ color: "var(--text-tertiary)" }}>Rezervo direkt</span>}
+                </div>
+                <ListingProducts listingSlug={listing.slug} products={products} isShopping={categoryLabel === "Shopping"} />
+              </div>
+            )}
 
             {/* ── About this service ── */}
-            <div style={{ borderTop: "1px solid var(--border-soft)", paddingTop: "1.5rem" }}>
+            <div id="legacy-description" className="hidden" style={{ borderTop: "1px solid var(--border-soft)", paddingTop: "1.5rem" }}>
               <h2 className="text-lg font-semibold mb-3" style={{ color: "var(--text-primary)" }}>
                 About this service
               </h2>
@@ -165,7 +239,7 @@ export default async function ListingDetailPage({ params }: { params: { slug: st
             {(listing.businessHours || listing.priceFrom || listing.price ||
               listing.website || listing.checkIn || listing.menuLink ||
               listing.eventDate || listing.bookingLink || listing.transportType) && (
-              <div style={{ borderTop: "1px solid var(--border-soft)", paddingTop: "1.5rem" }}>
+              <div id="business-details" style={{ borderTop: "1px solid var(--border-soft)", paddingTop: "1.5rem" }}>
                 <h2 className="text-lg font-semibold mb-4" style={{ color: "var(--text-primary)" }}>
                   Details
                 </h2>
@@ -311,7 +385,7 @@ export default async function ListingDetailPage({ params }: { params: { slug: st
 
             {/* ── What's Included (Amenities / Tags) ── */}
             {tags.length > 0 && (
-              <div style={{ borderTop: "1px solid var(--border-soft)", paddingTop: "1.5rem" }}>
+              <div id="amenities" style={{ borderTop: "1px solid var(--border-soft)", paddingTop: "1.5rem" }}>
                 <h2 className="text-lg font-semibold mb-4" style={{ color: "var(--text-primary)" }}>
                   What&apos;s included
                 </h2>
@@ -389,11 +463,29 @@ export default async function ListingDetailPage({ params }: { params: { slug: st
           </div>
 
           {/* ════ RIGHT SIDEBAR ════ */}
-          <aside className="lg:sticky lg:top-24 h-fit space-y-4">
+          <aside id="contact" className="lg:sticky lg:top-24 h-fit space-y-4">
+
+            {isHotel && (
+              <div className="hidden overflow-hidden rounded-2xl border bg-white shadow-sm lg:block" style={{ borderColor: "var(--border-soft)" }}>
+                <div className="border-b px-5 py-4" style={{ borderColor: "var(--border-soft)" }}>
+                  <h3 className="text-base font-bold" style={{ color: "var(--text-primary)" }}>Bëj rezervimin tënd</h3>
+                  <p className="mt-0.5 text-xs" style={{ color: "var(--text-tertiary)" }}>Zgjidh një dhomë dhe dërgo kërkesën</p>
+                </div>
+                <div className="space-y-3 p-5">
+                  <div className="grid grid-cols-2 gap-2">
+                    <label className="text-[11px] font-semibold" style={{ color: "var(--text-secondary)" }}>Check-in<input type="date" className="mt-1 w-full rounded-lg border px-2 py-2 text-xs" style={{ borderColor: "var(--border-medium)" }} /></label>
+                    <label className="text-[11px] font-semibold" style={{ color: "var(--text-secondary)" }}>Check-out<input type="date" className="mt-1 w-full rounded-lg border px-2 py-2 text-xs" style={{ borderColor: "var(--border-medium)" }} /></label>
+                  </div>
+                  <label className="block text-[11px] font-semibold" style={{ color: "var(--text-secondary)" }}>Të ftuar<select className="mt-1 w-full rounded-lg border px-2 py-2 text-xs" style={{ borderColor: "var(--border-medium)" }} defaultValue="2"><option value="1">1 i rritur</option><option value="2">2 të rritur</option><option value="3">3 të rritur</option><option value="4">4 të rritur</option></select></label>
+                  <a href="#rooms" className="flex w-full items-center justify-center rounded-lg py-2.5 text-xs font-bold text-white" style={{ background: "var(--brand-accent)" }}>Kontrollo disponueshmërinë</a>
+                  <p className="text-center text-[10px]" style={{ color: "var(--text-tertiary)" }}>Konfirmimi bëhet nga biznesi përmes WhatsApp</p>
+                </div>
+              </div>
+            )}
 
             {/* Contact / CTA Card — order straight from the business, no middleman */}
             <div
-              className="hidden lg:block overflow-hidden"
+              className="hidden"
               style={{
                 background: "var(--surface-white)",
                 border: "1px solid var(--border-soft)",
@@ -526,6 +618,8 @@ export default async function ListingDetailPage({ params }: { params: { slug: st
         listingId={listing._id.toString()}
         businessName={listing.title}
         phoneDigits={phoneDigits}
+        phone={phone}
+        isReservation={hasReservation}
         listing={orderHistoryListing}
       />
     </main>

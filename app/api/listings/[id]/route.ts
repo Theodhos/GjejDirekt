@@ -5,6 +5,7 @@ import { getAuthUser } from "@/lib/auth";
 import { sendMail } from "@/lib/mailer";
 import Listing from "@/models/Listing";
 import { isObjectId } from "@/lib/utils";
+import type { ListingAction } from "@/lib/constants";
 
 function parseList(value: unknown) {
   if (Array.isArray(value)) {
@@ -28,6 +29,14 @@ function parseMaybeNumber(value: unknown) {
 function parseMaybeString(value: unknown) {
   if (typeof value !== "string") return "";
   return value.trim();
+}
+
+/** Keeps only valid action values, deduped — an empty result just falls back to the category default. */
+function parseActions(value: unknown): ListingAction[] {
+  const list = Array.isArray(value) ? value : [];
+  return Array.from(
+    new Set(list.filter((item): item is ListingAction => item === "porosi" || item === "rezervim"))
+  );
 }
 
 function parseCoordinates(body: Record<string, unknown>) {
@@ -84,6 +93,7 @@ export async function PATCH(request: Request, { params }: { params: { id: string
     listing.description = parseMaybeString(body.description) || listing.description;
     listing.category = parseMaybeString(body.category) || listing.category;
     listing.subcategory = parseMaybeString(body.subcategory) || listing.subcategory;
+    listing.actions = Array.isArray(body.actions) ? parseActions(body.actions) : listing.actions;
     listing.location = parseMaybeString(body.location) || listing.location;
     listing.country = parseMaybeString(body.country) || "";
     listing.address = parseMaybeString(body.address) || "";

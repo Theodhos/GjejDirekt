@@ -28,6 +28,13 @@ export type CategoryDefinition = {
   color: string;
   /** Default actions for every listing in this category. */
   actions: ListingAction[];
+  /**
+   * Whether listings here get the products/menu catalog and the cart → WhatsApp
+   * order flow (ListingProducts + ListingCart). Defaults to actions including
+   * "porosi" — Hotele is the one rezervim-only category that overrides this to
+   * true, since its "products" are room types booked through the same cart UI.
+   */
+  catalog?: boolean;
   tags?: string[];
   subcategories: CategorySubcategory[];
 };
@@ -82,6 +89,9 @@ export const categories: CategoryDefinition[] = [
     image: "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1200&q=80",
     color: "var(--cat-hotele)",
     actions: ["rezervim"],
+    // Rooms are still "products" added through the same catalog + cart flow as a
+    // shop, just requested with dates instead of a straight order.
+    catalog: true,
     tags: ["Wi-Fi", "Ajër i kondicionuar", "Parkim", "Mëngjes i përfshirë", "Pishinë", "Pamje nga deti", "Kuzhinë", "Lejohen kafshët"],
     subcategories: [
       { value: "hotele", label: "Hotele", aliases: ["hotel", "hotels", "motel", "motels", "hostel", "hostels", "resort", "resorts"] },
@@ -187,7 +197,8 @@ export const categories: CategoryDefinition[] = [
       { value: "servis", label: "Servis", aliases: ["servis-auto", "car service", "mechanic", "mekanik", "elektroauto", "auto electric", "ac service", "karro-atrezzo", "towing", "tow truck"] },
       { value: "lavazh", label: "Lavazh", aliases: ["car wash", "larje makinash"] },
       { value: "gomisteri", label: "Gomisteri", aliases: ["gomiste", "tires", "goma", "tyre"] },
-      { value: "auto-salon", label: "Auto Salon", aliases: ["shitje-makinash", "car dealer", "auto sales", "shitje auto", "pjese-kembimi", "spare parts", "auto parts"] },
+      // Also sells spare parts as physical stock, unlike the rest of the category (booked services).
+      { value: "auto-salon", label: "Auto Salon", aliases: ["shitje-makinash", "car dealer", "auto sales", "shitje auto", "pjese-kembimi", "spare parts", "auto parts"], actions: ["rezervim", "porosi"] },
       { value: "te-tjera", label: "Tjetër", aliases: ["others", "other", "taksi", "taxi", "shuttle", "aeroport", "airport transfer", "minibus", "van", "furgon", "transport-mallrash", "cargo", "logistics", "varka", "ferry", "autoshkolle", "driving school"] }
     ]
   },
@@ -260,7 +271,8 @@ export const categories: CategoryDefinition[] = [
       { value: "videograf", label: "Videograf", aliases: ["videographer", "video"] },
       { value: "dj", label: "DJ", aliases: ["muzike", "music", "muzikë live", "band"] },
       { value: "dekor", label: "Dekor", aliases: ["decor", "dekorim", "decoration", "lule dasme"] },
-      { value: "catering", label: "Catering", aliases: ["katering"] },
+      // Sells food for the event, same as Catering under Ushqim & Pije, so it keeps porosi too.
+      { value: "catering", label: "Catering", aliases: ["katering"], actions: ["porosi", "rezervim"] },
       { value: "te-tjera", label: "Tjetër", aliases: ["others", "other", "organizim-eventesh", "event organisation", "event planning", "koncerte", "concert", "concerts", "festivale", "festival", "festivals", "feste-tradicionale", "panaire", "fair", "ekspozite", "exhibition", "event-kulturor", "event-sportiv", "event-gastronomik"] }
     ]
   },
@@ -454,6 +466,22 @@ export function getCategoryActions(categoryValue?: string): ListingAction[] {
 /** Subcategory actions when it overrides its parent, otherwise the category's. */
 export function getSubcategoryActions(categoryValue?: string, subcategoryValue?: string): ListingAction[] {
   return findSubcategory(categoryValue, subcategoryValue)?.actions || getCategoryActions(categoryValue);
+}
+
+/**
+ * Whether this specific listing gets the products/menu catalog and cart →
+ * WhatsApp order flow. A category explicitly marked `catalog: true` (Hotele —
+ * rooms are still "products") always keeps it; every other category follows the
+ * listing's resolved actions — the owner's manual toggle first, category/
+ * subcategory default otherwise, same precedence as getListingActions.
+ */
+export function getListingHasCatalog(listing?: {
+  category?: string;
+  subcategory?: string;
+  actions?: string[] | null;
+}): boolean {
+  if (getCategoryByValue(listing?.category)?.catalog) return true;
+  return getListingActions(listing).includes("porosi");
 }
 
 /**

@@ -40,7 +40,7 @@ import Input from "@/components/ui/Input";
 import Textarea from "@/components/ui/Textarea";
 import Select from "@/components/ui/Select";
 import ImageCropper from "@/components/ui/ImageCropper";
-import { categories, getCategoryActions, getCategoryFormValue, getSubcategoryFormValue } from "@/lib/constants";
+import { categories, getCategoryActions, getCategoryFormValue, getSubcategoryActions, getSubcategoryFormValue } from "@/lib/constants";
 import { PRICE_CURRENCY, startingPrice } from "@/lib/pricing";
 import { compressImageFile, fileFromDataUrl, readFileAsDataUrl } from "@/lib/image-tools";
 import { clearDraft, readDraft, writeDraft } from "@/lib/listing-draft";
@@ -54,6 +54,8 @@ export type WizardListing = {
   description?: string;
   category?: string;
   subcategory?: string;
+  /** Manual override of which WhatsApp flows this listing offers; empty/absent falls back to the category default. */
+  actions?: string[];
   location?: string;
   country?: string;
   address?: string;
@@ -274,6 +276,13 @@ const COPY = {
     subcategoryType: "Lloji",
     subcategoryCategory: "Kategoria",
     selectSubcategory: "Zgjidhni një opsion",
+    actionsTitle: "Si e marrin klientët shërbimin",
+    actionsHint: "Të para-zgjedhura sipas kategorisë — ndryshojini nëse biznesi juaj punon ndryshe.",
+    enableOrders: "Mundëso Porosi Online (Shportë)",
+    enableOrdersHint: "Klientët shtojnë artikuj dhe e dërgojnë porosinë në WhatsApp.",
+    enableReservations: "Mundëso Rezervim me Datë/Orë",
+    enableReservationsHint: "Klientët zgjedhin datë/orë dhe kërkojnë rezervim në WhatsApp.",
+    actionsRequired: "Zgjidhni të paktën një mënyrë si klientët ju kontaktojnë.",
     title: "Emri i listimit",
     titleActivity: "Emri i aktivitetit / turit",
     titlePlaceholder: "p.sh. Vila Panorama — Dhërmi",
@@ -404,6 +413,13 @@ const COPY = {
     subcategoryType: "Type",
     subcategoryCategory: "Category",
     selectSubcategory: "Select an option",
+    actionsTitle: "How customers get this service",
+    actionsHint: "Pre-selected from the category — change it if your business works differently.",
+    enableOrders: "Enable Online Orders (Cart)",
+    enableOrdersHint: "Customers add items and send the order on WhatsApp.",
+    enableReservations: "Enable Date/Time Reservations",
+    enableReservationsHint: "Customers pick a date/time and request a booking on WhatsApp.",
+    actionsRequired: "Pick at least one way for customers to reach you.",
     title: "Listing name",
     titleActivity: "Activity / tour name",
     titlePlaceholder: "e.g. Villa Panorama — Dhermi",
@@ -642,6 +658,23 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
   const [selectedSubcategory, setSelectedSubcategory] = useState(
     listing ? getSubcategoryFormValue(listing.category, listing.subcategory) : ""
   );
+
+  // Order/reservation toggles — pre-filled from the category+subcategory default,
+  // but the owner can flip either one by hand (a hair salon that also sells
+  // products, an auto shop that only takes appointments).
+  const [allowOrders, setAllowOrders] = useState(() =>
+    listing?.actions?.length
+      ? listing.actions.includes("porosi")
+      : getSubcategoryActions(selectedCategory, selectedSubcategory).includes("porosi")
+  );
+  const [allowReservations, setAllowReservations] = useState(() =>
+    listing?.actions?.length
+      ? listing.actions.includes("rezervim")
+      : getSubcategoryActions(selectedCategory, selectedSubcategory).includes("rezervim")
+  );
+  // Once the owner touches a toggle by hand, category/subcategory changes stop overwriting it.
+  const [actionsTouched, setActionsTouched] = useState(Boolean(listing?.actions?.length));
+
   const [activeTags, setActiveTags] = useState<string[]>(listing?.tags || []);
   const [cuisines, setCuisines] = useState<string[]>(listing?.cuisines || []);
   const [spokenLanguages, setSpokenLanguages] = useState<string[]>(listing?.languages || []);
@@ -898,6 +931,20 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
     }
   }, [selectedCategory, selectedSubcategory, tagsTouched]);
 
+  // Re-derive the order/reservation toggles from the taxonomy default whenever the
+  // category or subcategory changes, unless the owner has already flipped one by hand.
+  useEffect(() => {
+    if (actionsTouched) return;
+    if (!selectedCategory) {
+      setAllowOrders(false);
+      setAllowReservations(false);
+      return;
+    }
+    const defaults = getSubcategoryActions(selectedCategory, selectedSubcategory);
+    setAllowOrders(defaults.includes("porosi"));
+    setAllowReservations(defaults.includes("rezervim"));
+  }, [selectedCategory, selectedSubcategory, actionsTouched]);
+
   // Events and tourism entries are often published by people without a public phone number.
   const phoneRequired = selectedCategory !== "evente" && selectedCategory !== "turizem";
   const showCheckTimes = selectedCategory === "hotele";
@@ -990,6 +1037,7 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
     if (target === 1) {
       if (!selectedCategory) next.category = c.required;
       if (!selectedSubcategory) next.subcategory = c.required;
+      if (!allowOrders && !allowReservations) next.actions = c.actionsRequired;
       if (!form.title.trim()) next.title = c.required;
       if (!form.location.trim()) next.location = c.required;
       if (form.description.trim().length < MIN_DESCRIPTION) next.description = c.descriptionShort;
@@ -1093,6 +1141,7 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
         description: form.description.trim(),
         category: selectedCategory,
         subcategory: selectedSubcategory,
+        actions: [...(allowOrders ? ["porosi"] : []), ...(allowReservations ? ["rezervim"] : [])],
         location: form.location.trim(),
         village: form.village,
         country: listing?.country || "Albania",
@@ -1320,6 +1369,7 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
                       setSelectedCategory(event.target.value);
                       setSelectedSubcategory("");
                       setTagsTouched(false);
+                      setActionsTouched(false);
                       setErrors((prev) => ({ ...prev, category: "" }));
                     }}
                   />
@@ -1345,6 +1395,74 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
                 />
                 {errors.subcategory && <p className="mt-1 text-xs text-rose-600">{errors.subcategory}</p>}
               </div>
+
+              {selectedCategory && (
+                <div
+                  className="space-y-3 rounded-2xl border p-4"
+                  style={{ borderColor: "var(--border-soft)", background: "var(--surface-cream)" }}
+                >
+                  <div>
+                    <p className="text-sm font-bold" style={{ color: "var(--text-primary)" }}>
+                      {c.actionsTitle}
+                    </p>
+                    <p className="mt-0.5 text-xs" style={{ color: "var(--text-tertiary)" }}>
+                      {c.actionsHint}
+                    </p>
+                  </div>
+
+                  <label
+                    className="flex cursor-pointer items-start gap-3 rounded-xl border p-3"
+                    style={{ borderColor: "var(--border-soft)", background: "var(--surface-white)" }}
+                  >
+                    <input
+                      type="checkbox"
+                      className="mt-0.5 h-4 w-4 shrink-0 rounded"
+                      style={{ accentColor: "var(--brand-accent)" }}
+                      checked={allowOrders}
+                      onChange={(event) => {
+                        setActionsTouched(true);
+                        setAllowOrders(event.target.checked);
+                        setErrors((prev) => ({ ...prev, actions: "" }));
+                      }}
+                    />
+                    <span>
+                      <span className="block text-sm font-semibold" style={{ color: "var(--text-primary)" }}>
+                        🛒 {c.enableOrders}
+                      </span>
+                      <span className="block text-xs" style={{ color: "var(--text-tertiary)" }}>
+                        {c.enableOrdersHint}
+                      </span>
+                    </span>
+                  </label>
+
+                  <label
+                    className="flex cursor-pointer items-start gap-3 rounded-xl border p-3"
+                    style={{ borderColor: "var(--border-soft)", background: "var(--surface-white)" }}
+                  >
+                    <input
+                      type="checkbox"
+                      className="mt-0.5 h-4 w-4 shrink-0 rounded"
+                      style={{ accentColor: "var(--brand-accent)" }}
+                      checked={allowReservations}
+                      onChange={(event) => {
+                        setActionsTouched(true);
+                        setAllowReservations(event.target.checked);
+                        setErrors((prev) => ({ ...prev, actions: "" }));
+                      }}
+                    />
+                    <span>
+                      <span className="block text-sm font-semibold" style={{ color: "var(--text-primary)" }}>
+                        📅 {c.enableReservations}
+                      </span>
+                      <span className="block text-xs" style={{ color: "var(--text-tertiary)" }}>
+                        {c.enableReservationsHint}
+                      </span>
+                    </span>
+                  </label>
+
+                  {errors.actions && <p className="text-xs text-rose-600">{errors.actions}</p>}
+                </div>
+              )}
 
               <div>
                 <Input
