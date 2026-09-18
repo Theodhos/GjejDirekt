@@ -34,7 +34,7 @@ export default function ReviewPanel({ listingId }: { listingId: string }) {
   }
 
   return (
-    <div id="reviews" className="space-y-6">
+    <div className="space-y-6">
       <div className="space-y-4">
         <h3 className="text-xl font-bold text-slate-950">Reviews</h3>
         {reviews.length ? (

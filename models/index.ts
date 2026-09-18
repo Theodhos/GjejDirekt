@@ -5,3 +5,4 @@ export { default as Review } from "./Review";
 export { default as BlogPost } from "./BlogPost";
 export { default as Activity } from "./Activity";
 export { default as Payment } from "./Payment";
+export { default as Reservation } from "./Reservation";

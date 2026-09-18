@@ -9,6 +9,8 @@ export type ActivityType =
   | "listing_rejected"
   | "listing_deleted"
   | "review_created"
+  | "reservation_created"
+  | "reservation_status_updated"
   | "blog_created"
   | "blog_updated";
 
@@ -38,6 +40,8 @@ const ActivitySchema = new Schema<IActivity>(
         "listing_rejected",
         "listing_deleted",
         "review_created",
+        "reservation_created",
+        "reservation_status_updated",
         "blog_created",
         "blog_updated"
       ],

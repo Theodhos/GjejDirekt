@@ -47,6 +47,8 @@ export default function ListingCart({
   const [checkOut, setCheckOut] = useState("");
   const [persons, setPersons] = useState(2);
   const [specialRequest, setSpecialRequest] = useState("");
+  const [customerName, setCustomerName] = useState("");
+  const [customerPhone, setCustomerPhone] = useState("");
 
   // Order note (non-hotel flow) — revealed by the "Add order note" button
   const [noteOpen, setNoteOpen] = useState(false);
@@ -84,6 +86,29 @@ export default function ListingCart({
       fetch(`/api/listings/${listingId}/whatsapp-click`, { method: "POST", keepalive: true }).catch(() => {});
     }
     if (listing) recordOrderContact(listing);
+
+    // Booking (a hotel room, a table) is also a real reservation — persist it
+    // server-side so the business can see and confirm it from the dashboard,
+    // not only from the WhatsApp message this same click sends.
+    if (isBooking && listingId && checkIn && customerName.trim() && customerPhone.trim()) {
+      fetch("/api/reservations", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          listingId,
+          customerName: customerName.trim(),
+          customerPhone: customerPhone.trim(),
+          date: checkIn,
+          endDate: checkOut || undefined,
+          partySize: persons,
+          notes: specialRequest || undefined,
+          productId: items[0]?.productId,
+          itemName: items.map((item) => item.name).join(", ")
+        }),
+        keepalive: true
+      }).catch(() => {});
+    }
+
     clearCart(listingSlug);
     setOrderNote("");
     setNoteOpen(false);
@@ -223,6 +248,31 @@ export default function ListingCart({
 
               {isBooking && (
                 <div className="space-y-5 pt-2">
+                  <div className="grid grid-cols-1 gap-4">
+                    <div>
+                      <label className="flex items-center gap-2 text-[13px] font-bold mb-2 text-neutral-700">
+                        {en ? "Your name" : "Emri juaj"}
+                      </label>
+                      <input
+                        value={customerName}
+                        onChange={(e) => setCustomerName(e.target.value)}
+                        className="w-full border border-neutral-200 rounded-xl px-4 py-3 text-[14px] outline-none focus:border-red-500"
+                        placeholder={en ? "Full name" : "Emri e mbiemri"}
+                      />
+                    </div>
+                    <div>
+                      <label className="flex items-center gap-2 text-[13px] font-bold mb-2 text-neutral-700">
+                        {en ? "Phone number" : "Numri i telefonit"}
+                      </label>
+                      <input
+                        value={customerPhone}
+                        onChange={(e) => setCustomerPhone(e.target.value)}
+                        className="w-full border border-neutral-200 rounded-xl px-4 py-3 text-[14px] outline-none focus:border-red-500"
+                        placeholder="+355 6X XXX XXXX"
+                      />
+                    </div>
+                  </div>
+
                   <div className="grid grid-cols-1 gap-4">
                     <div>
                       <label className="flex items-center gap-2 text-[13px] font-bold mb-2 text-neutral-700">

@@ -5,7 +5,7 @@ import { BadgeCheck, MapPin, Heart } from "lucide-react";
 import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import SafeImage from "@/components/ui/SafeImage";
-import { getCategoryLabel } from "@/lib/constants";
+import { getCategoryLabel, getListingActions } from "@/lib/constants";
 import { useLanguage } from "@/context/LanguageContext";
 
 /** First usable photo on a listing, whichever field it happens to live in. */
@@ -27,6 +27,7 @@ export function listingCover(listing: any): string | undefined {
 export default function BusinessCard({ listing, className = "" }: { listing: any; className?: string }) {
   const { language } = useLanguage();
   const categoryLabel = getCategoryLabel(listing.category);
+  const actions = getListingActions(listing);
   const [favorited, setFavorited] = useState(false);
 
   useEffect(() => {
@@ -123,6 +124,14 @@ export default function BusinessCard({ listing, className = "" }: { listing: any
         <p className="line-clamp-1 text-[11px]" style={{ color: "var(--text-tertiary)" }}>
           {categoryLabel}
         </p>
+        <div className="mt-1 flex items-center justify-between gap-2">
+          <span className="flex items-center gap-1 text-[11px] font-semibold" style={{ color: "var(--text-secondary)" }}>
+            <span style={{ color: "#F5A524" }}>★</span>{Number(listing.ratingAverage || 0).toFixed(1)} <span className="font-normal" style={{ color: "var(--text-tertiary)" }}>({listing.reviewCount || 0})</span>
+          </span>
+          <span className="rounded-full px-2 py-0.5 text-[9px] font-bold" style={{ background: actions.includes("rezervim") ? "#FFF7ED" : "var(--brand-light)", color: actions.includes("rezervim") ? "#C2410C" : "var(--brand-accent)" }}>
+            {actions.includes("rezervim") ? "Rezervim" : "Porosi"}
+          </span>
+        </div>
         <p
           className="mt-auto flex items-center gap-0.5 pt-1 text-[10.5px]"
           style={{ color: "var(--text-tertiary)" }}

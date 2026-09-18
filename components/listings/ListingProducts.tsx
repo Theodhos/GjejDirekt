@@ -167,7 +167,7 @@ export default function ListingProducts({
                   <div
                     key={product._id}
                     className={isShopping ? "flex min-w-0 flex-col overflow-hidden rounded-xl" : "flex min-h-[96px] items-stretch gap-3 overflow-hidden rounded-xl"}
-                    style={{ background: "var(--surface-white)", border: "1px solid var(--border-soft)" }}
+                    style={{ background: "var(--surface-white)", boxShadow: "var(--shadow-card)" }}
                   >
                     <div className={isShopping ? "relative aspect-[4/3] w-full shrink-0" : "relative my-2 ml-2 h-[80px] w-[86px] shrink-0 overflow-hidden rounded-lg"} style={{ background: "var(--surface-cream)" }}>
                       {product.image ? (

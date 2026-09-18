@@ -92,24 +92,19 @@ export default function ListingMobileHeader({ listing }: { listing: any }) {
     fetch(`/api/listings/${listing._id}/${kind}`, { method: "POST", keepalive: true }).catch(() => {});
   };
 
-  return (
-    <div className="bg-white pb-4 pt-4 px-4 sm:px-6 w-full max-w-[1200px] mx-auto">
-      {/* Top Nav */}
-      <div className="flex items-center justify-between mb-6">
-        <button onClick={() => router.back()} className="p-2 -ml-2 rounded-full hover:bg-neutral-100 transition-colors">
-          <ArrowLeft className="w-6 h-6" style={{ color: "var(--text-primary)" }} />
-        </button>
-        <div className="flex items-center gap-2">
-          <button onClick={handleShare} className="p-2 rounded-full hover:bg-neutral-100 transition-colors">
-            <Share className="w-5 h-5" style={{ color: "var(--text-primary)" }} />
-          </button>
-          <button onClick={toggleFavorite} className="p-2 -mr-2 rounded-full hover:bg-neutral-100 transition-colors">
-            <Heart className={`w-5 h-5 transition-colors ${favorited ? "fill-[var(--brand-accent)] text-[var(--brand-accent)]" : "text-[var(--text-primary)]"}`} />
-          </button>
-        </div>
-      </div>
+  // history.length is 1 when the listing was opened directly (shared link, new tab,
+  // refresh) — router.back() would then leave the app instead of going anywhere useful.
+  const handleBack = () => {
+    if (window.history.length > 1) {
+      router.back();
+    } else {
+      router.push("/");
+    }
+  };
 
-      <div id="gallery" className="relative -mx-4 mb-4 h-[180px] overflow-hidden sm:-mx-6 sm:h-[250px]">
+  return (
+    <div className="bg-white pb-4 w-full">
+      <div className="relative mb-4 h-[180px] overflow-hidden sm:h-[250px] w-full">
         <SafeImage
           src={listing.bannerImage || listing.images?.[1] || listing.photos?.[1] || listing.images?.[0]}
           alt={`${listing.title} cover`}
@@ -118,10 +113,25 @@ export default function ListingMobileHeader({ listing }: { listing: any }) {
           sizes="100vw"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/35 to-transparent" />
+
+        {/* Top Nav — floats over the photo instead of its own white bar */}
+        <div className="absolute inset-x-0 top-0 z-10 flex items-center justify-between px-4 pt-4 sm:px-6">
+          <button onClick={handleBack} className="p-2 rounded-full bg-white/90 backdrop-blur-sm shadow-sm hover:bg-white transition-colors">
+            <ArrowLeft className="w-6 h-6" style={{ color: "var(--text-primary)" }} />
+          </button>
+          <div className="flex items-center gap-2">
+            <button onClick={handleShare} className="p-2 rounded-full bg-white/90 backdrop-blur-sm shadow-sm hover:bg-white transition-colors">
+              <Share className="w-5 h-5" style={{ color: "var(--text-primary)" }} />
+            </button>
+            <button onClick={toggleFavorite} className="p-2 rounded-full bg-white/90 backdrop-blur-sm shadow-sm hover:bg-white transition-colors">
+              <Heart className={`w-5 h-5 transition-colors ${favorited ? "fill-[var(--brand-accent)] text-[var(--brand-accent)]" : "text-[var(--text-primary)]"}`} />
+            </button>
+          </div>
+        </div>
       </div>
 
       {/* Business Info */}
-      <div className="relative z-10 -mt-12 flex gap-4 items-center rounded-t-3xl bg-white px-2 pt-3 mb-6">
+      <div className="relative z-10 -mt-12 flex gap-4 items-center rounded-t-3xl bg-white px-6 pt-3 mb-6 max-w-[1200px] mx-auto">
         {/* Circular Logo */}
         <div className="relative w-24 h-24 sm:w-28 sm:h-28 rounded-full overflow-hidden shrink-0 shadow-md border-4 border-white">
           <SafeImage
@@ -159,7 +169,7 @@ export default function ListingMobileHeader({ listing }: { listing: any }) {
       </div>
 
       {/* Action Buttons Row */}
-      <div className="flex gap-2">
+      <div className="flex gap-2 px-6 max-w-[1200px] mx-auto">
         {whatsappHref && (
           <a
             href={whatsappHref}

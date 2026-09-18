@@ -29,6 +29,7 @@ export default function ListingsBrowser({ listings, cities }: ListingsBrowserPro
   const initialQuery = params.get("q") || "";
   const [query, setQuery] = useState(initialQuery);
   const [showFilters, setShowFilters] = useState(false);
+  const [sort, setSort] = useState("recommended");
 
   const activeCategory = params.get("category") || "";
   const activeSubcategory = params.get("subcategory") || "";
@@ -46,7 +47,7 @@ export default function ListingsBrowser({ listings, cities }: ListingsBrowserPro
     const normalizedQuery = query.trim().toLowerCase();
     const category = getCategoryByValue(activeCategory);
 
-    return listings.filter((listing) => {
+    const filtered = listings.filter((listing) => {
       if (category) {
         const value = String(listing.category || "").toLowerCase();
         if (value !== category.value && !category.aliases.includes(value)) return false;
@@ -78,11 +79,14 @@ export default function ListingsBrowser({ listings, cities }: ListingsBrowserPro
 
       return true;
     });
-  }, [listings, query, activeCategory, activeSubcategory, activeCity]);
+    return [...filtered].sort((a, b) => {
+      if (sort === "name") return String(a.title || "").localeCompare(String(b.title || ""));
+      if (sort === "rating") return Number(b.ratingAverage || 0) - Number(a.ratingAverage || 0);
+      return Number(Boolean(b.featured)) - Number(Boolean(a.featured));
+    });
+  }, [listings, query, activeCategory, activeSubcategory, activeCity, sort]);
 
   const hasFilters = Boolean(activeCategory || activeSubcategory || activeCity || query);
-  const foodCategory = getCategoryByValue(activeCategory)?.value === "ushqim-pije";
-  const hotelCategory = getCategoryByValue(activeCategory)?.value === "hotele";
   const directoryCategory = getCategoryByValue(activeCategory);
   const directorySubcategories = directoryCategory?.subcategories || [];
 
@@ -140,7 +144,7 @@ export default function ListingsBrowser({ listings, cities }: ListingsBrowserPro
 
       {directoryCategory && (
         <section className="overflow-hidden rounded-2xl border" style={{ borderColor: "var(--border-soft)", background: "var(--surface-white)" }}>
-          <div className="relative h-28 overflow-hidden sm:h-36">
+          <div className="relative h-40 overflow-hidden sm:h-52">
             <Image src={directoryCategory.image} alt={directoryCategory.label} fill sizes="100vw" className="object-cover" />
             <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/35 to-transparent" />
             <div className="absolute inset-0 flex flex-col justify-center px-5 sm:px-7">
@@ -191,62 +195,72 @@ export default function ListingsBrowser({ listings, cities }: ListingsBrowserPro
             );
           })}
         </div>
-
-        {cities.length > 0 && (
-          <div className="gd-rail -mx-4 px-4 sm:-mx-6 sm:px-6 lg:mx-0 lg:px-0">
-            <button
-              type="button"
-              onClick={() => setParam("city", "")}
-              className="gd-quick-pill"
-              style={
-                !activeCity
-                  ? { background: "var(--text-primary)", color: "#fff", borderColor: "var(--text-primary)" }
-                  : undefined
-              }
-            >
-              {language === "en" ? "All cities" : "Të gjitha qytetet"}
-            </button>
-            {cities.map((city) => {
-              const active = activeCity.toLowerCase() === city.value.toLowerCase();
-              return (
-                <button
-                  key={city.value}
-                  type="button"
-                  onClick={() => setParam("city", active ? "" : city.value)}
-                  className="gd-quick-pill"
-                  style={active ? { background: "var(--text-primary)", color: "#fff", borderColor: "var(--text-primary)" } : undefined}
-                >
-                  {city.label}
-                </button>
-              );
-            })}
-          </div>
-        )}
       </div>
 
-      {/* Result count */}
-      <p className="text-[13px]" style={{ color: "var(--text-secondary)" }}>
-        <strong style={{ color: "var(--text-primary)" }}>{results.length}</strong>{" "}
-        {language === "en"
-          ? results.length === 1
-            ? "business"
-            : "businesses"
-          : results.length === 1
-          ? "biznes"
-          : "biznese"}
-        {hasFilters && (
+      {cities.length > 0 && (
+        <div className="gd-rail -mx-4 px-4 sm:-mx-6 sm:px-6 lg:mx-0 lg:px-0">
           <button
             type="button"
-            onClick={() => {
-              setQuery("");
-              router.push("/listings", { scroll: false });
-            }}
-            className="gd-section-link ml-2"
+            onClick={() => setParam("city", "")}
+            className="gd-quick-pill"
+            style={
+              !activeCity
+                ? { background: "var(--text-primary)", color: "#fff", borderColor: "var(--text-primary)" }
+                : undefined
+            }
           >
-            {language === "en" ? "Reset" : "Pastro filtrat"}
+            {language === "en" ? "All cities" : "Të gjitha qytetet"}
           </button>
-        )}
-      </p>
+          {cities.map((city) => {
+            const active = activeCity.toLowerCase() === city.value.toLowerCase();
+            return (
+              <button
+                key={city.value}
+                type="button"
+                onClick={() => setParam("city", active ? "" : city.value)}
+                className="gd-quick-pill"
+                style={active ? { background: "var(--text-primary)", color: "#fff", borderColor: "var(--text-primary)" } : undefined}
+              >
+                {city.label}
+              </button>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Result count + sort */}
+      <div className="flex items-center justify-between gap-3 rounded-xl border px-3.5 py-3 sm:px-4" style={{ borderColor: "var(--border-soft)", background: "var(--surface-white)" }}>
+        <p className="text-[13px]" style={{ color: "var(--text-secondary)" }}>
+          <strong style={{ color: "var(--text-primary)" }}>{results.length}</strong>{" "}
+          {language === "en" ? (results.length === 1 ? "business" : "businesses") : results.length === 1 ? "biznes" : "biznese"}
+        </p>
+        <div className="flex items-center gap-3">
+          {hasFilters && (
+            <button
+              type="button"
+              onClick={() => {
+                setQuery("");
+                router.push("/listings", { scroll: false });
+              }}
+              className="text-xs font-semibold"
+              style={{ color: "var(--brand-accent)" }}
+            >
+              {language === "en" ? "Reset" : "Pastro"}
+            </button>
+          )}
+          <select
+            value={sort}
+            onChange={(event) => setSort(event.target.value)}
+            className="rounded-lg border bg-transparent px-2 py-1.5 text-xs font-semibold outline-none"
+            style={{ borderColor: "var(--border-medium)", color: "var(--text-primary)" }}
+            aria-label={language === "en" ? "Sort results" : "Rendit rezultatet"}
+          >
+            <option value="recommended">{language === "en" ? "Recommended" : "Rekomanduar"}</option>
+            <option value="rating">{language === "en" ? "Top rated" : "Vlerësimi më i lartë"}</option>
+            <option value="name">{language === "en" ? "Name A–Z" : "Emri A–Z"}</option>
+          </select>
+        </div>
+      </div>
 
       {results.length ? (
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
