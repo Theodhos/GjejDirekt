@@ -117,7 +117,7 @@ export default function Header() {
         </button>
 
         {/* Logo — centered in its own column on mobile, left-anchored again on desktop */}
-        <Link href="/" onClick={() => setMobileOpen(false)} className="shrink-0 justify-self-center lg:justify-self-auto">
+        <Link href="/" onClick={() => setMobileOpen(false)} className="flex shrink-0 items-center justify-self-center lg:justify-self-auto">
           <Logo className="text-[19px] sm:text-[21px]" />
         </Link>
 

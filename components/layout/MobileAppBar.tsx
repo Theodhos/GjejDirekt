@@ -47,13 +47,13 @@ export default function MobileAppBar(
           >
             <ArrowLeft className="h-[22px] w-[22px]" style={{ color: "var(--text-primary)" }} />
           </button>
-          <Link href="/" aria-label="GjejDirekt">
+          <Link href="/" aria-label="GjejDirekt" className="flex items-center">
             <Logo className="text-[20px]" />
           </Link>
         </div>
       ) : (
         <>
-          <Link href="/" aria-label="GjejDirekt">
+          <Link href="/" aria-label="GjejDirekt" className="flex items-center">
             <Logo className="text-[20px]" />
           </Link>
           <ListingActions listing={props.listing} searchHref={props.searchHref || "/listings"} />
