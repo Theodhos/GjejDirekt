@@ -8,7 +8,10 @@ import { categories, getCategorySearchValues, getSubcategorySearchValues } from 
 import { connectDB } from "@/lib/db";
 import Listing from "@/models/Listing";
 import { sortByPackageTier } from "@/lib/ranking";
-import { escapeRegex } from "@/lib/utils";
+import { escapeRegex, safeJson } from "@/lib/utils";
+import ListingResults from "@/components/listings/ListingResults";
+import { FOOD_CATEGORY, isFoodCategory } from "@/lib/food";
+import { withMenuTerms } from "@/lib/food-server";
 
 // Approved listings per subcategory change a handful of times a day — cache the
 // page and refresh it in the background instead of hitting Mongo on every request.
@@ -35,8 +38,13 @@ export default async function SubcategoryPage({
     subcategory: { $in: getSubcategorySearchValues(category, subcategory) }
   };
 
-  if (typeof searchParams.location === "string" && searchParams.location) query.location = { $regex: escapeRegex(searchParams.location), $options: "i" };
-  if (typeof searchParams.q === "string" && searchParams.q) query.$text = { $search: searchParams.q };
+  // Food pages filter by city and search text on the device (ListingResults), so the whole
+  // set is fetched for them; every other category still filters in the query.
+  const isFood = isFoodCategory(category);
+  if (!isFood) {
+    if (typeof searchParams.location === "string" && searchParams.location) query.location = { $regex: escapeRegex(searchParams.location), $options: "i" };
+    if (typeof searchParams.q === "string" && searchParams.q) query.$text = { $search: searchParams.q };
+  }
 
   const sort: Record<string, 1 | -1> =
     searchParams.sort === "popular"
@@ -47,6 +55,22 @@ export default async function SubcategoryPage({
 
   const found = await Listing.find(query).sort(sort).lean<any>();
   const listings = sortByPackageTier(found);
+
+  if (isFood) {
+    const activeSubcategory = categoryObj?.subcategories.find((sub) => sub.value === subcategory || sub.aliases?.includes(subcategory))?.value ?? subcategory;
+    return (
+      <ListingResults
+        listings={safeJson(await withMenuTerms(listings))}
+        title={subcategoryLabel}
+        category={FOOD_CATEGORY}
+        showTabs
+        initialQuery={typeof searchParams.q === "string" ? searchParams.q : ""}
+        initialCity={typeof searchParams.location === "string" ? searchParams.location : ""}
+        activeSubcategory={activeSubcategory}
+        subcategoryBasePath={`/services/${FOOD_CATEGORY}`}
+      />
+    );
+  }
 
   const activeLocation = typeof searchParams.location === "string" ? searchParams.location : "";
   const basePath = `/services/${category}/${subcategory}`;

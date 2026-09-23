@@ -26,7 +26,8 @@ export default function ListingCart({
   phoneDigits,
   phone,
   listing,
-  isReservation = false
+  isReservation = false,
+  variant = "floating"
 }: {
   listingSlug: string;
   listingId?: string;
@@ -36,6 +37,12 @@ export default function ListingCart({
   phone?: string;
   listing?: { slug: string; title: string; images?: string[]; location?: string; category?: string };
   isReservation?: boolean;
+  /**
+   * "floating" is the rounded pill used by shops and hotels. "bar" is the full-width
+   * basket bar of the food pages — cart icon, `3 Produkte • 1.950 Lekë` and a
+   * "Shko te porosia" button — which stays put while several dishes are added.
+   */
+  variant?: "floating" | "bar";
 }) {
   const { language } = useLanguage();
   const en = language === "en";
@@ -61,19 +68,30 @@ export default function ListingCart({
   // actual "add" while the visitor is here) should reveal it.
   const previousCountRef = useRef<number | null>(null);
 
+  // Lets the sitewide chat button step up out of the way of the basket bar (see globals.css).
+  useEffect(() => {
+    if (variant !== "bar" || !items.length) return;
+    document.documentElement.dataset.cartBar = "1";
+    return () => {
+      delete document.documentElement.dataset.cartBar;
+    };
+  }, [variant, items.length]);
+
   useEffect(() => {
     const syncItems = () => {
       const next = readCart(listingSlug);
       setItems(next);
       const nextCount = cartCount(next);
       if (previousCountRef.current !== null && nextCount > previousCountRef.current) {
-        setOpen(true);
+        // The bar already shows the running total, so on a phone it must not throw the
+        // sheet over the menu after every dish; the right-hand drawer (sm and up) still opens.
+        if (variant !== "bar" || window.matchMedia("(min-width: 640px)").matches) setOpen(true);
       }
       previousCountRef.current = nextCount;
     };
     syncItems();
     return onCartChange(syncItems);
-  }, [listingSlug]);
+  }, [listingSlug, variant]);
 
   if (!items.length) return null;
 
@@ -136,44 +154,107 @@ export default function ListingCart({
 
   return (
     <>
-      <button
-        type="button"
-        onClick={() => setOpen(true)}
-        className="fixed left-1/2 z-40 flex w-[calc(100%-2rem)] max-w-md -translate-x-1/2 items-center justify-between gap-3 rounded-[1.5rem] px-5 py-3 text-left shadow-lg transition-transform active:scale-[0.98]"
-        style={{
-          background: "var(--surface-white)",
-          border: "1px solid var(--border-soft)",
-          boxShadow: "0 8px 32px rgba(15,20,25,0.12)",
-          // Sits centered above the phone tab bar rather than under/behind it —
-          // `--bottom-nav-height` is 0 from lg up, where the tab bar is hidden anyway.
-          bottom: "calc(var(--bottom-nav-height) + 1rem)"
-        }}
-      >
-        <span className="flex min-w-0 items-center gap-3">
-          <span className="relative flex h-10 w-10 shrink-0 items-center justify-center">
-            {isBooking ? (
-              <Calendar className="h-7 w-7 text-red-500" />
-            ) : (
-              <ShoppingCart className="h-7 w-7 text-red-500 fill-red-50" />
-            )}
-            <span
-              className="absolute -top-1 -right-1 flex h-[18px] w-[18px] items-center justify-center rounded-full text-[10px] font-black text-white"
+      {variant === "bar" ? (
+        <div
+          className="fixed inset-x-0 z-40 border-t bg-white lg:inset-x-auto lg:left-1/2 lg:mb-6 lg:w-[calc(100%-4rem)] lg:max-w-[1136px] lg:-translate-x-1/2 lg:rounded-2xl lg:border"
+          style={{
+            borderColor: "var(--border-soft)",
+            boxShadow: "0 -4px 20px rgba(15,20,25,0.08)",
+            // Rests on top of the phone tab bar; the variable is 0 from lg up.
+            bottom: "var(--bottom-nav-height)"
+          }}
+        >
+          <div className="mx-auto flex max-w-3xl items-center gap-3 px-3.5 py-2.5 lg:max-w-none lg:px-5">
+            <button type="button" onClick={() => setOpen(true)} className="flex min-w-0 flex-1 items-center gap-3 text-left" aria-label={isBooking ? (en ? "View booking" : "Shiko rezervimin") : en ? "View order" : "Shiko porosinë"}>
+              <span
+                className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-white"
+                style={{ background: "var(--brand-accent)" }}
+              >
+                <ShoppingCart className="h-6 w-6" strokeWidth={2} />
+                <span
+                  className="absolute -right-1.5 -top-1.5 flex h-5 min-w-[20px] items-center justify-center rounded-full border-2 border-white bg-white px-1 text-[11px] font-black"
+                  style={{ color: "var(--brand-accent)", boxShadow: "0 0 0 1px var(--brand-accent)" }}
+                >
+                  {count}
+                </span>
+              </span>
+              <span className="min-w-0">
+                <span className="block whitespace-nowrap text-[13.5px] font-bold" style={{ color: "var(--text-primary)" }}>
+                  {count}{" "}
+                  {isBooking
+                    ? en
+                      ? count === 1
+                        ? "Booking"
+                        : "Bookings"
+                      : count === 1
+                      ? "Rezervim"
+                      : "Rezervime"
+                    : en
+                    ? count === 1
+                      ? "Item"
+                      : "Items"
+                    : count === 1
+                    ? "Produkt"
+                    : "Produkte"}
+                  {hasAllPrices ? ` • ${formatPrice(total)}` : ""}
+                </span>
+                <span className="flex items-center gap-0.5 text-[12px]" style={{ color: "var(--text-secondary)" }}>
+                  {isBooking ? (en ? "View booking" : "Shko te rezervimi") : en ? "View order" : "Shko te porosia"}
+                  <ChevronRight className="h-3.5 w-3.5" />
+                </span>
+              </span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setOpen(true)}
+              className="h-11 shrink-0 whitespace-nowrap rounded-xl px-3.5 text-[13px] font-bold text-white transition-opacity hover:opacity-90 active:scale-[0.97] sm:px-7 sm:text-[14.5px]"
               style={{ background: "var(--brand-accent)" }}
             >
-              {count}
+              {isBooking ? (en ? "Go to booking" : "Shko te rezervimi") : en ? "Go to order" : "Shko te porosia"}
+            </button>
+          </div>
+        </div>
+      ) : (
+        <button
+          type="button"
+          onClick={() => setOpen(true)}
+          className="fixed left-1/2 z-40 flex w-[calc(100%-2rem)] max-w-md -translate-x-1/2 items-center justify-between gap-3 rounded-[1.5rem] px-5 py-3 text-left shadow-lg transition-transform active:scale-[0.98]"
+          style={{
+            background: "var(--surface-white)",
+            border: "1px solid var(--border-soft)",
+            boxShadow: "0 8px 32px rgba(15,20,25,0.12)",
+            // Sits centered above the phone tab bar rather than under/behind it —
+            // `--bottom-nav-height` is 0 from lg up, where the tab bar is hidden anyway.
+            bottom: "calc(var(--bottom-nav-height) + 1rem)"
+          }}
+        >
+          <span className="flex min-w-0 items-center gap-3">
+            <span className="relative flex h-10 w-10 shrink-0 items-center justify-center">
+              {isBooking ? (
+                <Calendar className="h-7 w-7 text-red-500" />
+              ) : (
+                <ShoppingCart className="h-7 w-7 text-red-500 fill-red-50" />
+              )}
+              <span
+                className="absolute -top-1 -right-1 flex h-[18px] w-[18px] items-center justify-center rounded-full text-[10px] font-black text-white"
+                style={{ background: "var(--brand-accent)" }}
+              >
+                {count}
+              </span>
+            </span>
+            <span className="truncate text-[15px] font-bold" style={{ color: "var(--text-primary)" }}>
+              {count} {isBooking ? (count === 1 ? (en ? "reservation" : "rezervim") : (en ? "reservations" : "rezervime")) : (count === 1 ? (en ? "item" : "artikull") : (en ? "items" : "artikuj"))}
+              {hasAllPrices ? ` • ${formatPrice(total)}` : ""}
             </span>
           </span>
-          <span className="truncate text-[15px] font-bold" style={{ color: "var(--text-primary)" }}>
-            {count} {isBooking ? (count === 1 ? (en ? "reservation" : "rezervim") : (en ? "reservations" : "rezervime")) : (count === 1 ? (en ? "item" : "artikull") : (en ? "items" : "artikuj"))}
-            {hasAllPrices ? ` • ${formatPrice(total)}` : ""}
-          </span>
-        </span>
 
-        <span className="flex shrink-0 items-center gap-0.5 text-[13px] font-bold" style={{ color: "var(--brand-accent)" }}>
-          {isBooking ? (en ? "View reservation" : "Shiko rezervimin") : (en ? "View order" : "Shiko kërkesën")}
-          <ChevronRight className="h-4 w-4" />
-        </span>
-      </button>
+          <span className="flex shrink-0 items-center gap-0.5 text-[13px] font-bold" style={{ color: "var(--brand-accent)" }}>
+            {isBooking ? (en ? "View reservation" : "Shiko rezervimin") : (en ? "View order" : "Shiko kërkesën")}
+            <ChevronRight className="h-4 w-4" />
+          </span>
+        </button>
+      )}
 
       {open && (
         <div

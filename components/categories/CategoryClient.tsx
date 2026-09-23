@@ -7,8 +7,10 @@ import { CategoryDefinition } from "@/lib/constants";
 import { useLanguage } from "@/context/LanguageContext";
 import { getCategoryIcon } from "@/lib/category-icons";
 import BusinessCard from "@/components/home/BusinessCard";
+import ListingResults from "@/components/listings/ListingResults";
 import PageHeader from "@/components/layout/PageHeader";
 import EmptyState from "@/components/ui/EmptyState";
+import { FOOD_CATEGORY } from "@/lib/food";
 
 export default function CategoryClient({
   category,
@@ -40,6 +42,11 @@ export default function CategoryClient({
     const values = new Set([activeSub, ...(sub?.aliases || [])]);
     return initialListings.filter((listing: any) => values.has(String(listing.subcategory || "").toLowerCase()));
   }, [activeSub, category.subcategories, initialListings]);
+
+  // Every Ushqim & Pije page shares one results layout (search, tabs, filter row, rows).
+  if (category.value === FOOD_CATEGORY) {
+    return <ListingResults listings={initialListings} title={categoryLabel} category={FOOD_CATEGORY} showTabs />;
+  }
 
   return (
     <div className="min-h-screen" style={{ background: "var(--surface-page)" }}>

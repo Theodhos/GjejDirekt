@@ -612,3 +612,11 @@ a { transition: color 0.15s ease, opacity 0.15s ease; }
   border-radius: 0 0 2px 2px;
   background: var(--brand-accent);
 }
+
+/* The food pages pin a basket bar above the phone tab bar; the chat button steps up
+   above it instead of sitting on the "Shko te porosia" button. */
+@media (max-width: 1023px) {
+  html[data-cart-bar] .gd-chat-toggle {
+    bottom: calc(var(--bottom-nav-height) + 6.25rem);
+  }
+}

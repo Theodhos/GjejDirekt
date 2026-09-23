@@ -3,6 +3,7 @@ import { connectDB } from "@/lib/db";
 import Listing from "@/models/Listing";
 import { getCategoryByValue, getCategorySearchValues, getSubcategorySearchValues } from "@/lib/constants";
 import { rankListings } from "@/lib/ranking";
+import { withMenuTerms } from "@/lib/food-server";
 import { safeJson } from "@/lib/utils";
 import SubcategoryClient from "@/components/categories/SubcategoryClient";
 
@@ -19,7 +20,8 @@ async function getListings(category: string, subcategory: string) {
   })
     .sort({ createdAt: -1 })
     .lean<any[]>();
-  return safeJson(rankListings(found));
+  // Food businesses also carry their menu item names so the results can be searched by dish.
+  return safeJson(await withMenuTerms(rankListings(found)));
 }
 
 export default async function SubcategoryPage({

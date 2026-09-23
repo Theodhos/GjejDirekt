@@ -89,7 +89,13 @@ export default function Header() {
       className="fixed inset-x-0 top-0 z-50 w-full transition-shadow duration-200"
       style={{
         background: "var(--surface-white)",
-        boxShadow: scrolled ? "0 1px 10px rgba(15,20,25,0.07)" : "none"
+        // A hairline edge at rest and a soft lift on scroll — both painted via
+        // box-shadow (not border/outline) so the header's box height never
+        // changes and stays in sync with the hardcoded `--header-height` the
+        // rest of the layout offsets against.
+        boxShadow: scrolled
+          ? "0 1px 0 var(--border-soft), 0 4px 16px rgba(15,20,25,0.06)"
+          : "0 1px 0 var(--border-soft)"
       }}
     >
       {/* Below `lg`: a true 3-column bar (equal-width outer tracks) so the logo
@@ -102,8 +108,8 @@ export default function Header() {
         <button
           type="button"
           onClick={() => setMobileOpen((v) => !v)}
-          className="-ml-1 inline-flex h-9 w-9 shrink-0 items-center justify-self-start rounded-xl transition-colors lg:hidden"
-          style={{ color: "var(--text-primary)", background: mobileOpen ? "var(--surface-subtle)" : "transparent" }}
+          className="-ml-1 inline-flex h-9 w-9 shrink-0 items-center justify-center justify-self-start rounded-xl transition-colors hover:bg-[var(--surface-subtle)] lg:hidden"
+          style={{ color: "var(--text-primary)", background: mobileOpen ? "var(--surface-subtle)" : "var(--surface-cream)" }}
           aria-label={language === "en" ? "Toggle navigation" : "Hap menunë"}
           aria-expanded={mobileOpen}
         >
@@ -121,7 +127,7 @@ export default function Header() {
             byte-for-byte the same as before. */}
         <div className="flex items-center justify-self-end gap-0.5 lg:contents">
           {/* Desktop nav */}
-          <nav className="hidden items-center gap-0.5 lg:ml-4 lg:flex">
+          <nav className="hidden items-center gap-1 lg:ml-6 lg:flex">
             {publicLinks.map((item) => (
               <Link
                 key={item.href}
@@ -135,8 +141,11 @@ export default function Header() {
 
           <div className="hidden flex-1 lg:block" />
 
-          {/* Desktop right */}
-          <div className="hidden items-center gap-2 lg:flex">
+          {/* Desktop right — a hairline divider separates primary navigation
+              from the account/language utility cluster, so the two groups
+              read as distinct sections instead of one long row of links. */}
+          <div className="hidden items-center gap-3 lg:flex">
+            <span aria-hidden className="h-5 w-px" style={{ background: "var(--border-soft)" }} />
             <LanguageSwitcher />
             {me ? (
               authenticatedLinks.map((item) =>
@@ -174,22 +183,22 @@ export default function Header() {
           </div>
 
           {/* Mobile right — notifications and account, exactly the two icons in the mock */}
-          <div className="flex items-center gap-0.5 lg:hidden">
+          <div className="flex items-center gap-1.5 lg:hidden">
             <Link
               href={me ? "/dashboard" : "/login"}
-              className="relative inline-flex h-9 w-9 items-center justify-center rounded-xl transition-colors"
-              style={{ color: "var(--text-primary)" }}
+              className="relative inline-flex h-9 w-9 items-center justify-center rounded-xl transition-colors hover:bg-[var(--surface-subtle)]"
+              style={{ color: "var(--text-primary)", background: "var(--surface-cream)" }}
               aria-label={language === "en" ? "Notifications" : "Njoftimet"}
             >
-              <Bell className="h-[21px] w-[21px]" strokeWidth={1.9} />
+              <Bell className="h-[19px] w-[19px]" strokeWidth={1.9} />
             </Link>
             <Link
               href={accountHref}
-              className="inline-flex h-9 w-9 items-center justify-center rounded-xl transition-colors"
-              style={{ color: "var(--text-primary)" }}
+              className="inline-flex h-9 w-9 items-center justify-center rounded-xl transition-colors hover:bg-[var(--surface-subtle)]"
+              style={{ color: "var(--text-primary)", background: "var(--surface-cream)" }}
               aria-label={me ? me.name : t.nav.login}
             >
-              <User className="h-[21px] w-[21px]" strokeWidth={1.9} />
+              <User className="h-[19px] w-[19px]" strokeWidth={1.9} />
             </Link>
           </div>
         </div>

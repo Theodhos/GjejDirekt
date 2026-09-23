@@ -7,8 +7,10 @@ import { translations } from "@/lib/dictionary";
 import { getCategoryByValue, getCategoryLabel, getSubcategoryLabel } from "@/lib/constants";
 import { getCategoryIcon } from "@/lib/category-icons";
 import BusinessCard from "@/components/home/BusinessCard";
+import ListingResults from "@/components/listings/ListingResults";
 import PageHeader from "@/components/layout/PageHeader";
 import EmptyState from "@/components/ui/EmptyState";
+import { FOOD_CATEGORY } from "@/lib/food";
 
 /**
  * One subcategory of one category. Same shell as the category page above it — the
@@ -38,6 +40,21 @@ export default function SubcategoryClient({
 
   const siblings = definition?.subcategories ?? [];
   const listings = initialListings;
+
+  // Every Ushqim & Pije page shares one results layout (search, tabs, filter row, rows).
+  if (definition?.value === FOOD_CATEGORY) {
+    const active = siblings.find((sub) => sub.value === subcategory || sub.aliases?.includes(subcategory));
+    return (
+      <ListingResults
+        listings={listings}
+        title={subcategoryLabel}
+        category={FOOD_CATEGORY}
+        showTabs
+        activeSubcategory={active?.value ?? subcategory}
+        subcategoryBasePath={`/categories/${FOOD_CATEGORY}`}
+      />
+    );
+  }
 
   return (
     <div className="min-h-screen" style={{ background: "var(--surface-page)" }}>
