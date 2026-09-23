@@ -127,12 +127,12 @@ export default function Header() {
             byte-for-byte the same as before. */}
         <div className="flex items-center justify-self-end gap-0.5 lg:contents">
           {/* Desktop nav */}
-          <nav className="hidden items-center gap-1 lg:ml-6 lg:flex">
+          <nav className="hidden items-center gap-0.5 lg:ml-4 lg:flex xl:ml-6 xl:gap-1">
             {publicLinks.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
-                className="rounded-lg px-3 py-2 text-sm font-medium text-[var(--text-secondary)] transition-colors hover:bg-[var(--surface-subtle)] hover:text-[var(--text-primary)]"
+                className="whitespace-nowrap rounded-lg px-1.5 py-2 text-[13px] font-medium min-[1120px]:px-2 xl:px-3 xl:text-sm text-[var(--text-secondary)] transition-colors hover:bg-[var(--surface-subtle)] hover:text-[var(--text-primary)]"
               >
                 {item.label}
               </Link>
@@ -144,7 +144,7 @@ export default function Header() {
           {/* Desktop right — a hairline divider separates primary navigation
               from the account/language utility cluster, so the two groups
               read as distinct sections instead of one long row of links. */}
-          <div className="hidden items-center gap-3 lg:flex">
+          <div className="hidden items-center gap-1.5 lg:flex xl:gap-3">
             <span aria-hidden className="h-5 w-px" style={{ background: "var(--border-soft)" }} />
             <LanguageSwitcher />
             {me ? (
@@ -153,7 +153,7 @@ export default function Header() {
                   <Link
                     key={item.href}
                     href={item.href}
-                    className="rounded-lg px-3 py-2 text-sm font-medium text-[var(--text-secondary)] transition-colors hover:text-[var(--text-primary)]"
+                    className="whitespace-nowrap rounded-lg px-1.5 py-2 text-[13px] font-medium min-[1120px]:px-2 xl:px-3 xl:text-sm text-[var(--text-secondary)] transition-colors hover:text-[var(--text-primary)]"
                   >
                     {item.label}
                   </Link>
@@ -162,7 +162,7 @@ export default function Header() {
                     key={item.label}
                     type="button"
                     onClick={item.onClick}
-                    className="rounded-lg px-3 py-2 text-sm font-medium text-[var(--text-secondary)] transition-colors hover:text-[var(--text-primary)]"
+                    className="whitespace-nowrap rounded-lg px-1.5 py-2 text-[13px] font-medium min-[1120px]:px-2 xl:px-3 xl:text-sm text-[var(--text-secondary)] transition-colors hover:text-[var(--text-primary)]"
                   >
                     {item.label}
                   </button>
@@ -171,12 +171,12 @@ export default function Header() {
             ) : (
               <Link
                 href="/login"
-                className="rounded-lg px-3 py-2 text-sm font-medium text-[var(--text-secondary)] transition-colors hover:text-[var(--text-primary)]"
+                className="whitespace-nowrap rounded-lg px-1.5 py-2 text-[13px] font-medium min-[1120px]:px-2 xl:px-3 xl:text-sm text-[var(--text-secondary)] transition-colors hover:text-[var(--text-primary)]"
               >
                 {t.nav.login}
               </Link>
             )}
-            <Link href="/create-listing" className="btn-primary">
+            <Link href="/create-listing" className="btn-primary whitespace-nowrap !px-3.5 !text-[13px] xl:!px-5 xl:!text-sm">
               <PlusCircle className="h-4 w-4" />
               {t.nav.addListing}
             </Link>
