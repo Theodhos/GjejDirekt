@@ -162,7 +162,7 @@ export default function ListingProducts({
             )}
 
             {!collapsed[section.key] && (
-              <div className={isShopping ? "grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4" : "space-y-2"}>
+              <div className={isShopping ? "grid grid-cols-2 gap-3.5 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4" : "space-y-2"}>
                 {section.items.map((product) => (
                   <div
                     key={product._id}
@@ -179,12 +179,12 @@ export default function ListingProducts({
                       )}
                     </div>
 
-                    <div className={isShopping ? "flex min-w-0 flex-1 flex-col p-2.5" : "flex min-w-0 flex-1 flex-col justify-center py-2.5 pr-2.5"}>
-                      <p className="text-[13px] font-bold leading-tight" style={{ color: "var(--text-primary)" }}>
+                    <div className={isShopping ? "flex min-w-0 flex-1 flex-col p-3" : "flex min-w-0 flex-1 flex-col justify-center py-2.5 pr-2.5"}>
+                      <p className={`font-bold leading-tight ${isShopping ? "text-[14.5px]" : "text-[13px]"}`} style={{ color: "var(--text-primary)" }}>
                         {product.name}
                       </p>
                       {product.description && (
-                        <p className="mt-0.5 line-clamp-2 text-[11px] leading-[1.35]" style={{ color: "var(--text-secondary)" }}>
+                        <p className={`mt-0.5 line-clamp-2 leading-[1.35] ${isShopping ? "text-[12.5px]" : "text-[11px]"}`} style={{ color: "var(--text-secondary)" }}>
                           {product.description}
                         </p>
                       )}

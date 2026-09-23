@@ -4,7 +4,7 @@ import Providers from "./providers";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import BottomNav from "@/components/layout/BottomNav";
-import ChatWidget from "@/components/ChatWidget";
+import ChatWidget from "@/components/ChatWidgetLoader";
 import { Poppins } from "next/font/google";
 
 const poppins = Poppins({

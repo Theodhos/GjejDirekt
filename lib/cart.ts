@@ -115,30 +115,21 @@ export type OrderDetails = {
   checkIn?: string;
   checkOut?: string;
   persons?: number;
+  /** Who's ordering/booking — this is what the business needs, not their own name. */
+  customerName?: string;
+  /** Delivery address for an order, or just contact info for a reservation. */
+  customerAddress?: string;
+  /** "Kesh në dorë", "Kartë (POS) në dorë", "Transfertë bankare"... */
+  paymentMethod?: string;
 };
 
-/**
- * Right-aligns a set of {left, right} rows into a receipt-style block by
- * padding every line to the same two column widths (capping the left column
- * so one long item name can't stretch the whole block). Meant to be wrapped
- * in a ``` fenced block — WhatsApp only keeps column alignment on monospace text.
- */
-function formatReceiptLines(rows: { left: string; right: string }[]) {
-  const leftWidth = Math.min(26, Math.max(...rows.map((r) => r.left.length)));
-  const rightWidth = Math.max(1, ...rows.map((r) => r.right.length));
-  return rows.map((row) => {
-    const left =
-      row.left.length > leftWidth ? `${row.left.slice(0, leftWidth - 1)}…` : row.left.padEnd(leftWidth, " ");
-    return `${left} ${row.right.padStart(rightWidth, " ")}`;
-  });
-}
+const SEPARATOR = "━".repeat(20);
 
 /**
- * Builds the order text sent to the business's WhatsApp: a header with the
- * business's contact details, then a monospace "receipt" block (one row per
- * item, a divider, the total) so it reads as a structured order recap in the
- * chat — WhatsApp text only supports bold, emoji and monospace, not real
- * cards or inline images, so this is the closest a plain wa.me link message can get.
+ * Builds the order text sent to the business's WhatsApp — a plain, receipt-style
+ * recap addressed to the business, so it leads with who is ordering and where
+ * to deliver (not the business's own name back at itself), then the items,
+ * an estimate, any note, and how they intend to pay.
  */
 export function buildOrderMessage(
   businessName: string,
@@ -151,50 +142,43 @@ export function buildOrderMessage(
   const total = hasAllPrices ? cartTotal(items) : null;
   const nightSuffix = details.isHotel ? (en ? "/night" : "/natë") : "";
 
-  const rows: { left: string; right: string }[] = items.map((item) => ({
-    left: `${item.qty}x ${item.name}`,
-    right: typeof item.price === "number" ? `${formatPrice(item.price * item.qty)}${nightSuffix}` : ""
-  }));
+  const parts = [SEPARATOR];
+  parts.push(`👤 ${en ? "CUSTOMER" : "KLIENTI"}: ${details.customerName?.trim() || (en ? "Not provided" : "Pa emër")}`);
+  if (details.customerAddress?.trim()) {
+    parts.push(`📍 ${en ? "ADDRESS" : "ADRESA"}: ${details.customerAddress.trim()}`);
+  }
+  parts.push(SEPARATOR, "");
 
   if (details.isHotel) {
-    if (details.checkIn) rows.push({ left: "Check-in", right: details.checkIn });
-    if (details.checkOut) rows.push({ left: "Check-out", right: details.checkOut });
-    if (details.persons) rows.push({ left: en ? "Guests" : "Persona", right: String(details.persons) });
+    parts.push(`🛏️ ${en ? "RESERVATION" : "REZERVIMI"}:`);
+    for (const item of items) {
+      const price = typeof item.price === "number" ? ` - ${formatPrice(item.price * item.qty)}${nightSuffix}` : "";
+      parts.push(`• ${item.qty}x ${item.name}${price}`);
+    }
+    if (details.checkIn) parts.push(`• ${en ? "Check-in" : "Check-in"}: ${details.checkIn}`);
+    if (details.checkOut) parts.push(`• ${en ? "Check-out" : "Check-out"}: ${details.checkOut}`);
+    if (details.persons) parts.push(`• ${en ? "Guests" : "Persona"}: ${details.persons}`);
+  } else {
+    parts.push(`🛒 ${en ? "ITEMS" : "ARTIKUJT"}:`);
+    for (const item of items) {
+      const price = typeof item.price === "number" ? ` - ${formatPrice(item.price * item.qty)}` : "";
+      parts.push(`• ${item.qty}x ${item.name}${price}`);
+    }
   }
 
-  const totalRowIndex = rows.length;
-  if (total !== null) rows.push({ left: en ? "TOTAL" : "TOTALI", right: formatPrice(total) });
-
-  const receiptLines = formatReceiptLines(rows);
-  if (total !== null) {
-    const width = receiptLines[0]?.length ?? 0;
-    receiptLines.splice(totalRowIndex, 0, "─".repeat(width));
-  }
-
-  const parts = [
-    details.isHotel
-      ? en ? `📋 *RESERVATION FROM GJEJDIREKT.COM*` : `📋 *REZERVIM NGA GJEJDIREKT.COM*`
-      : en ? `📋 *ORDER FROM GJEJDIREKT.COM*` : `📋 *POROSI NGA GJEJDIREKT.COM*`,
-    "",
-    `*${businessName}*`
-  ];
-  if (details.location) parts.push(`📍 ${details.location}`);
-  if (details.phone) parts.push(`📞 ${details.phone}`);
-
+  parts.push("");
   parts.push(
-    "",
-    details.isHotel ? (en ? `🛏️ *YOUR RESERVATION*` : `🛏️ *REZERVIMI JUAJ*`) : (en ? `🛒 *YOUR ORDER*` : `🛒 *POROSIA JUAJ*`),
-    "```",
-    ...receiptLines,
-    "```"
+    details.isHotel
+      ? `⏱️ ${en ? "CONFIRMATION" : "KONFIRMIMI"}: ${en ? "within 24h" : "brenda 24 orësh"}`
+      : `⏱️ ${en ? "WAIT" : "PRITJA"}: ~20-30 min`
   );
-
   if (details.note?.trim()) {
-    const noteLabel = details.isHotel
-      ? en ? `📝 *Special request:*` : `📝 *Kërkesë speciale:*`
-      : en ? `📝 *Order note:*` : `📝 *Shënim për porosinë:*`;
-    parts.push("", noteLabel, details.note.trim());
+    parts.push(`💬 ${en ? "NOTE" : "SHËNIM"}: ${details.note.trim()}`);
   }
+
+  parts.push(SEPARATOR);
+  if (total !== null) parts.push(`💰 ${en ? "TOTAL" : "TOTALI"}: ${formatPrice(total)}`);
+  parts.push(`💳 ${en ? "PAYMENT" : "PAGESA"}: ${details.paymentMethod || (en ? "Cash on delivery" : "Kesh në dorë")}`);
 
   return parts.join("\n");
 }

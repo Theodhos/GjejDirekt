@@ -6,7 +6,9 @@ import Listing from "@/models/Listing";
 import { rankListings } from "@/lib/ranking";
 import { safeJson } from "@/lib/utils";
 
-export const dynamic = "force-dynamic";
+// Approved listings per category change a handful of times a day — cache the
+// page and refresh it in the background instead of hitting Mongo on every request.
+export const revalidate = 60;
 
 async function getListingsByCategory(categoryValue: string) {
   await connectDB();

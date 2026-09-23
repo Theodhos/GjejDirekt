@@ -4,7 +4,9 @@ import { connectDB } from "@/lib/db";
 import BlogPost from "@/models/BlogPost";
 import PostClient from "./PostClient";
 
-export const dynamic = "force-dynamic";
+// Published posts rarely change after publishing — cache the page and refresh
+// it in the background instead of hitting Mongo on every request.
+export const revalidate = 300;
 
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
   await connectDB();

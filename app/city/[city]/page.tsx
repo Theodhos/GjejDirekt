@@ -14,7 +14,9 @@ import { seedCities } from "@/lib/cities-catalog";
 import { rankListings } from "@/lib/ranking";
 import { escapeRegex, safeJson } from "@/lib/utils";
 
-export const dynamic = "force-dynamic";
+// Approved listings per city change a handful of times a day — cache the page
+// and refresh it in the background instead of hitting Mongo on every request.
+export const revalidate = 60;
 
 async function getListingsByCity(city: string) {
   await connectDB();
@@ -165,7 +167,7 @@ export default async function CityPage({ params }: { params: { city: string } })
                   Shiko të gjitha
                 </Link>
               </div>
-              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+              <div className="grid grid-cols-2 gap-3.5 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
                 {categoryListings.map((listing: any) => (
                   <BusinessCard key={listing._id.toString()} listing={listing} />
                 ))}

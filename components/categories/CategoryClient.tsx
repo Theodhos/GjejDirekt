@@ -121,7 +121,7 @@ export default function CategoryClient({
         </p>
 
         {listings.length ? (
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+          <div className="grid grid-cols-2 gap-3.5 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
             {listings.map((listing: any) => (
               <BusinessCard key={listing._id?.toString() || listing.slug} listing={listing} />
             ))}

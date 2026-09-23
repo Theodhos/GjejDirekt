@@ -40,7 +40,7 @@ export default function FavoritesClient() {
 
       <div className="page-shell py-4 sm:py-6">
         {state === "loading" && (
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+          <div className="grid grid-cols-2 gap-3.5 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
             {[0, 1, 2, 3].map((index) => (
               <div
                 key={index}
@@ -70,7 +70,7 @@ export default function FavoritesClient() {
 
         {state === "ready" &&
           (favorites.length ? (
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+            <div className="grid grid-cols-2 gap-3.5 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
               {favorites.map((listing: any) => (
                 <BusinessCard key={listing._id || listing.slug} listing={listing} />
               ))}

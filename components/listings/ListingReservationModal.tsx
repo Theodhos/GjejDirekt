@@ -126,13 +126,13 @@ export default function ListingReservationModal({
 
       {open && (
         <div
-          className="fixed inset-0 z-50 flex items-end justify-center sm:items-center"
+          className="fixed inset-0 z-50 flex items-end justify-center sm:items-stretch sm:justify-end"
           style={{ background: "rgba(15,23,42,0.55)" }}
           onClick={() => setOpen(false)}
         >
           <div
-            className="w-full max-w-md rounded-t-3xl sm:rounded-2xl animate-in fade-in slide-in-from-bottom-4 duration-300 overflow-hidden flex flex-col"
-            style={{ background: "var(--surface-white)", boxShadow: "var(--shadow-card)", maxHeight: "90vh" }}
+            className="flex w-full max-w-md max-h-[90vh] flex-col overflow-hidden rounded-t-3xl animate-in fade-in slide-in-from-bottom-4 duration-300 sm:h-full sm:max-h-full sm:max-w-[420px] sm:rounded-none sm:rounded-l-3xl sm:slide-in-from-right sm:slide-in-from-bottom-0"
+            style={{ background: "var(--surface-white)", boxShadow: "var(--shadow-card)" }}
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between px-5 py-4 shrink-0" style={{ borderBottom: "1px solid var(--border-soft)" }}>

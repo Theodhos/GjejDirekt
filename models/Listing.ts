@@ -172,4 +172,13 @@ ListingSchema.index({
   amenities: "text"
 });
 
+// Every public listing page runs `find({ status: "approved", ... }).sort({ createdAt: -1 })`
+// (home, /listings, /categories/[category][/[subcategory]], /services/[category]/[subcategory]).
+// Without a compound index, Mongo can use the single-field `status` index to filter but still
+// has to sort the matches in memory. This index lets both the status-only queries (home,
+// /listings) and the status+category(+subcategory) queries use an index for the filter AND
+// the sort, via prefix matching.
+ListingSchema.index({ status: 1, createdAt: -1 });
+ListingSchema.index({ status: 1, category: 1, subcategory: 1, createdAt: -1 });
+
 export default models.Listing || model<IListing>("Listing", ListingSchema);

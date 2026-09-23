@@ -10,7 +10,9 @@ import Listing from "@/models/Listing";
 import { sortByPackageTier } from "@/lib/ranking";
 import { escapeRegex } from "@/lib/utils";
 
-export const dynamic = "force-dynamic";
+// Approved listings per subcategory change a handful of times a day — cache the
+// page and refresh it in the background instead of hitting Mongo on every request.
+export const revalidate = 60;
 
 export default async function SubcategoryPage({
   params,
@@ -134,7 +136,7 @@ export default async function SubcategoryPage({
         </p>
 
         {listings.length ? (
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+          <div className="grid grid-cols-2 gap-3.5 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
             {listings.map((listing: any) => (
               <BusinessCard key={listing._id.toString()} listing={listing} />
             ))}

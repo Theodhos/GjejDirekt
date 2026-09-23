@@ -5,7 +5,9 @@ import Listing from "@/models/Listing";
 import ListingsBrowser from "@/components/listings/ListingsBrowser";
 import { rankListings } from "@/lib/ranking";
 
-export const dynamic = "force-dynamic";
+// The full approved-listing set changes a handful of times a day — cache the
+// page and refresh it in the background instead of hitting Mongo on every request.
+export const revalidate = 60;
 
 export const metadata: Metadata = {
   title: "Kërko biznese",

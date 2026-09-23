@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import Link from "next/link";
 import SafeImage from "@/components/ui/SafeImage";
 import { ArrowRight, CheckCircle, MapPin, MessageCircle, Wallet } from "lucide-react";
@@ -11,57 +11,27 @@ import BusinessCard from "@/components/home/BusinessCard";
 import ProductCard from "@/components/home/ProductCard";
 import RegisterBusinessCTA from "@/components/home/RegisterBusinessCTA";
 import { albaniaCities } from "@/lib/albania-cities";
-import { countListingsByCity, rankCitiesByListings } from "@/lib/city-listing-counts";
 import { categories } from "@/lib/constants";
 import { productsFromListings } from "@/lib/products";
 import { useLanguage } from "@/context/LanguageContext";
 
-/** Card width for both rails — two and a half cards peek on a 360px phone. */
-const CARD_WIDTH = "w-[148px] min-w-[148px] snap-start sm:w-[200px] sm:min-w-[200px]";
+/** Card width for both rails — a little over two cards peek on a 360px phone. */
+const CARD_WIDTH = "w-[164px] min-w-[164px] snap-start sm:w-[224px] sm:min-w-[224px]";
 
-function HomePageClient({ initialCities = [] }: { initialCities?: any[] }) {
+type HomePageClientProps = {
+  initialListings?: any[];
+  initialBlogPosts?: any[];
+  initialCities?: any[];
+};
+
+function HomePageClient({ initialListings = [], initialBlogPosts = [], initialCities = [] }: HomePageClientProps) {
   const { language, t } = useLanguage();
 
-  const [blogPosts, setBlogPosts] = useState<any[]>([]);
-  const [listings, setListings] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [dynamicCities, setDynamicCities] = useState<any[]>(initialCities.length ? initialCities : albaniaCities);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [listingsRes, postsRes, citiesRes] = await Promise.all([
-          fetch("/api/listings"),
-          fetch("/api/blog"),
-          fetch("/api/cities")
-        ]);
-
-        const listingsData = await listingsRes.json();
-        setListings(listingsData.listings || []);
-
-        const postsData = await postsRes.json();
-        setBlogPosts(postsData.posts || []);
-
-        const citiesData = await citiesRes.json();
-        if (Array.isArray(citiesData.cities) && citiesData.cities.length) {
-          setDynamicCities(citiesData.cities);
-        }
-      } catch (error) {
-        console.error("Error fetching home data:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
-  }, []);
-
-  // Cities rank by how many approved listings each one has; the server already
-  // computed a first pass, so keep that order until the listings arrive.
-  const citiesByListingCount = useMemo(() => {
-    if (!listings.length) return dynamicCities;
-    const counts = countListingsByCity(listings.map((listing: any) => listing?.location));
-    return rankCitiesByListings(dynamicCities, counts);
-  }, [dynamicCities, listings]);
+  // All three arrive server-rendered — already ranked/filtered by the server,
+  // so nothing here re-fetches or re-derives them on mount.
+  const listings = initialListings;
+  const blogPosts = initialBlogPosts;
+  const citiesByListingCount = initialCities.length ? initialCities : albaniaCities;
 
   // Featured businesses lead the page; if nobody paid for a feature slot yet, the
   // verified ones stand in so the row is never empty.
@@ -117,15 +87,46 @@ function HomePageClient({ initialCities = [] }: { initialCities?: any[] }) {
       <HomeSearchHero />
 
       <div className="page-shell space-y-4 py-4 sm:space-y-6 sm:py-6">
+        {/* Why GjejDirekt — right after the hero, before any listing content, so
+            what the platform actually does (WhatsApp ordering, 0% commission,
+            verified, nearby) is clear before someone starts browsing. This used
+            to sit near the bottom of the page, well past categories, businesses,
+            products and cities. */}
+        <section className="gd-panel p-4 sm:p-6">
+          <h2 className="gd-section-title mb-3 text-center sm:text-left">
+            {language === "en" ? "Why GjejDirekt?" : "Pse GjejDirekt?"}
+          </h2>
+          <ul className="grid grid-cols-2 gap-2.5 sm:gap-4 lg:grid-cols-4">
+            {benefits.map((benefit) => (
+              <li
+                key={benefit.title}
+                className="rounded-xl border p-3 sm:p-4"
+                style={{ borderColor: "var(--border-soft)", background: "var(--surface-cream)" }}
+              >
+                <span
+                  className="mb-2.5 flex h-9 w-9 items-center justify-center rounded-lg"
+                  style={{ background: "var(--brand-light)", color: "var(--brand-accent)" }}
+                >
+                  <benefit.icon className="h-[18px] w-[18px]" />
+                </span>
+                <p className="text-[13px] font-bold leading-tight" style={{ color: "var(--text-primary)" }}>
+                  {benefit.title}
+                </p>
+                <p className="mt-1 text-[11.5px] leading-snug" style={{ color: "var(--text-secondary)" }}>
+                  {benefit.desc}
+                </p>
+              </li>
+            ))}
+          </ul>
+        </section>
+
         {/* Categories — white card panel */}
         <section className="gd-panel p-4 sm:p-5">
           <CategoryGrid />
         </section>
 
         {/* Recommended businesses */}
-        {loading ? (
-          <RailSkeleton title={language === "en" ? "Recommended businesses" : "Biznese të rekomanduara"} />
-        ) : recommended.length > 0 ? (
+        {recommended.length > 0 ? (
           <SectionRail
             title={language === "en" ? "Recommended businesses" : "Biznese të rekomanduara"}
             href="/listings"
@@ -138,7 +139,7 @@ function HomePageClient({ initialCities = [] }: { initialCities?: any[] }) {
         ) : null}
 
         {/* Popular products */}
-        {!loading && products.length > 0 && (
+        {products.length > 0 && (
           <SectionRail
             title={language === "en" ? "Popular products" : "Produkte popullore"}
             href="/listings"
@@ -195,35 +196,6 @@ function HomePageClient({ initialCities = [] }: { initialCities?: any[] }) {
           </SectionRail>
         ))}
 
-        {/* Why GjejDirekt */}
-        <section className="gd-panel p-4 sm:p-6">
-          <h2 className="gd-section-title mb-3">
-            {language === "en" ? "Why GjejDirekt?" : "Pse GjejDirekt?"}
-          </h2>
-          <ul className="grid grid-cols-2 gap-2.5 sm:gap-4 lg:grid-cols-4">
-            {benefits.map((benefit) => (
-              <li
-                key={benefit.title}
-                className="rounded-xl border p-3 sm:p-4"
-                style={{ borderColor: "var(--border-soft)", background: "var(--surface-cream)" }}
-              >
-                <span
-                  className="mb-2.5 flex h-9 w-9 items-center justify-center rounded-lg"
-                  style={{ background: "var(--brand-light)", color: "var(--brand-accent)" }}
-                >
-                  <benefit.icon className="h-[18px] w-[18px]" />
-                </span>
-                <p className="text-[13px] font-bold leading-tight" style={{ color: "var(--text-primary)" }}>
-                  {benefit.title}
-                </p>
-                <p className="mt-1 text-[11.5px] leading-snug" style={{ color: "var(--text-secondary)" }}>
-                  {benefit.desc}
-                </p>
-              </li>
-            ))}
-          </ul>
-        </section>
-
         {/* Blog */}
         {blogPosts.length > 0 && (
           <SectionRail
@@ -263,26 +235,6 @@ function HomePageClient({ initialCities = [] }: { initialCities?: any[] }) {
         )}
       </div>
     </div>
-  );
-}
-
-/** Placeholder row so the page keeps its shape while the first fetch is in flight. */
-function RailSkeleton({ title }: { title: string }) {
-  return (
-    <section>
-      <div className="gd-section-head">
-        <h2 className="gd-section-title">{title}</h2>
-      </div>
-      <div className="gd-rail -mx-4 px-4 sm:-mx-6 sm:px-6 lg:mx-0 lg:px-0">
-        {[0, 1, 2, 3].map((index) => (
-          <div
-            key={index}
-            className="h-[190px] w-[148px] min-w-[148px] animate-pulse rounded-[14px] sm:w-[200px] sm:min-w-[200px]"
-            style={{ background: "var(--surface-subtle)" }}
-          />
-        ))}
-      </div>
-    </section>
   );
 }
 

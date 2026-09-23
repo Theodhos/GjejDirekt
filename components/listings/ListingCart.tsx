@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ChevronRight, Minus, Plus, ShoppingCart, Trash2, X, MessageCircle, Lock, Calendar } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { formatPrice } from "@/lib/pricing";
@@ -49,14 +49,30 @@ export default function ListingCart({
   const [specialRequest, setSpecialRequest] = useState("");
   const [customerName, setCustomerName] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
+  const [customerAddress, setCustomerAddress] = useState("");
+  const [paymentMethod, setPaymentMethod] = useState(en ? "Cash on delivery" : "Kesh në dorë");
 
   // Order note (non-hotel flow) — revealed by the "Add order note" button
   const [noteOpen, setNoteOpen] = useState(false);
   const [orderNote, setOrderNote] = useState("");
 
+  // null until the first sync so a cart that already has items when this page
+  // loads doesn't pop the drawer open uninvited — only a live increase (an
+  // actual "add" while the visitor is here) should reveal it.
+  const previousCountRef = useRef<number | null>(null);
+
   useEffect(() => {
-    setItems(readCart(listingSlug));
-    return onCartChange(() => setItems(readCart(listingSlug)));
+    const syncItems = () => {
+      const next = readCart(listingSlug);
+      setItems(next);
+      const nextCount = cartCount(next);
+      if (previousCountRef.current !== null && nextCount > previousCountRef.current) {
+        setOpen(true);
+      }
+      previousCountRef.current = nextCount;
+    };
+    syncItems();
+    return onCartChange(syncItems);
   }, [listingSlug]);
 
   if (!items.length) return null;
@@ -78,7 +94,10 @@ export default function ListingCart({
     isHotel: isBooking,
     checkIn: isBooking ? checkIn : undefined,
     checkOut: isBooking ? checkOut : undefined,
-    persons: isBooking ? persons : undefined
+    persons: isBooking ? persons : undefined,
+    customerName,
+    customerAddress: isBooking ? undefined : customerAddress,
+    paymentMethod
   });
 
   const handleSend = () => {
@@ -158,13 +177,16 @@ export default function ListingCart({
 
       {open && (
         <div
-          className="fixed inset-0 z-50 flex items-end justify-center sm:items-center"
+          className="fixed inset-0 z-50 flex items-end justify-center sm:items-stretch sm:justify-end"
           style={{ background: "rgba(15,23,42,0.55)" }}
           onClick={() => setOpen(false)}
         >
+          {/* Bottom sheet on phones (unchanged); a right-anchored, full-height
+              drawer from `sm` up — checkout stays visible next to the page
+              instead of covering it as a centered modal. */}
           <div
-            className="w-full max-w-md rounded-t-3xl sm:rounded-2xl animate-in fade-in slide-in-from-bottom-4 duration-300 overflow-hidden flex flex-col"
-            style={{ background: "var(--surface-white)", boxShadow: "var(--shadow-card)", maxHeight: "90vh" }}
+            className="flex w-full max-w-md max-h-[90vh] flex-col overflow-hidden rounded-t-3xl animate-in fade-in slide-in-from-bottom-4 duration-300 sm:h-full sm:max-h-full sm:max-w-[420px] sm:rounded-none sm:rounded-l-3xl sm:slide-in-from-right sm:slide-in-from-bottom-0"
+            style={{ background: "var(--surface-white)", boxShadow: "var(--shadow-card)" }}
             onClick={(e) => e.stopPropagation()}
           >
             {/* Modal Header */}
@@ -336,6 +358,33 @@ export default function ListingCart({
               )}
 
               {!isBooking && (
+                <div className="grid grid-cols-1 gap-4 pt-2">
+                  <div>
+                    <label className="flex items-center gap-2 text-[13px] font-bold mb-2 text-neutral-700">
+                      {en ? "Your name" : "Emri juaj"}
+                    </label>
+                    <input
+                      value={customerName}
+                      onChange={(e) => setCustomerName(e.target.value)}
+                      className="w-full border border-neutral-200 rounded-xl px-4 py-3 text-[14px] outline-none focus:border-red-500"
+                      placeholder={en ? "Full name" : "Emri e mbiemri"}
+                    />
+                  </div>
+                  <div>
+                    <label className="flex items-center gap-2 text-[13px] font-bold mb-2 text-neutral-700">
+                      {en ? "Delivery address" : "Adresa e dorëzimit"}
+                    </label>
+                    <input
+                      value={customerAddress}
+                      onChange={(e) => setCustomerAddress(e.target.value)}
+                      className="w-full border border-neutral-200 rounded-xl px-4 py-3 text-[14px] outline-none focus:border-red-500"
+                      placeholder={en ? "Street, city..." : "Rruga, qyteti..."}
+                    />
+                  </div>
+                </div>
+              )}
+
+              {!isBooking && (
                 noteOpen ? (
                   <div className="mt-2">
                     <label className="flex items-center gap-2 text-[13px] font-bold mb-2 text-neutral-700">
@@ -359,6 +408,24 @@ export default function ListingCart({
                   </button>
                 )
               )}
+
+              <div>
+                <label className="flex items-center gap-2 text-[13px] font-bold mb-2 mt-2 text-neutral-700">
+                  <Lock className="w-4 h-4" /> {en ? "Payment method" : "Mënyra e pagesës"}
+                </label>
+                <select
+                  value={paymentMethod}
+                  onChange={(e) => setPaymentMethod(e.target.value)}
+                  className="w-full border border-neutral-200 rounded-xl px-4 py-3 text-[14px] outline-none focus:border-red-500 bg-white"
+                >
+                  {(en
+                    ? ["Cash on delivery", "Card on delivery", "Bank transfer"]
+                    : ["Kesh në dorë", "Kartë (POS) në dorë", "Transfertë bankare"]
+                  ).map((option) => (
+                    <option key={option} value={option}>{option}</option>
+                  ))}
+                </select>
+              </div>
             </div>
 
             {/* Modal Footer */}

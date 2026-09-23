@@ -92,12 +92,17 @@ export default function Header() {
         boxShadow: scrolled ? "0 1px 10px rgba(15,20,25,0.07)" : "none"
       }}
     >
-      <div className="page-shell flex items-center gap-2 py-2.5 sm:gap-4">
+      {/* Below `lg`: a true 3-column bar (equal-width outer tracks) so the logo
+          sits dead-center between the menu button and the icons, regardless of
+          their different widths — not left-anchored with the extra space
+          trailing on the right, like a plain flex row would leave it.
+          At `lg` and up this switches back to the original flex nav bar. */}
+      <div className="page-shell grid grid-cols-[1fr_auto_1fr] items-center gap-2 py-2.5 sm:gap-4 lg:flex">
         {/* Menu — the drawer is the only way to reach secondary links on phones */}
         <button
           type="button"
           onClick={() => setMobileOpen((v) => !v)}
-          className="-ml-1 inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl transition-colors lg:hidden"
+          className="-ml-1 inline-flex h-9 w-9 shrink-0 items-center justify-self-start rounded-xl transition-colors lg:hidden"
           style={{ color: "var(--text-primary)", background: mobileOpen ? "var(--surface-subtle)" : "transparent" }}
           aria-label={language === "en" ? "Toggle navigation" : "Hap menunë"}
           aria-expanded={mobileOpen}
@@ -105,82 +110,88 @@ export default function Header() {
           {mobileOpen ? <X className="h-[22px] w-[22px]" /> : <Menu className="h-[22px] w-[22px]" />}
         </button>
 
-        {/* Logo */}
-        <Link href="/" onClick={() => setMobileOpen(false)} className="shrink-0">
+        {/* Logo — centered in its own column on mobile, left-anchored again on desktop */}
+        <Link href="/" onClick={() => setMobileOpen(false)} className="shrink-0 justify-self-center lg:justify-self-auto">
           <Logo className="text-[19px] sm:text-[21px]" />
         </Link>
 
-        {/* Desktop nav */}
-        <nav className="ml-4 hidden items-center gap-0.5 lg:flex">
-          {publicLinks.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="rounded-lg px-3 py-2 text-sm font-medium text-[var(--text-secondary)] transition-colors hover:bg-[var(--surface-subtle)] hover:text-[var(--text-primary)]"
-            >
-              {item.label}
-            </Link>
-          ))}
-        </nav>
+        {/* Everything else collapses into one grid column on mobile (so the logo
+            column above stays perfectly centered) and unwraps back into normal
+            flex siblings at `lg` via `contents` — desktop layout/order is
+            byte-for-byte the same as before. */}
+        <div className="flex items-center justify-self-end gap-0.5 lg:contents">
+          {/* Desktop nav */}
+          <nav className="hidden items-center gap-0.5 lg:ml-4 lg:flex">
+            {publicLinks.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="rounded-lg px-3 py-2 text-sm font-medium text-[var(--text-secondary)] transition-colors hover:bg-[var(--surface-subtle)] hover:text-[var(--text-primary)]"
+              >
+                {item.label}
+              </Link>
+            ))}
+          </nav>
 
-        <div className="flex-1" />
+          <div className="hidden flex-1 lg:block" />
 
-        {/* Desktop right */}
-        <div className="hidden items-center gap-2 lg:flex">
-          <LanguageSwitcher />
-          {me ? (
-            authenticatedLinks.map((item) =>
-              "href" in item ? (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className="rounded-lg px-3 py-2 text-sm font-medium text-[var(--text-secondary)] transition-colors hover:text-[var(--text-primary)]"
-                >
-                  {item.label}
-                </Link>
-              ) : (
-                <button
-                  key={item.label}
-                  type="button"
-                  onClick={item.onClick}
-                  className="rounded-lg px-3 py-2 text-sm font-medium text-[var(--text-secondary)] transition-colors hover:text-[var(--text-primary)]"
-                >
-                  {item.label}
-                </button>
+          {/* Desktop right */}
+          <div className="hidden items-center gap-2 lg:flex">
+            <LanguageSwitcher />
+            {me ? (
+              authenticatedLinks.map((item) =>
+                "href" in item ? (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className="rounded-lg px-3 py-2 text-sm font-medium text-[var(--text-secondary)] transition-colors hover:text-[var(--text-primary)]"
+                  >
+                    {item.label}
+                  </Link>
+                ) : (
+                  <button
+                    key={item.label}
+                    type="button"
+                    onClick={item.onClick}
+                    className="rounded-lg px-3 py-2 text-sm font-medium text-[var(--text-secondary)] transition-colors hover:text-[var(--text-primary)]"
+                  >
+                    {item.label}
+                  </button>
+                )
               )
-            )
-          ) : (
-            <Link
-              href="/login"
-              className="rounded-lg px-3 py-2 text-sm font-medium text-[var(--text-secondary)] transition-colors hover:text-[var(--text-primary)]"
-            >
-              {t.nav.login}
+            ) : (
+              <Link
+                href="/login"
+                className="rounded-lg px-3 py-2 text-sm font-medium text-[var(--text-secondary)] transition-colors hover:text-[var(--text-primary)]"
+              >
+                {t.nav.login}
+              </Link>
+            )}
+            <Link href="/create-listing" className="btn-primary">
+              <PlusCircle className="h-4 w-4" />
+              {t.nav.addListing}
             </Link>
-          )}
-          <Link href="/create-listing" className="btn-primary">
-            <PlusCircle className="h-4 w-4" />
-            {t.nav.addListing}
-          </Link>
-        </div>
+          </div>
 
-        {/* Mobile right — notifications and account, exactly the two icons in the mock */}
-        <div className="flex items-center gap-0.5 lg:hidden">
-          <Link
-            href={me ? "/dashboard" : "/login"}
-            className="relative inline-flex h-9 w-9 items-center justify-center rounded-xl transition-colors"
-            style={{ color: "var(--text-primary)" }}
-            aria-label={language === "en" ? "Notifications" : "Njoftimet"}
-          >
-            <Bell className="h-[21px] w-[21px]" strokeWidth={1.9} />
-          </Link>
-          <Link
-            href={accountHref}
-            className="inline-flex h-9 w-9 items-center justify-center rounded-xl transition-colors"
-            style={{ color: "var(--text-primary)" }}
-            aria-label={me ? me.name : t.nav.login}
-          >
-            <User className="h-[21px] w-[21px]" strokeWidth={1.9} />
-          </Link>
+          {/* Mobile right — notifications and account, exactly the two icons in the mock */}
+          <div className="flex items-center gap-0.5 lg:hidden">
+            <Link
+              href={me ? "/dashboard" : "/login"}
+              className="relative inline-flex h-9 w-9 items-center justify-center rounded-xl transition-colors"
+              style={{ color: "var(--text-primary)" }}
+              aria-label={language === "en" ? "Notifications" : "Njoftimet"}
+            >
+              <Bell className="h-[21px] w-[21px]" strokeWidth={1.9} />
+            </Link>
+            <Link
+              href={accountHref}
+              className="inline-flex h-9 w-9 items-center justify-center rounded-xl transition-colors"
+              style={{ color: "var(--text-primary)" }}
+              aria-label={me ? me.name : t.nav.login}
+            >
+              <User className="h-[21px] w-[21px]" strokeWidth={1.9} />
+            </Link>
+          </div>
         </div>
       </div>
 

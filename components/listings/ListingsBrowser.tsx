@@ -263,7 +263,7 @@ export default function ListingsBrowser({ listings, cities }: ListingsBrowserPro
       </div>
 
       {results.length ? (
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+        <div className="grid grid-cols-2 gap-3.5 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
           {results.map((listing: any) => (
             <BusinessCard key={listing._id || listing.slug} listing={listing} />
           ))}
