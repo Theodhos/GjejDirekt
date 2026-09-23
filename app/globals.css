@@ -13,8 +13,9 @@
      components/layout/Header.tsx — the fixed header is offset by this value,
      so an undersized value hides page content behind the bar. */
   --header-height: 56px;
-  /* Height of the fixed mobile tab bar (components/layout/BottomNav.tsx).
-     Pages add it as bottom padding so the last row is never covered. */
+  /* Height of the fixed bottom tab bar (components/layout/BottomNav.tsx), on every screen
+     size. Pages add it as bottom padding so the last row is never covered. It drops to 0
+     on routes where the bar is not shown (see html[data-no-bottom-nav] below). */
   --bottom-nav-height: 62px;
 
   /* Surface Colors */
@@ -81,12 +82,12 @@
 }
 
 @media (min-width: 1024px) {
-  :root {
-    --header-height: 56px;
-    /* The tab bar is phone-only, so desktop pages reclaim the space. */
-    --bottom-nav-height: 0px;
-  }
+  :root { --header-height: 56px; }
 }
+
+/* BottomNav sets this on routes without the bar (admin) and while a full-screen overlay is open,
+   so those pages do not keep an empty strip where it would be. */
+html[data-no-bottom-nav] { --bottom-nav-height: 0px; }
 
 /* ============================================================
    BASE RESET & TYPOGRAPHY
@@ -613,10 +614,8 @@ a { transition: color 0.15s ease, opacity 0.15s ease; }
   background: var(--brand-accent);
 }
 
-/* The food pages pin a basket bar above the phone tab bar; the chat button steps up
+/* Business pages pin a basket bar above the bottom tab bar; the chat button steps up
    above it instead of sitting on the "Shko te porosia" button. */
-@media (max-width: 1023px) {
-  html[data-cart-bar] .gd-chat-toggle {
-    bottom: calc(var(--bottom-nav-height) + 6.25rem);
-  }
+html[data-cart-bar] .gd-chat-toggle {
+  bottom: calc(var(--bottom-nav-height) + 6.25rem);
 }

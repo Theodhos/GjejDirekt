@@ -3,21 +3,26 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Heart, Home, MessageCircle, MoreHorizontal, Search } from "lucide-react";
+import { CircleUser, Heart, Home, LayoutGrid, ShoppingCart } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 
+/**
+ * Kreu · Katalogu · Porositë · Të preferuarat · Profili. Each tab also owns the pages
+ * that belong under it (a business page is still the catalog, the sign-in pages are
+ * still the profile), so the bar always says where you are.
+ */
 const TABS = [
-  { href: "/", icon: Home, al: "Kreu", en: "Home" },
-  { href: "/listings", icon: Search, al: "Kërko", en: "Search" },
-  { href: "/te-preferuara", icon: Heart, al: "Të preferuara", en: "Saved" },
-  { href: "/porosite", icon: MessageCircle, al: "Porositë", en: "Orders" },
-  { href: "/me-shume", icon: MoreHorizontal, al: "Më shumë", en: "More" }
+  { href: "/", icon: Home, al: "Kreu", en: "Home", also: [] },
+  { href: "/listings", icon: LayoutGrid, al: "Katalogu", en: "Catalog", also: ["/categories", "/services", "/city", "/cities"] },
+  { href: "/porosite", icon: ShoppingCart, al: "Porositë", en: "Orders", also: [] },
+  { href: "/te-preferuara", icon: Heart, al: "Të preferuarat", en: "Saved", also: [] },
+  { href: "/me-shume", icon: CircleUser, al: "Profili", en: "Profile", also: ["/dashboard", "/login", "/register"] }
 ] as const;
 
 /**
- * Phone-only tab bar. It is the primary navigation on mobile, so it stays fixed
- * over the page; `--bottom-nav-height` reserves the space it covers and collapses
- * to 0 from `lg` up, where the header carries navigation instead.
+ * The tab bar. It is the primary navigation on a phone and stays fixed at the bottom of the
+ * screen on every page and every screen size (desktop included, under the footer);
+ * `--bottom-nav-height` reserves the space it covers.
  */
 export default function BottomNav() {
   const pathname = usePathname() || "/";
@@ -35,13 +40,26 @@ export default function BottomNav() {
   }, []);
 
   // Admin runs its own chrome and never needs the consumer tab bar.
-  if (pathname.startsWith("/admin") || hidden) return null;
+  const hideBar = pathname.startsWith("/admin") || hidden;
 
-  const isActive = (href: string) => (href === "/" ? pathname === "/" : pathname.startsWith(href));
+  // Without the bar there is nothing to make room for.
+  useEffect(() => {
+    const root = document.documentElement;
+    if (hideBar) root.dataset.noBottomNav = "1";
+    else delete root.dataset.noBottomNav;
+    return () => {
+      delete root.dataset.noBottomNav;
+    };
+  }, [hideBar]);
+
+  if (hideBar) return null;
+
+  const isActive = (tab: (typeof TABS)[number]) =>
+    tab.href === "/" ? pathname === "/" : [tab.href, ...tab.also].some((prefix) => pathname.startsWith(prefix));
 
   return (
     <nav
-      className="fixed inset-x-0 bottom-0 z-50 lg:hidden"
+      className="fixed inset-x-0 bottom-0 z-50"
       style={{
         height: "var(--bottom-nav-height)",
         background: "var(--surface-white)",
@@ -51,9 +69,9 @@ export default function BottomNav() {
       }}
       aria-label={language === "en" ? "Main navigation" : "Navigimi kryesor"}
     >
-      <ul className="mx-auto flex h-full max-w-lg items-stretch">
+      <ul className="mx-auto flex h-full max-w-lg items-stretch lg:max-w-xl">
         {TABS.map((tab) => {
-          const active = isActive(tab.href);
+          const active = isActive(tab);
           const Icon = tab.icon;
           return (
             <li key={tab.href} className="relative flex-1">
@@ -67,7 +85,7 @@ export default function BottomNav() {
               <Link
                 href={tab.href}
                 aria-current={active ? "page" : undefined}
-                className="flex h-full flex-col items-center justify-center gap-1 px-1 transition-colors"
+                className="flex h-full flex-col items-center justify-center gap-1 px-0.5 transition-colors"
                 style={{ color: active ? "var(--brand-accent)" : "var(--text-tertiary)" }}
               >
                 <Icon
@@ -76,7 +94,7 @@ export default function BottomNav() {
                   style={{ transform: active ? "scale(1.05)" : "scale(1)" }}
                 />
                 <span
-                  className="max-w-full truncate text-[10px] leading-none"
+                  className="max-w-full truncate text-[10px] leading-none max-[359px]:text-[9px]"
                   style={{ fontWeight: active ? 700 : 500 }}
                 >
                   {language === "en" ? tab.en : tab.al}

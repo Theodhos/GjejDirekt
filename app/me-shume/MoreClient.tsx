@@ -81,7 +81,7 @@ export default function MoreClient() {
   return (
     <div className="min-h-screen" style={{ background: "var(--surface-page)" }}>
       <PageHeader
-        title={en ? "More" : "Më shumë"}
+        title={en ? "Profile" : "Profili"}
         description={me ? (en ? `Signed in as ${me.name}` : `I identifikuar si ${me.name}`) : undefined}
       />
 

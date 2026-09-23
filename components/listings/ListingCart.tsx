@@ -224,8 +224,7 @@ export default function ListingCart({
             background: "var(--surface-white)",
             border: "1px solid var(--border-soft)",
             boxShadow: "0 8px 32px rgba(15,20,25,0.12)",
-            // Sits centered above the phone tab bar rather than under/behind it —
-            // `--bottom-nav-height` is 0 from lg up, where the tab bar is hidden anyway.
+            // Sits centered above the tab bar (present on every screen size) rather than under it.
             bottom: "calc(var(--bottom-nav-height) + 1rem)"
           }}
         >
