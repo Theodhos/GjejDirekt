@@ -15,16 +15,13 @@ const poppins = Poppins({
 
 export const metadata: Metadata = {
   title: {
-    default: "GjejDirekt — Gjej biznese pranë teje dhe porosit direkt",
+    // Short enough to read in full on a browser tab; the description carries the rest.
+    default: "GjejDirekt",
     template: "%s | GjejDirekt"
   },
   description:
-    "GjejDirekt është direktoria e bizneseve në Shqipëri: gjej restorante, hotele, shërbime dhe produkte pranë teje dhe porosit ose rezervo direkt në WhatsApp, pa komision.",
-  icons: {
-    icon: [{ url: "/uploads/iconee.png", type: "image/png" }],
-    shortcut: [{ url: "/uploads/iconee.png", type: "image/png" }],
-    apple: [{ url: "/uploads/iconee.png", type: "image/png" }]
-  }
+    "GjejDirekt është direktoria e bizneseve në Shqipëri: gjej restorante, hotele, shërbime dhe produkte pranë teje dhe porosit ose rezervo direkt në WhatsApp, pa komision."
+  // The tab icon (the pin from the menu) comes from app/icon.svg, app/favicon.ico and app/apple-icon.png.
 };
 
 export const viewport = {

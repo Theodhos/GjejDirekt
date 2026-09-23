@@ -10,7 +10,8 @@ import ListingsBanner, { type ListingsBannerData } from "@/components/listings/L
 import { useLanguage } from "@/context/LanguageContext";
 import { categories, getCategoryByValue } from "@/lib/constants";
 import { offersFoodServices } from "@/lib/food";
-import { getOpenStatus, matchesQuery, normalizeText, parseHours } from "@/lib/listing-display";
+import type { MenuItem } from "@/lib/food-server";
+import { getOpenStatus, matchScore, matchesQuery, normalizeText, parseHours } from "@/lib/listing-display";
 
 type Tab = "all" | "businesses" | "products" | "services";
 type Sort = "updated" | "rating" | "popular" | "name";
@@ -115,7 +116,10 @@ export default function ListingResults({
       if (minRating && Number(listing.ratingAverage || 0) < minRating) return false;
       if (onlyOpen && getOpenStatus(listing.businessHours).kind !== "open") return false;
 
-      const menu: string[] = listing.menuTerms || [];
+      // What the business offers: the title and description of each product, dish, room or
+      // service, and its section — so searching for one finds the business.
+      const items: MenuItem[] = listing.menuItems || [];
+      const menuText = items.map((item) => `${item.n} ${item.d || ""} ${item.s || ""}`).join(" ");
       const business = [
         listing.title,
         listing.description,
@@ -127,17 +131,17 @@ export default function ListingResults({
         ...(listing.tags || [])
       ].join(" ");
       // Place words in the query ("tirane") must still match when only the dishes are searched.
-      const dishes = [...menu, listing.location, listing.address].join(" ");
+      const dishes = [menuText, listing.location, listing.address].join(" ");
 
       switch (tab) {
         case "businesses":
           return matchesQuery(business, text);
         case "products":
-          return menu.length > 0 && matchesQuery(dishes, text);
+          return items.length > 0 && matchesQuery(dishes, text);
         case "services":
-          return offersFoodServices(listing) && matchesQuery(`${business} ${menu.join(" ")}`, text);
+          return offersFoodServices(listing) && matchesQuery(`${business} ${menuText}`, text);
         default:
-          return matchesQuery(`${business} ${menu.join(" ")}`, text);
+          return matchesQuery(`${business} ${menuText}`, text);
       }
     });
 
@@ -190,6 +194,18 @@ export default function ListingResults({
     setTab("all");
     setQuery("");
     onSubmitQuery?.("");
+  }
+
+  /** The offered items that contain the searched words, best match first — shown under the result so it is clear why it matched. */
+  function matchedItems(listing: any): string[] {
+    if (!trimmedQuery) return [];
+    const items: MenuItem[] = listing.menuItems || [];
+    return items
+      .map((item, index) => ({ item, index, score: matchScore(`${item.n} ${item.d || ""}`, trimmedQuery) }))
+      .filter((entry) => entry.score > 0)
+      .sort((a, b) => b.score - a.score || a.index - b.index)
+      .slice(0, 2)
+      .map((entry) => entry.item.n);
   }
 
   const countLabel =
@@ -371,7 +387,13 @@ export default function ListingResults({
           <>
             <div className="border-t lg:grid lg:grid-cols-2 lg:gap-3 lg:border-t-0 lg:px-0 lg:pb-4" style={{ borderColor: "var(--border-soft)" }}>
               {results.slice(0, visible).map((listing, index) => (
-                <ListingRow key={listing._id?.toString?.() || listing.slug} listing={listing} priority={index < 3} showCategory={!category} />
+                <ListingRow
+                  key={listing._id?.toString?.() || listing.slug}
+                  listing={listing}
+                  priority={index < 3}
+                  showCategory={!category}
+                  matchedItems={matchedItems(listing)}
+                />
               ))}
             </div>
             {results.length > visible && (

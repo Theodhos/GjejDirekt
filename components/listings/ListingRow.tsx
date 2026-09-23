@@ -24,11 +24,14 @@ import { formatPrice, fromPriceShort, startingPrice } from "@/lib/pricing";
 export default function ListingRow({
   listing,
   priority = false,
-  showCategory = false
+  showCategory = false,
+  matchedItems = []
 }: {
   listing: any;
   priority?: boolean;
   showCategory?: boolean;
+  /** Titles of the offered items a search matched — printed under the row. */
+  matchedItems?: string[];
 }) {
   const { language, t } = useLanguage();
   const en = language === "en";
@@ -111,6 +114,15 @@ export default function ListingRow({
           <p className="flex items-center gap-1 text-[13px]" style={{ color: "var(--text-secondary)" }}>
             <MapPin className="h-3.5 w-3.5 shrink-0" style={{ color: "var(--text-tertiary)" }} />
             <span className="truncate">{address}</span>
+          </p>
+        )}
+
+        {matchedItems.length > 0 && (
+          <p className="truncate text-[12px]" style={{ color: "var(--text-secondary)" }}>
+            <span className="font-semibold" style={{ color: "var(--brand-accent)" }}>
+              {en ? "Offers" : "Ofron"}:
+            </span>{" "}
+            {matchedItems.join(", ")}
           </p>
         )}
 

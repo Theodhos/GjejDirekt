@@ -7,6 +7,7 @@ import { escapeRegex, slugify } from "@/lib/utils";
 import { apiError } from "@/lib/api";
 import { categories, getCategorySearchValues, getSubcategorySearchValues, type ListingAction } from "@/lib/constants";
 import Listing from "@/models/Listing";
+import Product from "@/models/Product";
 import User from "@/models/User";
 import { rankListings } from "@/lib/ranking";
 
@@ -44,7 +45,7 @@ function parseCoordinates(body: Record<string, unknown>) {
   return { lat, lng };
 }
 
-function buildQuery(url: URL) {
+async function buildQuery(url: URL) {
   const search = url.searchParams.get("q")?.trim();
   const category = url.searchParams.get("category")?.trim();
   const subcategory = url.searchParams.get("subcategory")?.trim();
@@ -84,11 +85,19 @@ function buildQuery(url: URL) {
       )
       .map((cat) => cat.value);
 
+    // A business also matches when one of its products, dishes, rooms or services has the
+    // words in its title or description.
+    const productListingIds = await Product.find({
+      available: true,
+      $or: [{ name: { $regex: searchRegex } }, { description: { $regex: searchRegex } }]
+    }).distinct("listing");
+
     query.$or = [
       { title: { $regex: searchRegex } },
       { location: { $regex: searchRegex } },
       { category: { $regex: searchRegex } },
-      ...(matchedCategories.length ? [{ category: { $in: matchedCategories } }] : [])
+      ...(matchedCategories.length ? [{ category: { $in: matchedCategories } }] : []),
+      ...(productListingIds.length ? [{ _id: { $in: productListingIds } }] : [])
     ];
   }
 
@@ -105,7 +114,7 @@ export async function GET(request: Request) {
   try {
     await connectDB();
     const url = new URL(request.url);
-    const { query, sortQuery, sort } = buildQuery(url);
+    const { query, sortQuery, sort } = await buildQuery(url);
     const listings = await Listing.find(query).sort(sortQuery).populate("owner", "name email role").lean<any>();
 
     // Paid packages rank first, then WhatsApp engagement, then newest — but an

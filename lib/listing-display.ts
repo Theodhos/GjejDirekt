@@ -14,17 +14,34 @@ export function normalizeText(value: unknown) {
     .toLowerCase();
 }
 
+/** The words of a search, normalised. */
+export function queryTokens(query: string) {
+  return normalizeText(query).split(/\s+/).filter(Boolean);
+}
+
+/**
+ * Words of five letters or more also match without their last letter, which is what
+ * lets "tirana" find "Tiranë" and "burgers" find "burger".
+ */
+function hasToken(normalizedText: string, token: string) {
+  return normalizedText.includes(token) || (token.length >= 5 && normalizedText.includes(token.slice(0, -1)));
+}
+
 /**
  * Every word of the query has to show up somewhere in the text ("burger tirane"
  * finds a burger place in Tiranë, not only a name containing that exact phrase).
- * Words of five letters or more also match without their last letter, which is
- * what lets "tirana" find "Tiranë" and "burgers" find "burger".
  */
 export function matchesQuery(haystack: string, query: string) {
-  const tokens = normalizeText(query).split(/\s+/).filter(Boolean);
+  const tokens = queryTokens(query);
   if (!tokens.length) return true;
   const text = normalizeText(haystack);
-  return tokens.every((token) => text.includes(token) || (token.length >= 5 && text.includes(token.slice(0, -1))));
+  return tokens.every((token) => hasToken(text, token));
+}
+
+/** How many of the query's words this text contains — used to pick the best-matching items. */
+export function matchScore(haystack: string, query: string) {
+  const text = normalizeText(haystack);
+  return queryTokens(query).filter((token) => hasToken(text, token)).length;
 }
 
 /* ------------------------------------------------------------ opening hours */

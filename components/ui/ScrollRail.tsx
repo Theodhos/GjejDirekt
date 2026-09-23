@@ -26,13 +26,18 @@ export default function ScrollRail({
   const en = language === "en";
   const rail = useRef<HTMLDivElement>(null);
   const [edges, setEdges] = useState({ left: false, right: false });
+  const shown = useRef(edges);
 
+  // Only touches state when an arrow really has to appear or go — a setState on every
+  // measurement would keep re-rendering the rail.
   const measure = useCallback(() => {
     const el = rail.current;
     if (!el) return;
     const left = el.scrollLeft > 4;
     const right = el.scrollLeft + el.clientWidth < el.scrollWidth - 4;
-    setEdges((prev) => (prev.left === left && prev.right === right ? prev : { left, right }));
+    if (shown.current.left === left && shown.current.right === right) return;
+    shown.current = { left, right };
+    setEdges({ left, right });
   }, []);
 
   useEffect(() => {
@@ -47,8 +52,8 @@ export default function ScrollRail({
     };
   }, [measure]);
 
-  // The items can change with any render (another category brings other types).
-  useEffect(measure);
+  // Another category (or language) brings other items, so measure again when it changes.
+  useEffect(measure, [measure, focusKey, language]);
 
   useEffect(() => {
     const el = rail.current;
