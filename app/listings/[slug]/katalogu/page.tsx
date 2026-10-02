@@ -4,7 +4,7 @@ import Listing from "@/models/Listing";
 import { getListingPageData } from "@/lib/listing-page-data";
 import ListingReservationModal from "@/components/listings/ListingReservationModal";
 import ListingCart from "@/components/listings/ListingCart";
-import BusinessPage from "@/components/listings/BusinessPage";
+import ListingCatalogPage from "@/components/listings/ListingCatalogPage";
 
 export const dynamic = "force-dynamic";
 
@@ -12,27 +12,23 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   await connectDB();
   const listing = await Listing.findOne({ slug: params.slug, status: "approved" }).lean<any>();
   if (!listing) return {};
-  return {
-    title: `${listing.title} | GjejDirekt`,
-    description: listing.description.slice(0, 160)
-  };
+  return { title: `Katalogu | ${listing.title} | GjejDirekt` };
 }
 
-export default async function ListingDetailPage({ params }: { params: { slug: string } }) {
+/**
+ * The business's own catalog, on its own page: search + section pills + a card
+ * grid of everything it sells or books (components/listings/ListingCatalogPage) —
+ * one design for every category, reached from the business page's "Katalogu" tab.
+ * Same basket/reservation wiring as the business page itself (lib/listing-page-data).
+ */
+export default async function ListingCatalogRoute({ params }: { params: { slug: string } }) {
   const { listing, products, phone, phoneDigits, hasReservation, hasCatalog, basketIsReservation, orderHistoryListing } = await getListingPageData(
-    params.slug,
-    { countView: true }
+    params.slug
   );
 
-  // Every business, whatever its category, gets the one page (cover, quick actions, tabs,
-  // the offer with "+ Shto" and the basket bar) — see BusinessPage for what changes per
-  // category. Food is always ordered from the basket (a table is booked through the
-  // "Rezervo tavolinë" link, not through the hotel-style booking form); a catalog business
-  // that also takes reservations (a hotel picking a room) books through the same basket in
-  // its booking mode.
   return (
     <main style={{ background: "var(--surface-subtle)" }}>
-      <BusinessPage listing={listing} products={products} phone={phone} phoneDigits={phoneDigits} hasCatalog={hasCatalog} />
+      <ListingCatalogPage listing={listing} products={products} phone={phone} phoneDigits={phoneDigits} />
 
       {hasCatalog && (
         <ListingCart
@@ -46,8 +42,6 @@ export default async function ListingDetailPage({ params }: { params: { slug: st
         />
       )}
 
-      {/* Floating "Rezervo" CTA — for reservation businesses with no catalog to add-to-cart
-          from first (a hairdresser, a dentist, a mechanic...). */}
       {hasReservation && !hasCatalog && (
         <ListingReservationModal
           listingId={listing._id.toString()}

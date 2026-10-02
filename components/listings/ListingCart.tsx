@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { ChevronRight, Minus, Plus, ShoppingCart, Trash2, X, MessageCircle, Lock, Calendar } from "lucide-react";
+import { ChevronRight, Minus, Plus, ShoppingCart, Trash2, X, MessageCircle, Lock, Calendar, Clock } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { formatPrice } from "@/lib/pricing";
 import SafeImage from "@/components/ui/SafeImage";
@@ -18,13 +18,13 @@ import {
 } from "@/lib/cart";
 import { recordOrderContact } from "@/lib/order-history";
 import { getCategoryByValue } from "@/lib/constants";
+import { isFoodListing } from "@/lib/food";
 
 export default function ListingCart({
   listingSlug,
   listingId,
   businessName,
   phoneDigits,
-  phone,
   listing,
   isReservation = false,
   variant = "floating"
@@ -33,8 +33,6 @@ export default function ListingCart({
   listingId?: string;
   businessName: string;
   phoneDigits: string;
-  /** Human-formatted phone shown in the WhatsApp message header (falls back to phoneDigits). */
-  phone?: string;
   listing?: { slug: string; title: string; images?: string[]; location?: string; category?: string };
   isReservation?: boolean;
   /**
@@ -52,6 +50,7 @@ export default function ListingCart({
   // Booking states
   const [checkIn, setCheckIn] = useState("");
   const [checkOut, setCheckOut] = useState("");
+  const [serviceTime, setServiceTime] = useState("");
   const [persons, setPersons] = useState(2);
   const [specialRequest, setSpecialRequest] = useState("");
   const [customerName, setCustomerName] = useState("");
@@ -103,17 +102,30 @@ export default function ListingCart({
   // "akomodim", "hotel", "hotels", "resort", ...) rather than a raw string match,
   // so any listing that actually belongs to Hotele & Akomodim is recognized. The
   // item-name check stays as a fallback for listings still missing a category.
-  const isBooking = isReservation || getCategoryByValue(listing?.category)?.value === "hotele" || items.some(i => i.name.toLowerCase().includes("dhom"));
+  const isStay = getCategoryByValue(listing?.category)?.value === "hotele" || items.some(i => i.name.toLowerCase().includes("dhom"));
+  // Lines the owner marked "Rezervo" inside an order-taking business (a café's massage next to its coffees).
+  const bookedItems = items.filter((item) => item.action === "rezervim");
+  // A booking is either a stay (dates + guests, priced per night) or a service appointment
+  // (one date and a time — a haircut, a check-up, a repair). The whole basket is one when
+  // the business only books, or when every line in it is a "Rezervo" line.
+  const isBooking = isReservation || isStay || bookedItems.length === items.length;
+  // A mixed basket stays an order but still needs a date/time and a phone for its booked lines.
+  const hasBooked = isBooking || bookedItems.length > 0;
+  const isMixed = hasBooked && !isBooking;
 
   const whatsappHref = buildOrderWhatsappHref(phoneDigits, businessName, items, language, {
     location: listing?.location,
-    phone: phone || phoneDigits,
     note: isBooking ? specialRequest : orderNote,
     isHotel: isBooking,
-    checkIn: isBooking ? checkIn : undefined,
-    checkOut: isBooking ? checkOut : undefined,
-    persons: isBooking ? persons : undefined,
+    isFood: isFoodListing(listing),
+    bookingKind: isStay ? "stay" : "service",
+    checkIn: isStay ? checkIn : undefined,
+    checkOut: isStay ? checkOut : undefined,
+    persons: isStay ? persons : undefined,
+    date: hasBooked && !isStay ? checkIn : undefined,
+    time: hasBooked && !isStay ? serviceTime : undefined,
     customerName,
+    customerPhone: customerPhone.trim() || undefined,
     customerAddress: isBooking ? undefined : customerAddress,
     paymentMethod
   });
@@ -127,7 +139,8 @@ export default function ListingCart({
     // Booking (a hotel room, a table) is also a real reservation — persist it
     // server-side so the business can see and confirm it from the dashboard,
     // not only from the WhatsApp message this same click sends.
-    if (isBooking && listingId && checkIn && customerName.trim() && customerPhone.trim()) {
+    const reserved = isBooking ? items : bookedItems;
+    if (hasBooked && listingId && checkIn && customerName.trim() && customerPhone.trim()) {
       fetch("/api/reservations", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -136,11 +149,12 @@ export default function ListingCart({
           customerName: customerName.trim(),
           customerPhone: customerPhone.trim(),
           date: checkIn,
-          endDate: checkOut || undefined,
-          partySize: persons,
+          endDate: isStay ? checkOut || undefined : undefined,
+          time: isStay ? undefined : serviceTime || undefined,
+          partySize: isStay ? persons : undefined,
           notes: specialRequest || undefined,
-          productId: items[0]?.productId,
-          itemName: items.map((item) => item.name).join(", ")
+          productId: reserved[0]?.productId,
+          itemName: reserved.map((item) => item.name).join(", ")
         }),
         keepalive: true
       }).catch(() => {});
@@ -284,14 +298,14 @@ export default function ListingCart({
 
             <div className="px-5 pt-4 pb-2 shrink-0">
               <span className="inline-flex rounded-full bg-red-50 text-red-600 px-3 py-1 text-xs font-bold">
-                {isBooking ? (en ? "Reservation" : "Rezervim") : (en ? "Order" : "Porosi")}
+                {isBooking ? (en ? "Reservation" : "Rezervim") : isMixed ? (en ? "Order + Reservation" : "Porosi + Rezervim") : en ? "Order" : "Porosi"}
               </span>
             </div>
 
             {/* Modal Body */}
             <div className="space-y-4 overflow-y-auto px-5 py-2 flex-1">
               {items.map((item) => (
-                <div key={item.productId} className="flex items-start gap-3 pb-4" style={isBooking ? {} : { borderBottom: "1px solid var(--border-soft)" }}>
+                <div key={item.productId} className="flex items-start gap-3 pb-4" style={isStay ? {} : { borderBottom: "1px solid var(--border-soft)" }}>
                   <div className="relative w-16 h-16 rounded-xl overflow-hidden shrink-0 bg-neutral-100 border border-neutral-200">
                     <SafeImage src={item.image ?? null} alt={item.name} fill className="object-cover" />
                   </div>
@@ -300,6 +314,11 @@ export default function ListingCart({
                     <div className="flex justify-between items-start gap-2">
                       <p className="text-[14px] font-bold leading-tight" style={{ color: "var(--text-primary)" }}>
                         {item.name}
+                        {isMixed && item.action === "rezervim" && (
+                          <span className="ml-2 inline-flex items-center gap-1 rounded-full bg-red-50 px-2 py-0.5 align-middle text-[10px] font-bold text-red-600">
+                            <Calendar className="h-3 w-3" /> {en ? "Booking" : "Rezervim"}
+                          </span>
+                        )}
                       </p>
                       <button
                         type="button"
@@ -312,11 +331,11 @@ export default function ListingCart({
                     
                     {typeof item.price === "number" && (
                       <p className="text-[12px] font-medium mt-1" style={{ color: "var(--text-secondary)" }}>
-                        {formatPrice(item.price)} {isBooking ? "/ natë" : ""}
+                        {formatPrice(item.price)} {isStay ? "/ natë" : ""}
                       </p>
                     )}
 
-                    {!isBooking && (
+                    {!isStay && (
                       <div className="flex items-center justify-between mt-3">
                         <div className="flex items-center gap-4">
                           <button
@@ -375,7 +394,36 @@ export default function ListingCart({
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 gap-4">
+                  {/* A service appointment: one day and, optionally, a time. */}
+                  {!isStay && (
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="flex items-center gap-2 text-[13px] font-bold mb-2 text-neutral-700">
+                          <Calendar className="w-4 h-4" /> {en ? "Date" : "Data"}
+                        </label>
+                        <input
+                          type="date"
+                          value={checkIn}
+                          onChange={(e) => setCheckIn(e.target.value)}
+                          className="w-full border border-neutral-200 rounded-xl px-3 py-3 text-[14px] outline-none focus:border-red-500"
+                        />
+                      </div>
+                      <div>
+                        <label className="flex items-center gap-2 text-[13px] font-bold mb-2 text-neutral-700">
+                          <Clock className="w-4 h-4" /> {en ? "Time" : "Ora"}
+                        </label>
+                        <input
+                          type="time"
+                          value={serviceTime}
+                          onChange={(e) => setServiceTime(e.target.value)}
+                          className="w-full border border-neutral-200 rounded-xl px-3 py-3 text-[14px] outline-none focus:border-red-500"
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  {/* A stay: check-in / check-out dates and the number of guests (hotels). */}
+                  <div className={isStay ? "grid grid-cols-1 gap-4" : "hidden"}>
                     <div>
                       <label className="flex items-center gap-2 text-[13px] font-bold mb-2 text-neutral-700">
                         <Calendar className="w-4 h-4" /> {en ? "Check-in date" : "Data e hyrjes"}
@@ -400,7 +448,7 @@ export default function ListingCart({
                     </div>
                   </div>
 
-                  <div>
+                  <div className={isStay ? undefined : "hidden"}>
                     <label className="text-[13px] font-bold mb-2 block text-neutral-700 flex items-center gap-2">
                       <span className="w-4 h-4 flex items-center justify-center border border-current rounded-full text-[10px]">8</span> {en ? "Number of persons" : "Numri i personave"}
                     </label>
@@ -423,7 +471,7 @@ export default function ListingCart({
                     />
                   </div>
 
-                  <div className="bg-neutral-50 rounded-xl p-4 space-y-3">
+                  <div className={`bg-neutral-50 rounded-xl p-4 space-y-3 ${isStay ? "" : "hidden"}`}>
                     <p className="font-bold text-[14px] mb-2">{en ? "Summary" : "Përmbledhje"}</p>
                     <div className="flex justify-between text-[13px] text-neutral-600">
                       <span>{formatPrice(total)} × 1 {en ? "night" : "natë"}</span>
@@ -461,6 +509,50 @@ export default function ListingCart({
                       placeholder={en ? "Street, city..." : "Rruga, qyteti..."}
                     />
                   </div>
+
+                  {/* The booked lines of a mixed basket: a phone to confirm on, and when. */}
+                  {isMixed && (
+                    <div className="space-y-4 rounded-xl bg-neutral-50 p-4">
+                      <p className="flex items-center gap-2 text-[13px] font-bold text-neutral-700">
+                        <Calendar className="w-4 h-4" /> {en ? "For the booking" : "Për rezervimin"}
+                      </p>
+                      <div>
+                        <label className="flex items-center gap-2 text-[13px] font-bold mb-2 text-neutral-700">
+                          {en ? "Phone number" : "Numri i telefonit"}
+                        </label>
+                        <input
+                          value={customerPhone}
+                          onChange={(e) => setCustomerPhone(e.target.value)}
+                          className="w-full border border-neutral-200 rounded-xl px-4 py-3 text-[14px] outline-none focus:border-red-500"
+                          placeholder="+355 6X XXX XXXX"
+                        />
+                      </div>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className="flex items-center gap-2 text-[13px] font-bold mb-2 text-neutral-700">
+                            <Calendar className="w-4 h-4" /> {en ? "Date" : "Data"}
+                          </label>
+                          <input
+                            type="date"
+                            value={checkIn}
+                            onChange={(e) => setCheckIn(e.target.value)}
+                            className="w-full border border-neutral-200 rounded-xl px-3 py-3 text-[14px] outline-none focus:border-red-500"
+                          />
+                        </div>
+                        <div>
+                          <label className="flex items-center gap-2 text-[13px] font-bold mb-2 text-neutral-700">
+                            <Clock className="w-4 h-4" /> {en ? "Time" : "Ora"}
+                          </label>
+                          <input
+                            type="time"
+                            value={serviceTime}
+                            onChange={(e) => setServiceTime(e.target.value)}
+                            className="w-full border border-neutral-200 rounded-xl px-3 py-3 text-[14px] outline-none focus:border-red-500"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
 

@@ -1,4 +1,4 @@
-import { getCategoryByValue } from "@/lib/constants";
+import { getCategoryByValue, getListingActions } from "@/lib/constants";
 
 /**
  * What a business lets a visitor add to their order or booking, and what to call it.
@@ -61,10 +61,32 @@ export const OFFER_COPY: Record<OfferKind, OfferCopy> = {
   }
 };
 
-/** Which words the business page uses for this listing's offer. */
-export function getOfferKind(listing: { category?: string }, hasCatalog: boolean): OfferKind {
+/**
+ * Which words the business page uses for this listing's offer. Food has a menu and
+ * hotels have rooms; every other business either sells things that are ordered
+ * (products) or sells time that is booked (services) — whichever it does, it can put
+ * a catalog of them on its page.
+ */
+export function getOfferKind(listing: {
+  category?: string;
+  subcategory?: string;
+  actions?: string[] | null;
+}): OfferKind {
   const category = getCategoryByValue(listing.category)?.value;
   if (category === "ushqim-pije") return "menu";
   if (category === "hotele") return "rooms";
-  return hasCatalog ? "products" : "services";
+  return getListingActions(listing).includes("porosi") ? "products" : "services";
+}
+
+/** What a visitor does with one item: "porosi" = Porosit (basket, order), "rezervim" = Rezervo (date/time, booking). */
+export type ProductAction = "porosi" | "rezervim";
+
+/** What a kind of business does with an item unless the owner says otherwise: rooms and services are booked, everything else is ordered. */
+export function defaultProductAction(kind: OfferKind): ProductAction {
+  return kind === "rooms" || kind === "services" ? "rezervim" : "porosi";
+}
+
+/** The action of one item — its own setting when the owner picked one (a café's massage is booked, its coffee ordered), else the business's default. */
+export function getProductAction(product: { action?: string | null }, kind: OfferKind): ProductAction {
+  return product.action === "porosi" || product.action === "rezervim" ? product.action : defaultProductAction(kind);
 }

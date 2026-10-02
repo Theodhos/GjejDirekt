@@ -26,7 +26,7 @@ import {
 import toast from "react-hot-toast";
 import SafeImage from "@/components/ui/SafeImage";
 import { useLanguage } from "@/context/LanguageContext";
-import { OFFER_COPY, type OfferKind } from "@/lib/business-offer";
+import { OFFER_COPY, getProductAction, type OfferKind } from "@/lib/business-offer";
 import { addToCart, onCartChange, readCart, setCartQty } from "@/lib/cart";
 import { getCategoryIcon } from "@/lib/category-icons";
 import { formatPrice } from "@/lib/pricing";
@@ -144,7 +144,7 @@ export default function BusinessMenu({
   const active = sections.find((section) => section.key === activeKey) || sections[0];
 
   const handleAdd = (product: ListingProduct, silent = false) => {
-    addToCart(listingSlug, { productId: product._id, name: product.name, price: product.price, image: product.image }, 1);
+    addToCart(listingSlug, { productId: product._id, name: product.name, price: product.price, image: product.image, action: getProductAction(product, kind) }, 1);
     if (!silent) toast.success(en ? `Added ${product.name} to your order` : `${product.name} u shtua në porosinë tuaj`);
   };
 

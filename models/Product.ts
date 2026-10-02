@@ -9,6 +9,8 @@ export interface IProduct extends Document {
   image?: string;
   /** Menu section the owner grouped this item under, e.g. "Krepë të ëmbël" — free text, per listing. */
   menuCategory?: string;
+  /** Visitors order it (basket → WhatsApp order) or book it (date/time → WhatsApp reservation); unset = the business's default. */
+  action?: "porosi" | "rezervim";
   available: boolean;
   order: number;
   createdAt: Date;
@@ -24,6 +26,7 @@ const ProductSchema = new Schema<IProduct>(
     price: { type: Number },
     image: { type: String },
     menuCategory: { type: String, trim: true },
+    action: { type: String, enum: ["porosi", "rezervim"] },
     available: { type: Boolean, default: true },
     order: { type: Number, default: 0 }
   },

@@ -1,4 +1,5 @@
 import { formatPrice } from "@/lib/pricing";
+import { PLATFORM_WHATSAPP_NUMBER } from "@/lib/constants";
 
 /**
  * The food-ordering cart, scoped per business.
@@ -18,6 +19,8 @@ export type CartItem = {
   price?: number;
   qty: number;
   image?: string;
+  /** "rezervim" lines are booked (date/time) even inside an order basket; anything else is ordered. */
+  action?: "porosi" | "rezervim";
 };
 
 function storageKey(listingSlug: string) {
@@ -52,7 +55,7 @@ function writeCart(listingSlug: string, items: CartItem[]) {
 /** Adds `qty` of a product to the cart, merging into any existing line for it. */
 export function addToCart(
   listingSlug: string,
-  item: { productId: string; name: string; price?: number; image?: string },
+  item: { productId: string; name: string; price?: number; image?: string; action?: CartItem["action"] },
   qty = 1
 ) {
   if (typeof window === "undefined" || !listingSlug || qty <= 0) return;
@@ -61,7 +64,7 @@ export function addToCart(
   if (existing) {
     existing.qty += qty;
   } else {
-    items.push({ productId: item.productId, name: item.name, price: item.price, image: item.image, qty });
+    items.push({ productId: item.productId, name: item.name, price: item.price, image: item.image, action: item.action, qty });
   }
   writeCart(listingSlug, items);
 }
@@ -107,20 +110,32 @@ export function onCartChange(listener: () => void) {
 export type OrderDetails = {
   /** Business address/city shown under its name, e.g. "Bllok, Rr. Brigada e VIII, Tiranë". */
   location?: string;
-  /** Human-formatted phone, e.g. "+355 69 123 4567" (falls back to raw digits when absent). */
-  phone?: string;
   /** Free-text note from the customer — order instructions or special requests. */
   note?: string;
+  /** True for any booking (the name predates services) — the message is a reservation, not an order. */
   isHotel?: boolean;
+  /** A booking is a stay (dates and guests — hotels) or a service (one date and a time — a salon, a dentist). */
+  bookingKind?: "stay" | "service";
   checkIn?: string;
   checkOut?: string;
   persons?: number;
+  /** Service bookings: the day and, optionally, the time of the appointment. */
+  date?: string;
+  time?: string;
   /** Who's ordering/booking — this is what the business needs, not their own name. */
   customerName?: string;
+  /** Collected for bookings (to confirm by phone); regular orders don't ask for it. */
+  customerPhone?: string;
   /** Delivery address for an order, or just contact info for a reservation. */
   customerAddress?: string;
   /** "Kesh në dorë", "Kartë (POS) në dorë", "Transfertë bankare"... */
   paymentMethod?: string;
+  /**
+   * False for a non-food order (a shop, local products, electronics...) — the
+   * ~20-30 min line is a kitchen wait time and reads wrong for anything that isn't
+   * food. Defaults to true so a caller that doesn't know yet keeps the old wording.
+   */
+  isFood?: boolean;
 };
 
 const SEPARATOR = "━".repeat(20);
@@ -140,29 +155,49 @@ export function buildOrderMessage(
   const en = language === "en";
   const hasAllPrices = items.every((item) => typeof item.price === "number");
   const total = hasAllPrices ? cartTotal(items) : null;
-  const nightSuffix = details.isHotel ? (en ? "/night" : "/natë") : "";
+  const isService = Boolean(details.isHotel) && details.bookingKind === "service";
+  const nightSuffix = details.isHotel && !isService ? (en ? "/night" : "/natë") : "";
+  const isFood = details.isFood ?? true;
 
   const parts = [SEPARATOR];
+  const businessLine = details.location?.trim() ? `${businessName} — ${details.location.trim()}` : businessName;
+  parts.push(`🏪 ${en ? "BUSINESS" : "BIZNESI"}: ${businessLine}`);
   parts.push(`👤 ${en ? "CUSTOMER" : "KLIENTI"}: ${details.customerName?.trim() || (en ? "Not provided" : "Pa emër")}`);
+  if (details.customerPhone?.trim()) {
+    parts.push(`📞 ${en ? "PHONE" : "TELEFONI"}: ${details.customerPhone.trim()}`);
+  }
   if (details.customerAddress?.trim()) {
     parts.push(`📍 ${en ? "ADDRESS" : "ADRESA"}: ${details.customerAddress.trim()}`);
   }
   parts.push(SEPARATOR, "");
 
-  if (details.isHotel) {
-    parts.push(`🛏️ ${en ? "RESERVATION" : "REZERVIMI"}:`);
-    for (const item of items) {
+  // A whole-basket booking (hotel, salon) books every line; an order basket can still carry
+  // "Rezervo" lines (a café's massage next to its coffees), which get their own section.
+  const booked = details.isHotel ? items : items.filter((item) => item.action === "rezervim");
+  const ordered = details.isHotel ? [] : items.filter((item) => item.action !== "rezervim");
+  const isStay = Boolean(details.isHotel) && !isService;
+
+  if (ordered.length) {
+    parts.push(`${isFood ? "🍽️" : "🛍️"} ${en ? "ITEMS" : "ARTIKUJT"}:`);
+    for (const item of ordered) {
+      const price = typeof item.price === "number" ? ` - ${formatPrice(item.price * item.qty)}` : "";
+      parts.push(`• ${item.qty}x ${item.name}${price}`);
+    }
+  }
+  if (booked.length) {
+    if (ordered.length) parts.push("");
+    parts.push(`${isStay ? "🛏️" : "📅"} ${en ? "RESERVATION" : "REZERVIMI"}:`);
+    for (const item of booked) {
       const price = typeof item.price === "number" ? ` - ${formatPrice(item.price * item.qty)}${nightSuffix}` : "";
       parts.push(`• ${item.qty}x ${item.name}${price}`);
     }
-    if (details.checkIn) parts.push(`• ${en ? "Check-in" : "Check-in"}: ${details.checkIn}`);
-    if (details.checkOut) parts.push(`• ${en ? "Check-out" : "Check-out"}: ${details.checkOut}`);
-    if (details.persons) parts.push(`• ${en ? "Guests" : "Persona"}: ${details.persons}`);
-  } else {
-    parts.push(`🛒 ${en ? "ITEMS" : "ARTIKUJT"}:`);
-    for (const item of items) {
-      const price = typeof item.price === "number" ? ` - ${formatPrice(item.price * item.qty)}` : "";
-      parts.push(`• ${item.qty}x ${item.name}${price}`);
+    if (isStay) {
+      if (details.checkIn) parts.push(`• ${en ? "Check-in" : "Check-in"}: ${details.checkIn}`);
+      if (details.checkOut) parts.push(`• ${en ? "Check-out" : "Check-out"}: ${details.checkOut}`);
+      if (details.persons) parts.push(`• ${en ? "Guests" : "Persona"}: ${details.persons}`);
+    } else {
+      if (details.date) parts.push(`• ${en ? "Date" : "Data"}: ${details.date}`);
+      if (details.time) parts.push(`• ${en ? "Time" : "Ora"}: ${details.time}`);
     }
   }
 
@@ -170,7 +205,9 @@ export function buildOrderMessage(
   parts.push(
     details.isHotel
       ? `⏱️ ${en ? "CONFIRMATION" : "KONFIRMIMI"}: ${en ? "within 24h" : "brenda 24 orësh"}`
-      : `⏱️ ${en ? "WAIT" : "PRITJA"}: ~20-30 min`
+      : isFood
+        ? `⏱️ ${en ? "WAIT" : "PRITJA"}: ~20-30 min`
+        : `⏱️ ${en ? "CONFIRMATION" : "KONFIRMIMI"}: ${en ? "we'll contact you shortly" : "do t'ju kontaktojmë së shpejti"}`
   );
   if (details.note?.trim()) {
     parts.push(`💬 ${en ? "NOTE" : "SHËNIM"}: ${details.note.trim()}`);
@@ -191,5 +228,5 @@ export function buildOrderWhatsappHref(
   details: OrderDetails = {}
 ) {
   if (!phoneDigits || !items.length) return "";
-  return `https://wa.me/${phoneDigits}?text=${encodeURIComponent(buildOrderMessage(businessName, items, language, details))}`;
+  return `https://wa.me/${PLATFORM_WHATSAPP_NUMBER}?text=${encodeURIComponent(buildOrderMessage(businessName, items, language, details))}`;
 }

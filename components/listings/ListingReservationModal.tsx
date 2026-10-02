@@ -18,14 +18,11 @@ export default function ListingReservationModal({
   listingId,
   businessName,
   phoneDigits,
-  phone,
   listing
 }: {
   listingId?: string;
   businessName: string;
   phoneDigits: string;
-  /** Human-formatted phone shown in the WhatsApp message header (falls back to phoneDigits). */
-  phone?: string;
   listing?: { slug: string; title: string; images?: string[]; location?: string; category?: string };
 }) {
   const { language } = useLanguage();
@@ -86,7 +83,6 @@ export default function ListingReservationModal({
         {
           businessName,
           location: listing?.location,
-          phone: phone || phoneDigits,
           customerName: customerName.trim(),
           customerPhone: customerPhone.trim(),
           date,

@@ -2,12 +2,105 @@
 
 import { useRef, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import toast from "react-hot-toast";
-import { ArrowLeft, Loader2, Pencil, Plus, Trash2, UploadCloud, X } from "lucide-react";
+import { ArrowLeft, ArrowRight, BadgeCheck, Loader2, Pencil, Plus, Trash2, UploadCloud, X } from "lucide-react";
 import SafeImage from "@/components/ui/SafeImage";
 import { useLanguage } from "@/context/LanguageContext";
 import { formatPrice } from "@/lib/pricing";
+import { defaultProductAction, getOfferKind, getProductAction, type OfferKind, type ProductAction } from "@/lib/business-offer";
+
+type Bi = { en: string; sq: string };
+
+/** What the catalog is called and how the form talks about it, per kind of business. */
+const MANAGER_COPY: Record<
+  OfferKind,
+  {
+    manage: Bi;
+    intro: Bi;
+    add: Bi;
+    edit: Bi;
+    namePlaceholder: Bi;
+    section: Bi;
+    sectionPlaceholder: Bi;
+    sectionHint: Bi;
+    emptyTitle: Bi;
+    emptyText: Bi;
+  }
+> = {
+  menu: {
+    manage: { en: "Manage menu", sq: "Menaxho menunë" },
+    intro: {
+      en: "Add the food and drinks you sell. Visitors pick a quantity, add items to their basket, and send the order straight to your WhatsApp.",
+      sq: "Shtoni ushqimet dhe pijet që shisni. Vizitorët zgjedhin sasinë, i shtojnë në shportë dhe e dërgojnë porosinë direkt te WhatsApp-i juaj."
+    },
+    add: { en: "Add a product", sq: "Shto produkt" },
+    edit: { en: "Edit product", sq: "Modifiko produktin" },
+    namePlaceholder: { en: "e.g. Crêpe with Nutella", sq: "p.sh. Krep me Nutella" },
+    section: { en: "Menu section", sq: "Kategoria e menusë" },
+    sectionPlaceholder: { en: "e.g. Sweet crêpes", sq: "p.sh. Krepë të ëmbël" },
+    sectionHint: {
+      en: "Groups items on the menu, e.g. \"Sweet crêpes\", \"Drinks\". Leave blank to keep it ungrouped.",
+      sq: "Grupon artikujt në menu, p.sh. \"Krepë të ëmbël\", \"Pije\". Lëreni bosh nëse s'doni grupim."
+    },
+    emptyTitle: { en: "No products yet.", sq: "Nuk ka ende produkte." },
+    emptyText: { en: "Add your first menu item using the form.", sq: "Shtoni produktin tuaj të parë duke përdorur formularin." }
+  },
+  rooms: {
+    manage: { en: "Manage rooms", sq: "Menaxho dhomat" },
+    intro: {
+      en: "Add the rooms you offer with their price per night. Visitors pick a room, choose their dates, and send the booking request straight to your WhatsApp.",
+      sq: "Shtoni dhomat që ofroni me çmimin për natë. Vizitorët zgjedhin dhomën, datat dhe e dërgojnë kërkesën për rezervim direkt te WhatsApp-i juaj."
+    },
+    add: { en: "Add a room", sq: "Shto dhomë" },
+    edit: { en: "Edit room", sq: "Modifiko dhomën" },
+    namePlaceholder: { en: "e.g. Double room with sea view", sq: "p.sh. Dhomë dyshe me pamje nga deti" },
+    section: { en: "Room type", sq: "Lloji i dhomës" },
+    sectionPlaceholder: { en: "e.g. Suites", sq: "p.sh. Suita" },
+    sectionHint: {
+      en: "Groups rooms on your page, e.g. \"Suites\", \"Standard\". Leave blank to keep them ungrouped.",
+      sq: "Grupon dhomat në faqe, p.sh. \"Suita\", \"Standarde\". Lëreni bosh nëse s'doni grupim."
+    },
+    emptyTitle: { en: "No rooms yet.", sq: "Nuk ka ende dhoma." },
+    emptyText: { en: "Add your first room using the form.", sq: "Shtoni dhomën tuaj të parë duke përdorur formularin." }
+  },
+  products: {
+    manage: { en: "Manage products", sq: "Menaxho produktet" },
+    intro: {
+      en: "Add the products you sell. Visitors pick a quantity, add items to their basket, and send the order straight to your WhatsApp.",
+      sq: "Shtoni produktet që shisni. Vizitorët zgjedhin sasinë, i shtojnë në shportë dhe e dërgojnë porosinë direkt te WhatsApp-i juaj."
+    },
+    add: { en: "Add a product", sq: "Shto produkt" },
+    edit: { en: "Edit product", sq: "Modifiko produktin" },
+    namePlaceholder: { en: "e.g. Running shoes", sq: "p.sh. Këpucë sportive" },
+    section: { en: "Section", sq: "Kategoria" },
+    sectionPlaceholder: { en: "e.g. Shoes", sq: "p.sh. Këpucë" },
+    sectionHint: {
+      en: "Groups products on your page, e.g. \"Shoes\", \"Bags\". Leave blank to keep them ungrouped.",
+      sq: "Grupon produktet në faqe, p.sh. \"Këpucë\", \"Çanta\". Lëreni bosh nëse s'doni grupim."
+    },
+    emptyTitle: { en: "No products yet.", sq: "Nuk ka ende produkte." },
+    emptyText: { en: "Add your first product using the form.", sq: "Shtoni produktin tuaj të parë duke përdorur formularin." }
+  },
+  services: {
+    manage: { en: "Manage services", sq: "Menaxho shërbimet" },
+    intro: {
+      en: "Add the services you offer with their prices. Visitors pick a service, choose a date and time, and send the booking straight to your WhatsApp.",
+      sq: "Shtoni shërbimet që ofroni me çmimet e tyre. Vizitorët zgjedhin shërbimin, datën dhe orën dhe e dërgojnë rezervimin direkt te WhatsApp-i juaj."
+    },
+    add: { en: "Add a service", sq: "Shto shërbim" },
+    edit: { en: "Edit service", sq: "Modifiko shërbimin" },
+    namePlaceholder: { en: "e.g. Haircut", sq: "p.sh. Prerje flokësh" },
+    section: { en: "Section", sq: "Kategoria" },
+    sectionPlaceholder: { en: "e.g. Hair", sq: "p.sh. Flokë" },
+    sectionHint: {
+      en: "Groups services on your page, e.g. \"Hair\", \"Nails\". Leave blank to keep them ungrouped.",
+      sq: "Grupon shërbimet në faqe, p.sh. \"Flokë\", \"Thonj\". Lëreni bosh nëse s'doni grupim."
+    },
+    emptyTitle: { en: "No services yet.", sq: "Nuk ka ende shërbime." },
+    emptyText: { en: "Add your first service using the form.", sq: "Shtoni shërbimin tuaj të parë duke përdorur formularin." }
+  }
+};
 
 type Product = {
   _id: string;
@@ -16,6 +109,7 @@ type Product = {
   price?: number;
   image?: string;
   menuCategory?: string;
+  action?: ProductAction;
   available: boolean;
 };
 
@@ -25,32 +119,43 @@ type FormState = {
   price: string;
   image: string;
   menuCategory: string;
+  action: ProductAction;
   available: boolean;
 };
 
-const EMPTY_FORM: FormState = { name: "", description: "", price: "", image: "", menuCategory: "", available: true };
+const EMPTY_FORM: Omit<FormState, "action"> = { name: "", description: "", price: "", image: "", menuCategory: "", available: true };
 
 export default function ProductManagerClient({
   listing,
   products
 }: {
-  listing: { _id: string; slug: string; title: string };
+  listing: { _id: string; slug: string; title: string; category?: string; subcategory?: string; actions?: string[] | null };
   products: Product[];
 }) {
   const { language } = useLanguage();
   const en = language === "en";
+  const lang = en ? "en" : "sq";
+  const kind = getOfferKind(listing);
+  const copy = MANAGER_COPY[kind];
+  // New items start with what this kind of business usually does; the owner flips it per item.
+  const emptyForm: FormState = { ...EMPTY_FORM, action: defaultProductAction(kind) };
   const router = useRouter();
+  const searchParams = useSearchParams();
+  // Arrived straight from "Add listing" — this is that flow's last step, not a
+  // standalone dashboard visit, so the header reads as "finish setting up" rather
+  // than "manage" and "Back" would otherwise return into the wizard's history.
+  const isOnboarding = searchParams.get("onboarding") === "1";
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [items, setItems] = useState<Product[]>(products);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [form, setForm] = useState<FormState>(EMPTY_FORM);
+  const [form, setForm] = useState<FormState>(emptyForm);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const resetForm = () => {
-    setForm(EMPTY_FORM);
+    setForm(emptyForm);
     setEditingId(null);
   };
 
@@ -62,6 +167,7 @@ export default function ProductManagerClient({
       price: typeof product.price === "number" ? String(product.price) : "",
       image: product.image || "",
       menuCategory: product.menuCategory || "",
+      action: getProductAction(product, kind),
       available: product.available
     });
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -98,6 +204,7 @@ export default function ProductManagerClient({
         price: form.price ? Number(form.price) : undefined,
         image: form.image || undefined,
         menuCategory: form.menuCategory.trim() || undefined,
+        action: form.action,
         available: form.available
       };
 
@@ -174,16 +281,26 @@ export default function ProductManagerClient({
     <div style={{ background: "var(--surface-page)" }} className="min-h-screen pb-16">
       <section style={{ borderBottom: "1px solid var(--border-soft)", background: "var(--surface-cream)" }}>
         <div className="page-shell py-8 sm:py-10">
-          <button
-            type="button"
-            onClick={() => router.back()}
-            className="mb-4 inline-flex items-center gap-1.5 text-xs font-semibold transition-colors"
-            style={{ color: "var(--text-tertiary)" }}
-          >
-            <ArrowLeft className="h-3.5 w-3.5" />
-            {en ? "Back" : "Kthehu prapa"}
-          </button>
-          <p className="eyebrow mb-3">{en ? "Manage menu" : "Menaxho menunë"}</p>
+          {isOnboarding ? (
+            <div
+              className="mb-4 inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wider"
+              style={{ background: "var(--brand-light)", color: "var(--brand-accent)" }}
+            >
+              <BadgeCheck className="h-3.5 w-3.5" />
+              {en ? "Last step — your listing is already submitted" : "Hapi i fundit — listimi juaj u dërgua tashmë"}
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={() => router.back()}
+              className="mb-4 inline-flex items-center gap-1.5 text-xs font-semibold transition-colors"
+              style={{ color: "var(--text-tertiary)" }}
+            >
+              <ArrowLeft className="h-3.5 w-3.5" />
+              {en ? "Back" : "Kthehu prapa"}
+            </button>
+          )}
+          <p className="eyebrow mb-3">{copy.manage[lang]}</p>
           <h1
             className="font-bold tracking-tight"
             style={{ fontSize: "clamp(1.75rem, 4vw, 2.5rem)", color: "var(--text-primary)", lineHeight: 1.1 }}
@@ -191,17 +308,32 @@ export default function ProductManagerClient({
             {listing.title}
           </h1>
           <p className="mt-3 max-w-2xl text-sm leading-relaxed sm:text-base" style={{ color: "var(--text-secondary)" }}>
-            {en
-              ? "Add the food and drinks you sell. Visitors pick a quantity, add items to their basket, and send the order straight to your WhatsApp."
-              : "Shtoni ushqimet dhe pijet që shisni. Vizitorët zgjedhin sasinë, i shtojnë në shportë dhe e dërgojnë porosinë direkt te WhatsApp-i juaj."}
+            {isOnboarding
+              ? en
+                ? "One more thing: add what you offer here so customers can order it right away. You can always add more later from your dashboard."
+                : "Edhe një gjë: shtoni këtu çfarë ofroni që klientët ta porosisin menjëherë. Mund të shtoni e të modifikoni gjithmonë më vonë nga paneli juaj."
+              : copy.intro[lang]}
           </p>
-          <Link
-            href={`/listings/${listing.slug}`}
-            className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold hover:underline"
-            style={{ color: "var(--brand-accent)" }}
-          >
-            {en ? "View listing" : "Shiko listimin"} →
-          </Link>
+          <div className="mt-4 flex flex-wrap items-center gap-4">
+            <Link
+              href={`/listings/${listing.slug}`}
+              className="inline-flex items-center gap-1.5 text-sm font-semibold hover:underline"
+              style={{ color: "var(--brand-accent)" }}
+            >
+              {en ? "View listing" : "Shiko listimin"} →
+            </Link>
+            {isOnboarding && (
+              <button
+                type="button"
+                onClick={() => router.push("/dashboard")}
+                className="inline-flex items-center gap-1.5 rounded-full px-5 py-2.5 text-sm font-bold text-white transition-opacity hover:opacity-90"
+                style={{ background: "var(--brand-accent)" }}
+              >
+                {en ? "Finish — go to dashboard" : "Përfundo — shko te paneli"}
+                <ArrowRight className="h-4 w-4" />
+              </button>
+            )}
+          </div>
         </div>
       </section>
 
@@ -213,7 +345,7 @@ export default function ProductManagerClient({
           style={{ background: "var(--surface-white)", border: "1px solid var(--border-soft)", boxShadow: "var(--shadow-card)" }}
         >
           <h2 className="text-base font-bold" style={{ color: "var(--text-primary)" }}>
-            {editingId ? (en ? "Edit product" : "Modifiko produktin") : (en ? "Add a product" : "Shto produkt")}
+            {editingId ? copy.edit[lang] : copy.add[lang]}
           </h2>
 
           <div>
@@ -223,7 +355,7 @@ export default function ProductManagerClient({
             <input
               value={form.name}
               onChange={(e) => setForm((prev) => ({ ...prev, name: e.target.value }))}
-              placeholder={en ? "e.g. Crêpe with Nutella" : "p.sh. Krep me Nutella"}
+              placeholder={copy.namePlaceholder[lang]}
               className="w-full rounded-xl px-4 py-2.5 text-sm outline-none transition-all focus:ring-2"
               style={{ background: "var(--surface-cream)", border: "1px solid var(--border-soft)", color: "var(--text-primary)" }}
             />
@@ -231,13 +363,13 @@ export default function ProductManagerClient({
 
           <div>
             <label className="mb-1.5 block text-xs font-semibold" style={{ color: "var(--text-secondary)" }}>
-              {en ? "Menu section" : "Kategoria e menusë"}
+              {copy.section[lang]}
             </label>
             <input
               list="menu-category-suggestions"
               value={form.menuCategory}
               onChange={(e) => setForm((prev) => ({ ...prev, menuCategory: e.target.value }))}
-              placeholder={en ? "e.g. Sweet crêpes" : "p.sh. Krepë të ëmbël"}
+              placeholder={copy.sectionPlaceholder[lang]}
               className="w-full rounded-xl px-4 py-2.5 text-sm outline-none transition-all focus:ring-2"
               style={{ background: "var(--surface-cream)", border: "1px solid var(--border-soft)", color: "var(--text-primary)" }}
             />
@@ -247,9 +379,7 @@ export default function ProductManagerClient({
               ))}
             </datalist>
             <p className="mt-1 text-[11px]" style={{ color: "var(--text-tertiary)" }}>
-              {en
-                ? "Groups items on the menu, e.g. \"Sweet crêpes\", \"Drinks\". Leave blank to keep it ungrouped."
-                : "Grupon artikujt në menu, p.sh. \"Krepë të ëmbël\", \"Pije\". Lëreni bosh nëse s'doni grupim."}
+              {copy.sectionHint[lang]}
             </p>
           </div>
 
@@ -280,6 +410,38 @@ export default function ProductManagerClient({
               className="w-full rounded-xl px-4 py-2.5 text-sm outline-none transition-all focus:ring-2"
               style={{ background: "var(--surface-cream)", border: "1px solid var(--border-soft)", color: "var(--text-primary)" }}
             />
+          </div>
+
+          <div>
+            <label className="mb-1.5 block text-xs font-semibold" style={{ color: "var(--text-secondary)" }}>
+              {en ? "Button on the card" : "Butoni në kartë"}
+            </label>
+            <div className="grid grid-cols-2 gap-2" role="group">
+              {(["porosi", "rezervim"] as const).map((value) => {
+                const active = form.action === value;
+                return (
+                  <button
+                    key={value}
+                    type="button"
+                    aria-pressed={active}
+                    onClick={() => setForm((prev) => ({ ...prev, action: value }))}
+                    className="rounded-xl px-3 py-2.5 text-sm font-bold transition-colors"
+                    style={
+                      active
+                        ? { background: "var(--brand-accent)", color: "#fff", border: "1px solid var(--brand-accent)" }
+                        : { background: "var(--surface-cream)", color: "var(--text-secondary)", border: "1px solid var(--border-soft)" }
+                    }
+                  >
+                    {value === "porosi" ? (en ? "Order" : "Porosit") : en ? "Book" : "Rezervo"}
+                  </button>
+                );
+              })}
+            </div>
+            <p className="mt-1 text-[11px]" style={{ color: "var(--text-tertiary)" }}>
+              {en
+                ? "\"Order\" goes into the basket as an order; \"Book\" asks the visitor for a date and time."
+                : "\"Porosit\" shkon në shportë si porosi; \"Rezervo\" i kërkon vizitorit datë dhe orë."}
+            </p>
           </div>
 
           <div>
@@ -363,10 +525,10 @@ export default function ProductManagerClient({
               style={{ background: "var(--surface-cream)", border: "1px solid var(--border-soft)" }}
             >
               <p className="text-sm font-semibold" style={{ color: "var(--text-primary)" }}>
-                {en ? "No products yet." : "Nuk ka ende produkte."}
+                {copy.emptyTitle[lang]}
               </p>
               <p className="mt-1 text-sm" style={{ color: "var(--text-secondary)" }}>
-                {en ? "Add your first menu item using the form." : "Shtoni produktin tuaj të parë duke përdorur formularin."}
+                {copy.emptyText[lang]}
               </p>
             </div>
           ) : (
@@ -391,6 +553,16 @@ export default function ProductManagerClient({
                         {product.menuCategory}
                       </span>
                     )}
+                    <span
+                      className="shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold"
+                      style={
+                        getProductAction(product, kind) === "rezervim"
+                          ? { background: "var(--brand-light)", color: "var(--brand-accent)" }
+                          : { background: "#DCFCE7", color: "#15803D" }
+                      }
+                    >
+                      {getProductAction(product, kind) === "rezervim" ? (en ? "Book" : "Rezervo") : en ? "Order" : "Porosit"}
+                    </span>
                     {!product.available && (
                       <span
                         className="rounded-full px-2 py-0.5 text-[10px] font-bold uppercase"

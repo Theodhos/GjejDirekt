@@ -1,12 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { MapPin, Star } from "lucide-react";
+import { CalendarCheck, MapPin, MessageCircle, Star } from "lucide-react";
 import SafeImage from "@/components/ui/SafeImage";
 import OpenStatusLine from "@/components/listings/OpenStatusLine";
 import { listingCover } from "@/components/home/BusinessCard";
 import { useLanguage } from "@/context/LanguageContext";
-import { getCategoryByValue, getCategoryLabel, getSubcategoryLabel } from "@/lib/constants";
+import { getCategoryByValue, getCategoryLabel, getListingActions, getSubcategoryLabel } from "@/lib/constants";
 import { isFoodListing, foodTypeParts } from "@/lib/food";
 import { listingAddress, parseHours } from "@/lib/listing-display";
 import { formatPrice, fromPriceShort, startingPrice } from "@/lib/pricing";
@@ -54,12 +54,20 @@ export default function ListingRow({
   const price = startingPrice(listing);
   const hasHours = Boolean(parseHours(listing.businessHours));
 
+  // "Porosit" for a business that takes orders, "Rezervo" for one that books — straight into
+  // its Katalogu when it has one, otherwise its page (where the Rezervo button lives).
+  const actions = getListingActions(listing);
+  const orders = actions.includes("porosi");
+  const action = orders ? "porosi" : actions.includes("rezervim") ? "rezervim" : null;
+  const actionHref = listing.menuItems?.length ? `/listings/${listing.slug}/katalogu` : `/listings/${listing.slug}`;
+
   return (
-    <Link
-      href={`/listings/${listing.slug}`}
-      className="group flex items-stretch gap-3.5 border-b px-4 py-3.5 transition-colors active:bg-neutral-50 lg:rounded-2xl lg:border lg:bg-white lg:p-3 lg:hover:shadow-[var(--shadow-hover)]"
+    <div
+      className="group relative flex items-stretch gap-3.5 border-b px-4 py-3.5 transition-colors active:bg-neutral-50 lg:rounded-2xl lg:border lg:bg-white lg:p-3 lg:hover:shadow-[var(--shadow-hover)]"
       style={{ borderColor: "var(--border-soft)" }}
     >
+      {/* The whole row opens the business; the action button sits above this overlay. */}
+      <Link href={`/listings/${listing.slug}`} aria-label={listing.title} className="absolute inset-0 z-0 rounded-2xl" />
       <div
         className="relative h-[104px] w-[104px] shrink-0 overflow-hidden rounded-xl sm:h-[124px] sm:w-[124px]"
         style={{ background: "var(--surface-subtle)" }}
@@ -126,19 +134,32 @@ export default function ListingRow({
           </p>
         )}
 
-        {hasHours ? (
-          <OpenStatusLine hours={listing.businessHours} variant="row" />
-        ) : (
-          price !== null && (
+        <div className="flex items-end justify-between gap-2">
+          {hasHours ? (
+            <OpenStatusLine hours={listing.businessHours} variant="row" />
+          ) : price !== null ? (
             <p className="text-[12.5px]" style={{ color: "var(--text-secondary)" }}>
               {fromPriceShort(language)}{" "}
               <span className="font-bold" style={{ color: "var(--brand-accent)" }}>
                 {formatPrice(price)}
               </span>
             </p>
-          )
-        )}
+          ) : (
+            <span />
+          )}
+
+          {action && (
+            <Link
+              href={actionHref}
+              className="relative z-10 inline-flex h-8 min-h-0 shrink-0 items-center gap-1.5 rounded-full px-3.5 text-[12.5px] font-bold text-white transition-opacity hover:opacity-90 active:scale-95"
+              style={{ background: orders ? "var(--whatsapp-green)" : "var(--brand-accent)" }}
+            >
+              {orders ? <MessageCircle className="h-[14px] w-[14px]" /> : <CalendarCheck className="h-[14px] w-[14px]" />}
+              {orders ? (en ? "Order" : "Porosit") : en ? "Book" : "Rezervo"}
+            </Link>
+          )}
+        </div>
       </div>
-    </Link>
+    </div>
   );
 }

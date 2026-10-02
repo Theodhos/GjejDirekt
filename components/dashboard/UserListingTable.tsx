@@ -4,9 +4,9 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
-import { Edit3, Eye, Loader2, Trash2, User, UtensilsCrossed } from "lucide-react";
+import { Edit3, Eye, Loader2, Package, Trash2, User, UtensilsCrossed } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
-import { getListingHasCatalog } from "@/lib/constants";
+import { OFFER_COPY, getOfferKind } from "@/lib/business-offer";
 
 export default function UserListingTable({
   listings,
@@ -125,17 +125,24 @@ export default function UserListingTable({
                   </div>
 
                   <div className="flex flex-wrap items-center gap-2 justify-start md:justify-end mt-2 md:mt-0">
-                    {getListingHasCatalog(listing) && (
-                      <Link
-                        href={`/listings/${listing.slug}/products`}
-                        className="inline-flex h-10 md:h-11 items-center justify-center gap-1.5 sm:gap-2 rounded-xl px-3 sm:px-4 text-[10px] sm:text-xs font-black uppercase tracking-[0.12em] transition-colors hover:bg-neutral-100"
-                        style={{ border: "1px solid var(--border-medium)", color: "var(--text-secondary)" }}
-                        title={en ? "Manage menu" : "Menaxho menunë"}
-                      >
-                        <UtensilsCrossed className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                        <span className="hidden xl:inline">{en ? "Menu" : "Menuja"}</span>
-                      </Link>
-                    )}
+                    {/* Every business can list what it offers — a menu, rooms, products or
+                        services — so the catalog is one tap away whatever the category. */}
+                    {(() => {
+                      const kind = getOfferKind(listing);
+                      const name = kind === "menu" ? (en ? "Menu" : "Menuja") : OFFER_COPY[kind].tab[en ? "en" : "sq"];
+                      const Icon = kind === "menu" ? UtensilsCrossed : Package;
+                      return (
+                        <Link
+                          href={`/listings/${listing.slug}/products`}
+                          className="inline-flex h-10 md:h-11 items-center justify-center gap-1.5 sm:gap-2 rounded-xl px-3 sm:px-4 text-[10px] sm:text-xs font-black uppercase tracking-[0.12em] transition-colors hover:bg-neutral-100"
+                          style={{ border: "1px solid var(--border-medium)", color: "var(--text-secondary)" }}
+                          title={en ? `Manage ${name.toLowerCase()}` : `Menaxho ${name.toLowerCase()}`}
+                        >
+                          <Icon className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                          <span className="hidden xl:inline">{name}</span>
+                        </Link>
+                      );
+                    })()}
                     <Link
                       href={`/listings/${listing.slug}/edit`}
                       className="inline-flex h-10 md:h-11 items-center justify-center gap-1.5 sm:gap-2 rounded-xl px-3 sm:px-4 text-[10px] sm:text-xs font-black uppercase tracking-[0.12em] text-white transition-all hover:-translate-y-0.5"

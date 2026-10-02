@@ -3,19 +3,22 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { CircleUser, Heart, Home, LayoutGrid, ShoppingCart } from "lucide-react";
+import { CircleUser, Home, LayoutGrid, ShoppingCart, Store } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 
 /**
- * Kreu · Katalogu · Porositë · Të preferuarat · Profili. Each tab also owns the pages
+ * Kreu · Katalogu · Porositë · Shto Biznes · Profili. Each tab also owns the pages
  * that belong under it (a business page is still the catalog, the sign-in pages are
  * still the profile), so the bar always says where you are.
+ *
+ * "Shto Biznes" always points at /create-listing — that route itself redirects to
+ * /register (then back) when the visitor isn't logged in, so no auth check belongs here.
  */
 const TABS = [
   { href: "/", icon: Home, al: "Kreu", en: "Home", also: [] },
   { href: "/listings", icon: LayoutGrid, al: "Katalogu", en: "Catalog", also: ["/categories", "/services", "/city", "/cities"] },
   { href: "/porosite", icon: ShoppingCart, al: "Porositë", en: "Orders", also: [] },
-  { href: "/te-preferuara", icon: Heart, al: "Të preferuarat", en: "Saved", also: [] },
+  { href: "/create-listing", icon: Store, al: "Shto Biznes", en: "Add Business", also: [] },
   { href: "/me-shume", icon: CircleUser, al: "Profili", en: "Profile", also: ["/dashboard", "/login", "/register"] }
 ] as const;
 
@@ -57,6 +60,12 @@ export default function BottomNav() {
   const isActive = (tab: (typeof TABS)[number]) =>
     tab.href === "/" ? pathname === "/" : [tab.href, ...tab.also].some((prefix) => pathname.startsWith(prefix));
 
+  // Inside a business (its page or any of its sub-pages) "Katalogu" opens that business's own
+  // catalog; anywhere else there is no business to show, so it stays the directory.
+  const businessSlug = pathname.match(/^\/listings\/([^/]+)/)?.[1];
+  const catalogHref = businessSlug && businessSlug !== "add" ? `/listings/${businessSlug}/katalogu` : "/listings";
+  const hrefFor = (tab: (typeof TABS)[number]) => (tab.href === "/listings" ? catalogHref : tab.href);
+
   return (
     <nav
       className="fixed inset-x-0 bottom-0 z-50"
@@ -83,7 +92,7 @@ export default function BottomNav() {
                 />
               )}
               <Link
-                href={tab.href}
+                href={hrefFor(tab)}
                 aria-current={active ? "page" : undefined}
                 className="flex h-full flex-col items-center justify-center gap-1 px-0.5 transition-colors"
                 style={{ color: active ? "var(--brand-accent)" : "var(--text-tertiary)" }}

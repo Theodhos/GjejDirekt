@@ -1,14 +1,18 @@
+import { PLATFORM_WHATSAPP_NUMBER } from "@/lib/constants";
+
 /**
  * Client-side helpers for the standalone reservation flow — the businesses that
  * take bookings but have no product catalog to add-to-cart from (a hairdresser,
- * a dentist, a mechanic, a lawyer...). Mirrors lib/cart.ts's WhatsApp message
- * builder so both flows read the same way in a business's WhatsApp inbox.
+ * a dentist, a mechanic, a lawyer...). Shares lib/cart.ts's exact message skeleton
+ * (separators, 🏪/👤/📅 header, ⏱️ confirmation, 💬 note) so every business type —
+ * with or without a catalog — reads the same way in GjejDirekt's shared WhatsApp inbox.
  */
+
+const SEPARATOR = "━".repeat(20);
 
 export type ReservationDetails = {
   businessName: string;
   location?: string;
-  phone?: string;
   itemName?: string;
   customerName: string;
   customerPhone: string;
@@ -23,29 +27,34 @@ export function buildReservationMessage(details: ReservationDetails, language: "
   const formattedDate = details.date
     ? new Date(details.date).toLocaleDateString(en ? "en-GB" : "sq-AL", { day: "2-digit", month: "long", year: "numeric" })
     : "";
+  const businessLine = details.location?.trim()
+    ? `${details.businessName} — ${details.location.trim()}`
+    : details.businessName;
 
-  const parts = [en ? `📋 *RESERVATION FROM GJEJDIREKT.COM*` : `📋 *REZERVIM NGA GJEJDIREKT.COM*`, "", `*${details.businessName}*`];
-  if (details.location) parts.push(`📍 ${details.location}`);
-  if (details.phone) parts.push(`📞 ${details.phone}`);
+  const parts = [SEPARATOR];
+  parts.push(`🏪 ${en ? "BUSINESS" : "BIZNESI"}: ${businessLine}`);
+  parts.push(`👤 ${en ? "CUSTOMER" : "KLIENTI"}: ${details.customerName}`);
+  parts.push(`📞 ${en ? "PHONE" : "TELEFONI"}: ${details.customerPhone}`);
+  parts.push(SEPARATOR, "");
 
-  const rows: string[] = [];
-  if (details.itemName) rows.push(`${en ? "Service" : "Shërbimi"}: ${details.itemName}`);
-  rows.push(`${en ? "Date" : "Data"}: ${formattedDate}`);
-  if (details.time) rows.push(`${en ? "Time" : "Ora"}: ${details.time}`);
-  if (details.partySize) rows.push(`${en ? "People" : "Persona"}: ${details.partySize}`);
-  rows.push(`${en ? "Name" : "Emri"}: ${details.customerName}`);
-  rows.push(`${en ? "Phone" : "Telefoni"}: ${details.customerPhone}`);
+  parts.push(`📅 ${en ? "RESERVATION" : "REZERVIMI"}:`);
+  if (details.itemName) parts.push(`• ${details.itemName}`);
+  parts.push(`• ${en ? "Date" : "Data"}: ${formattedDate}`);
+  if (details.time) parts.push(`• ${en ? "Time" : "Ora"}: ${details.time}`);
+  if (details.partySize) parts.push(`• ${en ? "People" : "Persona"}: ${details.partySize}`);
 
-  parts.push("", en ? `🗓️ *RESERVATION DETAILS*` : `🗓️ *DETAJET E REZERVIMIT*`, "```", ...rows, "```");
-
+  parts.push("");
+  parts.push(`⏱️ ${en ? "CONFIRMATION" : "KONFIRMIMI"}: ${en ? "within 24h" : "brenda 24 orësh"}`);
   if (details.notes?.trim()) {
-    parts.push("", en ? `📝 *Note:*` : `📝 *Shënim:*`, details.notes.trim());
+    parts.push(`💬 ${en ? "NOTE" : "SHËNIM"}: ${details.notes.trim()}`);
   }
+
+  parts.push(SEPARATOR);
 
   return parts.join("\n");
 }
 
 export function buildReservationWhatsappHref(phoneDigits: string, details: ReservationDetails, language: "al" | "en" = "al") {
   if (!phoneDigits) return "";
-  return `https://wa.me/${phoneDigits}?text=${encodeURIComponent(buildReservationMessage(details, language))}`;
+  return `https://wa.me/${PLATFORM_WHATSAPP_NUMBER}?text=${encodeURIComponent(buildReservationMessage(details, language))}`;
 }

@@ -1212,7 +1212,10 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
         router.push(`/listings/${data.listing?.slug || listing!.slug || ""}`);
       } else {
         toast.success(c.success);
-        router.push("/dashboard");
+        // Straight into the catalog step (menu/rooms/products/services) as the
+        // natural last step of "adding a business" — the dashboard comes after.
+        const newSlug = data.listing?.slug;
+        router.push(newSlug ? `/listings/${newSlug}/products?onboarding=1` : "/dashboard");
       }
       router.refresh();
     } catch (error) {

@@ -1,49 +1,36 @@
 import HomePageClient from "./page.client";
-import { loadRankedCities } from "@/lib/cities-server";
 import { connectDB } from "@/lib/db";
 import Listing from "@/models/Listing";
-import BlogPost from "@/models/BlogPost";
 import { rankListings } from "@/lib/ranking";
 import { safeJson } from "@/lib/utils";
 
-// Listings/posts change a handful of times a day, not every request — cache the
-// page and refresh it in the background instead of rendering fresh on every hit.
+// Listings change a handful of times a day, not every request — cache the page
+// and refresh it in the background instead of rendering fresh on every hit.
 export const revalidate = 60;
 
-async function loadHomeListings() {
-  await connectDB();
-  const found = await Listing.find({ status: "approved" }).sort({ createdAt: -1 }).lean<any[]>();
-  return rankListings(found);
-}
+const RECOMMENDED_COUNT = 12;
 
-async function loadHomeBlogPosts() {
+/**
+ * The businesses shown on the home page. Featured (paid) ones lead; if nobody paid
+ * for a slot yet the verified ones stand in, then everyone else, so the row is
+ * never empty. Only the twelve that are shown are sent to the browser.
+ */
+async function loadRecommended() {
   await connectDB();
-  return BlogPost.find({ published: true }).sort({ createdAt: -1 }).limit(12).lean<any[]>();
+  const found = rankListings(await Listing.find({ status: "approved" }).sort({ createdAt: -1 }).lean<any[]>());
+  const featured = found.filter((listing) => listing.featured || listing.package);
+  const verified = found.filter((listing) => listing.verified && !featured.includes(listing));
+  const rest = found.filter((listing) => !featured.includes(listing) && !verified.includes(listing));
+  return [...featured, ...verified, ...rest].slice(0, RECOMMENDED_COUNT);
 }
 
 export default async function HomePage() {
-  // Three independent reads — fetch them together server-side and hand the
-  // client component finished data, instead of shipping an empty shell that
-  // re-fetches all three itself after hydration.
-  let listings: any[] = [];
-  let blogPosts: any[] = [];
-  let cities: any[] = [];
+  let recommended: any[] = [];
   try {
-    [listings, blogPosts, cities] = await Promise.all([
-      loadHomeListings(),
-      loadHomeBlogPosts(),
-      loadRankedCities()
-    ]);
+    recommended = await loadRecommended();
   } catch {
-    // The client falls back to the static city catalogue; listings/posts just
-    // render their empty state rather than failing the whole page.
+    // The hero and the category grid don't need the database; the row just stays hidden.
   }
 
-  return (
-    <HomePageClient
-      initialListings={safeJson(listings)}
-      initialBlogPosts={safeJson(blogPosts)}
-      initialCities={safeJson(cities)}
-    />
-  );
+  return <HomePageClient recommended={safeJson(recommended)} />;
 }

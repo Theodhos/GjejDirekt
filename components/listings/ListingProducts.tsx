@@ -16,6 +16,8 @@ export type ListingProduct = {
   image?: string;
   /** Menu section the owner grouped this item under, e.g. "Krepë të ëmbël". */
   menuCategory?: string;
+  /** Ordered ("porosi") or booked ("rezervim"); unset = the business's default (lib/business-offer.ts). */
+  action?: "porosi" | "rezervim";
 };
 
 const ALL_TAB = "__all__";

@@ -7,6 +7,13 @@
  */
 export type ListingAction = "porosi" | "rezervim";
 
+/**
+ * Every WhatsApp hand-off sitewide (orders, reservations, contact buttons,
+ * package purchases) lands in this one inbox rather than each business's own
+ * number — GjejDirekt is the single dispatcher for now.
+ */
+export const PLATFORM_WHATSAPP_NUMBER = "355695429998";
+
 export type CategorySubcategory = {
   value: string;
   label: string;
@@ -399,7 +406,7 @@ export function whatsappHrefFor(
   language: "sq" | "en" = "sq"
 ) {
   if (!phoneDigits) return "";
-  return `https://wa.me/${phoneDigits}?text=${encodeURIComponent(whatsappMessage(action, title, language))}`;
+  return `https://wa.me/${PLATFORM_WHATSAPP_NUMBER}?text=${encodeURIComponent(whatsappMessage(action, title, language))}`;
 }
 
 /** One entry per action a listing supports, ready for the contact buttons. */

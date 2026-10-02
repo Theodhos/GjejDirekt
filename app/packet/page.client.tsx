@@ -5,6 +5,7 @@ import { useLanguage } from "@/context/LanguageContext";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
+import { PLATFORM_WHATSAPP_NUMBER } from "@/lib/constants";
 
 function PacketPageClient() {
   const { language } = useLanguage();
@@ -51,7 +52,7 @@ function PacketPageClient() {
       ? `Hello GjejDirekt! I want to buy the ${pkg.name} package.\nPrice: €${pkg.price} ${pkg.priceSuffix}.\nDescription: ${pkg.description}.\nFeatures:\n- ${pkg.features.map((f: any) => (f.included ? "✅ " : "❌ ") + f.text).join("\n- ")}\nUser: ${userName}\nEmail: ${userEmail}\nListing ID: ${listingId || "N/A"}`
       : `Përshëndetje GjejDirekt! Dua të blej paketën ${pkg.name}.\nÇmimi: €${pkg.price} ${pkg.priceSuffix}.\nPërshkrimi: ${pkg.description}.\nKarakteristikat:\n- ${pkg.features.map((f: any) => (f.included ? "✅ " : "❌ ") + f.text).join("\n- ")}\nPërdoruesi: ${userName}\nEmail: ${userEmail}\nListing ID: ${listingId || "N/A"}`;
 
-    const whatsappUrl = `https://wa.me/355695429998?text=${encodeURIComponent(requestText)}`;
+    const whatsappUrl = `https://wa.me/${PLATFORM_WHATSAPP_NUMBER}?text=${encodeURIComponent(requestText)}`;
     window.open(whatsappUrl, "_blank");
   };
 

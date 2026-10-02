@@ -1,15 +1,16 @@
 "use client";
 
 import { useRef, useState } from "react";
+import Link from "next/link";
 import {
   BadgeCheck,
-  CalendarCheck,
   Clock,
   Globe,
   Heart,
   ImageIcon,
   Info,
   Instagram,
+  LayoutGrid,
   MapPin,
   MessageCircle,
   Navigation,
@@ -32,7 +33,7 @@ import { useLanguage } from "@/context/LanguageContext";
 import useFavoriteToggle from "@/hooks/useFavoriteToggle";
 import { OFFER_COPY, getOfferKind, type OfferKind } from "@/lib/business-offer";
 import { getCategoryIcon } from "@/lib/category-icons";
-import { buildWhatsappActions, getCategoryByValue, getListingActions, getSubcategoryLabel, whatsappHrefFor } from "@/lib/constants";
+import { buildWhatsappActions, getCategoryByValue, getSubcategoryLabel } from "@/lib/constants";
 import { FOOD_CATEGORY, foodTypeParts } from "@/lib/food";
 import { isLinkAddress, listingAddress } from "@/lib/listing-display";
 import { formatPrice } from "@/lib/pricing";
@@ -75,7 +76,7 @@ export default function BusinessPage({
 
   const categoryValue = getCategoryByValue(listing.category)?.value || "";
   const isFood = categoryValue === FOOD_CATEGORY;
-  const offerKind = getOfferKind(listing, hasCatalog);
+  const offerKind = getOfferKind(listing);
   const offer = OFFER_COPY[offerKind];
   const OfferIcon = getCategoryIcon(categoryValue);
 
@@ -95,8 +96,6 @@ export default function BusinessPage({
   const rating = Number(listing.ratingAverage || 0);
 
   const whatsappHref = buildWhatsappActions(listing, phoneDigits, lang)[0]?.href || "";
-  const canReserve = getListingActions(listing).includes("rezervim");
-  const reserveHref = canReserve ? whatsappHrefFor("rezervim", phoneDigits, listing.title, lang) : "";
 
   const coordinates = listing.coordinates?.lat && listing.coordinates?.lng ? `${listing.coordinates.lat},${listing.coordinates.lng}` : "";
   const streetAddress = isLinkAddress(listing.address) ? "" : listing.address;
@@ -136,11 +135,19 @@ export default function BusinessPage({
   }
 
   // The offer tab exists once a catalog business has put something in it; the others (a dentist,
-  // a hairdresser...) keep the reservation button instead and open on Përmbledhje.
+  // a hairdresser...) keep the reservation button instead and open on Përmbledhje. "Katalogu" is
+  // the same full catalog as its own page (search + section pills + grid) — one design for every
+  // category — so it only makes sense wherever the offer tab does.
   const hasOffer = hasCatalog && products.length > 0;
-  const tabs: { key: TabKey; label: string; icon: LucideIcon }[] = [
+  type NavTab = { key: TabKey; label: string; icon: LucideIcon; href?: undefined } | { key: "katalogu"; label: string; icon: LucideIcon; href: string };
+  const tabs: NavTab[] = [
     { key: "overview", label: en ? "Overview" : "Përmbledhje", icon: ClipboardList },
-    ...(hasOffer ? [{ key: "menu" as const, label: offer.tab[en ? "en" : "sq"], icon: OfferIcon }] : []),
+    ...(hasOffer
+      ? [
+          { key: "menu" as const, label: offer.tab[en ? "en" : "sq"], icon: OfferIcon },
+          { key: "katalogu" as const, label: en ? "Catalog" : "Katalogu", icon: LayoutGrid, href: `/listings/${listing.slug}/katalogu` }
+        ]
+      : []),
     { key: "reviews", label: en ? "Reviews" : "Vlerësime", icon: Star },
     { key: "photos", label: en ? "Photos" : "Foto", icon: ImageIcon },
     { key: "info", label: en ? "Info" : "Informacion", icon: Info }
@@ -273,15 +280,32 @@ export default function BusinessPage({
           style={{ top: "var(--header-height)", gridTemplateColumns: `repeat(${tabs.length}, minmax(0, 1fr))`, borderColor: "var(--border-soft)" }}
         >
           {tabs.map((item) => {
-            const active = tab === item.key;
             const Icon = item.icon;
+            if (item.href) {
+              return (
+                <Link
+                  key={item.key}
+                  href={item.href}
+                  role="tab"
+                  aria-selected={false}
+                  className="relative flex h-[62px] min-w-0 flex-col items-center justify-center gap-1 px-0.5 transition-colors"
+                  style={{ color: "var(--text-secondary)" }}
+                >
+                  <Icon className="h-[22px] w-[22px]" strokeWidth={1.7} />
+                  <span className="max-w-full truncate text-[11px] sm:text-[12.5px]" style={{ fontWeight: 500 }}>
+                    {item.label}
+                  </span>
+                </Link>
+              );
+            }
+            const active = tab === item.key;
             return (
               <button
                 key={item.key}
                 type="button"
                 role="tab"
                 aria-selected={active}
-                onClick={() => selectTab(item.key)}
+                onClick={() => selectTab(item.key as TabKey)}
                 className="relative flex h-[62px] min-w-0 flex-col items-center justify-center gap-1 px-0.5 transition-colors"
                 style={{ color: active ? "var(--brand-accent)" : "var(--text-secondary)" }}
               >
@@ -304,8 +328,6 @@ export default function BusinessPage({
             products={products}
             offerKind={offerKind}
             showOffer={hasOffer}
-            isFood={isFood}
-            reserveHref={reserveHref}
             onOpenMenu={() => selectTab("menu")}
           />
         )}
@@ -343,8 +365,6 @@ export default function BusinessPage({
             phone={phone}
             address={address}
             directionsHref={directionsHref}
-            isFood={isFood}
-            reserveHref={reserveHref}
           />
         )}
       </div>
@@ -406,16 +426,12 @@ function Overview({
   products,
   offerKind,
   showOffer,
-  isFood,
-  reserveHref,
   onOpenMenu
 }: {
   listing: any;
   products: ListingProduct[];
   offerKind: OfferKind;
   showOffer: boolean;
-  isFood: boolean;
-  reserveHref: string;
   onOpenMenu: () => void;
 }) {
   const { language } = useLanguage();
@@ -485,31 +501,8 @@ function Overview({
           </section>
         )}
 
-        {reserveHref && <ReserveLink href={reserveHref} isFood={isFood} />}
       </div>
     </div>
-  );
-}
-
-function ReserveLink({ href, isFood }: { href: string; isFood: boolean }) {
-  const { language } = useLanguage();
-  return (
-    <a
-      href={href}
-      target="_blank"
-      rel="noreferrer"
-      className="flex h-12 w-full items-center justify-center gap-2 rounded-xl text-[14.5px] font-bold text-white"
-      style={{ background: "var(--whatsapp-green)" }}
-    >
-      <CalendarCheck className="h-5 w-5" />
-      {isFood
-        ? language === "en"
-          ? "Book a table on WhatsApp"
-          : "Rezervo tavolinë në WhatsApp"
-        : language === "en"
-        ? "Book on WhatsApp"
-        : "Rezervo në WhatsApp"}
-    </a>
   );
 }
 
@@ -531,16 +524,12 @@ function Information({
   listing,
   phone,
   address,
-  directionsHref,
-  isFood,
-  reserveHref
+  directionsHref
 }: {
   listing: any;
   phone: string;
   address: string;
   directionsHref: string;
-  isFood: boolean;
-  reserveHref: string;
 }) {
   const { language } = useLanguage();
   const en = language === "en";
@@ -624,12 +613,6 @@ function Information({
           </InfoRow>
         )}
       </div>
-
-      {reserveHref && (
-        <div className="mt-5">
-          <ReserveLink href={reserveHref} isFood={isFood} />
-        </div>
-      )}
     </div>
   );
 }
