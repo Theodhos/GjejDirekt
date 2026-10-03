@@ -11,7 +11,7 @@ import { useLanguage } from "@/context/LanguageContext";
 import { categories, getCategoryByValue } from "@/lib/constants";
 import { offersFoodServices } from "@/lib/food";
 import type { MenuItem } from "@/lib/food-server";
-import { getOpenStatus, matchScore, matchesQuery, normalizeText, parseHours } from "@/lib/listing-display";
+import { getOpenStatus, listingSearchText, matchScore, matchesQuery, normalizeText, parseHours } from "@/lib/listing-display";
 
 type Tab = "all" | "businesses" | "products" | "services";
 type Sort = "updated" | "rating" | "popular" | "name";
@@ -120,16 +120,7 @@ export default function ListingResults({
       // service, and its section — so searching for one finds the business.
       const items: MenuItem[] = listing.menuItems || [];
       const menuText = items.map((item) => `${item.n} ${item.d || ""} ${item.s || ""}`).join(" ");
-      const business = [
-        listing.title,
-        listing.description,
-        listing.location,
-        listing.address,
-        listing.category,
-        listing.subcategory,
-        ...(listing.cuisines || []),
-        ...(listing.tags || [])
-      ].join(" ");
+      const business = listingSearchText(listing);
       // Place words in the query ("tirane") must still match when only the dishes are searched.
       const dishes = [menuText, listing.location, listing.address].join(" ");
 

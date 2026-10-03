@@ -73,6 +73,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
       image: parseMaybeString(body.image) || undefined,
       menuCategory: parseMaybeString(body.menuCategory) || undefined,
       action: body.action === "porosi" || body.action === "rezervim" ? body.action : undefined,
+      estimatedTime: parseMaybeString(body.estimatedTime) || undefined,
       available: body.available === false ? false : true,
       order: parseMaybeNumber(body.order) ?? 0
     });

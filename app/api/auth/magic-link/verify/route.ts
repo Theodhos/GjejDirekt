@@ -32,10 +32,11 @@ export async function POST(request: Request) {
     user.resetCodeExpires = undefined;
     await user.save();
 
-    const jwt = signToken({ id: user._id.toString(), name: user.name, email: user.email, role: user.role });
+    const accountType = user.accountType || "biznes";
+    const jwt = signToken({ id: user._id.toString(), name: user.name, email: user.email, role: user.role, accountType });
     setAuthCookie(jwt);
     const response = NextResponse.json({
-      user: { id: user._id, name: user.name, email: user.email, role: user.role }
+      user: { id: user._id, name: user.name, email: user.email, role: user.role, accountType }
     });
 
     response.cookies.set(AUTH_COOKIE, jwt, {

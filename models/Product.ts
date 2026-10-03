@@ -11,6 +11,8 @@ export interface IProduct extends Document {
   menuCategory?: string;
   /** Visitors order it (basket → WhatsApp order) or book it (date/time → WhatsApp reservation); unset = the business's default. */
   action?: "porosi" | "rezervim";
+  /** Prep/cooking time for products or appointment length for services — free text, e.g. "15 min". */
+  estimatedTime?: string;
   available: boolean;
   order: number;
   createdAt: Date;
@@ -27,6 +29,7 @@ const ProductSchema = new Schema<IProduct>(
     image: { type: String },
     menuCategory: { type: String, trim: true },
     action: { type: String, enum: ["porosi", "rezervim"] },
+    estimatedTime: { type: String, trim: true },
     available: { type: Boolean, default: true },
     order: { type: Number, default: 0 }
   },

@@ -14,6 +14,7 @@ export default function AuthForm({ mode = "login" }: { mode?: "login" | "registe
   const [magicLoading, setMagicLoading] = useState(false);
   const [emailForMagic, setEmailForMagic] = useState("");
   const [isMagicMode, setIsMagicMode] = useState(false);
+  const [accountType, setAccountType] = useState<"biznes" | "klient">("biznes");
   const router = useRouter();
 
   async function handleSendMagicLink() {
@@ -87,6 +88,50 @@ export default function AuthForm({ mode = "login" }: { mode?: "login" | "registe
     <form onSubmit={handleSubmit} className="space-y-4">
       {mode === "register" ? (
         <>
+          <div>
+            <span className="mb-2 block text-sm font-medium" style={{ color: "var(--text-primary)" }}>
+              {language === "en" ? "Account type" : "Lloji i llogarisë"}
+            </span>
+            <input type="hidden" name="accountType" value={accountType} />
+            <div className="grid grid-cols-2 gap-2">
+              {(
+                [
+                  {
+                    value: "biznes" as const,
+                    title: language === "en" ? "Business" : "Biznes",
+                    hint: language === "en" ? "List and manage a business" : "Shto dhe menaxho biznesin tënd"
+                  },
+                  {
+                    value: "klient" as const,
+                    title: language === "en" ? "Customer" : "Klient",
+                    hint: language === "en" ? "Order and book only" : "Vetëm porosi dhe rezervime"
+                  }
+                ]
+              ).map((option) => {
+                const active = accountType === option.value;
+                return (
+                  <button
+                    key={option.value}
+                    type="button"
+                    onClick={() => setAccountType(option.value)}
+                    className="rounded-xl border px-3 py-2.5 text-left transition-colors"
+                    style={{
+                      borderColor: active ? "var(--brand-accent)" : "var(--border-medium)",
+                      background: active ? "var(--brand-light)" : "var(--surface-white)"
+                    }}
+                  >
+                    <span className="block text-sm font-bold" style={{ color: active ? "var(--brand-accent)" : "var(--text-primary)" }}>
+                      {option.title}
+                    </span>
+                    <span className="block text-xs leading-snug" style={{ color: "var(--text-tertiary)" }}>
+                      {option.hint}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
           <Input name="name" label={language === "en" ? "Name" : "Emri"} placeholder={language === "en" ? "Your name" : "Emri juaj"} required />
           <Input name="phone" type="tel" label={language === "en" ? "Phone Number" : "Numri i Telefonit"} placeholder="+1 234 567 890" required />
         </>

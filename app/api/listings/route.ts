@@ -1,13 +1,14 @@
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
-import { getAuthUser } from "@/lib/auth";
+import { canCreateListing, getAuthUser } from "@/lib/auth";
 import { sendMail } from "@/lib/mailer";
 import { logActivity } from "@/lib/activity";
 import { escapeRegex, slugify } from "@/lib/utils";
 import { apiError } from "@/lib/api";
-import { categories, getCategorySearchValues, getSubcategorySearchValues, type ListingAction } from "@/lib/constants";
+import { getCategorySearchValues, getSubcategorySearchValues, type ListingAction } from "@/lib/constants";
+import { listingSearchText, matchesQuery } from "@/lib/listing-display";
+import { withMenuTerms } from "@/lib/food-server";
 import Listing from "@/models/Listing";
-import Product from "@/models/Product";
 import User from "@/models/User";
 import { rankListings } from "@/lib/ranking";
 
@@ -73,33 +74,6 @@ async function buildQuery(url: URL) {
   if (minRating) {
     query.ratingAverage = { $gte: Number(minRating) };
   }
-  if (search) {
-    const normalizedSearch = search.toLowerCase();
-    const searchRegex = new RegExp(escapeRegex(search), "i");
-    const matchedCategories = categories
-      .filter(
-        (cat) =>
-          cat.value.includes(normalizedSearch) ||
-          cat.label.toLowerCase().includes(normalizedSearch) ||
-          cat.aliases.some((alias) => alias.includes(normalizedSearch))
-      )
-      .map((cat) => cat.value);
-
-    // A business also matches when one of its products, dishes, rooms or services has the
-    // words in its title or description.
-    const productListingIds = await Product.find({
-      available: true,
-      $or: [{ name: { $regex: searchRegex } }, { description: { $regex: searchRegex } }]
-    }).distinct("listing");
-
-    query.$or = [
-      { title: { $regex: searchRegex } },
-      { location: { $regex: searchRegex } },
-      { category: { $regex: searchRegex } },
-      ...(matchedCategories.length ? [{ category: { $in: matchedCategories } }] : []),
-      ...(productListingIds.length ? [{ _id: { $in: productListingIds } }] : [])
-    ];
-  }
 
   const sortQuery: Record<string, 1 | -1> =
     sort === "popular"
@@ -107,15 +81,30 @@ async function buildQuery(url: URL) {
       : sort === "name"
         ? { title: 1 }
         : { createdAt: -1 };
-  return { query, sortQuery, sort };
+  return { query, sortQuery, sort, search };
 }
 
 export async function GET(request: Request) {
   try {
     await connectDB();
     const url = new URL(request.url);
-    const { query, sortQuery, sort } = await buildQuery(url);
-    const listings = await Listing.find(query).sort(sortQuery).populate("owner", "name email role").lean<any>();
+    const { query, sortQuery, sort, search } = await buildQuery(url);
+    let listings = await Listing.find(query).sort(sortQuery).populate("owner", "name email role").lean<any>();
+
+    if (search) {
+      // The same matching the full results page uses: every word of the query has to
+      // show up somewhere — in the business's own text, in its category/subcategory
+      // (value, label or alias, so "food" or "krepa" find it however it's filed), or
+      // in what it actually sells. Word order, plurals and missing diacritics don't
+      // matter, so "krepa te embla" finds a business whose description says "krepa
+      // të ëmbla" and "krepat" still finds every business whose subcategory is "krepa".
+      listings = await withMenuTerms(listings);
+      listings = listings.filter((listing: any) => {
+        const items = listing.menuItems || [];
+        const menuText = items.map((item: any) => `${item.n} ${item.d || ""} ${item.s || ""}`).join(" ");
+        return matchesQuery(`${listingSearchText(listing)} ${menuText}`, search);
+      });
+    }
 
     // Paid packages rank first, then WhatsApp engagement, then newest — but an
     // explicit sort choice from the user wins over the promotion ranking.
@@ -131,6 +120,10 @@ export async function POST(request: Request) {
   try {
     const auth = await getAuthUser();
     if (!auth) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    // Defense in depth — the add-listing pages already redirect a "klient" account away.
+    if (!canCreateListing(auth)) {
+      return NextResponse.json({ error: "Client accounts cannot create a business listing." }, { status: 403 });
+    }
 
     await connectDB();
     const body = await request.json();

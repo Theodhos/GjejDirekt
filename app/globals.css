@@ -13,10 +13,10 @@
      components/layout/Header.tsx — the fixed header is offset by this value,
      so an undersized value hides page content behind the bar. */
   --header-height: 56px;
-  /* Height of the fixed bottom tab bar (components/layout/BottomNav.tsx), on every screen
-     size. Pages add it as bottom padding so the last row is never covered. It drops to 0
-     on routes where the bar is not shown (see html[data-no-bottom-nav] below). */
-  --bottom-nav-height: 62px;
+  /* There is no fixed bottom tab bar any more; kept at 0 so the handful of sticky
+     bars (the basket bar, the chat toggle, ...) that still offset by this value
+     collapse to sitting right at the screen edge instead of needing their own edits. */
+  --bottom-nav-height: 0px;
 
   /* Surface Colors */
   --surface-page:    #F6F7F9;
@@ -84,10 +84,6 @@
 @media (min-width: 1024px) {
   :root { --header-height: 56px; }
 }
-
-/* BottomNav sets this on routes without the bar (admin) and while a full-screen overlay is open,
-   so those pages do not keep an empty strip where it would be. */
-html[data-no-bottom-nav] { --bottom-nav-height: 0px; }
 
 /* ============================================================
    BASE RESET & TYPOGRAPHY
@@ -402,6 +398,15 @@ a { transition: color 0.15s ease, opacity 0.15s ease; }
   box-shadow: var(--shadow-hover);
   transform: translateY(-2px);
   border-color: var(--border-medium);
+}
+
+/* The home page rails (Biznese të rekomanduara, one per category) keep the card
+   still on hover — no lift, no grey drop shadow — since the whole row already
+   scrolls under the cursor. */
+.gd-rail .gd-card:hover {
+  box-shadow: var(--shadow-card);
+  transform: none;
+  border-color: var(--border-soft);
 }
 
 /* Blue VERIFIED ribbon shown on approved businesses */

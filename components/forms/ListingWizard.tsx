@@ -29,6 +29,7 @@ import {
   Phone,
   Play,
   Plus,
+  ShoppingBag,
   SlidersHorizontal,
   Sparkles,
   Tag,
@@ -46,6 +47,7 @@ import { compressImageFile, fileFromDataUrl, readFileAsDataUrl } from "@/lib/ima
 import { clearDraft, readDraft, writeDraft } from "@/lib/listing-draft";
 import { albaniaCities } from "@/lib/albania-cities";
 import { useLanguage } from "@/context/LanguageContext";
+import CatalogManager from "@/components/dashboard/CatalogManager";
 
 export type WizardListing = {
   _id: string;
@@ -266,7 +268,8 @@ const COPY = {
       { title: "Kontakti", desc: "Si mund t'ju kontaktojnë turistët." },
       { title: "Vendndodhja", desc: "Adresa e saktë dhe linku i Google Maps." },
       { title: "Media", desc: "Fotoja kryesore që shfaqet në krye të listimit." },
-      { title: "Opsione Verified", desc: "Funksione shtesë që aktivizohen pas verifikimit." }
+      { title: "Opsione Verified", desc: "Funksione shtesë që aktivizohen pas verifikimit." },
+      { title: "Katalogu", desc: "Menuja, produktet, dhomat ose shërbimet që ofroni — me çmime dhe foto." }
     ],
     category: "Kategoria",
     categorySelected: "Kategoria e zgjedhur",
@@ -392,7 +395,15 @@ const COPY = {
     fixErrors: "Ju lutem plotësoni fushat e detyrueshme.",
     draftRestored: "Vazhduam aty ku e latë — të dhënat tuaja u ruajtën.",
     success: "Listimi u dërgua për miratim",
-    updated: "Shërbimi u përditësua"
+    updated: "Shërbimi u përditësua",
+    catalogLocked: "Publikoni listimin më parë — katalogu hapet menjëherë pas publikimit.",
+    catalogPublishedTitle: "Listimi u dërgua për miratim",
+    catalogPublishedText:
+      "Tani shtoni çfarë ofroni — menunë, produktet, dhomat ose shërbimet. Artikujt ruhen menjëherë dhe shfaqen në faqen tuaj sapo listimi të aprovohet.",
+    catalogHint:
+      "Çdo artikull ruhet menjëherë sapo e shtoni ose e ndryshoni. Vetëm ju dhe administratori mund t'i menaxhoni.",
+    finish: "Përfundo — shko te paneli",
+    viewListing: "Shiko listimin"
   },
   en: {
     stepWord: "Step",
@@ -403,7 +414,8 @@ const COPY = {
       { title: "Contact", desc: "How travellers reach you." },
       { title: "Location", desc: "Exact address and the Google Maps link." },
       { title: "Media", desc: "The main photo shown at the top of the listing." },
-      { title: "Verified options", desc: "Extra features unlocked after verification." }
+      { title: "Verified options", desc: "Extra features unlocked after verification." },
+      { title: "Catalog", desc: "The menu, products, rooms or services you offer — with prices and photos." }
     ],
     category: "Category",
     categorySelected: "Selected category",
@@ -529,15 +541,25 @@ const COPY = {
     fixErrors: "Please complete the required fields.",
     draftRestored: "Picked up where you left off — your details were kept.",
     success: "Listing submitted for approval",
-    updated: "Listing updated"
+    updated: "Listing updated",
+    catalogLocked: "Publish the listing first — the catalog opens right after publishing.",
+    catalogPublishedTitle: "Listing submitted for approval",
+    catalogPublishedText:
+      "Now add what you offer — the menu, products, rooms or services. Items save instantly and appear on your page as soon as the listing is approved.",
+    catalogHint:
+      "Every item saves instantly as you add or change it. Only you and the administrator can manage them.",
+    finish: "Finish — go to dashboard",
+    viewListing: "View listing"
   }
 } as const;
 
 const MAX_COVER_SIZE = 5 * 1024 * 1024;
 const MAX_GALLERY = 10;
 const MIN_DESCRIPTION = 30;
-const STEP_ICONS = [FileText, SlidersHorizontal, Phone, MapPin, Camera, Lock];
-const TOTAL_STEPS = 6;
+const STEP_ICONS = [FileText, SlidersHorizontal, Phone, MapPin, Camera, Lock, ShoppingBag];
+/** Steps that edit the listing's own fields — the catalog step after them saves per item. */
+const FORM_STEPS = 6;
+const TOTAL_STEPS = 7;
 
 const emptyForm = {
   title: "",
@@ -649,6 +671,10 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
 
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
+  // Create mode: the listing published at the end of step 6, so the catalog step can
+  // add items against a real listing id. Once set, the field steps lock — further
+  // changes go through the edit page.
+  const [createdListing, setCreatedListing] = useState<WizardListing | null>(null);
   const [form, setForm] = useState<FormState>(() => initialForm(listing));
   const [errors, setErrors] = useState<Partial<Record<string, string>>>({});
 
@@ -809,7 +835,9 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
     if (Array.isArray(draft.whatToBring)) setWhatToBring(draft.whatToBring);
     if (Array.isArray(draft.galleryUrls)) setGalleryUrls(draft.galleryUrls);
     if (draft.coverUrl) setCoverUrl(draft.coverUrl);
-    if (typeof draft.step === "number") setStep(Math.min(Math.max(draft.step, 1), TOTAL_STEPS));
+    // In create mode the catalog step only exists after publishing, so a draft can
+    // never land there directly.
+    if (typeof draft.step === "number") setStep(Math.min(Math.max(draft.step, 1), isEdit ? TOTAL_STEPS : FORM_STEPS));
     setTagsTouched(Boolean(draft.tagsTouched));
 
     if (draft.coverDataUrl) {
@@ -824,6 +852,8 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
 
   useEffect(() => {
     if (!draftReady) return;
+    // Published: the draft was already cleared — writing again would resurrect it.
+    if (createdListing) return;
     // Debounced: the inlined cover photo makes every write worth a few milliseconds.
     const timer = setTimeout(
       () =>
@@ -848,6 +878,7 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
   }, [
     draftReady,
     draftKey,
+    createdListing,
     step,
     form,
     selectedCategory,
@@ -950,7 +981,9 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
   const showCheckTimes = selectedCategory === "hotele";
   const showBusinessHours = selectedCategory !== "hotele" && selectedCategory !== "evente";
   const showEventFields = selectedCategory === "evente";
-  const showPriceRange = selectedCategory === "ushqim-pije";
+  // The price-range chip on the Overview tab isn't food-only (BusinessPage shows it for
+  // any category that sets one), so every business can pick a budget tier.
+  const showPriceRange = Boolean(selectedCategory);
   const showCuisines = selectedCategory === "ushqim-pije";
   const showDuration = selectedCategory === "turizem";
   const showLanguages = selectedCategory === "turizem";
@@ -1088,6 +1121,16 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
 
   const goToStep = (target: number) => {
     if (target === step) return;
+    if (!isEdit) {
+      if (createdListing) {
+        // Published: the field steps are frozen — only the catalog step stays live.
+        if (target < TOTAL_STEPS) return;
+      } else if (target >= TOTAL_STEPS) {
+        // The catalog needs a real listing id, so it only opens after publishing.
+        toast(c.catalogLocked);
+        return;
+      }
+    }
     // Moving forward always validates every step in between.
     if (target > step) {
       for (let current = step; current < target; current += 1) {
@@ -1108,13 +1151,23 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
     event.preventDefault();
     if (loading) return;
 
-    // Enter inside a field must move the wizard forward, never save early.
-    if (step < TOTAL_STEPS) {
+    // Create mode after publishing: the catalog items already saved themselves, so
+    // the last step's primary action simply closes the flow.
+    if (!isEdit && createdListing) {
+      router.push("/dashboard");
+      return;
+    }
+
+    // Enter inside a field must move the wizard forward, never save early. Create
+    // mode publishes at the end of the field steps so the catalog step that follows
+    // has a real listing to attach items to; edit mode saves on the last step.
+    const submitStep = isEdit ? TOTAL_STEPS : FORM_STEPS;
+    if (step < submitStep) {
       goToStep(step + 1);
       return;
     }
 
-    for (let current = 1; current <= TOTAL_STEPS; current += 1) {
+    for (let current = 1; current <= FORM_STEPS; current += 1) {
       if (!validateStep(current)) {
         setStep(current);
         toast.error(c.fixErrors);
@@ -1214,8 +1267,13 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
         toast.success(c.success);
         // Straight into the catalog step (menu/rooms/products/services) as the
         // natural last step of "adding a business" — the dashboard comes after.
-        const newSlug = data.listing?.slug;
-        router.push(newSlug ? `/listings/${newSlug}/products?onboarding=1` : "/dashboard");
+        if (data.listing?._id) {
+          setCreatedListing(data.listing);
+          setStep(TOTAL_STEPS);
+          scrollToTop();
+        } else {
+          router.push("/dashboard");
+        }
       }
       router.refresh();
     } catch (error) {
@@ -1228,6 +1286,10 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
   // 16px text on phones — smaller fonts make iOS zoom the whole page on focus.
   const inputClass = "rounded-xl py-2.5 text-base sm:text-sm";
   const showCoverPreview = coverPreview || coverUrl;
+
+  // The business whose catalog the last step manages: the listing being edited, or
+  // the one just published by this very flow.
+  const catalogListing = isEdit ? listing ?? null : createdListing;
 
   return (
     <form onSubmit={submit} className="space-y-4 sm:space-y-6">
@@ -2351,6 +2413,43 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
               )}
             </div>
           )}
+
+          {/* ===================== 7 · KATALOGU ===================== */}
+          {step === 7 && catalogListing && (
+            <div className="space-y-5">
+              {!isEdit && (
+                <div
+                  className="flex items-start gap-3 rounded-2xl border px-4 py-4"
+                  style={{ borderColor: "var(--brand-border)", background: "var(--brand-light)" }}
+                >
+                  <BadgeCheck className="mt-0.5 h-5 w-5 shrink-0" style={{ color: "var(--brand-accent)" }} />
+                  <div>
+                    <p className="text-sm font-bold" style={{ color: "var(--text-primary)" }}>
+                      {c.catalogPublishedTitle}
+                    </p>
+                    <p className="mt-1 text-xs" style={{ color: "var(--text-secondary)" }}>
+                      {c.catalogPublishedText}
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              <p className="text-xs" style={{ color: "var(--text-tertiary)" }}>
+                {c.catalogHint}
+              </p>
+
+              <CatalogManager
+                embedded
+                listing={{
+                  _id: catalogListing._id,
+                  slug: catalogListing.slug,
+                  category: catalogListing.category,
+                  subcategory: catalogListing.subcategory,
+                  actions: catalogListing.actions
+                }}
+              />
+            </div>
+          )}
         </div>
 
         {/* ---------- Navigation ---------- */}
@@ -2362,7 +2461,7 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
           <button
             type="button"
             onClick={() => goToStep(step - 1)}
-            disabled={step === 1 || loading}
+            disabled={step === 1 || loading || (!isEdit && Boolean(createdListing))}
             className="order-2 inline-flex items-center justify-center gap-2 rounded-full border px-5 py-2.5 text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-40 sm:order-1"
             style={{ borderColor: "var(--border-medium)", color: "var(--text-secondary)" }}
           >
@@ -2370,7 +2469,7 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
             {c.back}
           </button>
 
-          {step < TOTAL_STEPS ? (
+          {(isEdit ? step < TOTAL_STEPS : step < FORM_STEPS) ? (
             <button
               type="button"
               onClick={() => goToStep(step + 1)}
@@ -2388,7 +2487,7 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
       </div>
 
       {/* ---------- Publish / Save ---------- */}
-      {step === TOTAL_STEPS && (
+      {((isEdit && step === TOTAL_STEPS) || (!isEdit && step === FORM_STEPS && !createdListing)) && (
         <div className="space-y-3 text-center">
           <button
             type="submit"
@@ -2410,6 +2509,28 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
           <p className="text-xs" style={{ color: "var(--text-tertiary)" }}>
             {isEdit ? c.saveNote : c.publishNote}
           </p>
+        </div>
+      )}
+
+      {/* ---------- Finish (create mode, after the catalog) ---------- */}
+      {!isEdit && step === TOTAL_STEPS && createdListing && (
+        <div className="space-y-3 text-center">
+          <button
+            type="button"
+            onClick={() => router.push("/dashboard")}
+            className="flex h-14 w-full items-center justify-center gap-2 rounded-2xl text-base font-bold text-white transition-all duration-150"
+            style={{ background: "var(--brand-accent)", boxShadow: "0 6px 20px rgba(225, 29, 46, 0.28)" }}
+          >
+            {c.finish}
+            <ChevronRight className="h-5 w-5" />
+          </button>
+          <Link
+            href={`/listings/${createdListing.slug || ""}`}
+            className="inline-block text-sm font-semibold hover:underline"
+            style={{ color: "var(--brand-accent)" }}
+          >
+            {c.viewListing} →
+          </Link>
         </div>
       )}
 

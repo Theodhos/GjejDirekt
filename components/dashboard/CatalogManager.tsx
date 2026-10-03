@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
-import { Loader2, Pencil, Plus, Trash2, UploadCloud, X } from "lucide-react";
+import { Clock, Loader2, Pencil, Plus, Trash2, UploadCloud, X } from "lucide-react";
 import SafeImage from "@/components/ui/SafeImage";
 import { useLanguage } from "@/context/LanguageContext";
 import { formatPrice } from "@/lib/pricing";
@@ -39,8 +39,8 @@ export const MANAGER_COPY: Record<
     section: { en: "Menu section", sq: "Kategoria e menusë" },
     sectionPlaceholder: { en: "e.g. Sweet crêpes", sq: "p.sh. Krepë të ëmbël" },
     sectionHint: {
-      en: "Groups items on the menu, e.g. \"Sweet crêpes\", \"Drinks\". Leave blank to keep it ungrouped.",
-      sq: "Grupon artikujt në menu, p.sh. \"Krepë të ëmbël\", \"Pije\". Lëreni bosh nëse s'doni grupim."
+      en: "Groups items on the menu, e.g. \"Sweet crêpes\", \"Drinks\".",
+      sq: "Grupon artikujt në menu, p.sh. \"Krepë të ëmbël\", \"Pije\"."
     },
     emptyTitle: { en: "No products yet.", sq: "Nuk ka ende produkte." },
     emptyText: { en: "Add your first menu item using the form.", sq: "Shtoni produktin tuaj të parë duke përdorur formularin." }
@@ -57,8 +57,8 @@ export const MANAGER_COPY: Record<
     section: { en: "Room type", sq: "Lloji i dhomës" },
     sectionPlaceholder: { en: "e.g. Suites", sq: "p.sh. Suita" },
     sectionHint: {
-      en: "Groups rooms on your page, e.g. \"Suites\", \"Standard\". Leave blank to keep them ungrouped.",
-      sq: "Grupon dhomat në faqe, p.sh. \"Suita\", \"Standarde\". Lëreni bosh nëse s'doni grupim."
+      en: "Groups rooms on your page, e.g. \"Suites\", \"Standard\".",
+      sq: "Grupon dhomat në faqe, p.sh. \"Suita\", \"Standarde\"."
     },
     emptyTitle: { en: "No rooms yet.", sq: "Nuk ka ende dhoma." },
     emptyText: { en: "Add your first room using the form.", sq: "Shtoni dhomën tuaj të parë duke përdorur formularin." }
@@ -75,8 +75,8 @@ export const MANAGER_COPY: Record<
     section: { en: "Section", sq: "Kategoria" },
     sectionPlaceholder: { en: "e.g. Shoes", sq: "p.sh. Këpucë" },
     sectionHint: {
-      en: "Groups products on your page, e.g. \"Shoes\", \"Bags\". Leave blank to keep them ungrouped.",
-      sq: "Grupon produktet në faqe, p.sh. \"Këpucë\", \"Çanta\". Lëreni bosh nëse s'doni grupim."
+      en: "Groups products on your page, e.g. \"Shoes\", \"Bags\".",
+      sq: "Grupon produktet në faqe, p.sh. \"Këpucë\", \"Çanta\"."
     },
     emptyTitle: { en: "No products yet.", sq: "Nuk ka ende produkte." },
     emptyText: { en: "Add your first product using the form.", sq: "Shtoni produktin tuaj të parë duke përdorur formularin." }
@@ -93,8 +93,8 @@ export const MANAGER_COPY: Record<
     section: { en: "Section", sq: "Kategoria" },
     sectionPlaceholder: { en: "e.g. Hair", sq: "p.sh. Flokë" },
     sectionHint: {
-      en: "Groups services on your page, e.g. \"Hair\", \"Nails\". Leave blank to keep them ungrouped.",
-      sq: "Grupon shërbimet në faqe, p.sh. \"Flokë\", \"Thonj\". Lëreni bosh nëse s'doni grupim."
+      en: "Groups services on your page, e.g. \"Hair\", \"Nails\".",
+      sq: "Grupon shërbimet në faqe, p.sh. \"Flokë\", \"Thonj\"."
     },
     emptyTitle: { en: "No services yet.", sq: "Nuk ka ende shërbime." },
     emptyText: { en: "Add your first service using the form.", sq: "Shtoni shërbimin tuaj të parë duke përdorur formularin." }
@@ -109,6 +109,7 @@ export type CatalogProduct = {
   image?: string;
   menuCategory?: string;
   action?: ProductAction;
+  estimatedTime?: string;
   available: boolean;
 };
 
@@ -119,10 +120,19 @@ type FormState = {
   image: string;
   menuCategory: string;
   action: ProductAction;
+  estimatedTime: string;
   available: boolean;
 };
 
-const EMPTY_FORM: Omit<FormState, "action"> = { name: "", description: "", price: "", image: "", menuCategory: "", available: true };
+const EMPTY_FORM: Omit<FormState, "action"> = {
+  name: "",
+  description: "",
+  price: "",
+  image: "",
+  menuCategory: "",
+  estimatedTime: "",
+  available: true
+};
 
 export type CatalogListing = {
   _id: string;
@@ -202,6 +212,7 @@ export default function CatalogManager({
       image: product.image || "",
       menuCategory: product.menuCategory || "",
       action: getProductAction(product, kind),
+      estimatedTime: product.estimatedTime || "",
       available: product.available
     });
     if (!embedded) window.scrollTo({ top: 0, behavior: "smooth" });
@@ -225,8 +236,18 @@ export default function CatalogManager({
 
   const handleSubmit = async () => {
     if (saving || uploading) return;
+    // The universal required fields — the same for every kind of business:
+    // title, category, price and type (availability always carries a value).
     if (!form.name.trim()) {
-      toast.error(en ? "Product name is required" : "Emri i produktit është i detyrueshëm");
+      toast.error(en ? "The title is required" : "Titulli është i detyrueshëm");
+      return;
+    }
+    if (!form.menuCategory.trim()) {
+      toast.error(en ? "The category is required" : "Kategoria është e detyrueshme");
+      return;
+    }
+    if (!form.price.trim() || !Number.isFinite(Number(form.price)) || Number(form.price) < 0) {
+      toast.error(en ? "A valid price is required" : "Çmimi është i detyrueshëm");
       return;
     }
 
@@ -235,10 +256,11 @@ export default function CatalogManager({
       const payload = {
         name: form.name.trim(),
         description: form.description.trim(),
-        price: form.price ? Number(form.price) : undefined,
+        price: Number(form.price),
         image: form.image || undefined,
-        menuCategory: form.menuCategory.trim() || undefined,
+        menuCategory: form.menuCategory.trim(),
         action: form.action,
+        estimatedTime: form.estimatedTime.trim(),
         available: form.available
       };
 
@@ -330,9 +352,10 @@ export default function CatalogManager({
           {editingId ? copy.edit[lang] : copy.add[lang]}
         </h2>
 
+        {/* 1 · Titulli */}
         <div>
           <label className="mb-1.5 block text-xs font-semibold" style={{ color: "var(--text-secondary)" }}>
-            {en ? "Name" : "Emri"} *
+            {en ? "Title" : "Titulli"} *
           </label>
           <input
             value={form.name}
@@ -343,9 +366,10 @@ export default function CatalogManager({
           />
         </div>
 
+        {/* 2 · Kategoria */}
         <div>
           <label className="mb-1.5 block text-xs font-semibold" style={{ color: "var(--text-secondary)" }}>
-            {copy.section[lang]}
+            {copy.section[lang]} *
           </label>
           <input
             list="menu-category-suggestions"
@@ -365,23 +389,10 @@ export default function CatalogManager({
           </p>
         </div>
 
+        {/* 3 · Çmimi */}
         <div>
           <label className="mb-1.5 block text-xs font-semibold" style={{ color: "var(--text-secondary)" }}>
-            {en ? "Description — what's in it" : "Përshkrimi — çfarë përmban"}
-          </label>
-          <textarea
-            value={form.description}
-            onChange={(e) => setForm((prev) => ({ ...prev, description: e.target.value }))}
-            rows={3}
-            placeholder={en ? "Ingredients, size, notes..." : "Përbërësit, madhësia, shënime..."}
-            className="w-full resize-none rounded-xl px-4 py-2.5 text-sm outline-none transition-all focus:ring-2"
-            style={{ background: "var(--surface-cream)", border: "1px solid var(--border-soft)", color: "var(--text-primary)" }}
-          />
-        </div>
-
-        <div>
-          <label className="mb-1.5 block text-xs font-semibold" style={{ color: "var(--text-secondary)" }}>
-            {en ? "Price (Lekë)" : "Çmimi (Lekë)"}
+            {en ? "Price (Lekë)" : "Çmimi (Lekë)"} *
           </label>
           <input
             type="number"
@@ -394,9 +405,10 @@ export default function CatalogManager({
           />
         </div>
 
+        {/* 4 · Lloji — produkt (porositet) apo shërbim (rezervohet) */}
         <div>
           <label className="mb-1.5 block text-xs font-semibold" style={{ color: "var(--text-secondary)" }}>
-            {en ? "Button on the card" : "Butoni në kartë"}
+            {en ? "Type" : "Lloji"} *
           </label>
           <div className="grid grid-cols-2 gap-2" role="group">
             {(["porosi", "rezervim"] as const).map((value) => {
@@ -414,21 +426,96 @@ export default function CatalogManager({
                       : { background: "var(--surface-cream)", color: "var(--text-secondary)", border: "1px solid var(--border-soft)" }
                   }
                 >
-                  {value === "porosi" ? (en ? "Order" : "Porosit") : en ? "Book" : "Rezervo"}
+                  {value === "porosi" ? (en ? "Product" : "Produkt") : en ? "Service" : "Shërbim"}
                 </button>
               );
             })}
           </div>
           <p className="mt-1 text-[11px]" style={{ color: "var(--text-tertiary)" }}>
             {en
-              ? "\"Order\" goes into the basket as an order; \"Book\" asks the visitor for a date and time."
-              : "\"Porosit\" shkon në shportë si porosi; \"Rezervo\" i kërkon vizitorit datë dhe orë."}
+              ? "A product is ordered into the basket; a service is booked with a date and time."
+              : "Produkti porositet në shportë; shërbimi rezervohet me datë dhe orë."}
           </p>
         </div>
 
+        {/* 5 · Disponueshmëria — ON/OFF */}
         <div>
           <label className="mb-1.5 block text-xs font-semibold" style={{ color: "var(--text-secondary)" }}>
-            {en ? "Photo" : "Foto"}
+            {en ? "Availability" : "Disponueshmëria"} *
+          </label>
+          <button
+            type="button"
+            role="switch"
+            aria-checked={form.available}
+            onClick={() => setForm((prev) => ({ ...prev, available: !prev.available }))}
+            className="flex w-full items-center justify-between gap-3 rounded-xl px-4 py-2.5 transition-colors"
+            style={{ background: "var(--surface-cream)", border: "1px solid var(--border-soft)" }}
+          >
+            <span className="text-sm font-semibold" style={{ color: form.available ? "var(--text-primary)" : "var(--text-tertiary)" }}>
+              {form.available
+                ? en ? "ON — shown on your page" : "ON — shfaqet në faqen tuaj"
+                : en ? "OFF — hidden from visitors" : "OFF — e fshehur për vizitorët"}
+            </span>
+            <span
+              className="relative h-6 w-11 shrink-0 rounded-full transition-colors"
+              style={{ background: form.available ? "var(--brand-accent)" : "var(--border-medium)" }}
+            >
+              <span
+                className="absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-all"
+                style={{ left: form.available ? "calc(100% - 22px)" : "2px" }}
+              />
+            </span>
+          </button>
+          <p className="mt-1 text-[11px]" style={{ color: "var(--text-tertiary)" }}>
+            {en
+              ? "Turn it OFF when it runs out — it disappears from the page without being deleted."
+              : "Kalojeni OFF kur mbaron — zhduket nga faqja pa u fshirë."}
+          </p>
+        </div>
+
+        {/* 6 · Përshkrimi (opsionale) */}
+        <div>
+          <label className="mb-1.5 block text-xs font-semibold" style={{ color: "var(--text-secondary)" }}>
+            {en ? "Description (optional)" : "Përshkrimi (opsionale)"}
+          </label>
+          <textarea
+            value={form.description}
+            onChange={(e) => setForm((prev) => ({ ...prev, description: e.target.value }))}
+            rows={3}
+            placeholder={en ? "Ingredients, size, notes..." : "Përbërësit, madhësia, shënime..."}
+            className="w-full resize-none rounded-xl px-4 py-2.5 text-sm outline-none transition-all focus:ring-2"
+            style={{ background: "var(--surface-cream)", border: "1px solid var(--border-soft)", color: "var(--text-primary)" }}
+          />
+          <p className="mt-1 text-[11px]" style={{ color: "var(--text-tertiary)" }}>
+            {en
+              ? "On the page only one line shows, with a \"See more\" button for the rest."
+              : "Në faqe shfaqet vetëm 1 rresht, me butonin \"Shiko më shumë\" për pjesën tjetër."}
+          </p>
+        </div>
+
+        {/* 7 · Koha e estimuar (opsionale) */}
+        <div>
+          <label className="mb-1.5 block text-xs font-semibold" style={{ color: "var(--text-secondary)" }}>
+            {en ? "Estimated time (optional)" : "Koha e estimuar (opsionale)"}
+          </label>
+          <input
+            value={form.estimatedTime}
+            onChange={(e) => setForm((prev) => ({ ...prev, estimatedTime: e.target.value }))}
+            placeholder={en ? "e.g. 15 min" : "p.sh. 15 min"}
+            className="w-full rounded-xl px-4 py-2.5 text-sm outline-none transition-all focus:ring-2"
+            style={{ background: "var(--surface-cream)", border: "1px solid var(--border-soft)", color: "var(--text-primary)" }}
+          />
+          <p className="mt-1 text-[11px]" style={{ color: "var(--text-tertiary)" }}>
+            {en
+              ? "Prep/cooking time for products, or how long the appointment lasts for services."
+              : "Koha e gatimit/përgatitjes për produktet, ose kohëzgjatja e takimit për shërbimet."}
+          </p>
+        </div>
+
+        {/* 8 · Foto (opsionale) */}
+        <div>
+          <label className="mb-1.5 block text-xs font-semibold" style={{ color: "var(--text-secondary)" }}>
+            {en ? "Photo (optional)" : "Foto (opsionale)"}
           </label>
           {form.image ? (
             <div className="relative h-32 w-32 overflow-hidden rounded-xl">
@@ -465,16 +552,6 @@ export default function CatalogManager({
             }}
           />
         </div>
-
-        <label className="flex items-center gap-2 text-sm font-medium" style={{ color: "var(--text-secondary)" }}>
-          <input
-            type="checkbox"
-            checked={form.available}
-            onChange={(e) => setForm((prev) => ({ ...prev, available: e.target.checked }))}
-            className="h-4 w-4 rounded"
-          />
-          {en ? "Available to order" : "I disponueshëm për porosi"}
-        </label>
 
         <div className="flex gap-2 pt-1">
           <button
@@ -551,8 +628,17 @@ export default function CatalogManager({
                         : { background: "#DCFCE7", color: "#15803D" }
                     }
                   >
-                    {getProductAction(product, kind) === "rezervim" ? (en ? "Book" : "Rezervo") : en ? "Order" : "Porosit"}
+                    {getProductAction(product, kind) === "rezervim" ? (en ? "Service" : "Shërbim") : en ? "Product" : "Produkt"}
                   </span>
+                  {product.estimatedTime && (
+                    <span
+                      className="hidden shrink-0 items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold sm:inline-flex"
+                      style={{ background: "var(--surface-cream)", color: "var(--text-secondary)", border: "1px solid var(--border-soft)" }}
+                    >
+                      <Clock className="h-3 w-3" />
+                      {product.estimatedTime}
+                    </span>
+                  )}
                   {!product.available && (
                     <span
                       className="rounded-full px-2 py-0.5 text-[10px] font-bold uppercase"

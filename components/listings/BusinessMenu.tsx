@@ -16,6 +16,7 @@ import {
   Plus,
   Salad,
   Sandwich,
+  Clock,
   Soup,
   Utensils,
   UtensilsCrossed,
@@ -23,6 +24,7 @@ import {
   Wine,
   type LucideIcon
 } from "lucide-react";
+import ExpandableText from "@/components/ui/ExpandableText";
 import toast from "react-hot-toast";
 import SafeImage from "@/components/ui/SafeImage";
 import { useLanguage } from "@/context/LanguageContext";
@@ -220,9 +222,19 @@ export default function BusinessMenu({
                     {product.name}
                   </p>
                   {product.description && (
-                    <p className="mt-0.5 line-clamp-2 text-[12.5px] leading-[1.4]" style={{ color: "var(--text-secondary)" }}>
-                      {product.description}
-                    </p>
+                    <div className="mt-0.5">
+                      <ExpandableText
+                        text={product.description}
+                        className="text-[12.5px] leading-[1.4]"
+                        style={{ color: "var(--text-secondary)" }}
+                      />
+                    </div>
+                  )}
+                  {product.estimatedTime && (
+                    <span className="mt-1 inline-flex items-center gap-1 text-[11.5px] font-semibold" style={{ color: "var(--text-tertiary)" }}>
+                      <Clock className="h-3 w-3" />
+                      {product.estimatedTime}
+                    </span>
                   )}
 
                   <div className="mt-auto flex items-end justify-between gap-2 pt-2">

@@ -7,7 +7,7 @@ import { useLanguage } from "@/context/LanguageContext";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import Logo from "@/components/layout/Logo";
 
-type Me = { name: string; role: "user" | "admin" } | null;
+type Me = { name: string; role: "user" | "admin"; accountType?: "biznes" | "klient" } | null;
 type NavItem =
   | { href: string; label: string }
   | { label: string; onClick: () => void };
@@ -59,12 +59,16 @@ export default function Header() {
     window.location.href = "/";
   }
 
+  // A "klient" account only browses and orders/reserves — it never sees the add-listing
+  // entry points (signed-out visitors still see it; they choose "Biznes" at registration).
+  const isClientAccount = me?.accountType === "klient";
+
   const publicLinks = [
     { href: "/", label: t.nav.home },
     { href: "/listings", label: language === "en" ? "Businesses" : "Bizneset" },
     { href: "/packet", label: t.nav.packet || (language === "en" ? "Boost Bookings" : "Rrit Porositë") },
     { href: "/blog", label: t.nav.blog },
-    { href: "/create-listing", label: t.nav.addListing }
+    ...(isClientAccount ? [] : [{ href: "/create-listing", label: t.nav.addListing }])
   ];
 
   const authenticatedLinks: NavItem[] = me
@@ -176,10 +180,12 @@ export default function Header() {
                 {t.nav.login}
               </Link>
             )}
-            <Link href="/create-listing" className="btn-primary whitespace-nowrap !px-3.5 !text-[13px] xl:!px-5 xl:!text-sm">
-              <PlusCircle className="h-4 w-4" />
-              {t.nav.addListing}
-            </Link>
+            {!isClientAccount && (
+              <Link href="/create-listing" className="btn-primary whitespace-nowrap !px-3.5 !text-[13px] xl:!px-5 xl:!text-sm">
+                <PlusCircle className="h-4 w-4" />
+                {t.nav.addListing}
+              </Link>
+            )}
           </div>
 
           {/* Mobile right — notifications and account, exactly the two icons in the mock */}

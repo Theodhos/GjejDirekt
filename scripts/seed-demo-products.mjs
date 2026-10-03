@@ -261,6 +261,536 @@ const PETS = {
   ]}
 };
 
+const BEAUTY = {
+  "parukeri": { groups: [
+    { category: "Flokë Grash", items: [
+      { name: "Prerje & Styling", description: "Prerje sipas formës së fytyrës dhe stilim final", price: 1500, image: "https://images.unsplash.com/photo-1562322140-8baeececf3df?auto=format&fit=crop&w=800&q=80" },
+      { name: "Ngjyrim Flokësh", description: "Ngjyrë e plotë ose balayage, me produkte profesionale", price: 3500, image: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37a?auto=format&fit=crop&w=800&q=80" }
+    ]},
+    { category: "Flokë Burrash", items: [
+      { name: "Prerje Klasike", description: "Prerje me makinë dhe gërshërë", price: 800, image: "https://images.unsplash.com/photo-1503951914875-452162b0f3f1?auto=format&fit=crop&w=800&q=80" },
+      { name: "Trajtim Mjekre", description: "Formësim dhe trajtim mjekre me vaj", price: 600, image: "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?auto=format&fit=crop&w=800&q=80" }
+    ]}
+  ]},
+  "berber": { groups: [
+    { category: "Prerje", items: [
+      { name: "Prerje Standarde", description: "Prerje e plotë, larje dhe stilim", price: 700, image: "https://images.unsplash.com/photo-1503951914875-452162b0f3f1?auto=format&fit=crop&w=800&q=80" },
+      { name: "Prerje + Mjekër", description: "Prerje flokësh dhe formësim mjekre", price: 1000, image: "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?auto=format&fit=crop&w=800&q=80" }
+    ]},
+    { category: "Trajtime", items: [
+      { name: "Trajtim Flokësh", description: "Maskë ushqyese për flokë të thatë", price: 1200, image: "https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?auto=format&fit=crop&w=800&q=80" },
+      { name: "Masazh Kokë", description: "Masazh relaksues 15 minuta", price: 500, image: "https://images.unsplash.com/photo-1600334129128-685c5582fd35?auto=format&fit=crop&w=800&q=80" }
+    ]}
+  ]},
+  "spa": { groups: [
+    { category: "Masazhe", items: [
+      { name: "Masazh Relaksues 60min", description: "Masazh i plotë trupi me vajra aromatikë", price: 3500, image: "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?auto=format&fit=crop&w=800&q=80" },
+      { name: "Masazh me Gurë të Nxehtë", description: "Teknikë relaksuese me gurë bazalti", price: 4500, image: "https://images.unsplash.com/photo-1600334129128-685c5582fd35?auto=format&fit=crop&w=800&q=80" }
+    ]},
+    { category: "Trajtime Trupi", items: [
+      { name: "Peeling Trupi", description: "Pastrim dhe ripërtëritje e lëkurës", price: 3000, image: "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?auto=format&fit=crop&w=800&q=80" },
+      { name: "Aromaterapi", description: "Seancë relaksimi me vajra esenciale", price: 2800, image: "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=800&q=80" }
+    ]}
+  ]},
+  "estetike": { groups: [
+    { category: "Fytyrë", items: [
+      { name: "Pastrim i Thellë i Fytyrës", description: "Pastrim profesional me ekstraktim", price: 2500, image: "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?auto=format&fit=crop&w=800&q=80" },
+      { name: "Trajtim Anti-Age", description: "Seancë me serum dhe masazh facial", price: 4000, image: "https://images.unsplash.com/photo-1616394584738-fc6e612e71b9?auto=format&fit=crop&w=800&q=80" }
+    ]},
+    { category: "Epilim", items: [
+      { name: "Epilim me Laser (zonë e vogël)", description: "Epilim permanent, seancë e vetme", price: 2000, image: "https://images.unsplash.com/photo-1616394584738-fc6e612e71b9?auto=format&fit=crop&w=800&q=80" },
+      { name: "Qerasje me Dyll (këmbë)", description: "Heqje qimesh me dyll të ngrohtë", price: 1500, image: "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?auto=format&fit=crop&w=800&q=80" }
+    ]}
+  ]},
+  "thonj": { groups: [
+    { category: "Manikyr", items: [
+      { name: "Manikyr Klasik", description: "Formësim, kutikula dhe llak normal", price: 800, image: "https://images.unsplash.com/photo-1519014816548-bf5fe059798b?auto=format&fit=crop&w=800&q=80" },
+      { name: "Manikyr me Xhel", description: "Xhel me qëndrueshmëri deri 3 javë", price: 1800, image: "https://images.unsplash.com/photo-1604654894610-df63bc536371?auto=format&fit=crop&w=800&q=80" }
+    ]},
+    { category: "Pedikyr", items: [
+      { name: "Pedikyr Klasik", description: "Pastrim, formësim dhe llak", price: 1000, image: "https://images.unsplash.com/photo-1519014816548-bf5fe059798b?auto=format&fit=crop&w=800&q=80" },
+      { name: "Pedikyr Spa", description: "Banjë këmbësh, peeling dhe masazh", price: 2200, image: "https://images.unsplash.com/photo-1519014816548-bf5fe059798b?auto=format&fit=crop&w=800&q=80" }
+    ]}
+  ]}
+};
+
+const HEALTH = {
+  "klinika": { groups: [
+    { category: "Konsulta", items: [
+      { name: "Konsultë e Përgjithshme", description: "Vizitë me mjek të përgjithshëm", price: 2500, image: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=800&q=80" },
+      { name: "Konsultë Pediatrike", description: "Vizitë për fëmijë me pediatër", price: 2800, image: "https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&fit=crop&w=800&q=80" }
+    ]},
+    { category: "Analiza", items: [
+      { name: "Analiza Gjaku Bazë", description: "Hemogram i plotë", price: 1800, image: "https://images.unsplash.com/photo-1579154204601-01588f351e67?auto=format&fit=crop&w=800&q=80" },
+      { name: "Check-up i Plotë", description: "Panel i gjerë analizash dhe konsultë", price: 6500, image: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=800&q=80" }
+    ]}
+  ]},
+  "dentiste": { groups: [
+    { category: "Kontrolle", items: [
+      { name: "Kontroll & Pastrim Dhëmbësh", description: "Pastrim profesional dhe kontroll goje", price: 3000, image: "https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?auto=format&fit=crop&w=800&q=80" },
+      { name: "Mbushje Dhëmbi", description: "Mbushje me kompozit estetik", price: 4500, image: "https://images.unsplash.com/photo-1609840114035-3c981b782dfe?auto=format&fit=crop&w=800&q=80" }
+    ]},
+    { category: "Estetikë Dentare", items: [
+      { name: "Zbardhim Dhëmbësh", description: "Seancë zbardhimi profesional", price: 8000, image: "https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?auto=format&fit=crop&w=800&q=80" },
+      { name: "Vendosje Fasetash (copë)", description: "Faseta porcelani për çdo dhëmb", price: 15000, image: "https://images.unsplash.com/photo-1609840114035-3c981b782dfe?auto=format&fit=crop&w=800&q=80" }
+    ]}
+  ]},
+  "laboratore": { groups: [
+    { category: "Analiza Standarde", items: [
+      { name: "Analiza e Gjakut", description: "Hemogram dhe biokimi bazë", price: 1500, image: "https://images.unsplash.com/photo-1579154204601-01588f351e67?auto=format&fit=crop&w=800&q=80" },
+      { name: "Analiza e Urinës", description: "Ekzaminim i plotë urine", price: 800, image: "https://images.unsplash.com/photo-1579165466949-3180a3d056d5?auto=format&fit=crop&w=800&q=80" }
+    ]},
+    { category: "Analiza të Specializuara", items: [
+      { name: "Panel Hormonal", description: "Testim i niveleve hormonale", price: 4500, image: "https://images.unsplash.com/photo-1579154204601-01588f351e67?auto=format&fit=crop&w=800&q=80" },
+      { name: "Test Alergjie", description: "Panel alergjenësh të zakonshëm", price: 5000, image: "https://images.unsplash.com/photo-1579165466949-3180a3d056d5?auto=format&fit=crop&w=800&q=80" }
+    ]}
+  ]},
+  "fizioterapi": { groups: [
+    { category: "Seanca", items: [
+      { name: "Seancë Fizioterapie 45min", description: "Terapi manuale dhe ushtrime", price: 2500, image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=800&q=80" },
+      { name: "Masazh Terapeutik", description: "Masazh për dhimbje muskulore", price: 2000, image: "https://images.unsplash.com/photo-1591741535018-d042766c62eb?auto=format&fit=crop&w=800&q=80" }
+    ]},
+    { category: "Programe", items: [
+      { name: "Program Rehabilitimi (5 seanca)", description: "Program i plotë pas dëmtimi", price: 10000, image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=800&q=80" },
+      { name: "Vlerësim Fillestar", description: "Diagnostikim dhe plan trajtimi", price: 1500, image: "https://images.unsplash.com/photo-1591741535018-d042766c62eb?auto=format&fit=crop&w=800&q=80" }
+    ]}
+  ]},
+  "okuliste": { groups: [
+    { category: "Kontrolle Syri", items: [
+      { name: "Kontroll i Plotë i Shikimit", description: "Ekzaminim i plotë oftalmologjik", price: 2000, image: "https://images.unsplash.com/photo-1577401239170-897942555fb3?auto=format&fit=crop&w=800&q=80" },
+      { name: "Matje për Syze", description: "Matje precize e numrit të syzeve", price: 1000, image: "https://images.unsplash.com/photo-1577401159480-14b96db2ee04?auto=format&fit=crop&w=800&q=80" }
+    ]},
+    { category: "Produkte Optike", items: [
+      { name: "Lente Optike Standarde", description: "Lente me montim të përfshirë", price: 3500, image: "https://images.unsplash.com/photo-1577401239170-897942555fb3?auto=format&fit=crop&w=800&q=80" },
+      { name: "Lente Kontakti (çift)", description: "Lente mujore, çdo numër", price: 2500, image: "https://images.unsplash.com/photo-1577401159480-14b96db2ee04?auto=format&fit=crop&w=800&q=80" }
+    ]}
+  ]}
+};
+
+const AUTO = {
+  "rent-a-car": { groups: [
+    { category: "Makina Ekonomike", items: [
+      { name: "Qira Ditore - Hatchback", description: "Makinë ekonomike, klimë, 5 vende", price: 4000, image: "https://images.unsplash.com/photo-1494905998402-395d579af36f?auto=format&fit=crop&w=800&q=80" },
+      { name: "Qira Ditore - Sedan", description: "Komode për udhëtime të gjata", price: 5000, image: "https://images.unsplash.com/photo-1494905998402-395d579af36f?auto=format&fit=crop&w=800&q=80" }
+    ]},
+    { category: "Makina Premium", items: [
+      { name: "Qira Ditore - SUV", description: "Hapësirë e madhe, 4x4 opsional", price: 8000, image: "https://images.unsplash.com/photo-1562141961-3a1f6c88e0cb?auto=format&fit=crop&w=800&q=80" },
+      { name: "Qira Ditore - Luxury", description: "Makinë klase të lartë me shofer opsional", price: 15000, image: "https://images.unsplash.com/photo-1562141961-3a1f6c88e0cb?auto=format&fit=crop&w=800&q=80" }
+    ]}
+  ]},
+  "servis": { groups: [
+    { category: "Mirëmbajtje", items: [
+      { name: "Ndërrim Vaji & Filtri", description: "Vaj sintetik dhe filtër origjinal", price: 2500, image: "https://images.unsplash.com/photo-1632823469850-1b7b1557cdb3?auto=format&fit=crop&w=800&q=80" },
+      { name: "Diagnostikim Kompjuterik", description: "Skanim i plotë i gabimeve", price: 1500, image: "https://images.unsplash.com/photo-1517524008697-84bbe3c3fd98?auto=format&fit=crop&w=800&q=80" }
+    ]},
+    { category: "Riparime", items: [
+      { name: "Riparim Frenash (çift)", description: "Ndërrim disqe dhe ferrodo", price: 4500, image: "https://images.unsplash.com/photo-1632823469850-1b7b1557cdb3?auto=format&fit=crop&w=800&q=80" },
+      { name: "Servis Motori", description: "Kontroll dhe riparim i plotë motori", price: 8000, image: "https://images.unsplash.com/photo-1517524008697-84bbe3c3fd98?auto=format&fit=crop&w=800&q=80" }
+    ]}
+  ]},
+  "lavazh": { groups: [
+    { category: "Larje", items: [
+      { name: "Larje e Jashtme", description: "Larje dhe fshesë e karrocerisë", price: 500, image: "https://images.unsplash.com/photo-1607860108855-64acf2078ed9?auto=format&fit=crop&w=800&q=80" },
+      { name: "Larje e Plotë (Brenda+Jashtë)", description: "Larje, fshesë dhe pastrim interior", price: 1200, image: "https://images.unsplash.com/photo-1605164599901-db2c37427f9b?auto=format&fit=crop&w=800&q=80" }
+    ]},
+    { category: "Trajtime", items: [
+      { name: "Polirim Karrocerie", description: "Heqje gërvishtjesh të vogla", price: 5000, image: "https://images.unsplash.com/photo-1607860108855-64acf2078ed9?auto=format&fit=crop&w=800&q=80" },
+      { name: "Trajtim me Qelq (Nano)", description: "Mbrojtje afatgjatë e bojës", price: 12000, image: "https://images.unsplash.com/photo-1605164599901-db2c37427f9b?auto=format&fit=crop&w=800&q=80" }
+    ]}
+  ]},
+  "gomisteri": { groups: [
+    { category: "Shërbime Gomash", items: [
+      { name: "Montim/Çmontim Gome (copë)", description: "Montim i shpejtë në vend", price: 300, image: "https://images.unsplash.com/photo-1580273916550-e323be2ae537?auto=format&fit=crop&w=800&q=80" },
+      { name: "Balancim Rrotash (4 copë)", description: "Balancim elektronik i plotë", price: 1200, image: "https://images.unsplash.com/photo-1486326658194-fd4e3057c06b?auto=format&fit=crop&w=800&q=80" }
+    ]},
+    { category: "Goma", items: [
+      { name: "Gomë Vere (copë)", description: "Markë e njohur, çdo madhësi", price: 6000, image: "https://images.unsplash.com/photo-1580273916550-e323be2ae537?auto=format&fit=crop&w=800&q=80" },
+      { name: "Gomë Dimri (copë)", description: "Qëndrueshmëri në kushte të ftohta", price: 7000, image: "https://images.unsplash.com/photo-1486326658194-fd4e3057c06b?auto=format&fit=crop&w=800&q=80" }
+    ]}
+  ]},
+  "auto-salon": { groups: [
+    { category: "Makina në Shitje", items: [
+      { name: "Sedan i Përdorur 2018", description: "Kontrolluar plotësisht, çdo detaj i verifikuar", price: 1200000, image: "https://images.unsplash.com/photo-1562141961-3a1f6c88e0cb?auto=format&fit=crop&w=800&q=80" },
+      { name: "SUV i Përdorur 2020", description: "Kilometrazh i ulët, histori e pastër", price: 2200000, image: "https://images.unsplash.com/photo-1494905998402-395d579af36f?auto=format&fit=crop&w=800&q=80" }
+    ]},
+    { category: "Pjesë Këmbimi", items: [
+      { name: "Bateri Makine", description: "Garanci 2 vjet, montim falas", price: 8000, image: "https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?auto=format&fit=crop&w=800&q=80" },
+      { name: "Set Frenash i Plotë", description: "Disqe dhe ferrodo origjinale", price: 6000, image: "https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?auto=format&fit=crop&w=800&q=80" }
+    ]}
+  ]}
+};
+
+const HOME_SERVICES = {
+  "hidraulik": { groups: [
+    { category: "Riparime", items: [
+      { name: "Riparim Rrjedhje Uji", description: "Diagnostikim dhe riparim i shpejtë", price: 1500, image: "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=800&q=80" },
+      { name: "Zbllokim Kanalizimesh", description: "Me pajisje profesionale", price: 2000, image: "https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?auto=format&fit=crop&w=800&q=80" }
+    ]},
+    { category: "Instalime", items: [
+      { name: "Instalim Rubineti", description: "Montim dhe vendosje e re", price: 1000, image: "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=800&q=80" },
+      { name: "Instalim Boiler", description: "Montim i plotë me lidhje ujësjellësi", price: 3500, image: "https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?auto=format&fit=crop&w=800&q=80" }
+    ]}
+  ]},
+  "elektricist": { groups: [
+    { category: "Riparime", items: [
+      { name: "Riparim Qark Elektrik", description: "Diagnostikim dhe riparim i sigurt", price: 1500, image: "https://images.unsplash.com/photo-1621905252507-b35492cc74b4?auto=format&fit=crop&w=800&q=80" },
+      { name: "Ndërrim Prizash (copë)", description: "Priza të reja standarde", price: 500, image: "https://images.unsplash.com/photo-1621905252507-b35492cc74b4?auto=format&fit=crop&w=800&q=80" }
+    ]},
+    { category: "Instalime", items: [
+      { name: "Instalim Panel Elektrik", description: "Montim tabloje me siguresa", price: 6000, image: "https://images.unsplash.com/photo-1621905252507-b35492cc74b4?auto=format&fit=crop&w=800&q=80" },
+      { name: "Instalim Llambadarë", description: "Montim dhe lidhje elektrike", price: 1200, image: "https://images.unsplash.com/photo-1621905252507-b35492cc74b4?auto=format&fit=crop&w=800&q=80" }
+    ]}
+  ]},
+  "bojaxhi": { groups: [
+    { category: "Lyerje", items: [
+      { name: "Lyerje Dhome (m²)", description: "Bojë lavabile, dy dorë", price: 300, image: "https://images.unsplash.com/photo-1562259949-e8e7689d7828?auto=format&fit=crop&w=800&q=80" },
+      { name: "Lyerje Fasade (m²)", description: "Bojë rezistente ndaj motit", price: 450, image: "https://images.unsplash.com/photo-1562184552-997c461abbe6?auto=format&fit=crop&w=800&q=80" }
+    ]},
+    { category: "Rifiniturë", items: [
+      { name: "Suvatim Muri (m²)", description: "Rifiniturë e lëmuar para lyerjes", price: 500, image: "https://images.unsplash.com/photo-1562259949-e8e7689d7828?auto=format&fit=crop&w=800&q=80" },
+      { name: "Tapiceri Muri", description: "Vendosje tapicerie dekorative", price: 2500, image: "https://images.unsplash.com/photo-1562184552-997c461abbe6?auto=format&fit=crop&w=800&q=80" }
+    ]}
+  ]},
+  "pastrim": { groups: [
+    { category: "Pastrim Shtëpie", items: [
+      { name: "Pastrim i Plotë Apartamenti", description: "Pastrim i detajuar në çdo dhomë", price: 3500, image: "https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=800&q=80" },
+      { name: "Pastrim Pas Rinovimi", description: "Heqje pluhuri dhe mbetjesh ndërtimi", price: 6000, image: "https://images.unsplash.com/photo-1581579438747-104c53d7fbc4?auto=format&fit=crop&w=800&q=80" }
+    ]},
+    { category: "Shërbime Shtesë", items: [
+      { name: "Pastrim Qilimash (m²)", description: "Pastrim i thellë me pajisje profesionale", price: 300, image: "https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=800&q=80" },
+      { name: "Pastrim Xhamash", description: "Xhama të pastër pa shenja", price: 1500, image: "https://images.unsplash.com/photo-1581579438747-104c53d7fbc4?auto=format&fit=crop&w=800&q=80" }
+    ]}
+  ]},
+  "kondicionere": { groups: [
+    { category: "Instalim", items: [
+      { name: "Instalim Kondicioneri", description: "Montim i plotë, brenda dhe jashtë", price: 4000, image: "https://images.unsplash.com/photo-1631545806609-c2b6e4f4e3a4?auto=format&fit=crop&w=800&q=80" },
+      { name: "Shërbim Mirëmbajtjeje", description: "Pastrim filtrash dhe kontroll gazi", price: 2000, image: "https://images.unsplash.com/photo-1621905252507-b35492cc74b4?auto=format&fit=crop&w=800&q=80" }
+    ]},
+    { category: "Riparime", items: [
+      { name: "Rimbushje Gazi Freon", description: "Rimbushje e plotë me gaz freon", price: 3000, image: "https://images.unsplash.com/photo-1631545806609-c2b6e4f4e3a4?auto=format&fit=crop&w=800&q=80" },
+      { name: "Riparim Kompresori", description: "Diagnostikim dhe riparim i njësisë së jashtme", price: 5000, image: "https://images.unsplash.com/photo-1621905252507-b35492cc74b4?auto=format&fit=crop&w=800&q=80" }
+    ]}
+  ]}
+};
+
+const PROFESSIONAL = {
+  "avokat": { groups: [
+    { category: "Konsulta", items: [
+      { name: "Konsultë Juridike (orë)", description: "Këshillim mbi rastin konkret", price: 3000, image: "https://images.unsplash.com/photo-1589391886645-d51941baf7fb?auto=format&fit=crop&w=800&q=80" },
+      { name: "Hartim Kontrate", description: "Kontratë e personalizuar sipas rastit", price: 5000, image: "https://images.unsplash.com/photo-1560439514-4e9645039924?auto=format&fit=crop&w=800&q=80" }
+    ]},
+    { category: "Përfaqësim", items: [
+      { name: "Përfaqësim në Gjyq (seancë)", description: "Përfaqësim i plotë ligjor", price: 15000, image: "https://images.unsplash.com/photo-1589391886645-d51941baf7fb?auto=format&fit=crop&w=800&q=80" },
+      { name: "Dosje Divorci", description: "Përgatitje dhe ndjekje e plotë", price: 25000, image: "https://images.unsplash.com/photo-1560439514-4e9645039924?auto=format&fit=crop&w=800&q=80" }
+    ]}
+  ]},
+  "noter": { groups: [
+    { category: "Noterizime", items: [
+      { name: "Noterizim Dokumenti", description: "Noterizim i thjeshtë dokumenti", price: 1000, image: "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&w=800&q=80" },
+      { name: "Kontratë Shitje-Blerje", description: "Hartim dhe noterizim i plotë", price: 8000, image: "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&w=800&q=80" }
+    ]},
+    { category: "Vërtetime", items: [
+      { name: "Vërtetim Firme", description: "Vërtetim firme mbi dokument", price: 500, image: "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&w=800&q=80" },
+      { name: "Fuqi Prokure", description: "Hartim dhe noterizim prokure", price: 3000, image: "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&w=800&q=80" }
+    ]}
+  ]},
+  "kontabilist": { groups: [
+    { category: "Kontabilitet", items: [
+      { name: "Kontabilitet Mujor (Biznes i Vogël)", description: "Mbajtje e plotë e librave", price: 8000, image: "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=800&q=80" },
+      { name: "Deklarim TVSH", description: "Përgatitje dhe depozitim mujor", price: 3000, image: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=800&q=80" }
+    ]},
+    { category: "Konsulencë", items: [
+      { name: "Konsulencë Fiskale (orë)", description: "Këshillim për optimizim fiskal", price: 2500, image: "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=800&q=80" },
+      { name: "Hapje Biznesi", description: "Regjistrim i plotë pranë QKB", price: 15000, image: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=800&q=80" }
+    ]}
+  ]},
+  "marketing": { groups: [
+    { category: "Social Media", items: [
+      { name: "Menaxhim Social Media (muaj)", description: "Plan përmbajtjeje dhe postime javore", price: 15000, image: "https://images.unsplash.com/photo-1557838923-2985c318be48?auto=format&fit=crop&w=800&q=80" },
+      { name: "Fushatë Reklamash", description: "Krijim dhe menaxhim fushate Meta/Google", price: 10000, image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=800&q=80" }
+    ]},
+    { category: "Përmbajtje", items: [
+      { name: "Fotografi Produkti (10 copë)", description: "Foto profesionale për dyqan online", price: 5000, image: "https://images.unsplash.com/photo-1557838923-2985c318be48?auto=format&fit=crop&w=800&q=80" },
+      { name: "Video Promocionale", description: "Video e shkurtër për rrjete sociale", price: 20000, image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=800&q=80" }
+    ]}
+  ]},
+  "it": { groups: [
+    { category: "Web", items: [
+      { name: "Krijim Website Bazik", description: "Faqe prezantuese, deri 5 faqe", price: 25000, image: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=800&q=80" },
+      { name: "Mirëmbajtje Website (muaj)", description: "Përditësime dhe monitorim sigurie", price: 5000, image: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&w=800&q=80" }
+    ]},
+    { category: "Software", items: [
+      { name: "Zhvillim Aplikacioni (orë)", description: "Zhvillim i personalizuar sipas kërkesës", price: 3000, image: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=800&q=80" },
+      { name: "Konsulencë IT (orë)", description: "Këshillim teknik për biznesin", price: 2500, image: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&w=800&q=80" }
+    ]}
+  ]}
+};
+
+const EVENTS = {
+  "salla-eventesh": { groups: [
+    { category: "Paketa Sallash", items: [
+      { name: "Paketë Dasme (deri 100 vetë)", description: "Sallë, tavolina dhe shërbim i plotë", price: 150000, image: "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=800&q=80" },
+      { name: "Paketë Ditëlindjeje", description: "Sallë e dekoruar deri 50 vetë", price: 50000, image: "https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?auto=format&fit=crop&w=800&q=80" }
+    ]},
+    { category: "Shtesa", items: [
+      { name: "Dekor Bazik", description: "Dekor tavolinash dhe skene", price: 15000, image: "https://images.unsplash.com/photo-1478146059778-26028b07395a?auto=format&fit=crop&w=800&q=80" },
+      { name: "Qira Tendë e Jashtme", description: "Tendë për eventet në natyrë", price: 20000, image: "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=800&q=80" }
+    ]}
+  ]},
+  "fotograf": { groups: [
+    { category: "Paketa Foto", items: [
+      { name: "Paketë Fotografie Dasme", description: "Mbulim i plotë i ditës, album i përfshirë", price: 40000, image: "https://images.unsplash.com/photo-1452587925148-ce544e77e70d?auto=format&fit=crop&w=800&q=80" },
+      { name: "Session Fotografik Çift", description: "1 orë session para dasmës", price: 8000, image: "https://images.unsplash.com/photo-1554048612-b6a482bc67e5?auto=format&fit=crop&w=800&q=80" }
+    ]},
+    { category: "Shtesa", items: [
+      { name: "Album Fotografik", description: "Album i shtypur, 30 faqe", price: 6000, image: "https://images.unsplash.com/photo-1452587925148-ce544e77e70d?auto=format&fit=crop&w=800&q=80" },
+      { name: "Foto Drone", description: "Pamje ajrore të eventit", price: 5000, image: "https://images.unsplash.com/photo-1554048612-b6a482bc67e5?auto=format&fit=crop&w=800&q=80" }
+    ]}
+  ]},
+  "videograf": { groups: [
+    { category: "Paketa Video", items: [
+      { name: "Video Dasme (Full Day)", description: "Mbulim video i gjithë ditës", price: 50000, image: "https://images.unsplash.com/photo-1536240478700-b869070f9279?auto=format&fit=crop&w=800&q=80" },
+      { name: "Video Highlight (3-5min)", description: "Montim i shkurtër emocional", price: 15000, image: "https://images.unsplash.com/photo-1536240478700-b869070f9279?auto=format&fit=crop&w=800&q=80" }
+    ]},
+    { category: "Shtesa", items: [
+      { name: "Video me Drone", description: "Pamje ajrore shtesë për montim", price: 7000, image: "https://images.unsplash.com/photo-1536240478700-b869070f9279?auto=format&fit=crop&w=800&q=80" },
+      { name: "Montim Shtesë", description: "Version i zgjatur i videos", price: 5000, image: "https://images.unsplash.com/photo-1536240478700-b869070f9279?auto=format&fit=crop&w=800&q=80" }
+    ]}
+  ]},
+  "dj": { groups: [
+    { category: "Paketa Muzike", items: [
+      { name: "DJ + Sistem Zëri (4 orë)", description: "Muzikë e personalizuar sipas kërkesës", price: 25000, image: "https://images.unsplash.com/photo-1571266028243-d220c6a3c7c6?auto=format&fit=crop&w=800&q=80" },
+      { name: "DJ + Drita (6 orë)", description: "Paketë e plotë me efekte drite", price: 35000, image: "https://images.unsplash.com/photo-1571330735066-03aaa9429d89?auto=format&fit=crop&w=800&q=80" }
+    ]},
+    { category: "Shtesa", items: [
+      { name: "Orë Shtesë", description: "Zgjatje e eventit përtej paketës", price: 4000, image: "https://images.unsplash.com/photo-1571266028243-d220c6a3c7c6?auto=format&fit=crop&w=800&q=80" },
+      { name: "MC/Prezantues", description: "Prezantim dhe koordinim programi", price: 8000, image: "https://images.unsplash.com/photo-1571330735066-03aaa9429d89?auto=format&fit=crop&w=800&q=80" }
+    ]}
+  ]},
+  "dekor": { groups: [
+    { category: "Dekor Dasme", items: [
+      { name: "Dekor Tavoline (për tavolinë)", description: "Qendra lulesh dhe rroba tavoline", price: 2500, image: "https://images.unsplash.com/photo-1478146059778-26028b07395a?auto=format&fit=crop&w=800&q=80" },
+      { name: "Hark Lulesh", description: "Hark dekorativ për ceremoni", price: 12000, image: "https://images.unsplash.com/photo-1478146896981-b80fe463b330?auto=format&fit=crop&w=800&q=80" }
+    ]},
+    { category: "Dekor Eventesh", items: [
+      { name: "Balona & Dekor Ditëlindjeje", description: "Dekor i plotë me tema sipas kërkesës", price: 8000, image: "https://images.unsplash.com/photo-1478146896981-b80fe463b330?auto=format&fit=crop&w=800&q=80" },
+      { name: "Qendra Fotografike (Backdrop)", description: "Backdrop i dekoruar për foto", price: 10000, image: "https://images.unsplash.com/photo-1478146059778-26028b07395a?auto=format&fit=crop&w=800&q=80" }
+    ]}
+  ]}
+};
+
+const TOURISM = {
+  "agjenci-turistike": { groups: [
+    { category: "Paketa", items: [
+      { name: "Paketë Fundjave (2 ditë)", description: "Transport, akomodim dhe mëngjes i përfshirë", price: 12000, image: "https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=800&q=80" },
+      { name: "Paketë Plazh (3 net)", description: "Hotel buzë detit, transport i përfshirë", price: 25000, image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80" }
+    ]},
+    { category: "Shtesa", items: [
+      { name: "Transport Aeroport", description: "Transfer privat vajtje-ardhje", price: 2000, image: "https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=800&q=80" },
+      { name: "Sigurim Udhëtimi", description: "Mbulim mjekësor për udhëtimin", price: 1500, image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80" }
+    ]}
+  ]},
+  "guida": { groups: [
+    { category: "Ture me Guidë", items: [
+      { name: "Guidë Gjysmëditore", description: "Shëtitje e udhëhequr 3-4 orë", price: 4000, image: "https://images.unsplash.com/photo-1533105079780-92b9be482077?auto=format&fit=crop&w=800&q=80" },
+      { name: "Guidë Ditore e Plotë", description: "Program i plotë, 8 orë", price: 7000, image: "https://images.unsplash.com/photo-1533105079780-92b9be482077?auto=format&fit=crop&w=800&q=80" }
+    ]},
+    { category: "Shtesa", items: [
+      { name: "Guidë në Gjuhë të Huaj", description: "Anglisht, italisht ose gjermanisht", price: 2000, image: "https://images.unsplash.com/photo-1533105079780-92b9be482077?auto=format&fit=crop&w=800&q=80" },
+      { name: "Transport i Përfshirë", description: "Transport privat gjatë turit", price: 3000, image: "https://images.unsplash.com/photo-1533105079780-92b9be482077?auto=format&fit=crop&w=800&q=80" }
+    ]}
+  ]},
+  "ture": { groups: [
+    { category: "Ture Ditore", items: [
+      { name: "Tur Kulturor Ditor", description: "Vizitë vendesh historike me guidë", price: 3500, image: "https://images.unsplash.com/photo-1533105079780-92b9be482077?auto=format&fit=crop&w=800&q=80" },
+      { name: "Tur Gastronomik", description: "Shijim specialitetesh lokale", price: 4500, image: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=800&q=80" }
+    ]},
+    { category: "Ture me Varkë", items: [
+      { name: "Tur me Varkë (2 orë)", description: "Shëtitje buzë bregdetit", price: 3000, image: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=800&q=80" },
+      { name: "Tur me Varkë Private", description: "Varkë private deri 6 persona", price: 8000, image: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=800&q=80" }
+    ]}
+  ]},
+  "aktivitete": { groups: [
+    { category: "Natyrë", items: [
+      { name: "Hyrje Parku Natyror", description: "Biletë hyrjeje ditore", price: 500, image: "https://images.unsplash.com/photo-1551632811-561732d1e306?auto=format&fit=crop&w=800&q=80" },
+      { name: "Vizitë e Udhëhequr Muze", description: "Biletë + guidë brenda muzeut", price: 300, image: "https://images.unsplash.com/photo-1533105079780-92b9be482077?auto=format&fit=crop&w=800&q=80" }
+    ]},
+    { category: "Aktivitete Familjare", items: [
+      { name: "Qira Çadër Plazhi", description: "Çadër + 2 shezlongë, ditë e plotë", price: 1000, image: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=800&q=80" },
+      { name: "Lundrim me Kajak", description: "1 orë qira kajak, pajisje të përfshira", price: 1500, image: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=800&q=80" }
+    ]}
+  ]},
+  "sporte-aventure": { groups: [
+    { category: "Hiking & Trekking", items: [
+      { name: "Hiking i Udhëhequr (gjysmëditor)", description: "Shëtitje malore me guidë lokale", price: 3000, image: "https://images.unsplash.com/photo-1551632811-561732d1e306?auto=format&fit=crop&w=800&q=80" },
+      { name: "Trek Alpin (ditor)", description: "Udhëtim i plotë ditor në male", price: 6000, image: "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?auto=format&fit=crop&w=800&q=80" }
+    ]},
+    { category: "Sporte Uji", items: [
+      { name: "Zhytje me Maskë (Snorkeling)", description: "Pajisje të përfshira, guidë në ujë", price: 2500, image: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=800&q=80" },
+      { name: "Rafting (2 orë)", description: "Aventurë në lumë me instruktor", price: 5000, image: "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?auto=format&fit=crop&w=800&q=80" }
+    ]}
+  ]}
+};
+
+const EDUCATION = {
+  "kurse-digital": { groups: [
+    { category: "Kurse Kompjuteri", items: [
+      { name: "Kurs Bazik Kompjuteri (muaj)", description: "Nga zero, me çertifikatë përfundimi", price: 6000, image: "https://images.unsplash.com/photo-1501504905252-473c47e087f8?auto=format&fit=crop&w=800&q=80" },
+      { name: "Kurs Excel i Avancuar", description: "Formula, pivot tabela dhe analizë", price: 8000, image: "https://images.unsplash.com/photo-1501504905252-473c47e087f8?auto=format&fit=crop&w=800&q=80" }
+    ]},
+    { category: "Kurse Krijuese", items: [
+      { name: "Kurs Fotografie", description: "Bazat e kompozimit dhe dritës", price: 7000, image: "https://images.unsplash.com/photo-1452587925148-ce544e77e70d?auto=format&fit=crop&w=800&q=80" },
+      { name: "Kurs Dizajni Grafik", description: "Photoshop dhe Illustrator për fillestarë", price: 9000, image: "https://images.unsplash.com/photo-1501504905252-473c47e087f8?auto=format&fit=crop&w=800&q=80" }
+    ]}
+  ]},
+  "gjuhe-huaja": { groups: [
+    { category: "Gjuhë", items: [
+      { name: "Kurs Anglisht (nivel bazë, muaj)", description: "Grupe të vogla, materiale të përfshira", price: 6000, image: "https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&w=800&q=80" },
+      { name: "Kurs Italisht (muaj)", description: "Fokus në bisedë dhe gramatikë", price: 6000, image: "https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&w=800&q=80" }
+    ]},
+    { category: "Përgatitje Provimesh", items: [
+      { name: "Përgatitje IELTS", description: "Paketë 10 seancash intensive", price: 10000, image: "https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&w=800&q=80" },
+      { name: "Bisedë Praktike (orë)", description: "Seancë bisede me mësues nativ", price: 1500, image: "https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&w=800&q=80" }
+    ]}
+  ]},
+  "trajnime": { groups: [
+    { category: "Trajnime Profesionale", items: [
+      { name: "Trajnim Menaxhim Projekti", description: "Metodologji dhe raste praktike", price: 15000, image: "https://images.unsplash.com/photo-1503676382389-4809596d5290?auto=format&fit=crop&w=800&q=80" },
+      { name: "Trajnim Shitje & Marketing", description: "Teknika praktike shitjeje", price: 12000, image: "https://images.unsplash.com/photo-1503676382389-4809596d5290?auto=format&fit=crop&w=800&q=80" }
+    ]},
+    { category: "Workshope", items: [
+      { name: "Workshop 1-Ditor", description: "Seancë intensive me certifikatë", price: 5000, image: "https://images.unsplash.com/photo-1503676382389-4809596d5290?auto=format&fit=crop&w=800&q=80" },
+      { name: "Seminar Online", description: "Pjesëmarrje live nga distanca", price: 3000, image: "https://images.unsplash.com/photo-1503676382389-4809596d5290?auto=format&fit=crop&w=800&q=80" }
+    ]}
+  ]},
+  "mesim-privat": { groups: [
+    { category: "Mësim Privat", items: [
+      { name: "Orë Private Matematikë", description: "Orë individuale, çdo nivel", price: 1000, image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=800&q=80" },
+      { name: "Orë Private Fizikë", description: "Përgatitje për provime shkollore", price: 1000, image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=800&q=80" }
+    ]},
+    { category: "Përgatitje Provimesh", items: [
+      { name: "Përgatitje Maturë (paketë 10 orë)", description: "Program intensiv përpara provimit", price: 9000, image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=800&q=80" },
+      { name: "Ndihmë Detyrash (orë)", description: "Mbështetje javore me detyrat e shtëpisë", price: 800, image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=800&q=80" }
+    ]}
+  ]},
+  "arte": { groups: [
+    { category: "Arte", items: [
+      { name: "Kurs Piano (muaj)", description: "Nga bazat, çdo moshë", price: 7000, image: "https://images.unsplash.com/photo-1520523839897-bd0b52f945a0?auto=format&fit=crop&w=800&q=80" },
+      { name: "Kurs Kitarë (muaj)", description: "Akorde bazë dhe repertor", price: 6500, image: "https://images.unsplash.com/photo-1520523839897-bd0b52f945a0?auto=format&fit=crop&w=800&q=80" }
+    ]},
+    { category: "Vallëzim", items: [
+      { name: "Kurs Vallëzimi (muaj)", description: "Grupe sipas nivelit", price: 5500, image: "https://images.unsplash.com/photo-1504609773096-104ff2c73ba4?auto=format&fit=crop&w=800&q=80" },
+      { name: "Orë Private Vallëzimi", description: "Orë individuale ose për çift", price: 1500, image: "https://images.unsplash.com/photo-1504609773096-104ff2c73ba4?auto=format&fit=crop&w=800&q=80" }
+    ]}
+  ]}
+};
+
+const FITNESS = {
+  "palester": { groups: [
+    { category: "Abonime", items: [
+      { name: "Abonim Mujor", description: "Akses i plotë në palestër", price: 3500, image: "https://images.unsplash.com/photo-1571902943202-507ec2618e8f?auto=format&fit=crop&w=800&q=80" },
+      { name: "Abonim Vjetor", description: "12 muaj, me çmim të reduktuar", price: 30000, image: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=800&q=80" }
+    ]},
+    { category: "Trajnim Personal", items: [
+      { name: "Seancë Trajner Personal", description: "Program i personalizuar", price: 2000, image: "https://images.unsplash.com/photo-1571902943202-507ec2618e8f?auto=format&fit=crop&w=800&q=80" },
+      { name: "Paketë 10 Seanca PT", description: "Me ndjekje progresi", price: 17000, image: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=800&q=80" }
+    ]}
+  ]},
+  "yoga": { groups: [
+    { category: "Klasa Yoga", items: [
+      { name: "Klasë Yoga (e vetme)", description: "Klasë grupi, çdo nivel", price: 800, image: "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&w=800&q=80" },
+      { name: "Abonim Mujor Yoga", description: "Akses i pakufizuar në klasa", price: 6000, image: "https://images.unsplash.com/photo-1575052814086-f385e2e2ad1b?auto=format&fit=crop&w=800&q=80" }
+    ]},
+    { category: "Seanca Private", items: [
+      { name: "Seancë Private Yoga", description: "Seancë individuale me instruktor", price: 2500, image: "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&w=800&q=80" },
+      { name: "Yoga për Fëmijë (klasë)", description: "Klasë e përshtatur për fëmijë", price: 600, image: "https://images.unsplash.com/photo-1575052814086-f385e2e2ad1b?auto=format&fit=crop&w=800&q=80" }
+    ]}
+  ]},
+  "pilates": { groups: [
+    { category: "Klasa Pilates", items: [
+      { name: "Klasë Pilates (e vetme)", description: "Klasë grupi me mat", price: 900, image: "https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=800&q=80" },
+      { name: "Abonim Mujor Pilates", description: "Klasa të pakufizuara", price: 6500, image: "https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=800&q=80" }
+    ]},
+    { category: "Reformer", items: [
+      { name: "Seancë Reformer Pilates", description: "Seancë me pajisje reformer", price: 2000, image: "https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=800&q=80" },
+      { name: "Paketë 5 Seanca Reformer", description: "Me ulje çmimi për paketë", price: 9000, image: "https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=800&q=80" }
+    ]}
+  ]},
+  "pishine": { groups: [
+    { category: "Hyrje", items: [
+      { name: "Hyrje Ditore në Pishinë", description: "Akses i plotë për një ditë", price: 500, image: "https://images.unsplash.com/photo-1530549387789-4c1017266635?auto=format&fit=crop&w=800&q=80" },
+      { name: "Abonim Mujor Pishinë", description: "Hyrje e pakufizuar një muaj", price: 5000, image: "https://images.unsplash.com/photo-1530549387789-4c1017266635?auto=format&fit=crop&w=800&q=80" }
+    ]},
+    { category: "Mësim Not", items: [
+      { name: "Orë Mësim Not (fëmijë)", description: "Instruktor i certifikuar", price: 1500, image: "https://images.unsplash.com/photo-1530549387789-4c1017266635?auto=format&fit=crop&w=800&q=80" },
+      { name: "Orë Mësim Not (të rritur)", description: "Teknikë bazë e notit", price: 1800, image: "https://images.unsplash.com/photo-1530549387789-4c1017266635?auto=format&fit=crop&w=800&q=80" }
+    ]}
+  ]},
+  "tenis": { groups: [
+    { category: "Rezervim Fushe", items: [
+      { name: "Orë Fushë Tenisi", description: "Rezervim 1 orë, çdo kohë", price: 1500, image: "https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?auto=format&fit=crop&w=800&q=80" },
+      { name: "Orë Fushë Padel", description: "Rezervim 1 orë fushë padel", price: 2000, image: "https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?auto=format&fit=crop&w=800&q=80" }
+    ]},
+    { category: "Mësim", items: [
+      { name: "Orë Private Tenisi", description: "Me trajner të kualifikuar", price: 2500, image: "https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?auto=format&fit=crop&w=800&q=80" },
+      { name: "Paketë 5 Orë Mësim", description: "Me ndjekje progresi teknik", price: 11000, image: "https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?auto=format&fit=crop&w=800&q=80" }
+    ]}
+  ]}
+};
+
+const INDUSTRY = {
+  "materiale-ndertimi": { groups: [
+    { category: "Materiale Bazë", items: [
+      { name: "Çimento me Shumicë (ton)", description: "Çmim me shumicë, dërgesë e përfshirë", price: 18000, image: "https://images.unsplash.com/photo-1541888946425-d81bb19240f5?auto=format&fit=crop&w=800&q=80" },
+      { name: "Hekur Betoni (ton)", description: "Diametra të ndryshëm në stok", price: 120000, image: "https://images.unsplash.com/photo-1518709268805-4e9042af2176?auto=format&fit=crop&w=800&q=80" }
+    ]},
+    { category: "Inerte", items: [
+      { name: "Zhavorr (m³)", description: "Dërgesë me kamion deri në vend", price: 1500, image: "https://images.unsplash.com/photo-1518709268805-4e9042af2176?auto=format&fit=crop&w=800&q=80" },
+      { name: "Rërë (m³)", description: "Rërë e larë për ndërtim", price: 1200, image: "https://images.unsplash.com/photo-1541888946425-d81bb19240f5?auto=format&fit=crop&w=800&q=80" }
+    ]}
+  ]},
+  "pajisje-profesionale": { groups: [
+    { category: "Pajisje Hoteleri", items: [
+      { name: "Frigorifer Industrial", description: "Kapacitet i madh, klasë energjitike A", price: 180000, image: "https://images.unsplash.com/photo-1565514020179-026b92b2d70b?auto=format&fit=crop&w=800&q=80" },
+      { name: "Furrë Profesionale", description: "Furrë konvekcioni për restorante", price: 220000, image: "https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=800&q=80" }
+    ]},
+    { category: "Pajisje Zyre", items: [
+      { name: "Fotokopjuese Profesionale", description: "Shpejtësi e lartë, shumëfunksionale", price: 90000, image: "https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=800&q=80" },
+      { name: "Printer Industrial", description: "Për vëllim të lartë printimi", price: 60000, image: "https://images.unsplash.com/photo-1565514020179-026b92b2d70b?auto=format&fit=crop&w=800&q=80" }
+    ]}
+  ]},
+  "prodhues": { groups: [
+    { category: "Prodhim me Shumicë", items: [
+      { name: "Prodhim Paketimesh (1000 copë)", description: "Paketim i personalizuar sipas porosisë", price: 25000, image: "https://images.unsplash.com/photo-1565514020179-026b92b2d70b?auto=format&fit=crop&w=800&q=80" },
+      { name: "Prodhim Etiketash (5000 copë)", description: "Etiketa të printuara sipas dizajnit tuaj", price: 8000, image: "https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=800&q=80" }
+    ]},
+    { category: "Shërbime Prodhimi", items: [
+      { name: "Prerje Metali me Lazer (m)", description: "Precizion i lartë për çdo material", price: 500, image: "https://images.unsplash.com/photo-1565514020179-026b92b2d70b?auto=format&fit=crop&w=800&q=80" },
+      { name: "Montim me Porosi", description: "Montim sipas specifikimeve tuaja", price: 10000, image: "https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=800&q=80" }
+    ]}
+  ]},
+  "shitje-shumice": { groups: [
+    { category: "Shumicë Ushqimore", items: [
+      { name: "Vaj Ulliri me Shumicë (18L)", description: "Çmim i veçantë për sasi të mëdha", price: 9000, image: "https://images.unsplash.com/photo-1553413077-190883911c9b?auto=format&fit=crop&w=800&q=80" },
+      { name: "Miell me Shumicë (50kg)", description: "Çantë e madhe, dërgesë e përfshirë", price: 3500, image: "https://images.unsplash.com/photo-1553413077-190883911c9b?auto=format&fit=crop&w=800&q=80" }
+    ]},
+    { category: "Shumicë Paketimesh", items: [
+      { name: "Kuti Kartoni (100 copë)", description: "Madhësi standarde, qëndrueshmëri e lartë", price: 6000, image: "https://images.unsplash.com/photo-1553413077-190883911c9b?auto=format&fit=crop&w=800&q=80" },
+      { name: "Qese Plastike (1000 copë)", description: "Madhësi të ndryshme në dispozicion", price: 4000, image: "https://images.unsplash.com/photo-1553413077-190883911c9b?auto=format&fit=crop&w=800&q=80" }
+    ]}
+  ]},
+  "makineri": { groups: [
+    { category: "Makineri Ndërtimi", items: [
+      { name: "Qira Ekskavatori (ditë)", description: "Me operator, gati për punë", price: 25000, image: "https://images.unsplash.com/photo-1581093458791-9d42e3c7e117?auto=format&fit=crop&w=800&q=80" },
+      { name: "Qira Autobetonierë (ditë)", description: "Transport betoni deri në vend", price: 20000, image: "https://images.unsplash.com/photo-1581094651181-35942459ef62?auto=format&fit=crop&w=800&q=80" }
+    ]},
+    { category: "Makineri të Vogla", items: [
+      { name: "Qira Gjenerator (ditë)", description: "Fuqi e mjaftueshme për kantier të vogël", price: 3000, image: "https://images.unsplash.com/photo-1581093458791-9d42e3c7e117?auto=format&fit=crop&w=800&q=80" },
+      { name: "Qira Kompresor Ajri (ditë)", description: "Për vegla pneumatike", price: 2500, image: "https://images.unsplash.com/photo-1581094651181-35942459ef62?auto=format&fit=crop&w=800&q=80" }
+    ]}
+  ]}
+};
+
 const LISTING_PLANS = [
   // Ushqim & Pije — 5 general restaurants, same style menu.
   { slug: "demo-ushqim-pije-1", menu: FOOD_MENU },
@@ -297,7 +827,67 @@ const LISTING_PLANS = [
   { slug: "demo-kafshe-2", menu: PETS["veteriner"].groups },
   { slug: "demo-kafshe-3", menu: PETS["grooming"].groups },
   { slug: "demo-kafshe-4", menu: PETS["pet-shop"].groups },
-  { slug: "demo-kafshe-5", menu: PETS["veteriner"].groups }
+  { slug: "demo-kafshe-5", menu: PETS["veteriner"].groups },
+  // Bukuri & Wellness
+  { slug: "demo-bukuri-1", menu: BEAUTY["parukeri"].groups },
+  { slug: "demo-bukuri-2", menu: BEAUTY["berber"].groups },
+  { slug: "demo-bukuri-3", menu: BEAUTY["spa"].groups },
+  { slug: "demo-bukuri-4", menu: BEAUTY["estetike"].groups },
+  { slug: "demo-bukuri-5", menu: BEAUTY["thonj"].groups },
+  // Shëndet
+  { slug: "demo-shendet-1", menu: HEALTH["klinika"].groups },
+  { slug: "demo-shendet-2", menu: HEALTH["dentiste"].groups },
+  { slug: "demo-shendet-3", menu: HEALTH["laboratore"].groups },
+  { slug: "demo-shendet-4", menu: HEALTH["fizioterapi"].groups },
+  { slug: "demo-shendet-5", menu: HEALTH["okuliste"].groups },
+  // Automjete
+  { slug: "demo-auto-1", menu: AUTO["rent-a-car"].groups },
+  { slug: "demo-auto-2", menu: AUTO["servis"].groups },
+  { slug: "demo-auto-3", menu: AUTO["lavazh"].groups },
+  { slug: "demo-auto-4", menu: AUTO["gomisteri"].groups },
+  { slug: "demo-auto-5", menu: AUTO["auto-salon"].groups },
+  // Shërbime për Shtëpinë
+  { slug: "demo-sherbime-shtepi-1", menu: HOME_SERVICES["hidraulik"].groups },
+  { slug: "demo-sherbime-shtepi-2", menu: HOME_SERVICES["elektricist"].groups },
+  { slug: "demo-sherbime-shtepi-3", menu: HOME_SERVICES["bojaxhi"].groups },
+  { slug: "demo-sherbime-shtepi-4", menu: HOME_SERVICES["pastrim"].groups },
+  { slug: "demo-sherbime-shtepi-5", menu: HOME_SERVICES["kondicionere"].groups },
+  // Shërbime Profesionale
+  { slug: "demo-sherbime-profesionale-1", menu: PROFESSIONAL["avokat"].groups },
+  { slug: "demo-sherbime-profesionale-2", menu: PROFESSIONAL["noter"].groups },
+  { slug: "demo-sherbime-profesionale-3", menu: PROFESSIONAL["kontabilist"].groups },
+  { slug: "demo-sherbime-profesionale-4", menu: PROFESSIONAL["marketing"].groups },
+  { slug: "demo-sherbime-profesionale-5", menu: PROFESSIONAL["it"].groups },
+  // Evente & Dasma
+  { slug: "demo-evente-1", menu: EVENTS["salla-eventesh"].groups },
+  { slug: "demo-evente-2", menu: EVENTS["fotograf"].groups },
+  { slug: "demo-evente-3", menu: EVENTS["videograf"].groups },
+  { slug: "demo-evente-4", menu: EVENTS["dj"].groups },
+  { slug: "demo-evente-5", menu: EVENTS["dekor"].groups },
+  // Turizëm & Aktivitete
+  { slug: "demo-turizem-1", menu: TOURISM["agjenci-turistike"].groups },
+  { slug: "demo-turizem-2", menu: TOURISM["guida"].groups },
+  { slug: "demo-turizem-3", menu: TOURISM["ture"].groups },
+  { slug: "demo-turizem-4", menu: TOURISM["aktivitete"].groups },
+  { slug: "demo-turizem-5", menu: TOURISM["sporte-aventure"].groups },
+  // Arsim & Trajnime
+  { slug: "demo-arsim-1", menu: EDUCATION["kurse-digital"].groups },
+  { slug: "demo-arsim-2", menu: EDUCATION["gjuhe-huaja"].groups },
+  { slug: "demo-arsim-3", menu: EDUCATION["trajnime"].groups },
+  { slug: "demo-arsim-4", menu: EDUCATION["mesim-privat"].groups },
+  { slug: "demo-arsim-5", menu: EDUCATION["arte"].groups },
+  // Sport & Fitness
+  { slug: "demo-sport-fitness-1", menu: FITNESS["palester"].groups },
+  { slug: "demo-sport-fitness-2", menu: FITNESS["yoga"].groups },
+  { slug: "demo-sport-fitness-3", menu: FITNESS["pilates"].groups },
+  { slug: "demo-sport-fitness-4", menu: FITNESS["pishine"].groups },
+  { slug: "demo-sport-fitness-5", menu: FITNESS["tenis"].groups },
+  // Biznese & Industri
+  { slug: "demo-biznese-industri-1", menu: INDUSTRY["materiale-ndertimi"].groups },
+  { slug: "demo-biznese-industri-2", menu: INDUSTRY["pajisje-profesionale"].groups },
+  { slug: "demo-biznese-industri-3", menu: INDUSTRY["prodhues"].groups },
+  { slug: "demo-biznese-industri-4", menu: INDUSTRY["shitje-shumice"].groups },
+  { slug: "demo-biznese-industri-5", menu: INDUSTRY["makineri"].groups }
 ];
 
 const listingSchema = new mongoose.Schema({}, { strict: false });

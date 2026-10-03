@@ -2,7 +2,8 @@
 
 import { useEffect, useMemo, useState } from "react";
 import SafeImage from "@/components/ui/SafeImage";
-import { ChevronDown, ChevronUp, Minus, Plus, UtensilsCrossed, BedDouble, Pizza, Coffee, GlassWater, Hash } from "lucide-react";
+import { ChevronDown, ChevronUp, Clock, Minus, Plus, UtensilsCrossed, BedDouble, Pizza, Coffee, GlassWater, Hash } from "lucide-react";
+import ExpandableText from "@/components/ui/ExpandableText";
 import toast from "react-hot-toast";
 import { useLanguage } from "@/context/LanguageContext";
 import { formatPrice } from "@/lib/pricing";
@@ -18,6 +19,8 @@ export type ListingProduct = {
   menuCategory?: string;
   /** Ordered ("porosi") or booked ("rezervim"); unset = the business's default (lib/business-offer.ts). */
   action?: "porosi" | "rezervim";
+  /** Prep time for products or appointment length for services, e.g. "15 min". */
+  estimatedTime?: string;
 };
 
 const ALL_TAB = "__all__";
@@ -186,9 +189,19 @@ export default function ListingProducts({
                         {product.name}
                       </p>
                       {product.description && (
-                        <p className={`mt-0.5 line-clamp-2 leading-[1.35] ${isShopping ? "text-[12.5px]" : "text-[11px]"}`} style={{ color: "var(--text-secondary)" }}>
-                          {product.description}
-                        </p>
+                        <div className="mt-0.5">
+                          <ExpandableText
+                            text={product.description}
+                            className={`leading-[1.35] ${isShopping ? "text-[12.5px]" : "text-[11px]"}`}
+                            style={{ color: "var(--text-secondary)" }}
+                          />
+                        </div>
+                      )}
+                      {product.estimatedTime && (
+                        <span className="mt-1 inline-flex items-center gap-1 text-[11px] font-semibold" style={{ color: "var(--text-tertiary)" }}>
+                          <Clock className="h-3 w-3" />
+                          {product.estimatedTime}
+                        </span>
                       )}
 
                       <div className="mt-auto flex items-center justify-between gap-2 pt-1.5">

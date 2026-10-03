@@ -67,7 +67,7 @@ export async function PATCH(request: Request) {
     Object.assign(user, updates);
     await user.save();
 
-    const payload = { id: user._id.toString(), name: user.name, email: user.email, role: user.role };
+    const payload = { id: user._id.toString(), name: user.name, email: user.email, role: user.role, accountType: user.accountType || "biznes" };
     const token = signToken(payload);
     const response = NextResponse.json({
       user: payload,

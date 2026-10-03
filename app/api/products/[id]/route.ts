@@ -44,6 +44,7 @@ export async function PATCH(request: Request, { params }: { params: { id: string
     if (typeof body.image === "string") product!.image = parseMaybeString(body.image) || undefined;
     if (typeof body.menuCategory === "string") product!.menuCategory = parseMaybeString(body.menuCategory) || undefined;
     if ("action" in body) product!.action = body.action === "porosi" || body.action === "rezervim" ? body.action : undefined;
+    if (typeof body.estimatedTime === "string") product!.estimatedTime = parseMaybeString(body.estimatedTime) || undefined;
     if (typeof body.available === "boolean") product!.available = body.available;
     if ("order" in body) product!.order = parseMaybeNumber(body.order) ?? product!.order;
 

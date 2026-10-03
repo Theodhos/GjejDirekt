@@ -14,6 +14,8 @@ export async function POST(request: Request) {
     const email = String(body.email || "").toLowerCase().trim();
     const phone = String(body.phone || "").trim();
     const password = String(body.password || "");
+    // Anything other than the explicit "klient" choice stays a business account.
+    const accountType = body.accountType === "klient" ? "klient" : "biznes";
 
     if (!name || !email || !phone || password.length < 6) {
       return NextResponse.json({ error: "Name, phone, email, and a 6+ character password are required." }, { status: 400 });
@@ -27,10 +29,10 @@ export async function POST(request: Request) {
     }
 
     const hash = await bcrypt.hash(password, 12);
-    const user = await User.create({ name, email, phone, password: hash });
-    const token = signToken({ id: user._id.toString(), name: user.name, email: user.email, role: user.role });
+    const user = await User.create({ name, email, phone, password: hash, accountType });
+    const token = signToken({ id: user._id.toString(), name: user.name, email: user.email, role: user.role, accountType: user.accountType });
     const response = NextResponse.json({
-      user: { id: user._id, name: user.name, email: user.email, role: user.role }
+      user: { id: user._id, name: user.name, email: user.email, role: user.role, accountType: user.accountType }
     });
     response.cookies.set(AUTH_COOKIE, token, {
       httpOnly: true,

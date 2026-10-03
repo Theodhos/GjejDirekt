@@ -4,6 +4,8 @@
  * out whether a business is open right now, and printing its address.
  */
 
+import { getCategorySearchValues, getSubcategorySearchValues } from "./constants";
+
 /* ------------------------------------------------------------------ search */
 
 /** Lower-cased with diacritics stripped, so "tirane" finds "Tiranë" and "krepe" finds "Krepë". */
@@ -42,6 +44,48 @@ export function matchesQuery(haystack: string, query: string) {
 export function matchScore(haystack: string, query: string) {
   const text = normalizeText(haystack);
   return queryTokens(query).filter((token) => hasToken(text, token)).length;
+}
+
+/**
+ * Everything a search should find a business by, aside from what it actually sells
+ * (its products/dishes/rooms/services, searched separately since not every caller
+ * has them loaded): the business's own text, plus its category and subcategory's
+ * value, label AND every alias. That alias list is what makes "food" or "restaurant"
+ * find a business stored under "ushqim-pije", and makes "krepa" find every business
+ * whose subcategory is "krepa" regardless of which category it sits in — the same
+ * lookup the category/subcategory filters use, reused here so free-text search finds
+ * a niche exactly as reliably as picking it from a menu would.
+ *
+ * One shared implementation for every search entry point (the home search, the full
+ * results page, the category pages) so they all find the same businesses for the
+ * same words.
+ */
+export function listingSearchText(listing: {
+  title?: string;
+  description?: string;
+  location?: string;
+  address?: string;
+  category?: string;
+  subcategory?: string;
+  cuisines?: string[];
+  tags?: string[];
+}): string {
+  const categoryTerms = listing.category ? getCategorySearchValues(listing.category) : [];
+  const subcategoryTerms = listing.subcategory
+    ? getSubcategorySearchValues(listing.category, listing.subcategory)
+    : [];
+  return [
+    listing.title,
+    listing.description,
+    listing.location,
+    listing.address,
+    ...categoryTerms,
+    ...subcategoryTerms,
+    ...(listing.cuisines || []),
+    ...(listing.tags || [])
+  ]
+    .filter(Boolean)
+    .join(" ");
 }
 
 /* ------------------------------------------------------------ opening hours */

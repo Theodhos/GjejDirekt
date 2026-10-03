@@ -10,7 +10,16 @@ export type AuthUser = {
   name: string;
   email: string;
   role: "user" | "admin";
+  /** "biznes" can list and manage a business; "klient" can only browse, order and reserve.
+   * Missing on tokens signed before this field existed — callers should treat an absent
+   * value as "biznes" so nobody already using the platform loses access. */
+  accountType?: "biznes" | "klient";
 };
+
+/** `auth.accountType` defaults to "biznes" for tokens signed before the field existed. */
+export function canCreateListing(auth: Pick<AuthUser, "accountType"> | null | undefined) {
+  return Boolean(auth) && auth!.accountType !== "klient";
+}
 
 export function signToken(payload: AuthUser) {
   return jwt.sign(payload, process.env.JWT_SECRET as string, {
