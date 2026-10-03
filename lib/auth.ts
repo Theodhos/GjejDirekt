@@ -16,9 +16,16 @@ export type AuthUser = {
   accountType?: "biznes" | "klient";
 };
 
-/** `auth.accountType` defaults to "biznes" for tokens signed before the field existed. */
-export function canCreateListing(auth: Pick<AuthUser, "accountType"> | null | undefined) {
-  return Boolean(auth) && auth!.accountType !== "klient";
+/**
+ * Whether this account may create/own a business listing. An admin always can, no
+ * exception, whatever their own `accountType` happens to be — the "klient" restriction
+ * only ever applies to a plain "user" account. `accountType` defaults to "biznes" for
+ * tokens signed before the field existed, so nobody already using the platform loses access.
+ */
+export function canCreateListing(auth: Pick<AuthUser, "role" | "accountType"> | null | undefined) {
+  if (!auth) return false;
+  if (auth.role === "admin") return true;
+  return auth.accountType !== "klient";
 }
 
 export function signToken(payload: AuthUser) {

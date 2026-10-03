@@ -61,7 +61,8 @@ export default function Header() {
 
   // A "klient" account only browses and orders/reserves — it never sees the add-listing
   // entry points (signed-out visitors still see it; they choose "Biznes" at registration).
-  const isClientAccount = me?.accountType === "klient";
+  // An admin always sees everything, whatever their own accountType happens to be.
+  const isClientAccount = me?.accountType === "klient" && me.role !== "admin";
 
   const publicLinks = [
     { href: "/", label: t.nav.home },

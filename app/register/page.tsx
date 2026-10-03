@@ -6,14 +6,14 @@ import Image from "next/image";
 import { useLanguage } from "@/context/LanguageContext";
 import { translations } from "@/lib/dictionary";
 import SocialLogin from "@/components/auth/SocialLogin";
-import { CREATE_LISTING_REDIRECT, redirectQuery, useRedirectParam } from "@/lib/auth-redirect";
+import { redirectQuery, useRedirectParam } from "@/lib/auth-redirect";
 
 export default function RegisterPage() {
   const { language } = useLanguage();
   const t = translations[language];
-  // Set when the visitor tried to publish a service before having an account.
+  // Carried over to the login link so a visitor who already has an account still
+  // lands back where they were trying to go.
   const redirect = useRedirectParam();
-  const fromListingFlow = redirect === CREATE_LISTING_REDIRECT;
 
   return (
     <section
@@ -71,20 +71,6 @@ export default function RegisterPage() {
                     ? "Fill in the details to create your new account."
                     : "Plotësoni detajet për të krijuar llogarinë tuaj të re."}
                 </p>
-                {fromListingFlow && (
-                  <p
-                    className="mt-3 rounded-xl border px-3 py-2 text-xs font-medium"
-                    style={{
-                      borderColor: "var(--brand-border)",
-                      background: "var(--brand-light)",
-                      color: "var(--brand-accent)"
-                    }}
-                  >
-                    {language === "en"
-                      ? "One quick step: create your account and you go straight to publishing your service."
-                      : "Vetëm një hap: krijoni llogarinë dhe vazhdoni direkt me shtimin e shërbimit tuaj."}
-                  </p>
-                )}
               </div>
 
               <AuthForm mode="register" />
