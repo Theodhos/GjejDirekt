@@ -21,14 +21,27 @@ export async function generateMetadata({ params }: { params: { slug: string } })
  * one design for every category, reached from the business page's "Katalogu" tab.
  * Same basket/reservation wiring as the business page itself (lib/listing-page-data).
  */
-export default async function ListingCatalogRoute({ params }: { params: { slug: string } }) {
+export default async function ListingCatalogRoute({
+  params,
+  searchParams
+}: {
+  params: { slug: string };
+  /** `?q=` opens the catalog searched for one item — how a search result lands on what it found. */
+  searchParams?: { q?: string };
+}) {
   const { listing, products, phone, phoneDigits, hasReservation, hasCatalog, basketIsReservation, orderHistoryListing } = await getListingPageData(
     params.slug
   );
 
   return (
     <main style={{ background: "var(--surface-subtle)" }}>
-      <ListingCatalogPage listing={listing} products={products} phone={phone} phoneDigits={phoneDigits} />
+      <ListingCatalogPage
+        listing={listing}
+        products={products}
+        phone={phone}
+        phoneDigits={phoneDigits}
+        initialQuery={String(searchParams?.q || "").trim()}
+      />
 
       {hasCatalog && (
         <ListingCart

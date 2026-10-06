@@ -46,12 +46,15 @@ export default function ListingCatalogPage({
   listing,
   products,
   phone,
-  phoneDigits
+  phoneDigits,
+  initialQuery = ""
 }: {
   listing: any;
   products: ListingProduct[];
   phone: string;
   phoneDigits: string;
+  /** Prefills the catalog search — a search result opens the catalog on the item it found. */
+  initialQuery?: string;
 }) {
   const { language } = useLanguage();
   const en = language === "en";
@@ -67,7 +70,7 @@ export default function ListingCatalogPage({
   // business's default (rooms/services are booked) when they haven't.
   const isBooked = (product: ListingProduct) => getProductAction(product, offerKind) === "rezervim";
 
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState(initialQuery);
   const [activeSection, setActiveSection] = useState(ALL_SECTION);
   const [sort, setSort] = useState<Sort>("default");
   const [cartQtyById, setCartQtyById] = useState<Record<string, number>>({});

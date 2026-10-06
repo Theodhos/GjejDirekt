@@ -4,6 +4,7 @@ import { connectDB } from "@/lib/db";
 import { getAuthUser } from "@/lib/auth";
 import { sendMail } from "@/lib/mailer";
 import { logActivity } from "@/lib/activity";
+import { createNotification } from "@/lib/notifications";
 import Listing from "@/models/Listing";
 import User from "@/models/User";
 import { isObjectId } from "@/lib/utils";
@@ -25,6 +26,19 @@ export async function POST(_: Request, { params }: { params: { id: string } }) {
         subject: "Your listing was approved",
         html: `<p>Congratulations, your listing <strong>${listing.title}</strong> is now live.</p>`
       }).catch(() => undefined);
+    }
+
+    // In-app ping for the owner: the header bell lights up with "your business is live".
+    if (listing.owner) {
+      await createNotification({
+        user: listing.owner.toString(),
+        type: "listing_approved",
+        title: `Biznesi "${listing.title}" u aprovua`,
+        body: "Faqja juaj është tani publike dhe klientët mund të porosisin.",
+        listing: listing._id.toString(),
+        listingTitle: listing.title,
+        href: `/listings/${listing.slug}`
+      });
     }
 
     await logActivity({

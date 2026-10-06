@@ -3,6 +3,8 @@ import { apiError } from "@/lib/api";
 import { connectDB } from "@/lib/db";
 import { getAuthUser } from "@/lib/auth";
 import { logActivity } from "@/lib/activity";
+import { createNotification } from "@/lib/notifications";
+import { formatPrice } from "@/lib/pricing";
 import Order from "@/models/Order";
 import Listing from "@/models/Listing";
 import { isObjectId } from "@/lib/utils";
@@ -112,6 +114,24 @@ export async function POST(request: Request) {
       listingTitle: listing.title,
       meta: { orderId: order._id.toString() }
     });
+
+    // Ping the business owner the moment the WhatsApp message goes out — the header
+    // bell lights up and the dashboard lists the order, without waiting on the chat.
+    if (listing.owner) {
+      const summary = cleanItems.map((item: any) => `${item.qty}× ${item.name}`).join(", ");
+      const totalText = typeof total === "number" ? ` · ${formatPrice(total)}` : "";
+      const phoneText = body.customerPhone ? ` · ${String(body.customerPhone).trim()}` : "";
+      await createNotification({
+        user: listing.owner.toString(),
+        type: "order",
+        title: `Porosi e re nga ${customerName}`,
+        body: `${summary}${totalText}${phoneText}`,
+        listing: listingId,
+        listingTitle: listing.title,
+        href: "/dashboard#njoftimet",
+        meta: { orderId: order._id.toString() }
+      });
+    }
 
     return NextResponse.json({ order });
   } catch (error) {

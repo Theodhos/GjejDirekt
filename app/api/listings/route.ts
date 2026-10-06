@@ -6,7 +6,7 @@ import { logActivity } from "@/lib/activity";
 import { escapeRegex, slugify } from "@/lib/utils";
 import { apiError } from "@/lib/api";
 import { getCategorySearchValues, getSubcategorySearchValues, type ListingAction } from "@/lib/constants";
-import { listingSearchText, matchesQuery } from "@/lib/listing-display";
+import { searchBusinesses } from "@/lib/listing-search";
 import { withMenuTerms } from "@/lib/food-server";
 import Listing from "@/models/Listing";
 import User from "@/models/User";
@@ -91,24 +91,19 @@ export async function GET(request: Request) {
     const { query, sortQuery, sort, search } = await buildQuery(url);
     let listings = await Listing.find(query).sort(sortQuery).populate("owner", "name email role").lean<any>();
 
-    if (search) {
-      // The same matching the full results page uses: every word of the query has to
-      // show up somewhere — in the business's own text, in its category/subcategory
-      // (value, label or alias, so "food" or "krepa" find it however it's filed), or
-      // in what it actually sells. Word order, plurals and missing diacritics don't
-      // matter, so "krepa te embla" finds a business whose description says "krepa
-      // të ëmbla" and "krepat" still finds every business whose subcategory is "krepa".
-      listings = await withMenuTerms(listings);
-      listings = listings.filter((listing: any) => {
-        const items = listing.menuItems || [];
-        const menuText = items.map((item: any) => `${item.n} ${item.d || ""} ${item.s || ""}`).join(" ");
-        return matchesQuery(`${listingSearchText(listing)} ${menuText}`, search);
-      });
-    }
-
     // Paid packages rank first, then WhatsApp engagement, then newest — but an
     // explicit sort choice from the user wins over the promotion ranking.
-    const sorted = sort === "popular" || sort === "name" ? listings : rankListings(listings);
+    let sorted = sort === "popular" || sort === "name" ? listings : rankListings(listings);
+
+    if (search) {
+      // The same keyword search the results page uses (lib/listing-search.ts): every
+      // word is looked for in the business's own text, in its category/subcategory
+      // (value, label or alias, so "food" or "krepa" find it however it's filed), and
+      // in what it actually sells — with the businesses that fit every word first and
+      // near matches after. Word order, plurals and missing diacritics don't matter,
+      // so "krepa te embla" finds a business whose description says "krepa të ëmbla".
+      sorted = searchBusinesses(await withMenuTerms(sorted), search);
+    }
 
     return NextResponse.json({ listings: sorted });
   } catch (error) {

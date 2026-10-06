@@ -6,6 +6,7 @@ import Button from "@/components/ui/Button";
 import SafeImage from "@/components/ui/SafeImage";
 import ProfilePanel from "@/components/dashboard/ProfilePanel";
 import UserListingTable from "@/components/dashboard/UserListingTable";
+import NotificationsPanel from "@/components/dashboard/NotificationsPanel";
 import EmptyState from "@/components/ui/EmptyState";
 import { getCategoryLabel } from "@/lib/constants";
 import { useLanguage } from "@/context/LanguageContext";
@@ -26,6 +27,8 @@ type DashboardClientProps = {
   favorites?: any[];
   orders?: any[];
   reservations?: any[];
+  /** Business accounts only — new orders/reservations and approvals, newest first. */
+  notifications?: any[];
 };
 
 function listingCover(listing: any): string | undefined {
@@ -41,7 +44,8 @@ export default function DashboardClient({
   isClient = false,
   favorites = [],
   orders = [],
-  reservations = []
+  reservations = [],
+  notifications = []
 }: DashboardClientProps) {
   const { language } = useLanguage();
   const en = language === "en";
@@ -167,7 +171,8 @@ export default function DashboardClient({
       )}
 
       {!isClient && (
-      <div className="page-shell py-8">
+      <div className="page-shell py-8 space-y-6">
+        <NotificationsPanel initial={notifications} />
         <div className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
           <div
             className="rounded-2xl overflow-hidden"

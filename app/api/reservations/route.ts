@@ -3,6 +3,7 @@ import { apiError } from "@/lib/api";
 import { connectDB } from "@/lib/db";
 import { getAuthUser } from "@/lib/auth";
 import { logActivity } from "@/lib/activity";
+import { createNotification } from "@/lib/notifications";
 import Reservation from "@/models/Reservation";
 import Listing from "@/models/Listing";
 import Product from "@/models/Product";
@@ -124,6 +125,30 @@ export async function POST(request: Request) {
       listingTitle: listing.title,
       meta: { reservationId: reservation._id.toString() }
     });
+
+    // Same ping as for an order: the owner sees the booking in the header bell and
+    // the dashboard the moment the customer's WhatsApp message is sent.
+    if (listing.owner) {
+      const when = [
+        dateValue.toLocaleDateString("sq-AL", { day: "numeric", month: "short", year: "numeric" }),
+        body.time ? String(body.time).trim() : undefined
+      ]
+        .filter(Boolean)
+        .join(" ");
+      const details = [itemName, when, Number.isFinite(partySize) && partySize > 0 ? `${partySize} persona` : undefined, customerPhone]
+        .filter(Boolean)
+        .join(" · ");
+      await createNotification({
+        user: listing.owner.toString(),
+        type: "reservation",
+        title: `Rezervim i ri nga ${customerName}`,
+        body: details,
+        listing: listingId,
+        listingTitle: listing.title,
+        href: "/dashboard#njoftimet",
+        meta: { reservationId: reservation._id.toString() }
+      });
+    }
 
     return NextResponse.json({ reservation });
   } catch (error) {

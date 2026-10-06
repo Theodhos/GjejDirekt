@@ -1,17 +1,18 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 import { Check, ChevronDown, MapPin, Search, SearchX, SlidersHorizontal, X } from "lucide-react";
 import MobileAppBar from "@/components/layout/MobileAppBar";
 import CategoryRails from "@/components/listings/CategoryRails";
+import ItemResultCard from "@/components/listings/ItemResultCard";
 import ListingRow from "@/components/listings/ListingRow";
 import ListingsBanner, { type ListingsBannerData } from "@/components/listings/ListingsBanner";
 import { useLanguage } from "@/context/LanguageContext";
 import { categories, getCategoryByValue } from "@/lib/constants";
 import { offersFoodServices } from "@/lib/food";
-import type { MenuItem } from "@/lib/food-server";
-import { getOpenStatus, listingSearchText, matchScore, matchesQuery, normalizeText, parseHours } from "@/lib/listing-display";
+import { getOpenStatus, normalizeText, parseHours } from "@/lib/listing-display";
+import { searchListings, type SearchHit } from "@/lib/listing-search";
 
 type Tab = "all" | "businesses" | "products" | "services";
 type Sort = "updated" | "rating" | "popular" | "name";
@@ -106,7 +107,7 @@ export default function ListingResults({
   // "Hapur tani" only means something when businesses in this list gave opening hours.
   const hasOpeningHours = useMemo(() => listings.some((listing) => parseHours(listing.businessHours)), [listings]);
 
-  const results = useMemo(() => {
+  const results = useMemo<SearchHit[]>(() => {
     const text = query.trim();
     const cityKey = normalizeText(city);
 
@@ -115,31 +116,26 @@ export default function ListingResults({
       if (onlyVerified && !listing.verified) return false;
       if (minRating && Number(listing.ratingAverage || 0) < minRating) return false;
       if (onlyOpen && getOpenStatus(listing.businessHours).kind !== "open") return false;
-
-      // What the business offers: the title and description of each product, dish, room or
-      // service, and its section — so searching for one finds the business.
-      const items: MenuItem[] = listing.menuItems || [];
-      const menuText = items.map((item) => `${item.n} ${item.d || ""} ${item.s || ""}`).join(" ");
-      const business = listingSearchText(listing);
-      // Place words in the query ("tirane") must still match when only the dishes are searched.
-      const dishes = [menuText, listing.location, listing.address].join(" ");
-
-      switch (tab) {
-        case "businesses":
-          return matchesQuery(business, text);
-        case "products":
-          return items.length > 0 && matchesQuery(dishes, text);
-        case "services":
-          return offersFoodServices(listing) && matchesQuery(`${business} ${menuText}`, text);
-        default:
-          return matchesQuery(`${business} ${menuText}`, text);
-      }
+      if (tab === "services") return offersFoodServices(listing);
+      if (tab === "products") return (listing.menuItems || []).length > 0;
+      return true;
     });
 
-    // "Më të përditësuar" keeps the order the page came with (paid tiers first, then the
-    // most contacted, then newest), so choosing another sort is the only thing that reorders.
-    if (sort === "updated") return filtered;
-    return [...filtered].sort((a, b) => {
+    // Every word typed is a keyword, looked for in the business (name, city, category,
+    // description) and in what it sells; a business that fits is a row, an item that
+    // fits is a card with its price and button (lib/listing-search.ts).
+    let hits = searchListings(filtered, text);
+    if (tab === "businesses") hits = hits.filter((hit) => hit.kind === "business");
+    // Produkte: the dishes themselves when something was typed, the places that have a menu otherwise.
+    if (tab === "products" && text) hits = hits.filter((hit) => hit.kind === "item");
+
+    // "Më të përditësuar" keeps the order the search gave (best match first; without a
+    // search, paid tiers first, then the most contacted, then newest), so choosing
+    // another sort is the only thing that reorders.
+    if (sort === "updated") return hits;
+    return [...hits].sort((x, y) => {
+      const a = x.listing;
+      const b = y.listing;
       if (sort === "rating") {
         return Number(b.ratingAverage || 0) - Number(a.ratingAverage || 0) || Number(b.reviewCount || 0) - Number(a.reviewCount || 0);
       }
@@ -147,6 +143,9 @@ export default function ListingResults({
       return String(a.title || "").localeCompare(String(b.title || ""));
     });
   }, [listings, query, tab, city, sort, onlyOpen, onlyVerified, minRating]);
+
+  // Where the full matches end and the near ones (half the words or more) begin.
+  const firstNearMatch = results.findIndex((hit) => !hit.full);
 
   // A new filter starts the list from the top again instead of leaving it expanded.
   useEffect(() => setVisible(PAGE_SIZE), [query, tab, city, sort, onlyOpen, onlyVerified, minRating, listings]);
@@ -185,18 +184,6 @@ export default function ListingResults({
     setTab("all");
     setQuery("");
     onSubmitQuery?.("");
-  }
-
-  /** The offered items that contain the searched words, best match first — shown under the result so it is clear why it matched. */
-  function matchedItems(listing: any): string[] {
-    if (!trimmedQuery) return [];
-    const items: MenuItem[] = listing.menuItems || [];
-    return items
-      .map((item, index) => ({ item, index, score: matchScore(`${item.n} ${item.d || ""}`, trimmedQuery) }))
-      .filter((entry) => entry.score > 0)
-      .sort((a, b) => b.score - a.score || a.index - b.index)
-      .slice(0, 2)
-      .map((entry) => entry.item.n);
   }
 
   const countLabel =
@@ -377,15 +364,33 @@ export default function ListingResults({
         {results.length ? (
           <>
             <div className="border-t lg:grid lg:grid-cols-2 lg:gap-3 lg:border-t-0 lg:px-0 lg:pb-4" style={{ borderColor: "var(--border-soft)" }}>
-              {results.slice(0, visible).map((listing, index) => (
-                <ListingRow
-                  key={listing._id?.toString?.() || listing.slug}
-                  listing={listing}
-                  priority={index < 3}
-                  showCategory={!category}
-                  matchedItems={matchedItems(listing)}
-                />
-              ))}
+              {results.slice(0, visible).map((hit, index) => {
+                const listingKey = hit.listing._id?.toString?.() || hit.listing.slug;
+                const card =
+                  hit.kind === "item" ? (
+                    <ItemResultCard key={`${listingKey}-${hit.item.id}`} listing={hit.listing} item={hit.item} priority={index < 3} />
+                  ) : (
+                    <ListingRow
+                      key={listingKey}
+                      listing={hit.listing}
+                      priority={index < 3}
+                      showCategory={!category}
+                      matchedItems={hit.matchedItems}
+                    />
+                  );
+                // The near matches (not every word fit) are set apart so the list is honest about them.
+                if (index === firstNearMatch && index > 0) {
+                  return (
+                    <Fragment key={`near-${listingKey}`}>
+                      <p className="px-4 pb-1.5 pt-4 text-[12px] font-bold uppercase tracking-[0.08em] lg:col-span-2 lg:px-0" style={{ color: "var(--text-tertiary)" }}>
+                        {en ? "Related results" : "Rezultate të ngjashme"}
+                      </p>
+                      {card}
+                    </Fragment>
+                  );
+                }
+                return card;
+              })}
             </div>
             {results.length > visible && (
               <div className="px-4 pb-6 pt-4 lg:px-0">

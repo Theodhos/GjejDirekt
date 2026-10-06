@@ -2,10 +2,11 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { Bell, Menu, PlusCircle, User, X } from "lucide-react";
+import { LogOut, Menu, PlusCircle, User, X } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import Logo from "@/components/layout/Logo";
+import NotificationBell from "@/components/layout/NotificationBell";
 
 type Me = { name: string; role: "user" | "admin"; accountType?: "biznes" | "klient" } | null;
 type NavItem =
@@ -95,6 +96,9 @@ export default function Header() {
 
   /** Where the avatar button sends people depends on whether they are signed in. */
   const accountHref = me ? (me.role === "admin" ? "/admin" : "/dashboard") : "/login";
+  // Only a business account (or an admin) gets notifications — "biznesi u aprovua",
+  // "porosi e re", "rezervim i ri". A "klient" never owns a business, so no bell.
+  const showBell = Boolean(me) && !isClientAccount;
 
   if (hideForSearchOverlay) return null;
 
@@ -162,26 +166,29 @@ export default function Header() {
             <span aria-hidden className="h-5 w-px" style={{ background: "var(--border-soft)" }} />
             <LanguageSwitcher />
             {me ? (
-              authenticatedLinks.map((item) =>
-                "href" in item ? (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className="whitespace-nowrap rounded-lg px-1.5 py-2 text-[13px] font-medium min-[1120px]:px-2 xl:px-3 xl:text-sm text-[var(--text-secondary)] transition-colors hover:text-[var(--text-primary)]"
-                  >
-                    {item.label}
-                  </Link>
-                ) : (
-                  <button
-                    key={item.label}
-                    type="button"
-                    onClick={item.onClick}
-                    className="whitespace-nowrap rounded-lg px-1.5 py-2 text-[13px] font-medium min-[1120px]:px-2 xl:px-3 xl:text-sm text-[var(--text-secondary)] transition-colors hover:text-[var(--text-primary)]"
-                  >
-                    {item.label}
-                  </button>
-                )
-              )
+              <div className="flex items-center gap-1.5">
+                {showBell && <NotificationBell />}
+                {/* The person icon is the way into the account's panel — dashboard, or admin for an admin. */}
+                <Link
+                  href={accountHref}
+                  className="inline-flex h-9 w-9 items-center justify-center rounded-xl transition-colors hover:bg-[var(--surface-subtle)]"
+                  style={{ color: "var(--text-primary)", background: "var(--surface-cream)" }}
+                  aria-label={me.role === "admin" ? t.admin.navAdminLabel || "Admin" : language === "en" ? "My Dashboard" : "Paneli im"}
+                  title={me.role === "admin" ? t.admin.navAdminLabel || "Admin" : language === "en" ? "My Dashboard" : "Paneli im"}
+                >
+                  <User className="h-[19px] w-[19px]" strokeWidth={1.9} />
+                </Link>
+                <button
+                  type="button"
+                  onClick={logout}
+                  className="inline-flex h-9 w-9 items-center justify-center rounded-xl transition-colors hover:bg-[var(--surface-subtle)]"
+                  style={{ color: "var(--text-secondary)", background: "var(--surface-cream)" }}
+                  aria-label={t.nav.logout}
+                  title={t.nav.logout}
+                >
+                  <LogOut className="h-[18px] w-[18px]" strokeWidth={1.9} />
+                </button>
+              </div>
             ) : (
               <Link
                 href="/login"
@@ -200,14 +207,7 @@ export default function Header() {
 
           {/* Mobile right — notifications and account, exactly the two icons in the mock */}
           <div className="flex items-center gap-1.5 lg:hidden">
-            <Link
-              href={me ? "/dashboard" : "/login"}
-              className="relative inline-flex h-9 w-9 items-center justify-center rounded-xl transition-colors hover:bg-[var(--surface-subtle)]"
-              style={{ color: "var(--text-primary)", background: "var(--surface-cream)" }}
-              aria-label={language === "en" ? "Notifications" : "Njoftimet"}
-            >
-              <Bell className="h-[19px] w-[19px]" strokeWidth={1.9} />
-            </Link>
+            {showBell && <NotificationBell />}
             <Link
               href={accountHref}
               className="inline-flex h-9 w-9 items-center justify-center rounded-xl transition-colors hover:bg-[var(--surface-subtle)]"

@@ -25,7 +25,7 @@ export function queryTokens(query: string) {
  * Words of five letters or more also match without their last letter, which is what
  * lets "tirana" find "Tiranë" and "burgers" find "burger".
  */
-function hasToken(normalizedText: string, token: string) {
+export function hasToken(normalizedText: string, token: string) {
   return normalizedText.includes(token) || (token.length >= 5 && normalizedText.includes(token.slice(0, -1)));
 }
 
@@ -46,21 +46,7 @@ export function matchScore(haystack: string, query: string) {
   return queryTokens(query).filter((token) => hasToken(text, token)).length;
 }
 
-/**
- * Everything a search should find a business by, aside from what it actually sells
- * (its products/dishes/rooms/services, searched separately since not every caller
- * has them loaded): the business's own text, plus its category and subcategory's
- * value, label AND every alias. That alias list is what makes "food" or "restaurant"
- * find a business stored under "ushqim-pije", and makes "krepa" find every business
- * whose subcategory is "krepa" regardless of which category it sits in — the same
- * lookup the category/subcategory filters use, reused here so free-text search finds
- * a niche exactly as reliably as picking it from a menu would.
- *
- * One shared implementation for every search entry point (the home search, the full
- * results page, the category pages) so they all find the same businesses for the
- * same words.
- */
-export function listingSearchText(listing: {
+export type SearchableListing = {
   title?: string;
   description?: string;
   location?: string;
@@ -69,16 +55,31 @@ export function listingSearchText(listing: {
   subcategory?: string;
   cuisines?: string[];
   tags?: string[];
-}): string {
+};
+
+/**
+ * The two halves of what a search finds a business by, aside from what it actually
+ * sells (its products/dishes/rooms/services, searched separately since not every
+ * caller has them loaded):
+ *
+ * - `about`: the business's own text, plus its category and subcategory's value,
+ *   label AND every alias. That alias list is what makes "food" or "restaurant" find
+ *   a business stored under "ushqim-pije", and makes "krepa" find every business
+ *   whose subcategory is "krepa" regardless of which category it sits in — the same
+ *   lookup the category/subcategory filters use, reused here so free-text search
+ *   finds a niche exactly as reliably as picking it from a menu would.
+ * - `place`: its city and street. Kept apart because a word that only hits the city
+ *   ("tirane") says nothing about what the business is — lib/listing-search.ts gives
+ *   it less weight.
+ */
+export function listingSearchFields(listing: SearchableListing): { about: string; place: string } {
   const categoryTerms = listing.category ? getCategorySearchValues(listing.category) : [];
   const subcategoryTerms = listing.subcategory
     ? getSubcategorySearchValues(listing.category, listing.subcategory)
     : [];
-  return [
+  const about = [
     listing.title,
     listing.description,
-    listing.location,
-    listing.address,
     ...categoryTerms,
     ...subcategoryTerms,
     ...(listing.cuisines || []),
@@ -86,6 +87,19 @@ export function listingSearchText(listing: {
   ]
     .filter(Boolean)
     .join(" ");
+  const place = [listing.location, listing.address].filter(Boolean).join(" ");
+  return { about, place };
+}
+
+/**
+ * Everything a search should find a business by (see `listingSearchFields`), as one
+ * string. One shared implementation for every search entry point (the home search,
+ * the full results page, the category pages) so they all find the same businesses
+ * for the same words.
+ */
+export function listingSearchText(listing: SearchableListing): string {
+  const { about, place } = listingSearchFields(listing);
+  return `${about} ${place}`;
 }
 
 /* ------------------------------------------------------------ opening hours */

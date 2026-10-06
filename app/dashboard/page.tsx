@@ -7,6 +7,7 @@ import Activity from "@/models/Activity";
 import Payment from "@/models/Payment";
 import Order from "@/models/Order";
 import Reservation from "@/models/Reservation";
+import Notification from "@/models/Notification";
 import DashboardClient from "@/components/dashboard/DashboardClient";
 
 export const dynamic = "force-dynamic";
@@ -61,6 +62,8 @@ export default async function DashboardPage() {
   const paymentsCount = auth.role === "admin"
     ? await Payment.countDocuments({})
     : await Payment.countDocuments({ user: auth.id });
+  // Only a business account gets notifications (new order / reservation, business approved).
+  const notifications = await Notification.find({ user: auth.id }).sort({ createdAt: -1 }).limit(50).lean<any>();
 
   const profileUser = {
     name: user?.name || auth.name,
@@ -76,6 +79,7 @@ export default async function DashboardPage() {
       profileUser={profileUser}
       isAdmin={auth.role === "admin"}
       paymentsCount={paymentsCount}
+      notifications={JSON.parse(JSON.stringify(notifications))}
     />
   );
 }
