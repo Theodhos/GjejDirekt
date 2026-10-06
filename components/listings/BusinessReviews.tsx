@@ -153,6 +153,10 @@ export default function BusinessReviews({
           <p className="text-center text-[13px]" style={{ color: "var(--text-tertiary)" }}>
             {en ? "Loading reviews..." : "Duke ngarkuar vlerësimet..."}
           </p>
+        ) : reviews.length === 0 ? (
+          <p className="rounded-2xl border px-4 py-6 text-center text-[13.5px]" style={{ borderColor: "var(--border-soft)", color: "var(--text-tertiary)" }}>
+            {en ? "No written reviews yet — be the first to share yours." : "Ende pa komente — bëhu i pari që ndan përvojën."}
+          </p>
         ) : (
           <ul className="divide-y" style={{ borderColor: "var(--border-soft)" }}>
             {reviews.map((review) => (

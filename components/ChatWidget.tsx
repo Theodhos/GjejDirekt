@@ -191,13 +191,20 @@ export default function ChatWidget() {
   );
   if (onListingForm) return null;
 
+  // A business page (and its Katalogu) on a phone: the bubble would cover the "+ Shto" /
+  // "Rezervo" buttons along the right edge, so it only shows from `sm` up there.
+  const onBusinessPage = Boolean(pathname && /^\/listings\/[^/]+(\/katalogu)?\/?$/.test(pathname));
+  // The results directory keeps its Porosit/Rezervo buttons on the right edge of every row,
+  // so on a phone the bubble moves to the left corner there.
+  const onDirectory = pathname === "/listings";
+
   return (
     <>
       {!open && (
         <button
           onClick={() => setOpen(true)}
           aria-label={c.open}
-          className="gd-chat-toggle fixed right-3 z-50 flex h-12 w-12 items-center justify-center gap-2 rounded-full text-white font-bold text-sm shadow-lg transition-transform hover:scale-105 active:scale-95 sm:right-6 sm:h-auto sm:w-auto sm:px-5 sm:py-4"
+          className={`gd-chat-toggle fixed z-50 ${onDirectory ? "left-3 sm:left-auto" : "right-3"} ${onBusinessPage ? "hidden sm:flex" : "flex"} h-12 w-12 items-center justify-center gap-2 rounded-full text-white font-bold text-sm shadow-lg transition-transform hover:scale-105 active:scale-95 sm:right-6 sm:h-auto sm:w-auto sm:px-5 sm:py-4`}
           style={{ background: "var(--brand-accent)", boxShadow: "0 8px 24px rgba(225,29,46,0.35)" }}
         >
           <Sparkles className="w-5 h-5" />
