@@ -691,7 +691,7 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
 
     toast.success(c.draftRestored);
     setDraftReady(true);
-  }, [draftKey, searchParams, c.draftRestored]);
+  }, [draftKey, searchParams, c.draftRestored, isEdit]);
 
   useEffect(() => {
     if (!draftReady) return;

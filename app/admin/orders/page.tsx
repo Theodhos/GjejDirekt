@@ -30,7 +30,7 @@ export default async function AdminOrdersPage() {
             <ShoppingBag className="w-4 h-4" /> Analytics
           </p>
           <h1 className="mt-2 text-3xl font-black text-slate-950">Orders</h1>
-          <p className="text-sm text-slate-500 mt-1">Every order sent to a business's WhatsApp, newest first (last 200).</p>
+          <p className="text-sm text-slate-500 mt-1">Every order sent to a business&apos;s WhatsApp, newest first (last 200).</p>
         </div>
       </div>
 
