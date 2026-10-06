@@ -11,6 +11,7 @@ export type ActivityType =
   | "review_created"
   | "reservation_created"
   | "reservation_status_updated"
+  | "order_created"
   | "blog_created"
   | "blog_updated";
 
@@ -42,6 +43,7 @@ const ActivitySchema = new Schema<IActivity>(
         "review_created",
         "reservation_created",
         "reservation_status_updated",
+        "order_created",
         "blog_created",
         "blog_updated"
       ],

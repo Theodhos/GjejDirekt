@@ -8,12 +8,45 @@ import PageHeader from "@/components/layout/PageHeader";
 import EmptyState from "@/components/ui/EmptyState";
 import { getCategoryLabel } from "@/lib/constants";
 import { clearOrderHistory, readOrderHistory, type OrderHistoryEntry } from "@/lib/order-history";
+import { formatPrice } from "@/lib/pricing";
 import { useLanguage } from "@/context/LanguageContext";
+
+/** An order as /api/orders?mine=1 returns it — saved on the account when it was sent. */
+type MyOrder = {
+  _id: string;
+  listing?: { title?: string; slug?: string; images?: string[]; photos?: string[]; bannerImage?: string } | null;
+  items: { name: string; price?: number; qty: number }[];
+  total?: number;
+  status: "new" | "confirmed" | "declined" | "cancelled";
+  createdAt: string;
+};
+
+const STATUS_LABELS: Record<MyOrder["status"], { sq: string; en: string; color: string; background: string }> = {
+  new: { sq: "Dërguar", en: "Sent", color: "#1D4ED8", background: "#DBEAFE" },
+  confirmed: { sq: "Konfirmuar", en: "Confirmed", color: "#15803D", background: "#DCFCE7" },
+  declined: { sq: "Refuzuar", en: "Declined", color: "#DC2626", background: "#FEE2E2" },
+  cancelled: { sq: "Anuluar", en: "Cancelled", color: "#6B7280", background: "#F3F4F6" }
+};
 
 export default function OrdersClient() {
   const { language } = useLanguage();
   const [entries, setEntries] = useState<OrderHistoryEntry[]>([]);
   const [ready, setReady] = useState(false);
+  // Every order this account has sent; stays empty for a guest (the API answers 401).
+  const [myOrders, setMyOrders] = useState<MyOrder[]>([]);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/api/orders?mine=1", { cache: "no-store" })
+      .then((res) => (res.ok ? res.json() : { orders: [] }))
+      .then((data) => {
+        if (!cancelled && Array.isArray(data.orders)) setMyOrders(data.orders);
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   useEffect(() => {
     const load = () => setEntries(readOrderHistory());
@@ -69,6 +102,68 @@ export default function OrdersClient() {
           </p>
         </div>
 
+        {myOrders.length > 0 && (
+          <section className="space-y-2.5">
+            <h2 className="!text-[15px] font-bold" style={{ color: "var(--text-primary)" }}>
+              {language === "en" ? "My orders" : "Porositë e mia"}
+            </h2>
+            <ul className="space-y-2.5">
+              {myOrders.map((order) => {
+                const status = STATUS_LABELS[order.status] || STATUS_LABELS.new;
+                const image = order.listing?.images?.[0] || order.listing?.photos?.[0] || order.listing?.bannerImage;
+                const card = (
+                  <>
+                    <span className="relative h-14 w-14 shrink-0 overflow-hidden rounded-lg" style={{ background: "var(--surface-cream)" }}>
+                      {image && <SafeImage src={image} alt="" fill sizes="56px" className="object-cover" />}
+                    </span>
+                    <span className="min-w-0 flex-1">
+                      <span className="flex items-center gap-2">
+                        <span className="truncate text-[14px] font-bold" style={{ color: "var(--text-primary)" }}>
+                          {order.listing?.title || (language === "en" ? "Business" : "Biznes")}
+                        </span>
+                        <span
+                          className="shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold"
+                          style={{ color: status.color, background: status.background }}
+                        >
+                          {language === "en" ? status.en : status.sq}
+                        </span>
+                      </span>
+                      <span className="block truncate text-[12px]" style={{ color: "var(--text-secondary)" }}>
+                        {order.items.map((item) => `${item.qty}× ${item.name}`).join(", ")}
+                      </span>
+                      <span className="block text-[11px]" style={{ color: "var(--text-tertiary)" }}>
+                        {formatDate(new Date(order.createdAt).getTime())}
+                      </span>
+                    </span>
+                    {typeof order.total === "number" && (
+                      <span className="shrink-0 text-[13px] font-bold" style={{ color: "var(--brand-accent)" }}>
+                        {formatPrice(order.total)}
+                      </span>
+                    )}
+                  </>
+                );
+                return (
+                  <li key={order._id}>
+                    {order.listing?.slug ? (
+                      <Link href={`/listings/${order.listing.slug}`} className="gd-card flex items-center gap-3 p-2.5">
+                        {card}
+                      </Link>
+                    ) : (
+                      <div className="gd-card flex items-center gap-3 p-2.5">{card}</div>
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
+          </section>
+        )}
+
+        {myOrders.length > 0 && entries.length > 0 && (
+          <h2 className="!text-[15px] font-bold" style={{ color: "var(--text-primary)" }}>
+            {language === "en" ? "Businesses you contacted" : "Bizneset që ke kontaktuar"}
+          </h2>
+        )}
+
         {ready &&
           (entries.length ? (
             <ul className="space-y-2.5">
@@ -103,7 +198,7 @@ export default function OrdersClient() {
                 </li>
               ))}
             </ul>
-          ) : (
+          ) : myOrders.length > 0 ? null : (
             <EmptyState
               icon={MessageCircle}
               title={language === "en" ? "No orders yet" : "Ende asnjë porosi"}

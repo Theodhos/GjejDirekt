@@ -66,8 +66,8 @@ export default function ListingFormAside({ verified = false }: { verified?: bool
         <p className="mt-1 text-xs leading-relaxed" style={{ color: "var(--text-secondary)" }}>
           {verified
             ? en
-              ? "Website, Book Now, Instagram, Facebook and the 10-photo gallery are active in step 4."
-              : "Website, Book Now, Instagram, Facebook dhe galeria me 10 foto janë aktive te hapi 4."
+              ? "Website, Book Now, Instagram, Facebook and the 10-photo gallery are active in step 3."
+              : "Website, Book Now, Instagram, Facebook dhe galeria me 10 foto janë aktive te hapi 3."
             : en
               ? "Website, Book Now, Instagram, Facebook and a gallery of up to 10 photos unlock with the Verified badge."
               : "Website, Book Now, Instagram, Facebook dhe galeria deri në 10 foto aktivizohen me statusin Verified."}

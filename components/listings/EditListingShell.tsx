@@ -11,12 +11,14 @@ import { categoryIcons } from "@/lib/category-icons";
 
 const statusStyles: Record<string, { bg: string; color: string; border: string }> = {
   approved: { bg: "#D1FAE5", color: "#047857", border: "#A7F3D0" },
+  draft: { bg: "#F3F4F6", color: "#4B5563", border: "#E5E7EB" },
   pending: { bg: "#FEF3C7", color: "#B45309", border: "#FDE68A" },
   rejected: { bg: "#FEE2E2", color: "#DC2626", border: "#FECACA" }
 };
 
 const statusLabels: Record<string, { en: string; al: string }> = {
   approved: { en: "Approved", al: "I miratuar" },
+  draft: { en: "Draft — not published", al: "Draft — i papublikuar" },
   pending: { en: "Pending", al: "Në pritje" },
   rejected: { en: "Rejected", al: "I refuzuar" }
 };

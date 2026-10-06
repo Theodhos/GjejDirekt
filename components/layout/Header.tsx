@@ -66,10 +66,19 @@ export default function Header() {
 
   const publicLinks = [
     { href: "/", label: t.nav.home },
+    // A "klient" account gets About Us and FAQ in their place — more useful to a
+    // customer than the business-owner links everyone else sees here.
+    ...(isClientAccount ? [{ href: "/about-us", label: t.nav.aboutUs || (language === "en" ? "About Us" : "Rreth Nesh") }] : []),
     { href: "/listings", label: language === "en" ? "Businesses" : "Bizneset" },
-    { href: "/packet", label: t.nav.packet || (language === "en" ? "Boost Bookings" : "Rrit Porositë") },
+    // "Rrit Rezervimet" (promo packages) and "Shto Biznes" are both business-owner
+    // actions — a "klient" account sees neither.
+    ...(isClientAccount
+      ? []
+      : [{ href: "/packet", label: t.nav.packet || (language === "en" ? "Boost Bookings" : "Rrit Porositë") }]),
     { href: "/blog", label: t.nav.blog },
-    ...(isClientAccount ? [] : [{ href: "/create-listing", label: t.nav.addListing }])
+    ...(isClientAccount
+      ? [{ href: "/faq", label: t.nav.faq || "FAQ" }]
+      : [{ href: "/create-listing", label: t.nav.addListing }])
   ];
 
   const authenticatedLinks: NavItem[] = me

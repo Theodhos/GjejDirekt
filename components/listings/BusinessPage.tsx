@@ -23,6 +23,8 @@ import {
 } from "lucide-react";
 import toast from "react-hot-toast";
 import SafeImage from "@/components/ui/SafeImage";
+import InitialsAvatar from "@/components/ui/InitialsAvatar";
+import ExpandableText from "@/components/ui/ExpandableText";
 import Lightbox from "@/components/ui/Lightbox";
 import MobileAppBar from "@/components/layout/MobileAppBar";
 import BusinessMenu from "@/components/listings/BusinessMenu";
@@ -57,19 +59,24 @@ export default function BusinessPage({
   products,
   phone,
   phoneDigits,
-  hasCatalog
+  hasCatalog,
+  canEdit = false
 }: {
   listing: any;
   products: ListingProduct[];
   phone: string;
   phoneDigits: string;
   hasCatalog: boolean;
+  /** The owner (or an admin) viewing their own listing — unlocks adding catalog items inline. */
+  canEdit?: boolean;
 }) {
   const { language, t } = useLanguage();
   const en = language === "en";
   const lang = en ? "en" : "sq";
 
-  const [tab, setTab] = useState<TabKey>(hasCatalog && products.length ? "menu" : "overview");
+  // The owner of an empty catalog business lands straight on the tab that lets them
+  // add their first item, instead of Overview with no obvious way in.
+  const [tab, setTab] = useState<TabKey>(hasCatalog && (products.length || canEdit) ? "menu" : "overview");
   const [lightbox, setLightbox] = useState<number | null>(null);
   const tabsRef = useRef<HTMLDivElement>(null);
   const { favorited, toggle: toggleFavorite } = useFavoriteToggle(listing._id);
@@ -139,15 +146,16 @@ export default function BusinessPage({
   // the same full catalog as its own page (search + section pills + grid) — one design for every
   // category — so it only makes sense wherever the offer tab does.
   const hasOffer = hasCatalog && products.length > 0;
+  // The owner needs the Menu/Dhomat/Produktet/Shërbimet tab even with nothing in it
+  // yet — it's where "+ Shto" lives — so it doesn't stay hidden behind the very
+  // items it's meant to let them add. The public "Katalogu" page still only makes
+  // sense once there is something to browse.
+  const showMenuTab = canEdit ? hasCatalog : hasOffer;
   type NavTab = { key: TabKey; label: string; icon: LucideIcon; href?: undefined } | { key: "katalogu"; label: string; icon: LucideIcon; href: string };
   const tabs: NavTab[] = [
     { key: "overview", label: en ? "Overview" : "Përmbledhje", icon: ClipboardList },
-    ...(hasOffer
-      ? [
-          { key: "menu" as const, label: offer.tab[en ? "en" : "sq"], icon: OfferIcon },
-          { key: "katalogu" as const, label: en ? "Catalog" : "Katalogu", icon: LayoutGrid, href: `/listings/${listing.slug}/katalogu` }
-        ]
-      : []),
+    ...(showMenuTab ? [{ key: "menu" as const, label: offer.tab[en ? "en" : "sq"], icon: OfferIcon }] : []),
+    ...(hasOffer ? [{ key: "katalogu" as const, label: en ? "Catalog" : "Katalogu", icon: LayoutGrid, href: `/listings/${listing.slug}/katalogu` }] : []),
     { key: "reviews", label: en ? "Reviews" : "Vlerësime", icon: Star },
     { key: "photos", label: en ? "Photos" : "Foto", icon: ImageIcon },
     { key: "info", label: en ? "Info" : "Informacion", icon: Info }
@@ -163,7 +171,12 @@ export default function BusinessPage({
       {/* Cover — edge to edge under the header; everything below lines up with the header's content
           (page-shell: 1200px max, 2rem gutters). */}
       <div className="relative h-[132px] overflow-hidden sm:h-[220px] lg:h-[280px]">
-        <SafeImage src={cover} alt={`${listing.title} cover`} fill priority sizes="100vw" className="object-cover" />
+        {cover ? (
+          <SafeImage src={cover} alt={`${listing.title} cover`} fill priority sizes="100vw" className="object-cover" />
+        ) : (
+          // No photo at all — a calm brand tint instead of a stock picture that isn't theirs.
+          <div className="absolute inset-0" style={{ background: "var(--brand-light)" }} />
+        )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
         {/* On phones share/save live in the app bar; from lg up there is no app bar. */}
         <div className="absolute inset-x-0 top-3 hidden lg:block">
@@ -189,7 +202,11 @@ export default function BusinessPage({
             className="relative -mt-9 h-[68px] w-[68px] shrink-0 overflow-hidden rounded-full border-[3px] border-white shadow-md sm:-mt-11 sm:h-[92px] sm:w-[92px]"
             style={{ background: "#16181D" }}
           >
-            <SafeImage src={logo} alt={listing.title} fill sizes="92px" className="object-cover" />
+            {logo ? (
+              <SafeImage src={logo} alt={listing.title} fill sizes="92px" className="object-cover" />
+            ) : (
+              <InitialsAvatar name={listing.title} className="text-[22px] sm:text-[30px]" />
+            )}
           </div>
 
           <div className="min-w-0 flex-1 pt-2.5">
@@ -202,6 +219,24 @@ export default function BusinessPage({
                 >
                   Verified
                   <BadgeCheck className="h-3 w-3" />
+                </span>
+              )}
+              {/* Only the owner/admin ever sees this page before approval — a visible
+                  reminder that it isn't public yet, right where they'll notice it. */}
+              {canEdit && listing.status === "draft" && (
+                <span
+                  className="inline-flex items-center gap-1 rounded-md px-1.5 py-[3px] text-[9.5px] font-bold uppercase leading-none tracking-[0.06em] text-white"
+                  style={{ background: "#6B7280" }}
+                >
+                  {en ? "Draft — not published" : "Draft — i papublikuar"}
+                </span>
+              )}
+              {canEdit && listing.status === "pending" && (
+                <span
+                  className="inline-flex items-center gap-1 rounded-md px-1.5 py-[3px] text-[9.5px] font-bold uppercase leading-none tracking-[0.06em] text-white"
+                  style={{ background: "#D97706" }}
+                >
+                  {en ? "Pending approval" : "Në pritje të miratimit"}
                 </span>
               )}
             </h1>
@@ -320,7 +355,22 @@ export default function BusinessPage({
         </div>
 
         {/* Tab content */}
-        {tab === "menu" && <BusinessMenu listingSlug={listing.slug} products={products} kind={offerKind} categoryValue={categoryValue} />}
+        {tab === "menu" && (
+          <BusinessMenu
+            listingSlug={listing.slug}
+            products={products}
+            kind={offerKind}
+            categoryValue={categoryValue}
+            canEdit={canEdit}
+            catalogListing={{
+              _id: listing._id,
+              slug: listing.slug,
+              category: listing.category,
+              subcategory: listing.subcategory,
+              actions: listing.actions
+            }}
+          />
+        )}
 
         {tab === "overview" && (
           <Overview
@@ -451,9 +501,12 @@ function Overview({
         {listing.description && (
           <section>
             <SectionTitle>{en ? "About" : "Rreth nesh"}</SectionTitle>
-            <p className="whitespace-pre-line text-[14px] leading-relaxed" style={{ color: "var(--text-secondary)" }}>
-              {listing.description}
-            </p>
+            {/* Exactly one line, with "See more" opening the rest underneath. */}
+            <ExpandableText
+              text={listing.description}
+              className="whitespace-pre-line text-[14px] leading-relaxed"
+              style={{ color: "var(--text-secondary)" }}
+            />
           </section>
         )}
 
@@ -555,7 +608,13 @@ function Information({
           <InfoRow icon={MapPin} label={en ? "Address" : "Adresa"}>
             <p>{address}</p>
             <a href={directionsHref} target="_blank" rel="noreferrer" className={`${link} text-[13px]`} style={{ color: "var(--brand-accent)" }}>
-              {en ? "Open in maps" : "Hape në hartë"}
+              {listing.googleMapsLink
+                ? en
+                  ? "📍 See reviews and the map"
+                  : "📍 Shiko vlerësimet dhe hartën"
+                : en
+                  ? "Open in maps"
+                  : "Hape në hartë"}
             </a>
           </InfoRow>
         )}

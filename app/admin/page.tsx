@@ -7,6 +7,8 @@ import User from "@/models/User";
 import BlogPost from "@/models/BlogPost";
 import Report from "@/models/Report";
 import Payment from "@/models/Payment";
+import Order from "@/models/Order";
+import Reservation from "@/models/Reservation";
 import AdminClient from "@/components/dashboard/AdminClient";
 import City from "@/models/City";
 import HiddenCity from "@/models/HiddenCity";
@@ -27,6 +29,8 @@ export default async function AdminPage() {
     totalReports,
     totalBlogs,
     totalPayments,
+    totalOrders,
+    totalReservations,
     recentBlogs,
     customCities,
     hiddenCities
@@ -37,6 +41,8 @@ export default async function AdminPage() {
     Report.countDocuments({ status: "pending" }),
     BlogPost.countDocuments(),
     Payment.countDocuments(),
+    Order.countDocuments(),
+    Reservation.countDocuments(),
     BlogPost.find().sort({ createdAt: -1 }).limit(5).populate("author", "name").lean<any>(),
     City.find().lean<any[]>(),
     HiddenCity.find().lean<any[]>()
@@ -58,6 +64,8 @@ export default async function AdminPage() {
       totalReports={totalReports}
       totalBlogs={totalBlogs}
       totalPayments={totalPayments}
+      totalOrders={totalOrders}
+      totalReservations={totalReservations}
       totalCities={totalCities}
       serializedBlogs={serializedBlogs}
       displayName={displayName}

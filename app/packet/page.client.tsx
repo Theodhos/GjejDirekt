@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, X, ArrowRight, Rocket, BadgeCheck, Megaphone, Crown } from "lucide-react";
+import { Check, X, ArrowRight, Rocket, BadgeCheck, CalendarCheck, Crown, Search } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
@@ -88,33 +88,65 @@ function PacketPageClient() {
   const packages = [
     {
       id: "free",
-      name: language === "en" ? "Free" : "Falas",
+      name: language === "en" ? "First Year Free" : "Viti i Parë Falas",
       icon: Rocket,
       price: "0",
-      priceSuffix: language === "en" ? "free" : "falas",
+      priceSuffix: language === "en" ? "/ first year" : "/ viti i parë",
       subtitle: language === "en"
-        ? "Basic online presence"
-        : "Prezenca bazë online",
+        ? "FREE first year for every new business."
+        : "Viti i parë FALAS për çdo biznes të ri.",
       description: language === "en"
-        ? "Start at no cost and become part of Albania's tourism database."
-        : "Filloni pa asnjë kosto dhe bëhuni pjesë e databazës turistike të Shqipërisë.",
+        ? "List your business and your catalog at no cost for the first 12 months."
+        : "Listoni biznesin dhe katalogun tuaj pa asnjë kosto për 12 muajt e parë.",
       features: [
-        { text: language === "en" ? "Free listing" : "Listim falas", included: true },
-        { text: language === "en" ? "1 cover photo" : "1 foto cover", included: true },
-        { text: language === "en" ? "Description" : "Përshkrimi", included: true },
-        { text: language === "en" ? "Phone number" : "Telefon", included: true },
-        { text: "WhatsApp", included: true },
-        { text: "Google Maps", included: true },
-        { text: language === "en" ? "Working hours (if applicable)" : "Orari (kur aplikohet)", included: true },
-        { text: language === "en" ? "Basic features" : "Karakteristikat bazë", included: true },
-        { text: language === "en" ? "Tags" : "Tag-et", included: true },
-        { text: "Website", included: false },
-        { text: language === "en" ? "Social media" : "Rrjetet sociale", included: false },
-        { text: "Book Now", included: false },
-        { text: language === "en" ? "Verified Badge" : "Badge Verified", included: false },
-        { text: "Ads / Ads Pro", included: false },
+        { text: language === "en" ? "Full business page" : "Faqe e plotë e biznesit", included: true },
+        { text: language === "en" ? "Catalog of products or services" : "Katalog me produkte ose shërbime", included: true },
+        { text: language === "en" ? "Orders and reservations via WhatsApp" : "Porosi dhe rezervime me WhatsApp", included: true },
+        { text: language === "en" ? "Phone, Google Maps and working hours" : "Telefon, Google Maps dhe orari", included: true },
+        { text: language === "en" ? "Shown in Smart Search" : "Shfaqje në Kërkimin Inteligjent", included: true },
       ],
+      note: language === "en" ? "€99 / year after the first year." : "99 Euro / vit pas vitit të parë.",
       cta: language === "en" ? "Start Free" : "Fillo Falas",
+    },
+    {
+      id: "annual",
+      name: language === "en" ? "Annual" : "Vjetore",
+      icon: CalendarCheck,
+      price: "99",
+      priceSuffix: language === "en" ? "/ year" : "/ vit",
+      subtitle: language === "en"
+        ? "After the first year."
+        : "Pas vitit të parë.",
+      description: language === "en"
+        ? "Keep your business and catalog active on the platform after the free year."
+        : "Mbani biznesin dhe katalogun tuaj aktiv në platformë pas vitit falas.",
+      features: [
+        { text: language === "en" ? "Everything in the first year +" : "Gjithçka nga viti i parë +", included: true },
+        { text: language === "en" ? "Business active for 12 months" : "Biznesi aktiv për 12 muaj", included: true },
+        { text: language === "en" ? "Catalog, orders and reservations stay on" : "Katalogu, porositë dhe rezervimet mbeten aktive", included: true },
+        { text: language === "en" ? "Shown in Smart Search" : "Shfaqje në Kërkimin Inteligjent", included: true },
+      ],
+      cta: language === "en" ? "Renew for a Year" : "Rinovo për një Vit",
+    },
+    {
+      id: "vip",
+      name: "VIP",
+      icon: Crown,
+      price: "50",
+      priceSuffix: language === "en" ? "/ month" : "/ muaj",
+      popular: true,
+      subtitle: language === "en"
+        ? "For businesses that want advertising."
+        : "Për bizneset që duan reklamë.",
+      description: language === "en"
+        ? "VIP Highlighted with random rotation: your business is shown highlighted, in turn with the other VIP businesses."
+        : "VIP Highlighted me rrotacion të rastësishëm (Random): biznesi juaj shfaqet i theksuar, me radhë me bizneset e tjera VIP.",
+      features: [
+        { text: "VIP Highlighted", included: true },
+        { text: language === "en" ? "Random rotation among VIP businesses" : "Rrotacion i rastësishëm (Random) mes bizneseve VIP", included: true },
+        { text: language === "en" ? "More visibility and more visits" : "Më shumë shikueshmëri dhe më shumë vizita", included: true },
+      ],
+      cta: language === "en" ? "Activate VIP" : "Aktivizo VIP",
     },
     {
       id: "verified",
@@ -123,70 +155,17 @@ function PacketPageClient() {
       price: "50",
       priceSuffix: language === "en" ? "one-time" : "një herë",
       subtitle: language === "en"
-        ? "Only Verified businesses can use Ads and Ads Pro."
-        : "Vetëm bizneset Verified mund të përdorin Ads dhe Ads Pro.",
+        ? "Verification of your business."
+        : "Verifikimi i biznesit tuaj.",
       description: language === "en"
-        ? "The Verified badge shows tourists that the business has a verified profile."
-        : "Badge Verified u tregon turistëve se biznesi ka një profil të verifikuar.",
+        ? "The Verified Badge shows customers that the business has a verified profile."
+        : "Verified Badge u tregon klientëve se biznesi ka një profil të verifikuar.",
       features: [
-        { text: language === "en" ? "Everything in Free +" : "Gjithçka nga Falas +", included: true },
-        { text: language === "en" ? "Verified Badge" : "Badge Verified", included: true },
-        { text: language === "en" ? "Up to 10 photos" : "Deri në 10 foto", included: true },
-        { text: "Website", included: true },
-        { text: "Facebook", included: true },
-        { text: "Instagram", included: true },
-        { text: "TikTok", included: true },
-        { text: "YouTube", included: true },
-        { text: "Book Now", included: true },
-        { text: language === "en" ? "Eligible for Ads" : "E drejtë për Ads", included: true },
-        { text: language === "en" ? "Eligible for Ads Pro" : "E drejtë për Ads Pro", included: true },
+        { text: "Verified Badge", included: true },
+        { text: language === "en" ? "Paid only once" : "Paguhet vetëm një herë", included: true },
+        { text: language === "en" ? "More trust from customers" : "Më shumë besim nga klientët", included: true },
       ],
       cta: language === "en" ? "Become Verified" : "Bëhu Verified",
-    },
-    {
-      id: "ads",
-      name: "Ads",
-      icon: Megaphone,
-      price: "50",
-      priceSuffix: language === "en" ? "/ year" : "/ vit",
-      subtitle: language === "en"
-        ? "Increase your business visibility."
-        : "Rrit shikueshmërinë e biznesit tuaj.",
-      description: language === "en"
-        ? "For Verified businesses that want to appear more often and get more visits."
-        : "Për bizneset Verified që duan të shfaqen më shpesh dhe të marrin më shumë vizita.",
-      features: [
-        { text: language === "en" ? "Everything in Verified +" : "Gjithçka nga Verified +", included: true },
-        { text: language === "en" ? "Ad Badge" : "Badge Ad", included: true },
-        { text: language === "en" ? "More visibility in category" : "Më shumë shikueshmëri në kategori", included: true },
-        { text: language === "en" ? "Priority in search results" : "Prioritet në rezultatet e kërkimit", included: true },
-        { text: language === "en" ? "More exposure for a year" : "Më shumë ekspozim për një vit", included: true },
-      ],
-      note: language === "en" ? "Only for Verified businesses." : "Vetëm për bizneset Verified.",
-      cta: language === "en" ? "Activate Ads" : "Aktivizo Ads",
-    },
-    {
-      id: "ads-pro",
-      name: "Ads Pro",
-      icon: Crown,
-      price: "30",
-      priceSuffix: language === "en" ? "/ month" : "/ muaj",
-      popular: true,
-      subtitle: language === "en"
-        ? "Maximum exposure for your business."
-        : "Ekspozimi maksimal për biznesin tuaj.",
-      description: language === "en"
-        ? "For Verified businesses that want to always be visible."
-        : "Për bizneset Verified që duan të jenë gjithmonë të dukshme.",
-      features: [
-        { text: language === "en" ? "Everything in Ads +" : "Gjithçka nga Ads +", included: true },
-        { text: language === "en" ? "Highlighted (underlined background)" : "Highlighted (sfond i nenvizuar)", included: true },
-        { text: language === "en" ? "Always on top of the category" : "Gjithmonë në krye të kategorisë", included: true },
-        { text: language === "en" ? "Maximum priority in search" : "Prioritet maksimal në kërkim", included: true },
-        { text: language === "en" ? "Highest exposure on the platform" : "Ekspozimi më i lartë në platformë", included: true },
-      ],
-      note: language === "en" ? "Only for Verified businesses." : "Vetëm për bizneset Verified.",
-      cta: language === "en" ? "Activate Ads Pro" : "Aktivizo Ads Pro",
     }
   ];
 
@@ -209,12 +188,12 @@ function PacketPageClient() {
             className="font-bold tracking-tight mb-4"
             style={{ fontSize: "clamp(2rem, 5vw, 3rem)", color: "var(--text-primary)", lineHeight: 1.1 }}
           >
-            {language === "en" ? "Choose Your Growth Package" : "Zgjidhni Paketën tuaj të Rritjes"}
+            {language === "en" ? "Packages" : "Paketat"}
           </h1>
           <p className="text-base leading-relaxed" style={{ color: "var(--text-secondary)" }}>
             {language === "en"
-              ? "Boost your business visibility and reach more tourists."
-              : "Rritni shikueshmërinë e biznesit tuaj dhe arrini më shumë turistë."}
+              ? "FREE first year for every new business. €99 / year after that."
+              : "Viti i parë FALAS për çdo biznes të ri. 99 Euro / vit pas vitit të parë."}
           </p>
         </div>
       </section>
@@ -228,7 +207,7 @@ function PacketPageClient() {
               className="relative flex flex-col h-full transition-all duration-300 hover:-translate-y-1"
               style={{
                 background: "var(--surface-white)",
-                border: pkg.popular || pkg.id === "ads"
+                border: pkg.popular
                   ? "2px solid var(--brand-accent)"
                   : "1px solid var(--border-soft)",
                 borderRadius: "16px",
@@ -337,6 +316,60 @@ function PacketPageClient() {
               )}
             </div>
           ))}
+        </div>
+
+        {/* ── SMART SEARCH ── */}
+        <div
+          className="max-w-7xl mx-auto mt-10"
+          style={{
+            background: "var(--surface-white)",
+            border: "1px solid var(--border-soft)",
+            borderRadius: "16px",
+            boxShadow: "var(--shadow-card)",
+            padding: "2rem"
+          }}
+        >
+          <div className="flex items-center gap-4 mb-4">
+            <div
+              className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl"
+              style={{ background: "var(--brand-light)" }}
+            >
+              <Search className="w-6 h-6" style={{ color: "var(--brand-accent)" }} />
+            </div>
+            <div>
+              <h2 className="text-xl font-bold" style={{ color: "var(--text-primary)" }}>
+                {language === "en" ? "Smart Search" : "Kërkimi Inteligjent"}
+              </h2>
+              <p className="text-[15px] font-medium leading-snug" style={{ color: "var(--brand-accent)" }}>
+                {language === "en" ? "Included for every business." : "I përfshirë për çdo biznes."}
+              </p>
+            </div>
+          </div>
+          <p className="text-[14px] leading-relaxed mb-5" style={{ color: "var(--text-secondary)" }}>
+            {language === "en"
+              ? "The customer types something (e.g. \"double room\" or \"hotel voskopoje\") and the system checks the Title or the Description."
+              : "Klienti shkruan diçka (psh: \"dhomë dyshe\" ose \"hotel voskopoje\") dhe sistemi kontrollon Titullin ose Përshkrimin."}
+          </p>
+          <ul className="space-y-3">
+            {[
+              language === "en"
+                ? "Businesses are shown when a category or location is searched."
+                : "Shfaqen bizneset nëse kërkohet kategori ose lokacion.",
+              language === "en"
+                ? "Products are shown when a specific feature is searched."
+                : "Shfaqen produktet nëse kërkohet një tipar specifik."
+            ].map((text, i) => (
+              <li key={i} className="flex items-start gap-2.5">
+                <div
+                  className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full mt-0.5"
+                  style={{ background: "var(--brand-light)" }}
+                >
+                  <Check className="w-3 h-3" style={{ color: "var(--brand-accent)" }} />
+                </div>
+                <span className="text-[14px] leading-snug" style={{ color: "var(--text-secondary)" }}>{text}</span>
+              </li>
+            ))}
+          </ul>
         </div>
 
       </section>

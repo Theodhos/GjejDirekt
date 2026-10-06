@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { ChevronRight, Minus, Plus, ShoppingCart, Trash2, X, MessageCircle, Lock, Calendar, Clock } from "lucide-react";
+import toast from "react-hot-toast";
 import { useLanguage } from "@/context/LanguageContext";
 import { formatPrice } from "@/lib/pricing";
 import SafeImage from "@/components/ui/SafeImage";
@@ -130,7 +131,28 @@ export default function ListingCart({
     paymentMethod
   });
 
-  const handleSend = () => {
+  const handleSend = (event: React.MouseEvent<HTMLAnchorElement>) => {
+    // The link below is the only way this basket ever reaches the business, so it has
+    // to be the one place that guarantees the record and the WhatsApp message happen
+    // together — sending without a name (or, for a booking, a date and phone) would
+    // open WhatsApp with an incomplete message and silently skip the server record.
+    if (!customerName.trim()) {
+      event.preventDefault();
+      toast.error(en ? "Please enter your name." : "Vendos emrin tënd.");
+      return;
+    }
+    if (isBooking) {
+      if (!checkIn || (isStay && !checkOut) || !customerPhone.trim()) {
+        event.preventDefault();
+        toast.error(en ? "Please fill in the date and phone number." : "Plotëso datën dhe numrin e telefonit.");
+        return;
+      }
+    } else if (isMixed && (!checkIn || !customerPhone.trim())) {
+      event.preventDefault();
+      toast.error(en ? "Please fill in the date and phone number for the booking." : "Plotëso datën dhe telefonin për rezervimin.");
+      return;
+    }
+
     if (listingId) {
       fetch(`/api/listings/${listingId}/whatsapp-click`, { method: "POST", keepalive: true }).catch(() => {});
     }
@@ -155,6 +177,28 @@ export default function ListingCart({
           notes: specialRequest || undefined,
           productId: reserved[0]?.productId,
           itemName: reserved.map((item) => item.name).join(", ")
+        }),
+        keepalive: true
+      }).catch(() => {});
+    }
+
+    // The ordered lines (everything that isn't a "Rezervo" line inside this basket) —
+    // persisted the same way, so a client's "Porositë" panel and the admin's
+    // analytics see it too, not only the WhatsApp chat.
+    const orderedItems = isBooking ? [] : items.filter((item) => item.action !== "rezervim");
+    if (orderedItems.length && listingId && customerName.trim()) {
+      fetch("/api/orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          listingId,
+          customerName: customerName.trim(),
+          customerPhone: customerPhone.trim() || undefined,
+          customerAddress: customerAddress.trim() || undefined,
+          items: orderedItems.map((item) => ({ productId: item.productId, name: item.name, price: item.price, qty: item.qty })),
+          total: orderedItems.every((item) => typeof item.price === "number") ? cartTotal(orderedItems) : undefined,
+          paymentMethod,
+          note: orderNote || undefined
         }),
         keepalive: true
       }).catch(() => {});

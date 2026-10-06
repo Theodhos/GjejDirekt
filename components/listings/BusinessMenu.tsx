@@ -22,6 +22,7 @@ import {
   UtensilsCrossed,
   Wheat,
   Wine,
+  X,
   type LucideIcon
 } from "lucide-react";
 import ExpandableText from "@/components/ui/ExpandableText";
@@ -34,6 +35,7 @@ import { getCategoryIcon } from "@/lib/category-icons";
 import { formatPrice } from "@/lib/pricing";
 import { normalizeText } from "@/lib/listing-display";
 import type { ListingProduct } from "@/components/listings/ListingProducts";
+import CatalogManager, { type CatalogListing } from "@/components/dashboard/CatalogManager";
 
 const UNCATEGORIZED = "__uncategorized__";
 
@@ -77,13 +79,19 @@ export default function BusinessMenu({
   listingSlug,
   products,
   kind,
-  categoryValue
+  categoryValue,
+  canEdit = false,
+  catalogListing
 }: {
   listingSlug: string;
   products: ListingProduct[];
   kind: OfferKind;
   /** Canonical category of the business — picks the fallback icon. */
   categoryValue: string;
+  /** The owner (or an admin) viewing their own listing — shows the inline "+ Shto" editor. */
+  canEdit?: boolean;
+  /** Only required when `canEdit` — what CatalogManager needs to save a new item. */
+  catalogListing?: CatalogListing;
 }) {
   const { language } = useLanguage();
   const en = language === "en";
@@ -93,6 +101,7 @@ export default function BusinessMenu({
   const FallbackIcon = getCategoryIcon(categoryValue);
   const [activeKey, setActiveKey] = useState<string>("");
   const [cartQtyById, setCartQtyById] = useState<Record<string, number>>({});
+  const [addOpen, setAddOpen] = useState(false);
 
   useEffect(() => {
     const sync = () => {
@@ -123,6 +132,19 @@ export default function BusinessMenu({
   }, [products, en]);
 
   if (!products.length) {
+    // The owner lands here with nothing yet — show the add form right away instead
+    // of a dead end they'd have to go hunting for.
+    if (canEdit && catalogListing) {
+      return (
+        <div className="px-4 py-6 sm:px-6">
+          <div className="mx-auto max-w-xl">
+            {/* No initialProducts: this fetches the owner's full catalog itself (hidden
+                items included), same as the wizard's embedded step. */}
+            <CatalogManager listing={catalogListing} embedded />
+          </div>
+        </div>
+      );
+    }
     return (
       <div className="px-6 py-16 text-center">
         <span
@@ -141,8 +163,9 @@ export default function BusinessMenu({
     );
   }
 
-  // One section means there is nothing to switch between, so the sidebar would be noise.
-  const hasSidebar = sections.length > 1 || (sections.length === 1 && sections[0].key !== UNCATEGORIZED);
+  // One section means there is nothing to switch between, so the sidebar would be noise —
+  // unless the owner needs it anyway, as the one place to reach "+ Shto".
+  const hasSidebar = canEdit || sections.length > 1 || (sections.length === 1 && sections[0].key !== UNCATEGORIZED);
   const active = sections.find((section) => section.key === activeKey) || sections[0];
 
   const handleAdd = (product: ListingProduct, silent = false) => {
@@ -185,11 +208,54 @@ export default function BusinessMenu({
                 </button>
               );
             })}
+            {canEdit && catalogListing && (
+              <button
+                type="button"
+                onClick={() => setAddOpen((value) => !value)}
+                aria-pressed={addOpen}
+                className="mt-1 flex w-full items-center gap-1.5 border-l-[3px] px-2 py-3 text-left text-[11.5px] font-semibold transition-colors sm:gap-2 sm:px-3 sm:text-[13.5px]"
+                style={{
+                  borderColor: addOpen ? accent : "transparent",
+                  background: addOpen ? "var(--brand-light)" : "transparent",
+                  color: accent
+                }}
+              >
+                {addOpen ? <X className="h-4 w-4 shrink-0 sm:h-[18px] sm:w-[18px]" strokeWidth={1.8} /> : <Plus className="h-4 w-4 shrink-0 sm:h-[18px] sm:w-[18px]" strokeWidth={1.8} />}
+                <span className="min-w-0 break-words leading-tight">{en ? "Add" : "Shto"}</span>
+              </button>
+            )}
           </nav>
         </aside>
       )}
 
       <div className="min-w-0 px-3.5 pb-28 pt-4 sm:px-5 lg:px-8">
+        {canEdit && addOpen && catalogListing && (
+          <div
+            className="mb-6 rounded-2xl border p-4 sm:p-5"
+            style={{ borderColor: "var(--border-soft)", background: "var(--surface-page)" }}
+          >
+            <div className="mb-3 flex items-center justify-between">
+              <h2 className="!text-[16px] font-bold" style={{ color: "var(--text-primary)" }}>
+                {en ? "Add a category & item" : "Shto kategori & artikull"}
+              </h2>
+              <button
+                type="button"
+                onClick={() => setAddOpen(false)}
+                className="flex h-8 w-8 items-center justify-center rounded-lg transition-colors hover:bg-neutral-100"
+                aria-label={en ? "Close" : "Mbyll"}
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+            <p className="mb-4 text-[12.5px]" style={{ color: "var(--text-secondary)" }}>
+              {en
+                ? "Add a category, then the items under it. Categories can be renamed or deleted at any time."
+                : "Shto një kategori, pastaj artikujt poshtë saj. Kategoritë mund të riemërtohen ose fshihen në çdo kohë."}
+            </p>
+            <CatalogManager listing={catalogListing} embedded />
+          </div>
+        )}
+
         {hasSidebar && (
           <h2 className="mb-1 !text-[20px] font-bold" style={{ color: "var(--text-primary)" }}>
             {active.label}

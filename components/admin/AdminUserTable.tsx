@@ -36,6 +36,7 @@ export default function AdminUserTable({ initialUsers }: { initialUsers: any[] }
               <th className="px-6 py-4 text-left text-[10px] font-black uppercase tracking-widest text-slate-400">User</th>
               <th className="px-6 py-4 text-left text-[10px] font-black uppercase tracking-widest text-slate-400">Contact</th>
               <th className="px-6 py-4 text-left text-[10px] font-black uppercase tracking-widest text-slate-400">Role</th>
+              <th className="px-6 py-4 text-left text-[10px] font-black uppercase tracking-widest text-slate-400">Account type</th>
               <th className="px-6 py-4 text-left text-[10px] font-black uppercase tracking-widest text-slate-400">Services</th>
               <th className="px-6 py-4 text-left text-[10px] font-black uppercase tracking-widest text-slate-400">Joined</th>
             </tr>
@@ -76,6 +77,17 @@ export default function AdminUserTable({ initialUsers }: { initialUsers: any[] }
                     </span>
                   </td>
                   <td className="px-6 py-4">
+                    <span
+                      className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-[10px] font-black uppercase tracking-widest ${
+                        user.accountType === "klient"
+                          ? "bg-slate-100 text-slate-600 border border-slate-200"
+                          : "bg-emerald-50 text-emerald-700 border border-emerald-100 shadow-sm"
+                      }`}
+                    >
+                      {user.accountType === "klient" ? "Klient" : "Biznes"}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4">
                     <div className="space-y-2">
                       {user.services?.slice(0, 3).map((service: any) => (
                         <div key={service.slug} className="rounded-2xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-semibold text-slate-700">
@@ -100,7 +112,7 @@ export default function AdminUserTable({ initialUsers }: { initialUsers: any[] }
               ))
             ) : (
               <tr>
-                <td colSpan={5} className="px-6 py-12 text-center">
+                <td colSpan={6} className="px-6 py-12 text-center">
                   <p className="text-sm font-bold text-slate-500">No users found.</p>
                 </td>
               </tr>

@@ -98,7 +98,11 @@ export async function PATCH(request: Request, { params }: { params: { id: string
     listing.country = parseMaybeString(body.country) || "";
     listing.address = parseMaybeString(body.address) || "";
     listing.images = Array.isArray(body.images) ? body.images.map((item: unknown) => String(item)).filter(Boolean) : listing.images;
-    listing.bannerImage = parseMaybeString(body.bannerImage) || listing.images?.[0] || listing.bannerImage;
+    // The profile photo is optional, so an explicitly empty value removes it.
+    listing.bannerImage =
+      typeof body.bannerImage === "string"
+        ? body.bannerImage.trim()
+        : listing.images?.[0] || listing.bannerImage;
     listing.photos = Array.isArray(body.photos) ? body.photos.map((item: unknown) => String(item)).filter(Boolean) : listing.images?.slice(1) || listing.photos;
     listing.price = parseMaybeNumber(body.price);
     listing.priceFrom = parseMaybeNumber(body.priceFrom);

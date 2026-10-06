@@ -14,36 +14,29 @@ export default async function AdminUsersPage() {
   if (!auth || auth.role !== "admin") redirect("/login");
 
   await connectDB();
-  const listings = await Listing.find().populate("owner", "name email role createdAt").lean<any[]>();
+  // Every registered account — "klient" ones included, even though they can never
+  // own a listing — not just the ones a listing happens to point back to.
+  const users = await User.find().select("name email role accountType createdAt").sort({ createdAt: -1 }).lean<any[]>();
+  const listings = await Listing.find().select("owner title slug package status").lean<any[]>();
 
-  const usersMap = new Map<string, any>();
+  const servicesByOwner = new Map<string, any[]>();
   listings.forEach((listing) => {
-    const owner = listing.owner;
-    if (!owner || typeof owner === "string") return;
-    const ownerId = owner._id.toString();
-    if (!usersMap.has(ownerId)) {
-      usersMap.set(ownerId, {
-        _id: ownerId,
-        name: owner.name,
-        email: owner.email,
-        role: owner.role,
-        createdAt: owner.createdAt ? new Date(owner.createdAt).toISOString() : null,
-        services: []
-      });
-    }
-    usersMap.get(ownerId).services.push({
-      title: listing.title,
-      slug: listing.slug,
-      package: listing.package,
-      status: listing.status
-    });
+    if (!listing.owner) return;
+    const ownerId = listing.owner.toString();
+    const services = servicesByOwner.get(ownerId) || [];
+    services.push({ title: listing.title, slug: listing.slug, package: listing.package, status: listing.status });
+    servicesByOwner.set(ownerId, services);
   });
 
-  const serializedUsers = Array.from(usersMap.values()).sort((a, b) => {
-    if (!a.createdAt) return 1;
-    if (!b.createdAt) return -1;
-    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-  });
+  const serializedUsers = users.map((user) => ({
+    _id: user._id.toString(),
+    name: user.name,
+    email: user.email,
+    role: user.role,
+    accountType: user.accountType || "biznes",
+    createdAt: user.createdAt ? new Date(user.createdAt).toISOString() : null,
+    services: servicesByOwner.get(user._id.toString()) || []
+  }));
 
   return (
     <section className="page-shell py-10">
@@ -53,8 +46,8 @@ export default async function AdminUsersPage() {
                 <ArrowLeft className="w-5 h-5 text-slate-600" />
             </Link>
             <div>
-                <h1 className="text-3xl font-black text-slate-950">Users with Services</h1>
-                <p className="text-sm text-slate-500 mt-1">All users that have listings on the platform and their services are shown below.</p>
+                <h1 className="text-3xl font-black text-slate-950">Users</h1>
+                <p className="text-sm text-slate-500 mt-1">Every registered account — business and client — with their listings, if any.</p>
             </div>
         </div>
         <button className="hidden sm:inline-flex items-center gap-2 rounded-full bg-slate-950 px-6 py-3 text-sm font-black text-white hover:bg-brand-600 transition">

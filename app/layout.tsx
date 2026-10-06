@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import Providers from "./providers";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+import BottomNav from "@/components/layout/BottomNav";
 import ChatWidget from "@/components/ChatWidgetLoader";
 import { Poppins } from "next/font/google";
 
@@ -34,10 +35,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Providers>
           <Header />
           {/* The fixed header overlaps the page, so the document reserves its height at the top. */}
-          <div className="pt-[var(--header-height)]">
+          {/* ...and the fixed bottom bar's height at the bottom. */}
+          <div className="pb-[var(--bottom-nav-height)] pt-[var(--header-height)]">
             <main>{children}</main>
             <Footer />
           </div>
+          <BottomNav />
           <ChatWidget />
         </Providers>
       </body>

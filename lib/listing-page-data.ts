@@ -53,5 +53,5 @@ export async function getListingPageData(slug: string, opts: { countView?: boole
     category: listing.category ? String(listing.category) : undefined
   };
 
-  return { listing, products, phone, phoneDigits, hasReservation, hasCatalog, basketIsReservation, orderHistoryListing };
+  return { listing, products, phone, phoneDigits, hasReservation, hasCatalog, basketIsReservation, orderHistoryListing, canEdit };
 }

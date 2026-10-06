@@ -13,10 +13,10 @@
      components/layout/Header.tsx — the fixed header is offset by this value,
      so an undersized value hides page content behind the bar. */
   --header-height: 56px;
-  /* There is no fixed bottom tab bar any more; kept at 0 so the handful of sticky
-     bars (the basket bar, the chat toggle, ...) that still offset by this value
-     collapse to sitting right at the screen edge instead of needing their own edits. */
-  --bottom-nav-height: 0px;
+  /* Height of the fixed bottom bar (components/layout/BottomNav.tsx), home-indicator
+     inset included. The page and the other sticky bars (the basket bar, the chat
+     toggle, ...) offset themselves by this value so nothing hides behind it. */
+  --bottom-nav-height: calc(60px + env(safe-area-inset-bottom, 0px));
 
   /* Surface Colors */
   --surface-page:    #F6F7F9;

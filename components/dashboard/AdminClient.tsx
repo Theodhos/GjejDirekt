@@ -2,7 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
-import { Clock3, LayoutDashboard, MapPinned, PlusCircle, ShieldCheck, Users, AlertTriangle, CreditCard, ArrowUpRight } from "lucide-react";
+import { Clock3, LayoutDashboard, MapPinned, PlusCircle, ShieldCheck, Users, AlertTriangle, CreditCard, ArrowUpRight, ShoppingBag, CalendarCheck } from "lucide-react";
 import BlogStudio from "@/components/dashboard/BlogStudio";
 import CityStudio from "@/components/dashboard/CityStudio";
 import AdminProfile from "@/components/dashboard/AdminProfile";
@@ -17,6 +17,8 @@ export default function AdminClient({
   totalReports,
   totalBlogs,
   totalPayments,
+  totalOrders,
+  totalReservations,
   totalCities,
   serializedBlogs,
   displayName,
@@ -28,6 +30,8 @@ export default function AdminClient({
   totalReports: number;
   totalBlogs: number;
   totalPayments: number;
+  totalOrders: number;
+  totalReservations: number;
   totalCities: number;
   serializedBlogs: ListingAny[];
   displayName: string;
@@ -44,7 +48,9 @@ export default function AdminClient({
     { icon: AlertTriangle, label: t.admin.reports, value: totalReports, accent: "bg-red-50 text-red-700", href: "/admin/reports" },
     { icon: LayoutDashboard, label: t.admin.blogs, value: totalBlogs, accent: "bg-violet-50 text-violet-700", href: "/admin/blogs" },
     { icon: MapPinned, label: adminText.cities || "Qytete", value: totalCities, accent: "bg-teal-50 text-teal-700", href: "/admin/cities" },
-    { icon: CreditCard, label: adminText.payments || "Payments", value: totalPayments, accent: "bg-emerald-50 text-emerald-700", href: "/admin/payments" }
+    { icon: CreditCard, label: adminText.payments || "Payments", value: totalPayments, accent: "bg-emerald-50 text-emerald-700", href: "/admin/payments" },
+    { icon: ShoppingBag, label: language === "en" ? "Orders" : "Porositë", value: totalOrders, accent: "bg-orange-50 text-orange-700", href: "/admin/orders" },
+    { icon: CalendarCheck, label: language === "en" ? "Reservations" : "Rezervimet", value: totalReservations, accent: "bg-sky-50 text-sky-700", href: "/admin/reservations" }
   ];
 
   return (

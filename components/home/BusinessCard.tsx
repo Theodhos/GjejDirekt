@@ -4,6 +4,7 @@ import Link from "next/link";
 import { BadgeCheck, MapPin, Heart } from "lucide-react";
 import toast from "react-hot-toast";
 import SafeImage from "@/components/ui/SafeImage";
+import InitialsAvatar from "@/components/ui/InitialsAvatar";
 import { getCategoryLabel, getListingActions } from "@/lib/constants";
 import { useLanguage } from "@/context/LanguageContext";
 import useFavorites from "@/hooks/useFavorites";
@@ -71,13 +72,18 @@ export default function BusinessCard({ listing, className = "" }: { listing: any
       className={`gd-card group flex flex-col ${className}`}
     >
       <div className="relative aspect-[4/3] w-full overflow-hidden">
-        <SafeImage
-          src={listingCover(listing)}
-          alt={listing.title}
-          fill
-          sizes="(max-width: 640px) 46vw, (max-width: 1280px) 24vw, 300px"
-          className="object-cover transition-transform duration-500 group-hover:scale-105"
-        />
+        {listingCover(listing) ? (
+          <SafeImage
+            src={listingCover(listing)}
+            alt={listing.title}
+            fill
+            sizes="(max-width: 640px) 46vw, (max-width: 1280px) 24vw, 300px"
+            className="object-cover transition-transform duration-500 group-hover:scale-105"
+          />
+        ) : (
+          // No profile photo: the business's initials instead of a stock picture.
+          <InitialsAvatar name={listing.title} className="text-4xl" />
+        )}
 
         {/* VERIFIED badge — blue pill top-left exactly like the mockup */}
         {listing.verified && (

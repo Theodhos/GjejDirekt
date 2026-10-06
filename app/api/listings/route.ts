@@ -129,7 +129,10 @@ export async function POST(request: Request) {
     const body = await request.json();
     const title = String(body.title || "").trim();
 
-    if (!title || !body.description || !body.category || !body.subcategory || !body.location || !body.contactPhone || !body.bannerImage) {
+    // The universal business profile: name, description, WhatsApp, homepage category
+    // and city. The Google Maps link and the profile photo are optional.
+    const whatsapp = String(body.whatsapp || body.contactPhone || "").trim();
+    if (!title || !body.description || !body.category || !body.location || !whatsapp) {
       return NextResponse.json({ error: "Missing required fields." }, { status: 400 });
     }
 
@@ -145,14 +148,14 @@ export async function POST(request: Request) {
       slug,
       description: body.description,
       category: body.category,
-      subcategory: body.subcategory,
+      subcategory: body.subcategory || "",
       actions: parseActions(body.actions),
       location: body.location,
       country: body.country || "",
       address: body.address || "",
       bannerImage: body.bannerImage || "",
       photos: Array.isArray(body.photos) ? body.photos : parseList(body.photos),
-      images: Array.isArray(body.images) ? body.images : [],
+      images: Array.isArray(body.images) ? body.images.map((item: unknown) => String(item || "")).filter(Boolean) : [],
       price: parseMaybeNumber(body.price),
       priceFrom: parseMaybeNumber(body.priceFrom),
       currency: body.currency || "€",
@@ -167,7 +170,7 @@ export async function POST(request: Request) {
       cuisines: Array.isArray(body.cuisines) ? body.cuisines : parseList(body.cuisines),
       languages: Array.isArray(body.languages) ? body.languages : parseList(body.languages),
       businessHours: body.businessHours || "",
-      whatsapp: body.whatsapp || "",
+      whatsapp,
       website: body.website || "",
       checkIn: body.checkIn || "",
       checkOut: body.checkOut || "",
@@ -178,7 +181,7 @@ export async function POST(request: Request) {
       bookingLink: body.bookingLink || "",
       transportType: body.transportType || "",
       contactInfo: {
-        phone: body.contactPhone || "",
+        phone: body.contactPhone || whatsapp,
         email: body.contactEmail || "",
         website: body.website || ""
       },
@@ -191,8 +194,14 @@ export async function POST(request: Request) {
       googleMapsLink: body.googleMapsLink || "",
       tags: Array.isArray(body.tags) ? body.tags : parseList(body.tags),
       amenities: Array.isArray(body.tags) ? body.tags : parseList(body.tags),
-      status: "pending"
+      status: body.draft ? "draft" : "pending"
     });
+
+    // A draft is not submitted yet: the add-business flow still has its catalog and
+    // last step to go, and /api/listings/[id]/publish announces it when it is done.
+    if (body.draft) {
+      return NextResponse.json({ listing });
+    }
 
     await logActivity({
       type: "listing_submitted",

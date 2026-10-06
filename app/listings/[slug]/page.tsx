@@ -19,7 +19,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
 }
 
 export default async function ListingDetailPage({ params }: { params: { slug: string } }) {
-  const { listing, products, phone, phoneDigits, hasReservation, hasCatalog, basketIsReservation, orderHistoryListing } = await getListingPageData(
+  const { listing, products, phone, phoneDigits, hasReservation, hasCatalog, basketIsReservation, orderHistoryListing, canEdit } = await getListingPageData(
     params.slug,
     { countView: true }
   );
@@ -32,7 +32,7 @@ export default async function ListingDetailPage({ params }: { params: { slug: st
   // its booking mode.
   return (
     <main style={{ background: "var(--surface-subtle)" }}>
-      <BusinessPage listing={listing} products={products} phone={phone} phoneDigits={phoneDigits} hasCatalog={hasCatalog} />
+      <BusinessPage listing={listing} products={products} phone={phone} phoneDigits={phoneDigits} hasCatalog={hasCatalog} canEdit={canEdit} />
 
       {hasCatalog && (
         <ListingCart

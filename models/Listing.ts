@@ -1,6 +1,7 @@
 import { Schema, model, models, type Document } from "mongoose";
 
-export type ListingStatus = "pending" | "approved" | "rejected";
+/** "draft": saved by the add-business flow but not submitted yet — only its owner sees it. */
+export type ListingStatus = "draft" | "pending" | "approved" | "rejected";
 export type PackageTier = "verify" | "trading" | "features" | null;
 
 export interface IListing extends Document {
@@ -88,7 +89,7 @@ const ListingSchema = new Schema<IListing>(
     slug: { type: String, required: true, unique: true, index: true },
     description: { type: String, required: true },
     category: { type: String, required: true },
-    subcategory: { type: String, required: true },
+    subcategory: { type: String, default: "" },
     actions: { type: [String], enum: ["porosi", "rezervim"], default: [] },
     location: { type: String, required: true, index: true },
     country: { type: String, index: true },
@@ -127,7 +128,7 @@ const ListingSchema = new Schema<IListing>(
     googleMapsLink: { type: String },
     status: {
       type: String,
-      enum: ["pending", "approved", "rejected"],
+      enum: ["draft", "pending", "approved", "rejected"],
       default: "pending",
       index: true
     },

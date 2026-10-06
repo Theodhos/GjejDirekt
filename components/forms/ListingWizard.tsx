@@ -5,42 +5,35 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import toast from "react-hot-toast";
 import {
-  Backpack,
   BadgeCheck,
   CalendarClock,
   Camera,
   Check,
   ChevronLeft,
   ChevronRight,
-  Clock,
   Crop,
   Facebook,
   FileText,
   FileType,
   Globe,
-  Hourglass,
   ImagePlus,
   Instagram,
-  Languages,
   Loader2,
   Lock,
   MapPin,
   Music,
-  Phone,
   Play,
   Plus,
   ShoppingBag,
-  SlidersHorizontal,
-  Sparkles,
   Tag,
   Trash2,
-  Utensils,
   X
 } from "lucide-react";
 import Input from "@/components/ui/Input";
 import Textarea from "@/components/ui/Textarea";
 import Select from "@/components/ui/Select";
 import ImageCropper from "@/components/ui/ImageCropper";
+import InitialsAvatar from "@/components/ui/InitialsAvatar";
 import { categories, getCategoryActions, getCategoryFormValue, getSubcategoryActions, getSubcategoryFormValue } from "@/lib/constants";
 import { PRICE_CURRENCY, startingPrice } from "@/lib/pricing";
 import { compressImageFile, fileFromDataUrl, readFileAsDataUrl } from "@/lib/image-tools";
@@ -112,166 +105,17 @@ async function uploadImage(file: File) {
   return data.url as string;
 }
 
-const CATEGORY_DEFAULT_TAGS: Record<string, string[]> = {
-  akomodim: ["Wifi", "AC", "Parking", "Kuzhinë", "TV"],
-  restorante: ["Wifi", "Outdoor Seating", "Vegan Options", "Rezervime", "Parking"],
-  atraksione: ["Entry Fee", "Family Friendly", "Guide Available", "Parking", "Pamje piktoreske"],
-  evente: ["Tickets Needed", "Outdoor", "Indoor", "Parking", "Muzikë live"],
-  aktivitete: [
-    "Guide i certifikuar",
-    "Pajisjet përfshihen",
-    "Transport i përfshirë",
-    "Ushqim i përfshirë",
-    "I përshtatshëm për familje",
-    "Lejohen kafshët",
-    "Parkim",
-    "Rezervim i nevojshëm"
-  ],
-  "sherbime-turistike": ["English Speaking", "Licensed Guide", "Group Discount", "Tur privat", "Eksperiencë lokale"],
-  "produkte-lokale": ["Handmade", "Organic", "Shipping Available", "Bio", "Tradicionale"],
-  transport: ["AC", "English Speaking Driver", "Airport Pickup", "Shofer profesionist", "Taksi e licencuar"]
-};
-
-const SUBCATEGORY_DEFAULT_TAGS: Record<string, Record<string, string[]>> = {
-  akomodim: {
-    hotel: ["Wifi", "AC", "Mëngjesi", "Shërbim dhome", "Parking"],
-    resort: ["Pishinë", "Pamje nga deti", "Spa", "Plazh privat", "Wifi"],
-    vila: ["Pishinë", "Kopsht", "Kuzhinë", "AC", "Pamje nga mali"],
-    apartament: ["Wifi", "AC", "Kuzhinë", "Lavatriçe", "Ballkon"],
-    guesthouse: ["Mëngjesi", "Kopsht", "Mikpritje", "Parking", "Wifi"],
-    hostel: ["Wifi", "Kuzhinë e përbashkët", "Zonë sociale", "Lokacion qendror", "Çmim ekonomik"],
-    glamping: ["Natyre", "Barbecue", "Zonë jashtë", "Pamje piktoreske", "Flihet në çadër"],
-    motel: ["Parking falas", "AC", "TV", "Recepsoin 24/7", "Pranë autostradës"]
-  },
-  restorante: {
-    tradicional: ["Ushqim tradicional", "Zonë jashtë", "Rezervime", "Parking", "Muzikë live"],
-    internacional: ["Menu moderne", "Pije alkoolike", "Zonë jashtë", "Wifi", "Rezervime"],
-    "fast-food": ["Marrje me vete", "Ushqim i shpejtë", "WiFi", "Kënd lojërash", "AC"],
-    "kafe-bar": ["Kafe", "Kokteje", "Zonë jashtë", "Wifi", "Muzikë e mirë"],
-    pizzeria: ["Pica me dru", "Ushqim Italian", "Marrje me vete", "Dërgesa", "E përshtatshme për familje"],
-    taverne: ["Muzikë live", "Ushqime deti", "Zonë tradicionale", "Rezervime", "Verë shtëpie"],
-    "shisha-lounge": ["Shisha", "Kokteje", "Muzikë DJ", "Zonë VIP", "Udhëheqje nate"]
-  },
-  atraksione: {
-    natyre: ["Pamje piktoreske", "E përshtatshme për familje", "Shtigje ecjeje", "Udhërrëfyes", "Falas"],
-    historike: ["Vlerë historike", "Arkitekturë", "Udhërrëfyes", "Biletë hyrjeje", "Parking"],
-    muze: ["Ekspozitë", "Udhërrëfyes audio", "E përshtatshme për fëmijë", "Biletë hyrjeje", "AC"],
-    plazh: ["Rërë", "Shezlongë", "Pamje nga perëndimi", "Sportet e ujit", "Zonë për not"],
-    adventure: ["Sporte ekstreme", "Adrenalinë", "Udhërrëfyes profesionist", "Pajisje të sigurisë", "Tur në grup"],
-    arkeologji: ["Gërmime arkeologjike", "Histori e lashtë", "Udhërrëfyes", "Biletë hyrjeje", "Arkitekturë"],
-    kulture: ["Ngjarje kulturore", "Teatër", "Punëtori arti", "Lokale", "E përshtatshme për të gjithë"]
-  },
-  evente: {
-    koncerte: ["Muzikë live", "Biletë e nevojshme", "Skenë e hapur", "Parking", "Zonë VIP"],
-    festivale: ["Festival", "Ushqim & Pije", "Zonë jashtë", "Biletë e nevojshme", "Muzikë"],
-    panaire: ["Ekspozitë", "Falas", "Punime dore", "Zonë brenda", "Parking"],
-    dasma: ["Dekorim", "Katering", "Muzikë", "Zonë jashtë", "Fotograf"],
-    ekspozita: ["Punime arti", "Hyrje e lirë", "Zonë brenda", "Fotografi", "Pije mirëseardhjeje"],
-    teater: ["Performancë live", "Aktorë profesionistë", "Biletë e nevojshme", "Zonë e mbyllur", "Drama & Komedi"],
-    sportive: ["Gara", "Aktivitet fizik", "Pamje live", "Biletë e nevojshme", "Për të gjitha moshat"]
-  },
-  "sherbime-turistike": {
-    guida: ["Anglisht folës", "Udhërrëfyes i licencuar", "Tur privat", "Eksperiencë lokale", "Mikpritës"],
-    agjenci: ["Planifikim udhëtimi", "Bileta", "Transport i përfshirë", "Paketa turistike", "Mbështetje 24/7"],
-    ekskursione: ["Tur ditor", "Udhërrëfyes", "Piknik", "Transport", "E përshtatshme për grupe"],
-    rezervime: ["Konfirmim i shpejtë", "Asistencë", "Pa pagesë paraprake", "Fleksibël", "Mbështetje"],
-    "rent-equipment": ["Pajisje cilësore", "Sporte ujore/malore", "Dorëzim i shpejtë", "Çmim ditor", "Asistencë teknike"],
-    "foto-video": ["Fotograf profesionist", "Video me dron", "Redaktim profesional", "Portofolio e pasur", "Udhëtimes"],
-    "tours-boat": ["Tur me varkë", "Pamje nga deti", "Kapiten i licencuar", "Kolete shpëtimi", "Eksplorim shpellash"]
-  },
-  "produkte-lokale": {
-    artizanat: ["Punim dore", "Autentike", "Dhurata", "Unike", "Lokale"],
-    ushqimore: ["Organike", "Bio", "Tradicionale", "E freskët", "Pa konservantë"],
-    suvenire: ["Suvenire", "Lokale", "Dhurata", "Punim dore", "Çmime të arsyeshme"],
-    agro: ["Nga ferma", "Organike", "E freskët", "Ekologjike", "Lokale"],
-    veret: ["Degustim verash", "Vreshta", "Lokale", "Traditë familjare", "Dhurata"],
-    "punime-druri": ["Punim dore", "Druri natyral", "Dekor shtëpie", "Unike", "Porosi speciale"],
-    "kozmetike-natyrale": ["Bio", "Vegane", "Pa kimikate", "Vajra esenciale", "Punim dore"]
-  },
-  transport: {
-    aeroport: ["Transfertë aeroporti", "Shofer profesionist", "Pritje me emër", "Bagazhe", "AC"],
-    "makine-me-qira": ["Makina të reja", "Kasko e plotë", "Pa depozitë", "Kilometra pa limit", "AC"],
-    varka: ["Tur me varkë", "Pamje nga deti", "Kolete shpëtimi", "Kapiten", "Muzikë në varkë"],
-    taksi: ["Taksi e licencuar", "Shofer i shpejtë", "AC", "Çmim fiks", "Ndihmë me bagazhet"],
-    bicikleta: ["Bicikleta cilësore", "Kaskë e përfshirë", "Çmim ekonomik", "Harta turistike", "Motorë elektrikë"],
-    autobus: ["Udhëtim në grup", "Komoditet", "AC", "Linja të rregullta", "Bagazhe të mëdha"],
-    helikopter: ["Fluturim panoramik", "Adrenalinë", "Pilot i certifikuar", "Siguri maksimale", "Pamje VIP"]
-  }
-};
-
-const CUISINE_OPTIONS = [
-  "Tradicionale",
-  "Mesdhetare",
-  "Italiane",
-  "Ushqime deti",
-  "Grill / BBQ",
-  "Pizza",
-  "Fast food",
-  "Vegjetariane",
-  "Vegane",
-  "Aziatike",
-  "Turke",
-  "Greke",
-  "Ëmbëltore",
-  "Kafe & Bar"
-];
-
-const LANGUAGE_OPTIONS = [
-  "Shqip",
-  "Anglisht",
-  "Italisht",
-  "Gjermanisht",
-  "Frëngjisht",
-  "Greqisht",
-  "Spanjisht",
-  "Turqisht",
-  "Rusisht"
-];
-
-const PRICE_RANGE_OPTIONS = ["€", "€€", "€€€"];
-
-/** Activity-only pick lists. */
-const DIFFICULTY_OPTIONS = [
-  { value: "lehte", al: "Lehtë", en: "Easy" },
-  { value: "mesatare", al: "Mesatare", en: "Moderate" },
-  { value: "veshtire", al: "Vështirë", en: "Hard" }
-];
-
-const SEASON_OPTIONS = [
-  { value: "gjithe-vitin", al: "Gjithë vitin", en: "All year" },
-  { value: "pranvere", al: "Pranverë", en: "Spring" },
-  { value: "vere", al: "Verë", en: "Summer" },
-  { value: "vjeshte", al: "Vjeshtë", en: "Autumn" },
-  { value: "dimer", al: "Dimër", en: "Winter" }
-];
-
-const WHAT_TO_BRING_OPTIONS = [
-  "Këpucë sportive",
-  "Rroba të ngrohta",
-  "Ujë",
-  "Krem dielli",
-  "Kostum banje",
-  "Peshqir",
-  "Kapelë",
-  "Syze dielli",
-  "Tjetër"
-];
-
 /** All wizard copy lives here so the whole flow can be re-worded in one place. */
 const COPY = {
   al: {
     stepWord: "Hapi",
     ofWord: "nga",
     steps: [
-      { title: "Informacioni bazë", desc: "Emri, kategoria, qyteti dhe përshkrimi." },
-      { title: "Detajet e kategorisë", desc: "Fushat specifike për këtë lloj shërbimi." },
-      { title: "Kontakti", desc: "Si mund t'ju kontaktojnë turistët." },
-      { title: "Vendndodhja", desc: "Adresa e saktë dhe linku i Google Maps." },
-      { title: "Media", desc: "Fotoja kryesore që shfaqet në krye të listimit." },
-      { title: "Opsione Verified", desc: "Funksione shtesë që aktivizohen pas verifikimit." },
-      { title: "Katalogu", desc: "Menuja, produktet, dhomat ose shërbimet që ofroni — me çmime dhe foto." }
+      { title: "Profili i Biznesit", desc: "7 fushat universale: emri, përshkrimi, WhatsApp, kategoria, qyteti, harta dhe fotoja." },
+      { title: "Katalogu", desc: "8 fushat universale të çdo artikulli, të grupuara sipas kategorive." },
+      { title: "Opsione Verified", desc: "Funksione shtesë që aktivizohen pasi blihet paketa." }
     ],
-    category: "Kategoria",
+    category: "Kategoria e Homepage",
     categorySelected: "Kategoria e zgjedhur",
     changeCategory: "Ndrysho",
     selectCategory: "Zgjidhni një kategori",
@@ -286,34 +130,33 @@ const COPY = {
     enableReservations: "Mundëso Rezervim me Datë/Orë",
     enableReservationsHint: "Klientët zgjedhin datë/orë dhe kërkojnë rezervim në WhatsApp.",
     actionsRequired: "Zgjidhni të paktën një mënyrë si klientët ju kontaktojnë.",
-    title: "Emri i listimit",
+    title: "Emri i Biznesit",
     titleActivity: "Emri i aktivitetit / turit",
-    titlePlaceholder: "p.sh. Vila Panorama — Dhërmi",
+    titlePlaceholder: "p.sh. Bujtina Sophia",
     titleActivityPlaceholder: "p.sh. Tur me varkë në Ksamil",
-    titleHint: "Përdorni emrin e biznesit dhe zonën. Shmangni shkronjat e mëdha të tepërta.",
+    titleHint: "Emri publik i brandit, siç e njohin klientët.",
     city: "Qyteti",
     cityPlaceholder: "Tiranë",
     village: "Fshati / Zona",
     selectVillage: "Zgjidh fshatin (opsionale)",
-    description: "Përshkrimi",
-    descriptionPlaceholder:
-      "Përshkruani shërbimin, çfarë e bën të veçantë, çfarë përfshihet dhe pse turistët duhet t'ju zgjedhin.",
-    descriptionHint: "Minimumi 30 karaktere. Përshkrimet e detajuara marrin më shumë kontakte.",
-    cover: "Cover foto (fotoja kryesore)",
-    coverCta: "Kliko për të ngarkuar foton kryesore",
-    coverHint: "JPG ose PNG · e prisni dhe optimizohet automatikisht brenda platformës",
+    description: "Përshkrimi i Biznesit",
+    descriptionPlaceholder: "Prezantim i shkurtër i biznesit: çfarë ofroni dhe çfarë ju bën të veçantë.",
+    descriptionHint: "Në faqe shfaqet vetëm 1 rresht, me butonin «Shiko më shumë» për pjesën tjetër.",
+    cover: "Foto Profili (opsionale)",
+    coverCta: "Ngarko foto ose logo",
+    coverHint: "Foto e ambientit ose logoja. Nëse lihet bosh, shfaqet një rreth elegant me shkronjat e para të emrit.",
     coverReplace: "Ndrysho foton",
     coverCrop: "Prit foton",
     coverRemove: "Hiq",
     coverCurrent: "Fotoja aktuale",
     phone: "Telefon",
-    whatsapp: "WhatsApp",
-    whatsappHint: "Lëreni bosh nëse përdorni të njëjtin numër si telefoni.",
+    whatsapp: "Numri i WhatsApp-it",
+    whatsappHint: "Në format ndërkombëtar, p.sh. +355 69 123 4567 — këtu shkojnë porositë dhe rezervimet.",
     address: "Adresa / Vendndodhja",
     addressPlaceholder: "Rruga, numri i ndërtesës, zona",
-    maps: "Google Maps — linku i vendndodhjes",
+    maps: "Linku i Google Maps (opsionale)",
     mapsPlaceholder: "https://maps.app.goo.gl/...",
-    mapsHint: "Hapni Google Maps, gjeni vendin tuaj, shtypni «Share» → «Copy link» dhe ngjiteni këtu.",
+    mapsHint: "Kthehet në butonin «📍 Shiko vlerësimet dhe hartën». Në Google Maps: gjeni vendin tuaj → «Share» → «Copy link».",
     mapsOpen: "Hap Google Maps",
     price: "Nga çmimi",
     priceHint: "Opsionale — por listimet me çmim marrin dukshëm më shumë klikime. Çmimet janë gjithmonë në euro.",
@@ -377,7 +220,11 @@ const COPY = {
     verifiedCta: "Bëhu Verified",
     back: "Kthehu",
     next: "Vazhdo",
-    publish: "Publiko Listimin",
+    publish: "Publiko Biznesin",
+    saveAndContinue: "Ruaj dhe vazhdo te Katalogu",
+    profileSaved: "Profili u ruajt — vazhdoni me katalogun",
+    draftNote: "Profili ruhet si draft. Biznesi publikohet vetëm në hapin e fundit.",
+    publishFinalNote: "Biznesi shkon te administratori për miratim dhe shfaqet publikisht pas aprovimit.",
     publishing: "Duke publikuar...",
     publishNote: "Mund ta përditësoni profilin tuaj në çdo kohë.",
     save: "Ruaj Ndryshimet",
@@ -390,16 +237,17 @@ const COPY = {
     coverRequired: "Fotoja kryesore është e detyrueshme.",
     invalidUrl: "Linku duhet të fillojë me http:// ose https://",
     invalidEmail: "Email-i nuk është i vlefshëm.",
+    invalidWhatsapp: "Shkruajeni në format ndërkombëtar, p.sh. +355 69 123 4567.",
     fileTooLarge: "Fotoja nuk u përpunua dot. Provoni një foto tjetër.",
     galleryFull: "Mund të ngarkoni maksimumi 10 foto në galeri.",
     fixErrors: "Ju lutem plotësoni fushat e detyrueshme.",
     draftRestored: "Vazhduam aty ku e latë — të dhënat tuaja u ruajtën.",
     success: "Listimi u dërgua për miratim",
     updated: "Shërbimi u përditësua",
-    catalogLocked: "Publikoni listimin më parë — katalogu hapet menjëherë pas publikimit.",
-    catalogPublishedTitle: "Listimi u dërgua për miratim",
+    catalogLocked: "Plotësoni dhe ruani profilin më parë — hapat e tjerë hapen me radhë.",
+    catalogPublishedTitle: "Profili u ruajt si draft",
     catalogPublishedText:
-      "Tani shtoni çfarë ofroni — menunë, produktet, dhomat ose shërbimet. Artikujt ruhen menjëherë dhe shfaqen në faqen tuaj sapo listimi të aprovohet.",
+      "Tani shtoni kategoritë (p.sh. «Krepa të ëmbla») dhe poshtë tyre produktet. Çdo gjë ruhet menjëherë; biznesi publikohet në hapin e fundit.",
     catalogHint:
       "Çdo artikull ruhet menjëherë sapo e shtoni ose e ndryshoni. Vetëm ju dhe administratori mund t'i menaxhoni.",
     finish: "Përfundo — shko te paneli",
@@ -409,15 +257,11 @@ const COPY = {
     stepWord: "Step",
     ofWord: "of",
     steps: [
-      { title: "Basic information", desc: "Name, category, city and description." },
-      { title: "Category details", desc: "The fields specific to this type of service." },
-      { title: "Contact", desc: "How travellers reach you." },
-      { title: "Location", desc: "Exact address and the Google Maps link." },
-      { title: "Media", desc: "The main photo shown at the top of the listing." },
-      { title: "Verified options", desc: "Extra features unlocked after verification." },
-      { title: "Catalog", desc: "The menu, products, rooms or services you offer — with prices and photos." }
+      { title: "Business profile", desc: "The 7 universal fields: name, description, WhatsApp, category, city, map and photo." },
+      { title: "Catalog", desc: "The 8 universal fields of every item, grouped by category." },
+      { title: "Verified options", desc: "Extra features unlocked once a package is bought." }
     ],
-    category: "Category",
+    category: "Homepage category",
     categorySelected: "Selected category",
     changeCategory: "Change",
     selectCategory: "Select a category",
@@ -432,34 +276,33 @@ const COPY = {
     enableReservations: "Enable Date/Time Reservations",
     enableReservationsHint: "Customers pick a date/time and request a booking on WhatsApp.",
     actionsRequired: "Pick at least one way for customers to reach you.",
-    title: "Listing name",
+    title: "Business name",
     titleActivity: "Activity / tour name",
-    titlePlaceholder: "e.g. Villa Panorama — Dhermi",
+    titlePlaceholder: "e.g. Bujtina Sophia",
     titleActivityPlaceholder: "e.g. Boat tour in Ksamil",
-    titleHint: "Use your business name and the area. Avoid ALL CAPS.",
+    titleHint: "The public brand name, as customers know it.",
     city: "City",
     cityPlaceholder: "Tirana",
     village: "Village / Area",
     selectVillage: "Select village (optional)",
-    description: "Description",
-    descriptionPlaceholder:
-      "Describe the service, what makes it special, what is included and why travellers should choose you.",
-    descriptionHint: "Minimum 30 characters. Detailed descriptions get more contacts.",
-    cover: "Cover photo",
-    coverCta: "Click to upload the main photo",
-    coverHint: "JPG or PNG · you crop it and it is optimised inside the platform",
+    description: "Business description",
+    descriptionPlaceholder: "A short introduction: what you offer and what makes you special.",
+    descriptionHint: "On the page only one line shows, with a “See more” button for the rest.",
+    cover: "Profile photo (optional)",
+    coverCta: "Upload a photo or logo",
+    coverHint: "A photo of the place or your logo. If left empty, an elegant circle with the name's initials is shown.",
     coverReplace: "Replace photo",
     coverCrop: "Crop photo",
     coverRemove: "Remove",
     coverCurrent: "Current photo",
     phone: "Phone",
-    whatsapp: "WhatsApp",
-    whatsappHint: "Leave empty if it is the same as the phone number.",
+    whatsapp: "WhatsApp number",
+    whatsappHint: "In international format, e.g. +355 69 123 4567 — orders and bookings are sent here.",
     address: "Address / Location",
     addressPlaceholder: "Street, building number, area",
-    maps: "Google Maps — location link",
+    maps: "Google Maps link (optional)",
     mapsPlaceholder: "https://maps.app.goo.gl/...",
-    mapsHint: "Open Google Maps, find your place, tap “Share” → “Copy link” and paste it here.",
+    mapsHint: "Becomes the “📍 See reviews and the map” button. In Google Maps: find your place → “Share” → “Copy link”.",
     mapsOpen: "Open Google Maps",
     price: "From price",
     priceHint: "Optional — but listings with a price get noticeably more clicks. Prices are always in euro.",
@@ -523,7 +366,11 @@ const COPY = {
     verifiedCta: "Get Verified",
     back: "Back",
     next: "Continue",
-    publish: "Publish listing",
+    publish: "Publish business",
+    saveAndContinue: "Save and continue to the catalog",
+    profileSaved: "Profile saved — continue with the catalog",
+    draftNote: "The profile is saved as a draft. The business is published only on the last step.",
+    publishFinalNote: "The business goes to an admin for approval and goes live once approved.",
     publishing: "Publishing...",
     publishNote: "You can update your profile at any time.",
     save: "Save changes",
@@ -536,16 +383,17 @@ const COPY = {
     coverRequired: "The cover photo is required.",
     invalidUrl: "The link must start with http:// or https://",
     invalidEmail: "This email address is not valid.",
+    invalidWhatsapp: "Use the international format, e.g. +355 69 123 4567.",
     fileTooLarge: "The photo could not be processed. Try another one.",
     galleryFull: "You can upload a maximum of 10 gallery photos.",
     fixErrors: "Please complete the required fields.",
     draftRestored: "Picked up where you left off — your details were kept.",
     success: "Listing submitted for approval",
     updated: "Listing updated",
-    catalogLocked: "Publish the listing first — the catalog opens right after publishing.",
-    catalogPublishedTitle: "Listing submitted for approval",
+    catalogLocked: "Fill in and save the profile first — the other steps open in order.",
+    catalogPublishedTitle: "Profile saved as a draft",
     catalogPublishedText:
-      "Now add what you offer — the menu, products, rooms or services. Items save instantly and appear on your page as soon as the listing is approved.",
+      "Now add your categories (e.g. “Sweet crêpes”) and the products under them. Everything saves instantly; the business is published on the last step.",
     catalogHint:
       "Every item saves instantly as you add or change it. Only you and the administrator can manage them.",
     finish: "Finish — go to dashboard",
@@ -555,11 +403,17 @@ const COPY = {
 
 const MAX_COVER_SIZE = 5 * 1024 * 1024;
 const MAX_GALLERY = 10;
-const MIN_DESCRIPTION = 30;
-const STEP_ICONS = [FileText, SlidersHorizontal, Phone, MapPin, Camera, Lock, ShoppingBag];
-/** Steps that edit the listing's own fields — the catalog step after them saves per item. */
-const FORM_STEPS = 6;
-const TOTAL_STEPS = 7;
+const STEP_ICONS = [FileText, ShoppingBag, Lock];
+/** Create mode saves the listing as a draft at the end of this step — the catalog step right after it needs a real listing id. Publishing happens on the last step. */
+const FORM_STEPS = 1;
+const CATALOG_STEP = 2;
+const VERIFIED_STEP = 3;
+const TOTAL_STEPS = 3;
+
+/** "+355 69 123 4567" or "00355..." — a country code is required, a local "069..." is not enough. */
+function isInternationalNumber(value: string) {
+  return /^(\+|00)?[1-9]\d{7,14}$/.test(value.replace(/[\s().-]/g, ""));
+}
 
 const emptyForm = {
   title: "",
@@ -621,7 +475,7 @@ function initialForm(listing?: WizardListing): FormState {
     village: "",
     description: listing.description || "",
     contactPhone: listing.contactInfo?.phone || "",
-    whatsapp: listing.whatsapp || "",
+    whatsapp: listing.whatsapp || listing.contactInfo?.phone || "",
     contactEmail: listing.contactInfo?.email || "",
     address: listing.address || "",
     googleMapsLink: listing.googleMapsLink || "",
@@ -671,7 +525,7 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
 
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
-  // Create mode: the listing published at the end of step 6, so the catalog step can
+  // Create mode: the listing saved as a draft at the end of step 1, so the catalog step can
   // add items against a real listing id. Once set, the field steps lock — further
   // changes go through the edit page.
   const [createdListing, setCreatedListing] = useState<WizardListing | null>(null);
@@ -705,7 +559,6 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
   const [cuisines, setCuisines] = useState<string[]>(listing?.cuisines || []);
   const [spokenLanguages, setSpokenLanguages] = useState<string[]>(listing?.languages || []);
   const [whatToBring, setWhatToBring] = useState<string[]>(listing?.whatToBring || []);
-  const [customTag, setCustomTag] = useState("");
   // Edit mode keeps the saved tags; create mode seeds them from the category.
   const [tagsTouched, setTagsTouched] = useState(isEdit);
 
@@ -722,8 +575,6 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
   // The freshly picked file waiting to be cropped, and the cropped result inlined in the draft.
   const [cropSource, setCropSource] = useState<File | null>(null);
   const [coverDataUrl, setCoverDataUrl] = useState("");
-  // Dimensions of the photo exactly as it will be uploaded.
-  const [coverSize, setCoverSize] = useState({ width: 0, height: 0 });
 
   const [galleryUrls, setGalleryUrls] = useState<string[]>(() =>
     listing ? (listing.photos?.length ? listing.photos : existingImages.slice(1)) : []
@@ -732,7 +583,6 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
   const galleryInputRef = useRef<HTMLInputElement>(null);
 
   const [cities, setCities] = useState<any[]>(albaniaCities);
-  const [villages, setVillages] = useState<string[]>([]);
   const topRef = useRef<HTMLDivElement>(null);
 
   // A category passed through the URL (?category=...) locks the choice for the whole flow.
@@ -765,13 +615,6 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
     };
     loadCities();
   }, []);
-
-  useEffect(() => {
-    const found = cities.find((item) => String(item.label).toLowerCase() === form.location.toLowerCase());
-    const nextVillages: string[] = found?.villages || [];
-    setVillages(nextVillages);
-    setForm((prev) => (nextVillages.includes(prev.village) ? prev : { ...prev, village: "" }));
-  }, [form.location, cities]);
 
   useEffect(() => {
     if (!coverFile) {
@@ -899,26 +742,10 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
     [selectedCategory]
   );
 
-  const subcategories = categoryDef?.subcategories || [];
-  const isActivity = selectedCategory === "turizem";
-
   const categoryLabel =
     (selectedCategory && t.categories.names[selectedCategory as keyof typeof t.categories.names]) ||
     categoryDef?.label ||
     "";
-
-  const subcategoryLabel = (value: string) => {
-    const names = (t.categories.subnames as Record<string, Record<string, string>>)[selectedCategory];
-    return names?.[value] || subcategories.find((item) => item.value === value)?.label || value;
-  };
-
-  // "Nënkategoria" reads oddly for some categories — vehicles pick a type, events a category.
-  const subcategoryFieldLabel =
-    selectedCategory === "auto"
-      ? c.subcategoryType
-      : selectedCategory === "evente" || selectedCategory === "supermarkete"
-        ? c.subcategoryCategory
-        : c.subcategory;
 
   // The link label follows what the business actually takes: a table, a ticket, an
   // order, or a plain appointment.
@@ -930,37 +757,6 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
         : !getCategoryActions(selectedCategory).includes("rezervim")
           ? c.bookShop
           : c.bookNow;
-
-  const titleFieldLabel = isActivity ? c.titleActivity : c.title;
-  const titleFieldPlaceholder = isActivity ? c.titleActivityPlaceholder : c.titlePlaceholder;
-
-  const suggestedTags = useMemo(() => {
-    if (!selectedCategory) return [] as string[];
-    if (selectedSubcategory && SUBCATEGORY_DEFAULT_TAGS[selectedCategory]?.[selectedSubcategory]) {
-      return SUBCATEGORY_DEFAULT_TAGS[selectedCategory][selectedSubcategory];
-    }
-    return categoryDef?.tags || [];
-  }, [selectedCategory, selectedSubcategory, categoryDef]);
-
-  // Pre-select the five most relevant features until the user edits the selection.
-  useEffect(() => {
-    if (tagsTouched) return;
-    if (!selectedCategory) {
-      setActiveTags([]);
-      return;
-    }
-    if (selectedCategory === "turizem") {
-      setActiveTags([]);
-      return;
-    }
-    if (selectedSubcategory && SUBCATEGORY_DEFAULT_TAGS[selectedCategory]?.[selectedSubcategory]) {
-      setActiveTags(SUBCATEGORY_DEFAULT_TAGS[selectedCategory][selectedSubcategory].slice(0, 5));
-    } else if (CATEGORY_DEFAULT_TAGS[selectedCategory]) {
-      setActiveTags(CATEGORY_DEFAULT_TAGS[selectedCategory].slice(0, 5));
-    } else {
-      setActiveTags((categories.find((item) => item.value === selectedCategory)?.tags || []).slice(0, 5));
-    }
-  }, [selectedCategory, selectedSubcategory, tagsTouched]);
 
   // Re-derive the order/reservation toggles from the taxonomy default whenever the
   // category or subcategory changes, unless the owner has already flipped one by hand.
@@ -976,43 +772,12 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
     setAllowReservations(defaults.includes("rezervim"));
   }, [selectedCategory, selectedSubcategory, actionsTouched]);
 
-  // Events and tourism entries are often published by people without a public phone number.
-  const phoneRequired = selectedCategory !== "evente" && selectedCategory !== "turizem";
-  const showCheckTimes = selectedCategory === "hotele";
-  const showBusinessHours = selectedCategory !== "hotele" && selectedCategory !== "evente";
-  const showEventFields = selectedCategory === "evente";
-  // The price-range chip on the Overview tab isn't food-only (BusinessPage shows it for
-  // any category that sets one), so every business can pick a budget tier.
-  const showPriceRange = Boolean(selectedCategory);
-  const showCuisines = selectedCategory === "ushqim-pije";
-  const showDuration = selectedCategory === "turizem";
-  const showLanguages = selectedCategory === "turizem";
   const showMenuLink = selectedCategory === "ushqim-pije";
   const galleryTotal = galleryUrls.length + newPhotos.length;
 
   const update = (key: FormKey, value: string) => {
     setForm((prev) => ({ ...prev, [key]: value }));
     setErrors((prev) => (prev[key] ? { ...prev, [key]: "" } : prev));
-  };
-
-  const toggleTag = (tag: string) => {
-    setTagsTouched(true);
-    setActiveTags((prev) => (prev.includes(tag) ? prev.filter((item) => item !== tag) : [...prev, tag]));
-  };
-
-  // Mobile keyboards have no Enter on this field, so the "+" button is the primary way in.
-  const commitCustomTag = () => {
-    const value = customTag.trim();
-    if (!value) return;
-    setTagsTouched(true);
-    if (!activeTags.includes(value)) setActiveTags((prev) => [...prev, value]);
-    setCustomTag("");
-  };
-
-  const addCustomTag = (event: React.KeyboardEvent) => {
-    if (event.key !== "Enter") return;
-    event.preventDefault();
-    commitCustomTag();
   };
 
   // Any picked photo goes through the in-app cropper, so an oversized camera shot is
@@ -1067,45 +832,21 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
   function validateStep(target: number) {
     const next: Record<string, string> = {};
 
+    // The universal profile: name, description, WhatsApp, category and city are
+    // required; the Google Maps link and the photo are optional.
     if (target === 1) {
-      if (!selectedCategory) next.category = c.required;
-      if (!selectedSubcategory) next.subcategory = c.required;
-      if (!allowOrders && !allowReservations) next.actions = c.actionsRequired;
       if (!form.title.trim()) next.title = c.required;
+      if (!form.description.trim()) next.description = c.required;
+      if (!form.whatsapp.trim()) next.whatsapp = c.required;
+      else if (!isInternationalNumber(form.whatsapp)) next.whatsapp = c.invalidWhatsapp;
+      if (!selectedCategory) next.category = c.required;
       if (!form.location.trim()) next.location = c.required;
-      if (form.description.trim().length < MIN_DESCRIPTION) next.description = c.descriptionShort;
-    }
-
-    if (target === 2) {
-      if (showEventFields) {
-        if (!form.eventDate) next.eventDate = c.required;
-        if (!form.eventTime) next.eventTime = c.required;
-      }
-      if (selectedCategory === "auto" && !form.transportType.trim()) {
-        next.transportType = c.required;
-      }
-    }
-
-    if (target === 3) {
-      if (phoneRequired && !form.contactPhone.trim()) next.contactPhone = c.required;
-      if (isActivity && !form.whatsapp.trim()) next.whatsapp = c.required;
-      if (form.contactEmail.trim() && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(form.contactEmail.trim())) {
-        next.contactEmail = c.invalidEmail;
-      }
-    }
-
-    if (target === 4) {
-      if (!form.address.trim()) next.address = c.required;
       if (form.googleMapsLink.trim() && !/^https?:\/\//i.test(form.googleMapsLink.trim())) {
         next.googleMapsLink = c.invalidUrl;
       }
     }
 
-    if (target === 5 && !coverFile && !coverUrl) {
-      next.cover = c.coverRequired;
-    }
-
-    if (target === 6 && verifiedUnlocked) {
+    if (target === VERIFIED_STEP && verifiedUnlocked) {
       (["website", "bookingLink", "menuLink", "instagram", "facebook", "tiktok", "youtube"] as const).forEach((key) => {
         if (form[key].trim() && !/^https?:\/\//i.test(form[key].trim())) next[key] = c.invalidUrl;
       });
@@ -1123,9 +864,9 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
     if (target === step) return;
     if (!isEdit) {
       if (createdListing) {
-        // Published: the field steps are frozen — only the catalog step stays live.
-        if (target < TOTAL_STEPS) return;
-      } else if (target >= TOTAL_STEPS) {
+        // Published: the profile step is frozen — the catalog and what follows stay live.
+        if (target < CATALOG_STEP) return;
+      } else if (target > FORM_STEPS) {
         // The catalog needs a real listing id, so it only opens after publishing.
         toast(c.catalogLocked);
         return;
@@ -1147,14 +888,33 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
     scrollToTop();
   };
 
+  /** Create mode, last step: hands the draft (profile + catalog) over for approval. */
+  async function publishDraft() {
+    if (!createdListing || loading) return;
+    setLoading(true);
+    try {
+      const response = await fetch(`/api/listings/${createdListing._id}/publish`, { method: "POST" });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || "Something went wrong");
+      toast.success(c.success);
+      router.push(createdListing.slug ? `/listings/${createdListing.slug}` : "/dashboard");
+      router.refresh();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Something went wrong");
+    } finally {
+      setLoading(false);
+    }
+  }
+
   async function submit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (loading) return;
 
-    // Create mode after publishing: the catalog items already saved themselves, so
-    // the last step's primary action simply closes the flow.
+    // Create mode once the draft exists: the catalog items save themselves, so the
+    // steps in between only move forward — the last one publishes.
     if (!isEdit && createdListing) {
-      router.push("/dashboard");
+      if (step < TOTAL_STEPS) goToStep(step + 1);
+      else await publishDraft();
       return;
     }
 
@@ -1167,7 +927,7 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
       return;
     }
 
-    for (let current = 1; current <= FORM_STEPS; current += 1) {
+    for (let current = 1; current <= submitStep; current += 1) {
       if (!validateStep(current)) {
         setStep(current);
         toast.error(c.fixErrors);
@@ -1194,12 +954,16 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
         description: form.description.trim(),
         category: selectedCategory,
         subcategory: selectedSubcategory,
-        actions: [...(allowOrders ? ["porosi"] : []), ...(allowReservations ? ["rezervim"] : [])],
+        // Each catalog item says whether it is ordered or booked, so a business offering
+        // both gets both buttons on its own. Only a saved manual override is kept.
+        actions: actionsTouched
+          ? [...(allowOrders ? ["porosi"] : []), ...(allowReservations ? ["rezervim"] : [])]
+          : [],
         location: form.location.trim(),
         village: form.village,
         country: listing?.country || "Albania",
         address: form.address.trim(),
-        contactPhone: form.contactPhone.trim(),
+        contactPhone: form.contactPhone.trim() || form.whatsapp.trim(),
         contactEmail: form.contactEmail.trim(),
         whatsapp: form.whatsapp.trim(),
         googleMapsLink: form.googleMapsLink.trim(),
@@ -1238,10 +1002,14 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
         youtube: form.youtube.trim(),
         bannerImage: bannerUrl,
         photos: gallery,
-        images: [bannerUrl, ...gallery],
+        images: [bannerUrl, ...gallery].filter(Boolean),
         tags: activeTags,
         amenities: activeTags
       };
+
+      // Create mode: saved now so the catalog has a listing to attach to, published
+      // only on the last step.
+      if (!isEdit) payload.draft = true;
 
       if (isEdit && listing) {
         // Fields the wizard does not expose must be echoed back or PATCH clears them.
@@ -1264,12 +1032,12 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
         toast.success(c.updated);
         router.push(`/listings/${data.listing?.slug || listing!.slug || ""}`);
       } else {
-        toast.success(c.success);
-        // Straight into the catalog step (menu/rooms/products/services) as the
-        // natural last step of "adding a business" — the dashboard comes after.
+        toast.success(c.profileSaved);
+        // Straight into the catalog step (categories, then the items under them) as
+        // the natural last step of "adding a business" — the dashboard comes after.
         if (data.listing?._id) {
           setCreatedListing(data.listing);
-          setStep(TOTAL_STEPS);
+          setStep(CATALOG_STEP);
           scrollToTop();
         } else {
           router.push("/dashboard");
@@ -1291,6 +1059,9 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
   // the one just published by this very flow.
   const catalogListing = isEdit ? listing ?? null : createdListing;
 
+  const stepperTotal = TOTAL_STEPS;
+  const stepperSteps = c.steps;
+
   return (
     <form onSubmit={submit} className="space-y-4 sm:space-y-6">
       <div ref={topRef} className="scroll-mt-28" />
@@ -1300,23 +1071,38 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
         className="rounded-2xl border bg-white p-4 sm:p-5"
         style={{ borderColor: "var(--border-soft)", boxShadow: "var(--shadow-card)" }}
       >
-        <div className="mb-3 flex items-center justify-between sm:hidden">
-          <p className="text-sm font-semibold" style={{ color: "var(--text-primary)" }}>
-            {c.steps[step - 1].title}
-          </p>
-          <span className="text-xs font-semibold" style={{ color: "var(--brand-accent)" }}>
-            {c.stepWord} {step} {c.ofWord} {TOTAL_STEPS}
+        {/* Compact bar — every screen too narrow to fit all the steps with a readable
+            label (phones through small/medium laptops) gets this instead of bare,
+            unlabeled icons; the rich labeled row below only takes over once there is
+            room for it. One breakpoint, no in-between range stuck with neither. */}
+        <div className="flex items-center justify-between gap-3 xl:hidden">
+          <div className="flex min-w-0 items-center gap-2.5">
+            <span
+              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full"
+              style={{ background: "var(--brand-light)", color: "var(--brand-accent)" }}
+            >
+              {(() => {
+                const Icon = STEP_ICONS[step - 1];
+                return <Icon className="h-4 w-4" />;
+              })()}
+            </span>
+            <p className="truncate text-sm font-semibold sm:text-base" style={{ color: "var(--text-primary)" }}>
+              {c.steps[step - 1].title}
+            </p>
+          </div>
+          <span className="shrink-0 text-xs font-semibold sm:text-sm" style={{ color: "var(--brand-accent)" }}>
+            {c.stepWord} {step} {c.ofWord} {stepperTotal}
           </span>
         </div>
-        <div className="h-1.5 w-full overflow-hidden rounded-full sm:hidden" style={{ background: "var(--surface-subtle)" }}>
+        <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full xl:hidden" style={{ background: "var(--surface-subtle)" }}>
           <div
             className="h-full rounded-full transition-all duration-500"
-            style={{ width: `${(step / TOTAL_STEPS) * 100}%`, background: "var(--brand-accent)" }}
+            style={{ width: `${(step / stepperTotal) * 100}%`, background: "var(--brand-accent)" }}
           />
         </div>
 
-        <ol className="hidden sm:flex sm:items-center">
-          {c.steps.map((item, index) => {
+        <ol className="hidden xl:flex xl:items-center">
+          {stepperSteps.map((item, index) => {
             const number = index + 1;
             const Icon = STEP_ICONS[index];
             const done = number < step;
@@ -1339,7 +1125,7 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
                   >
                     {done ? <Check className="h-4 w-4" /> : <Icon className="h-4 w-4" />}
                   </span>
-                  <span className="hidden xl:block">
+                  <span className="block">
                     <span
                       className="block text-[10px] font-semibold uppercase tracking-wider"
                       style={{ color: active ? "var(--brand-accent)" : "var(--text-tertiary)" }}
@@ -1354,7 +1140,7 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
                     </span>
                   </span>
                 </button>
-                {number < TOTAL_STEPS && (
+                {number < stepperTotal && (
                   <span
                     className="mx-2 h-px flex-1 transition-colors duration-300"
                     style={{ background: done ? "var(--brand-accent)" : "var(--border-soft)" }}
@@ -1373,7 +1159,7 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
       >
         <div className="border-b px-5 py-4 sm:px-7 sm:py-5" style={{ borderColor: "var(--border-soft)" }}>
           <p className="eyebrow mb-2">
-            {c.stepWord} {step} {c.ofWord} {TOTAL_STEPS}
+            {c.stepWord} {step} {c.ofWord} {stepperTotal}
           </p>
           <h3 className="text-lg font-bold sm:text-xl" style={{ color: "var(--text-primary)" }}>
             {c.steps[step - 1].title}
@@ -1384,9 +1170,65 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
         </div>
 
         <div className="space-y-5 px-5 py-6 sm:px-7">
-          {/* ===================== 1 · INFORMACIONI BAZË ===================== */}
+          {/* ===================== 1 · PROFILI I BIZNESIT — 7 fushat universale ===================== */}
           {step === 1 && (
             <>
+              {/* 1 · Emri i Biznesit */}
+              <div>
+                <Input
+                  name="title"
+                  label={`${c.title} *`}
+                  className={inputClass}
+                  placeholder={c.titlePlaceholder}
+                  value={form.title}
+                  onChange={(event) => update("title", event.target.value)}
+                  error={errors.title}
+                  maxLength={90}
+                />
+                {!errors.title && (
+                  <p className="mt-1 text-xs" style={{ color: "var(--text-tertiary)" }}>
+                    {c.titleHint}
+                  </p>
+                )}
+              </div>
+
+              {/* 2 · Përshkrimi i Biznesit */}
+              <div>
+                <Textarea
+                  name="description"
+                  label={`${c.description} *`}
+                  className="rounded-xl text-base sm:text-sm"
+                  placeholder={c.descriptionPlaceholder}
+                  value={form.description}
+                  onChange={(event) => update("description", event.target.value)}
+                  error={errors.description}
+                />
+                <p className="mt-1 text-xs" style={{ color: "var(--text-tertiary)" }}>
+                  {c.descriptionHint}
+                </p>
+              </div>
+
+              {/* 3 · Numri i WhatsApp-it */}
+              <div>
+                <Input
+                  name="whatsapp"
+                  label={`${c.whatsapp} *`}
+                  className={inputClass}
+                  placeholder="+355 69 123 4567"
+                  inputMode="tel"
+                  autoComplete="tel"
+                  value={form.whatsapp}
+                  onChange={(event) => update("whatsapp", event.target.value)}
+                  error={errors.whatsapp}
+                />
+                {!errors.whatsapp && (
+                  <p className="mt-1 text-xs" style={{ color: "var(--text-tertiary)" }}>
+                    {c.whatsappHint}
+                  </p>
+                )}
+              </div>
+
+              {/* 4 · Kategoria e Homepage */}
               {categoryLocked ? (
                 <div
                   className="flex items-center justify-between gap-3 rounded-xl border px-4 py-3"
@@ -1401,7 +1243,7 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
                     </span>
                     <span className="min-w-0">
                       <span className="block text-[11px] font-semibold uppercase tracking-wider" style={{ color: "var(--brand-accent)" }}>
-                        {c.categorySelected}
+                        {c.category}
                       </span>
                       <span className="block truncate text-sm font-bold" style={{ color: "var(--text-primary)" }}>
                         {categoryLabel}
@@ -1433,7 +1275,6 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
                     onChange={(event) => {
                       setSelectedCategory(event.target.value);
                       setSelectedSubcategory("");
-                      setTagsTouched(false);
                       setActionsTouched(false);
                       setErrors((prev) => ({ ...prev, category: "" }));
                     }}
@@ -1442,112 +1283,8 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
                 </div>
               )}
 
+              {/* 5 · Qyteti */}
               <div>
-                <Select
-                  name="subcategory"
-                  label={`${subcategoryFieldLabel} *`}
-                  className={inputClass}
-                  disabled={!selectedCategory}
-                  options={[
-                    { label: c.selectSubcategory, value: "" },
-                    ...subcategories.map((item) => ({ label: subcategoryLabel(item.value), value: item.value }))
-                  ]}
-                  value={selectedSubcategory}
-                  onChange={(event) => {
-                    setSelectedSubcategory(event.target.value);
-                    setErrors((prev) => ({ ...prev, subcategory: "" }));
-                  }}
-                />
-                {errors.subcategory && <p className="mt-1 text-xs text-rose-600">{errors.subcategory}</p>}
-              </div>
-
-              {selectedCategory && (
-                <div
-                  className="space-y-3 rounded-2xl border p-4"
-                  style={{ borderColor: "var(--border-soft)", background: "var(--surface-cream)" }}
-                >
-                  <div>
-                    <p className="text-sm font-bold" style={{ color: "var(--text-primary)" }}>
-                      {c.actionsTitle}
-                    </p>
-                    <p className="mt-0.5 text-xs" style={{ color: "var(--text-tertiary)" }}>
-                      {c.actionsHint}
-                    </p>
-                  </div>
-
-                  <label
-                    className="flex cursor-pointer items-start gap-3 rounded-xl border p-3"
-                    style={{ borderColor: "var(--border-soft)", background: "var(--surface-white)" }}
-                  >
-                    <input
-                      type="checkbox"
-                      className="mt-0.5 h-4 w-4 shrink-0 rounded"
-                      style={{ accentColor: "var(--brand-accent)" }}
-                      checked={allowOrders}
-                      onChange={(event) => {
-                        setActionsTouched(true);
-                        setAllowOrders(event.target.checked);
-                        setErrors((prev) => ({ ...prev, actions: "" }));
-                      }}
-                    />
-                    <span>
-                      <span className="block text-sm font-semibold" style={{ color: "var(--text-primary)" }}>
-                        🛒 {c.enableOrders}
-                      </span>
-                      <span className="block text-xs" style={{ color: "var(--text-tertiary)" }}>
-                        {c.enableOrdersHint}
-                      </span>
-                    </span>
-                  </label>
-
-                  <label
-                    className="flex cursor-pointer items-start gap-3 rounded-xl border p-3"
-                    style={{ borderColor: "var(--border-soft)", background: "var(--surface-white)" }}
-                  >
-                    <input
-                      type="checkbox"
-                      className="mt-0.5 h-4 w-4 shrink-0 rounded"
-                      style={{ accentColor: "var(--brand-accent)" }}
-                      checked={allowReservations}
-                      onChange={(event) => {
-                        setActionsTouched(true);
-                        setAllowReservations(event.target.checked);
-                        setErrors((prev) => ({ ...prev, actions: "" }));
-                      }}
-                    />
-                    <span>
-                      <span className="block text-sm font-semibold" style={{ color: "var(--text-primary)" }}>
-                        📅 {c.enableReservations}
-                      </span>
-                      <span className="block text-xs" style={{ color: "var(--text-tertiary)" }}>
-                        {c.enableReservationsHint}
-                      </span>
-                    </span>
-                  </label>
-
-                  {errors.actions && <p className="text-xs text-rose-600">{errors.actions}</p>}
-                </div>
-              )}
-
-              <div>
-                <Input
-                  name="title"
-                  label={`${titleFieldLabel} *`}
-                  className={inputClass}
-                  placeholder={titleFieldPlaceholder}
-                  value={form.title}
-                  onChange={(event) => update("title", event.target.value)}
-                  error={errors.title}
-                  maxLength={90}
-                />
-                {!errors.title && (
-                  <p className="mt-1 text-xs" style={{ color: "var(--text-tertiary)" }}>
-                    {c.titleHint}
-                  </p>
-                )}
-              </div>
-
-              <div className="grid gap-4 sm:grid-cols-2">
                 <Input
                   name="location"
                   label={`${c.city} *`}
@@ -1559,468 +1296,14 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
                   error={errors.location}
                   autoComplete="off"
                 />
-                {villages.length > 0 ? (
-                  <Select
-                    name="village"
-                    label={c.village}
-                    className={inputClass}
-                    options={[
-                      { label: c.selectVillage, value: "" },
-                      ...villages.map((item) => ({ label: item, value: item }))
-                    ]}
-                    value={form.village}
-                    onChange={(event) => update("village", event.target.value)}
-                  />
-                ) : (
-                  <div className="hidden sm:block" />
-                )}
+                <datalist id="city-list">
+                  {cities.map((item) => (
+                    <option key={item.value} value={item.label} />
+                  ))}
+                </datalist>
               </div>
 
-              <datalist id="city-list">
-                {cities.map((item) => (
-                  <option key={item.value} value={item.label} />
-                ))}
-              </datalist>
-
-              <div>
-                <Textarea
-                  name="description"
-                  label={`${c.description} *`}
-                  className="rounded-xl text-base sm:text-sm"
-                  placeholder={c.descriptionPlaceholder}
-                  value={form.description}
-                  onChange={(event) => update("description", event.target.value)}
-                  error={errors.description}
-                />
-                <div className="mt-1 flex items-center justify-between gap-3">
-                  <p className="text-xs" style={{ color: "var(--text-tertiary)" }}>
-                    {c.descriptionHint}
-                  </p>
-                  <span
-                    className="shrink-0 text-xs font-semibold"
-                    style={{
-                      color:
-                        form.description.trim().length >= MIN_DESCRIPTION
-                          ? "var(--brand-accent)"
-                          : "var(--text-tertiary)"
-                    }}
-                  >
-                    {form.description.trim().length}/{MIN_DESCRIPTION}
-                  </span>
-                </div>
-              </div>
-            </>
-          )}
-
-          {/* ===================== 2 · DETAJET E KATEGORISË ===================== */}
-          {step === 2 && (
-            <>
-              {showEventFields && (
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <Input
-                    name="eventDate"
-                    type="date"
-                    label={`${c.eventDate} *`}
-                    className={inputClass}
-                    value={form.eventDate}
-                    onChange={(event) => update("eventDate", event.target.value)}
-                    error={errors.eventDate}
-                  />
-                  <Input
-                    name="eventTime"
-                    type="time"
-                    label={`${c.eventTime} *`}
-                    className={inputClass}
-                    value={form.eventTime}
-                    onChange={(event) => update("eventTime", event.target.value)}
-                    error={errors.eventTime}
-                  />
-                </div>
-              )}
-
-              {selectedCategory === "auto" && (
-                <Input
-                  name="transportType"
-                  label={`${c.transportType} *`}
-                  className={inputClass}
-                  placeholder={c.transportPlaceholder}
-                  value={form.transportType}
-                  onChange={(event) => update("transportType", event.target.value)}
-                  error={errors.transportType}
-                />
-              )}
-
-              {showBusinessHours && (
-                <div className="space-y-2">
-                  <span className="flex items-center gap-2 text-sm font-semibold" style={{ color: "var(--text-primary)" }}>
-                    <Clock className="h-4 w-4" style={{ color: "var(--brand-accent)" }} />
-                    {c.businessHours}
-                  </span>
-                  <div className="grid gap-4 sm:grid-cols-2">
-                    <Input
-                      name="businessOpen"
-                      type="time"
-                      label={c.businessOpen}
-                      className={inputClass}
-                      value={form.businessOpen}
-                      onChange={(event) => update("businessOpen", event.target.value)}
-                    />
-                    <Input
-                      name="businessClose"
-                      type="time"
-                      label={c.businessClose}
-                      className={inputClass}
-                      value={form.businessClose}
-                      onChange={(event) => update("businessClose", event.target.value)}
-                    />
-                  </div>
-                </div>
-              )}
-
-              {showCheckTimes && (
-                <div className="space-y-2">
-                  <span className="flex items-center gap-2 text-sm font-semibold" style={{ color: "var(--text-primary)" }}>
-                    <Clock className="h-4 w-4" style={{ color: "var(--brand-accent)" }} />
-                    {c.checkTimes}
-                  </span>
-                  <div className="grid gap-4 sm:grid-cols-2">
-                    <Input
-                      name="checkIn"
-                      type="time"
-                      label={c.checkIn}
-                      className={inputClass}
-                      value={form.checkIn}
-                      onChange={(event) => update("checkIn", event.target.value)}
-                    />
-                    <Input
-                      name="checkOut"
-                      type="time"
-                      label={c.checkOut}
-                      className={inputClass}
-                      value={form.checkOut}
-                      onChange={(event) => update("checkOut", event.target.value)}
-                    />
-                  </div>
-                </div>
-              )}
-
-              {showDuration && (
-                <Input
-                  name="duration"
-                  label={selectedCategory === "turizem" ? c.durationVisit : c.duration}
-                  className={inputClass}
-                  placeholder={c.durationPlaceholder}
-                  value={form.duration}
-                  onChange={(event) => update("duration", event.target.value)}
-                />
-              )}
-
-              {isActivity && (
-                <>
-                  <div className="grid gap-4 sm:grid-cols-2">
-                    <Select
-                      name="difficulty"
-                      label={c.difficulty}
-                      className={inputClass}
-                      options={[
-                        { label: c.selectDifficulty, value: "" },
-                        ...DIFFICULTY_OPTIONS.map((item) => ({ label: item[language], value: item.value }))
-                      ]}
-                      value={form.difficulty}
-                      onChange={(event) => update("difficulty", event.target.value)}
-                    />
-                    <Select
-                      name="season"
-                      label={c.season}
-                      className={inputClass}
-                      options={[
-                        { label: c.selectSeason, value: "" },
-                        ...SEASON_OPTIONS.map((item) => ({ label: item[language], value: item.value }))
-                      ]}
-                      value={form.season}
-                      onChange={(event) => update("season", event.target.value)}
-                    />
-                  </div>
-
-                  <div className="grid gap-4 sm:grid-cols-2">
-                    <Input
-                      name="maxParticipants"
-                      type="number"
-                      min={1}
-                      label={c.maxParticipants}
-                      className={inputClass}
-                      placeholder="12"
-                      value={form.maxParticipants}
-                      onChange={(event) => update("maxParticipants", event.target.value)}
-                    />
-                    <Input
-                      name="minAge"
-                      type="number"
-                      min={0}
-                      label={c.minAge}
-                      className={inputClass}
-                      placeholder="8"
-                      value={form.minAge}
-                      onChange={(event) => update("minAge", event.target.value)}
-                    />
-                  </div>
-                </>
-              )}
-
-              <div className="space-y-2">
-                <Input
-                  name="priceFrom"
-                  type="number"
-                  min={0}
-                  inputMode="decimal"
-                  className={inputClass}
-                  label={`${c.price} (${PRICE_CURRENCY})`}
-                  placeholder="50"
-                  value={form.priceFrom}
-                  onChange={(event) => update("priceFrom", event.target.value)}
-                />
-                <p className="text-xs" style={{ color: "var(--text-tertiary)" }}>
-                  {c.priceHint}
-                </p>
-                {isActivity && (
-                  <Input
-                    name="childPrice"
-                    type="number"
-                    min={0}
-                    inputMode="decimal"
-                    label={`${c.childPrice} (${PRICE_CURRENCY})`}
-                    className={inputClass}
-                    placeholder="25"
-                    value={form.childPrice}
-                    onChange={(event) => update("childPrice", event.target.value)}
-                  />
-                )}
-              </div>
-
-              {showPriceRange && (
-                <div className="space-y-2">
-                  <span className="block text-sm font-semibold" style={{ color: "var(--text-primary)" }}>
-                    {c.priceRange}
-                  </span>
-                  <div className="flex gap-2">
-                    {PRICE_RANGE_OPTIONS.map((option) => {
-                      const isActive = form.priceRange === option;
-                      return (
-                        <button
-                          key={option}
-                          type="button"
-                          onClick={() => update("priceRange", isActive ? "" : option)}
-                          className="h-10 flex-1 rounded-xl border text-sm font-bold transition-all"
-                          style={{
-                            background: isActive ? "var(--brand-accent)" : "var(--surface-white)",
-                            borderColor: isActive ? "var(--brand-accent)" : "var(--border-medium)",
-                            color: isActive ? "#fff" : "var(--text-secondary)"
-                          }}
-                        >
-                          {option}
-                        </button>
-                      );
-                    })}
-                  </div>
-                  <p className="text-xs" style={{ color: "var(--text-tertiary)" }}>
-                    {c.priceRangeHint}
-                  </p>
-                </div>
-              )}
-
-              {showCuisines && (
-                <ChipGroup
-                  icon={Utensils}
-                  label={c.cuisines}
-                  hint={c.cuisinesHint}
-                  options={CUISINE_OPTIONS}
-                  selected={cuisines}
-                  onToggle={(value) =>
-                    setCuisines((prev) =>
-                      prev.includes(value) ? prev.filter((item) => item !== value) : [...prev, value]
-                    )
-                  }
-                />
-              )}
-
-              {showLanguages && (
-                <ChipGroup
-                  icon={Languages}
-                  label={isActivity ? c.guideLanguages : c.languagesLabel}
-                  hint={c.languagesHint}
-                  options={LANGUAGE_OPTIONS}
-                  selected={spokenLanguages}
-                  onToggle={(value) =>
-                    setSpokenLanguages((prev) =>
-                      prev.includes(value) ? prev.filter((item) => item !== value) : [...prev, value]
-                    )
-                  }
-                />
-              )}
-
-              {selectedCategory === "turizem" && (
-                <Textarea
-                  name="tips"
-                  label={c.tips}
-                  className="rounded-xl text-base sm:text-sm"
-                  placeholder={c.tipsPlaceholder}
-                  value={form.tips}
-                  onChange={(event) => update("tips", event.target.value)}
-                />
-              )}
-
-              {/* Features */}
-              <div className="space-y-2">
-                <span className="block text-sm font-semibold" style={{ color: "var(--text-primary)" }}>
-                  {c.features}
-                </span>
-                <div
-                  className="rounded-2xl border p-4"
-                  style={{ borderColor: "var(--border-soft)", background: "var(--surface-cream)" }}
-                >
-                  <div className="mb-3 flex flex-wrap gap-2">
-                    {suggestedTags.map((tag) => {
-                      const isActive = activeTags.includes(tag);
-                      return (
-                        <button
-                          key={tag}
-                          type="button"
-                          onClick={() => toggleTag(tag)}
-                          className="flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-semibold transition-all"
-                          style={{
-                            background: isActive ? "var(--brand-accent)" : "var(--surface-white)",
-                            borderColor: isActive ? "var(--brand-accent)" : "var(--border-soft)",
-                            color: isActive ? "#fff" : "var(--text-secondary)"
-                          }}
-                        >
-                          {isActive && <Check className="h-3 w-3" />}
-                          {tag}
-                        </button>
-                      );
-                    })}
-                    {activeTags
-                      .filter((tag) => !suggestedTags.includes(tag))
-                      .map((tag) => (
-                        <button
-                          key={tag}
-                          type="button"
-                          onClick={() => toggleTag(tag)}
-                          className="flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold text-white"
-                          style={{ background: "var(--text-primary)" }}
-                        >
-                          {tag}
-                          <span className="text-sm leading-none">×</span>
-                        </button>
-                      ))}
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className="relative flex-1">
-                      <Sparkles
-                        className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2"
-                        style={{ color: "var(--brand-accent)" }}
-                      />
-                      <input
-                        type="text"
-                        value={customTag}
-                        onChange={(event) => setCustomTag(event.target.value)}
-                        onKeyDown={addCustomTag}
-                        placeholder={c.customTag}
-                        className="input-base pl-9"
-                        enterKeyHint="done"
-                      />
-                    </div>
-                    <button
-                      type="button"
-                      onClick={commitCustomTag}
-                      disabled={!customTag.trim()}
-                      aria-label={c.addTag}
-                      title={c.addTag}
-                      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-white transition-opacity disabled:opacity-40"
-                      style={{ background: "var(--brand-accent)" }}
-                    >
-                      <Plus className="h-5 w-5" />
-                    </button>
-                  </div>
-                  <p className="mt-2 text-xs" style={{ color: "var(--text-tertiary)" }}>
-                    {c.featuresHint}
-                  </p>
-                </div>
-              </div>
-
-              {isActivity && (
-                <ChipGroup
-                  icon={Backpack}
-                  label={c.whatToBring}
-                  hint={c.whatToBringHint}
-                  options={WHAT_TO_BRING_OPTIONS}
-                  selected={whatToBring}
-                  onToggle={(value) =>
-                    setWhatToBring((prev) =>
-                      prev.includes(value) ? prev.filter((item) => item !== value) : [...prev, value]
-                    )
-                  }
-                />
-              )}
-            </>
-          )}
-
-          {/* ===================== 3 · KONTAKTI ===================== */}
-          {step === 3 && (
-            <div className="grid gap-4 sm:grid-cols-2">
-              <Input
-                name="contactPhone"
-                label={phoneRequired ? `${c.phone} *` : c.phone}
-                className={inputClass}
-                placeholder="+355 69 ..."
-                inputMode="tel"
-                value={form.contactPhone}
-                onChange={(event) => update("contactPhone", event.target.value)}
-                error={errors.contactPhone}
-              />
-              <div>
-                <Input
-                  name="whatsapp"
-                  label={isActivity ? `${c.whatsapp} *` : c.whatsapp}
-                  className={inputClass}
-                  placeholder="+355 69 ..."
-                  inputMode="tel"
-                  value={form.whatsapp}
-                  onChange={(event) => update("whatsapp", event.target.value)}
-                  error={errors.whatsapp}
-                />
-                {!errors.whatsapp && (
-                  <p className="mt-1 text-xs" style={{ color: "var(--text-tertiary)" }}>
-                    {c.whatsappHint}
-                  </p>
-                )}
-              </div>
-
-              <Input
-                name="contactEmail"
-                type="email"
-                label={c.email}
-                className={inputClass}
-                placeholder="info@example.com"
-                value={form.contactEmail}
-                onChange={(event) => update("contactEmail", event.target.value)}
-                error={errors.contactEmail}
-              />
-            </div>
-          )}
-
-          {/* ===================== 4 · VENDNDODHJA ===================== */}
-          {step === 4 && (
-            <>
-              <Input
-                name="address"
-                label={`${c.address} *`}
-                className={inputClass}
-                placeholder={c.addressPlaceholder}
-                value={form.address}
-                onChange={(event) => update("address", event.target.value)}
-                error={errors.address}
-              />
-
+              {/* 6 · Linku i Google Maps */}
               <div>
                 <Input
                   name="googleMapsLink"
@@ -2042,7 +1325,7 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
                   </p>
                   <a
                     href={`https://www.google.com/maps/search/${encodeURIComponent(
-                      `${form.address} ${form.location}`.trim() || "Albania"
+                      `${form.title} ${form.location}`.trim() || "Albania"
                     )}`}
                     target="_blank"
                     rel="noreferrer"
@@ -2053,140 +1336,87 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
                   </a>
                 </div>
               </div>
-            </>
-          )}
 
-          {/* ===================== 5 · MEDIA ===================== */}
-          {step === 5 && (
-            <div className="space-y-2">
-              <span className="block text-sm font-semibold" style={{ color: "var(--text-primary)" }}>
-                {c.cover} *
-              </span>
+              {/* 7 · Foto Profili */}
+              <div className="space-y-2">
+                <span className="block text-sm font-semibold" style={{ color: "var(--text-primary)" }}>
+                  {c.cover}
+                </span>
+                <div
+                  className="flex flex-col items-start gap-4 rounded-2xl border p-4 sm:flex-row sm:items-center"
+                  style={{ borderColor: "var(--border-soft)", background: "var(--surface-cream)" }}
+                >
+                  {/* Exactly what the business page shows: the photo, or the initials circle. */}
+                  <div
+                    className="h-20 w-20 shrink-0 overflow-hidden rounded-full border-[3px] border-white shadow-md"
+                    style={{ background: "var(--surface-white)" }}
+                  >
+                    {showCoverPreview ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={coverPreview || coverUrl} alt="" className="h-full w-full object-cover" />
+                    ) : (
+                      <InitialsAvatar name={form.title} className="text-2xl" />
+                    )}
+                  </div>
 
-              {showCoverPreview ? (
-                <div className="overflow-hidden rounded-2xl border" style={{ borderColor: "var(--border-soft)" }}>
-                  {/* The uploaded file itself, filling the frame at its own proportions. */}
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={coverPreview || coverUrl}
-                    alt="cover"
-                    className="block h-auto w-full"
-                    onLoad={(event) =>
-                      setCoverSize({
-                        width: event.currentTarget.naturalWidth,
-                        height: event.currentTarget.naturalHeight
-                      })
-                    }
-                  />
-                  {/* Stacked on phones: three pills plus the file name never fit one row. */}
-                  <div className="flex flex-col gap-2 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
-                    <span className="block truncate text-xs" style={{ color: "var(--text-tertiary)" }}>
-                      {coverSize.width > 0 && (
-                        <span className="font-semibold" style={{ color: "var(--brand-accent)" }}>
-                          {coverSize.width} × {coverSize.height}
-                          {" · "}
-                        </span>
-                      )}
-                      {coverFile?.name || c.coverCurrent}
-                    </span>
-                    <span className="flex flex-wrap items-center gap-2 sm:shrink-0 sm:flex-nowrap">
+                  <div className="min-w-0 flex-1 space-y-2">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => coverInputRef.current?.click()}
+                        className="flex items-center gap-1.5 rounded-full border bg-white px-3 py-1.5 text-xs font-semibold transition-colors"
+                        style={{ borderColor: "var(--border-medium)", color: "var(--text-secondary)" }}
+                      >
+                        <Camera className="h-3.5 w-3.5" />
+                        {showCoverPreview ? c.coverReplace : c.coverCta}
+                      </button>
                       {coverFile && (
                         <button
                           type="button"
                           onClick={() => setCropSource(coverFile)}
-                          className="flex items-center gap-1 rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors"
+                          className="flex items-center gap-1 rounded-full border bg-white px-3 py-1.5 text-xs font-semibold transition-colors"
                           style={{ borderColor: "var(--brand-border)", color: "var(--brand-accent)" }}
                         >
                           <Crop className="h-3.5 w-3.5" />
                           {c.coverCrop}
                         </button>
                       )}
-                      <button
-                        type="button"
-                        onClick={() => coverInputRef.current?.click()}
-                        className="rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors"
-                        style={{ borderColor: "var(--border-medium)", color: "var(--text-secondary)" }}
-                      >
-                        {c.coverReplace}
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setCoverFile(null);
-                          setCoverUrl("");
-                          setCoverSize({ width: 0, height: 0 });
-                        }}
-                        className="flex items-center gap-1 rounded-full px-3 py-1.5 text-xs font-semibold text-rose-600 transition-colors hover:bg-rose-50"
-                      >
-                        <Trash2 className="h-3.5 w-3.5" />
-                        {c.coverRemove}
-                      </button>
-                    </span>
+                      {showCoverPreview && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setCoverFile(null);
+                            setCoverUrl("");
+                          }}
+                          className="flex items-center gap-1 rounded-full px-3 py-1.5 text-xs font-semibold text-rose-600 transition-colors hover:bg-rose-50"
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                          {c.coverRemove}
+                        </button>
+                      )}
+                    </div>
+                    <p className="text-xs" style={{ color: "var(--text-tertiary)" }}>
+                      {c.coverHint}
+                    </p>
                   </div>
                 </div>
-              ) : (
-                <button
-                  type="button"
-                  onClick={() => coverInputRef.current?.click()}
-                  className="flex w-full flex-col items-center justify-center gap-2 rounded-2xl border border-dashed px-6 py-10 text-center transition-colors hover:bg-[var(--brand-light)]"
-                  style={{
-                    borderColor: errors.cover ? "#fda4af" : "var(--border-medium)",
-                    background: "var(--surface-cream)"
-                  }}
-                >
-                  <span
-                    className="flex h-11 w-11 items-center justify-center rounded-full"
-                    style={{ background: "var(--brand-light)", color: "var(--brand-accent)" }}
-                  >
-                    <Camera className="h-5 w-5" />
-                  </span>
-                  <span className="text-sm font-semibold" style={{ color: "var(--text-primary)" }}>
-                    {c.coverCta}
-                  </span>
-                  <span className="text-xs" style={{ color: "var(--text-tertiary)" }}>
-                    {c.coverHint}
-                  </span>
-                </button>
-              )}
 
-              <input
-                ref={coverInputRef}
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={(event) => {
-                  pickCover(event.target.files?.[0]);
-                  event.target.value = "";
-                }}
-              />
-              {errors.cover && <p className="text-xs text-rose-600">{errors.cover}</p>}
-              <div
-                className="rounded-xl border px-4 py-3"
-                style={{ borderColor: "var(--border-soft)", background: "var(--surface-cream)" }}
-              >
-                <p className="text-xs font-semibold" style={{ color: "var(--text-primary)" }}>
-                  {c.gallery}
-                </p>
-                <ul className="mt-1.5 space-y-1 text-xs" style={{ color: "var(--text-secondary)" }}>
-                  <li className="flex items-center gap-2">
-                    <Check className="h-3.5 w-3.5" style={{ color: "var(--brand-accent)" }} />
-                    {c.galleryFree}
-                  </li>
-                  <li className="flex items-center gap-2">
-                    {verifiedUnlocked ? (
-                      <BadgeCheck className="h-3.5 w-3.5" style={{ color: "var(--brand-accent)" }} />
-                    ) : (
-                      <Lock className="h-3.5 w-3.5" style={{ color: "var(--text-tertiary)" }} />
-                    )}
-                    {c.galleryVerified}
-                  </li>
-                </ul>
+                <input
+                  ref={coverInputRef}
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(event) => {
+                    pickCover(event.target.files?.[0]);
+                    event.target.value = "";
+                  }}
+                />
               </div>
-            </div>
+            </>
           )}
 
-          {/* ===================== 6 · OPSIONET VERIFIED ===================== */}
-          {step === 6 && (
+          {/* ===================== 3 · OPSIONET VERIFIED ===================== */}
+          {step === VERIFIED_STEP && (
             <div className="space-y-5">
               <div
                 className="flex items-start gap-3 rounded-2xl border px-4 py-4"
@@ -2414,8 +1644,8 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
             </div>
           )}
 
-          {/* ===================== 7 · KATALOGU ===================== */}
-          {step === 7 && catalogListing && (
+          {/* ===================== 2 · KATALOGU — 8 fushat universale, sipas kategorive ===================== */}
+          {step === CATALOG_STEP && catalogListing && (
             <div className="space-y-5">
               {!isEdit && (
                 <div
@@ -2461,7 +1691,7 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
           <button
             type="button"
             onClick={() => goToStep(step - 1)}
-            disabled={step === 1 || loading || (!isEdit && Boolean(createdListing))}
+            disabled={step === 1 || loading || (!isEdit && Boolean(createdListing) && step === CATALOG_STEP)}
             className="order-2 inline-flex items-center justify-center gap-2 rounded-full border px-5 py-2.5 text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-40 sm:order-1"
             style={{ borderColor: "var(--border-medium)", color: "var(--text-secondary)" }}
           >
@@ -2469,7 +1699,7 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
             {c.back}
           </button>
 
-          {(isEdit ? step < TOTAL_STEPS : step < FORM_STEPS) ? (
+          {(isEdit || createdListing) && step < TOTAL_STEPS ? (
             <button
               type="button"
               onClick={() => goToStep(step + 1)}
@@ -2498,39 +1728,45 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
             {loading ? (
               <>
                 <Loader2 className="h-5 w-5 animate-spin" />
-                {isEdit ? c.saving : c.publishing}
+                {c.saving}
               </>
             ) : isEdit ? (
               c.save
+            ) : (
+              <>
+                {c.saveAndContinue}
+                <ChevronRight className="h-5 w-5" />
+              </>
+            )}
+          </button>
+          <p className="text-xs" style={{ color: "var(--text-tertiary)" }}>
+            {isEdit ? c.saveNote : c.draftNote}
+          </p>
+        </div>
+      )}
+
+      {/* ---------- Publish (create mode, on the last step) ---------- */}
+      {!isEdit && step === TOTAL_STEPS && createdListing && (
+        <div className="space-y-3 text-center">
+          <button
+            type="button"
+            onClick={publishDraft}
+            disabled={loading}
+            className="flex h-14 w-full items-center justify-center gap-2 rounded-2xl text-base font-bold text-white transition-all duration-150 disabled:cursor-not-allowed disabled:opacity-60"
+            style={{ background: "var(--brand-accent)", boxShadow: "0 6px 20px rgba(225, 29, 46, 0.28)" }}
+          >
+            {loading ? (
+              <>
+                <Loader2 className="h-5 w-5 animate-spin" />
+                {c.publishing}
+              </>
             ) : (
               c.publish
             )}
           </button>
           <p className="text-xs" style={{ color: "var(--text-tertiary)" }}>
-            {isEdit ? c.saveNote : c.publishNote}
+            {c.publishFinalNote}
           </p>
-        </div>
-      )}
-
-      {/* ---------- Finish (create mode, after the catalog) ---------- */}
-      {!isEdit && step === TOTAL_STEPS && createdListing && (
-        <div className="space-y-3 text-center">
-          <button
-            type="button"
-            onClick={() => router.push("/dashboard")}
-            className="flex h-14 w-full items-center justify-center gap-2 rounded-2xl text-base font-bold text-white transition-all duration-150"
-            style={{ background: "var(--brand-accent)", boxShadow: "0 6px 20px rgba(225, 29, 46, 0.28)" }}
-          >
-            {c.finish}
-            <ChevronRight className="h-5 w-5" />
-          </button>
-          <Link
-            href={`/listings/${createdListing.slug || ""}`}
-            className="inline-block text-sm font-semibold hover:underline"
-            style={{ color: "var(--brand-accent)" }}
-          >
-            {c.viewListing} →
-          </Link>
         </div>
       )}
 
@@ -2543,60 +1779,6 @@ export default function ListingWizard({ listing }: { listing?: WizardListing }) 
         />
       )}
     </form>
-  );
-}
-
-function ChipGroup({
-  icon: Icon,
-  label,
-  hint,
-  options,
-  selected,
-  onToggle
-}: {
-  icon: React.ComponentType<{ className?: string; style?: React.CSSProperties }>;
-  label: string;
-  hint: string;
-  options: string[];
-  selected: string[];
-  onToggle: (value: string) => void;
-}) {
-  return (
-    <div className="space-y-2">
-      <span className="flex items-center gap-2 text-sm font-semibold" style={{ color: "var(--text-primary)" }}>
-        <Icon className="h-4 w-4" style={{ color: "var(--brand-accent)" }} />
-        {label}
-      </span>
-      <div
-        className="rounded-2xl border p-4"
-        style={{ borderColor: "var(--border-soft)", background: "var(--surface-cream)" }}
-      >
-        <div className="flex flex-wrap gap-2">
-          {options.map((option) => {
-            const isActive = selected.includes(option);
-            return (
-              <button
-                key={option}
-                type="button"
-                onClick={() => onToggle(option)}
-                className="flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-semibold transition-all"
-                style={{
-                  background: isActive ? "var(--brand-accent)" : "var(--surface-white)",
-                  borderColor: isActive ? "var(--brand-accent)" : "var(--border-soft)",
-                  color: isActive ? "#fff" : "var(--text-secondary)"
-                }}
-              >
-                {isActive && <Check className="h-3 w-3" />}
-                {option}
-              </button>
-            );
-          })}
-        </div>
-        <p className="mt-2 text-xs" style={{ color: "var(--text-tertiary)" }}>
-          {hint}
-        </p>
-      </div>
-    </div>
   );
 }
 
