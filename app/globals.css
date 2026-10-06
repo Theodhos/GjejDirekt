@@ -619,8 +619,39 @@ a { transition: color 0.15s ease, opacity 0.15s ease; }
   background: var(--brand-accent);
 }
 
+/* On phones the chat bubble and its panel hug the corner just above the bottom tab bar;
+   from 640px up they sit where they always did (bottom-28). */
+.gd-chat-toggle,
+.gd-chat-panel {
+  bottom: calc(var(--bottom-nav-height) + 0.75rem);
+}
+@media (min-width: 640px) {
+  .gd-chat-toggle,
+  .gd-chat-panel {
+    bottom: 7rem;
+  }
+}
+
 /* Business pages pin a basket bar above the bottom tab bar; the chat button steps up
    above it instead of sitting on the "Shko te porosia" button. */
-html[data-cart-bar] .gd-chat-toggle {
-  bottom: calc(var(--bottom-nav-height) + 6.25rem);
+html[data-cart-bar] .gd-chat-toggle,
+html[data-cart-bar] .gd-chat-panel {
+  bottom: calc(var(--bottom-nav-height) + 5rem);
+}
+@media (min-width: 640px) {
+  html[data-cart-bar] .gd-chat-toggle,
+  html[data-cart-bar] .gd-chat-panel {
+    bottom: calc(var(--bottom-nav-height) + 6.25rem);
+  }
+}
+
+/* A checkout / reservation sheet is open: the chat bubble gets out of its way. */
+html[data-sheet-open] .gd-chat-toggle,
+html[data-sheet-open] .gd-chat-panel {
+  display: none;
+}
+
+/* The business page's tab bar scrolls sideways on phones — no scrollbar track. */
+.gd-tabbar::-webkit-scrollbar {
+  display: none;
 }

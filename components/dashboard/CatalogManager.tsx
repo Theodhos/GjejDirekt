@@ -429,7 +429,7 @@ export default function CatalogManager({
   const renderItem = (product: CatalogProduct) => (
     <div
       key={product._id}
-      className="flex items-center gap-3 rounded-xl p-3"
+      className="flex flex-wrap items-center gap-3 rounded-xl p-3 sm:flex-nowrap"
       style={{ background: "var(--surface-white)", border: "1px solid var(--border-soft)" }}
     >
       <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-lg" style={{ background: "var(--surface-cream)" }}>
@@ -475,7 +475,7 @@ export default function CatalogManager({
         )}
       </div>
 
-      <div className="flex shrink-0 items-center gap-1.5">
+      <div className="flex basis-full shrink-0 items-center justify-end gap-1.5 sm:basis-auto">
         <button
           type="button"
           onClick={() => toggleAvailable(product)}

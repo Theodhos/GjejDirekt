@@ -197,7 +197,7 @@ export default function ChatWidget() {
         <button
           onClick={() => setOpen(true)}
           aria-label={c.open}
-          className="gd-chat-toggle fixed bottom-28 right-6 z-50 flex items-center gap-2 rounded-full px-5 py-4 text-white font-bold text-sm shadow-lg transition-transform hover:scale-105 active:scale-95"
+          className="gd-chat-toggle fixed right-3 z-50 flex h-12 w-12 items-center justify-center gap-2 rounded-full text-white font-bold text-sm shadow-lg transition-transform hover:scale-105 active:scale-95 sm:right-6 sm:h-auto sm:w-auto sm:px-5 sm:py-4"
           style={{ background: "var(--brand-accent)", boxShadow: "0 8px 24px rgba(225,29,46,0.35)" }}
         >
           <Sparkles className="w-5 h-5" />
@@ -207,7 +207,7 @@ export default function ChatWidget() {
 
       {open && (
         <div
-          className="fixed bottom-28 right-6 z-50 flex flex-col w-[calc(100vw-3rem)] sm:w-[380px] h-[560px] max-h-[calc(100vh-8rem)] animate-in fade-in slide-in-from-bottom-4 duration-300"
+          className="gd-chat-panel fixed inset-x-3 z-50 flex flex-col h-[560px] max-h-[calc(100dvh-var(--header-height)-var(--bottom-nav-height)-1.5rem)] animate-in fade-in slide-in-from-bottom-4 duration-300 sm:inset-x-auto sm:right-6 sm:w-[380px] sm:max-h-[calc(100vh-8rem)]"
           style={{ background: "var(--surface-white)", border: "1px solid var(--border-soft)", borderRadius: "18px", boxShadow: "0 16px 48px rgba(15,20,25,0.18)" }}
         >
           {/* Header */}

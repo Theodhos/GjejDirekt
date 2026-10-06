@@ -156,10 +156,8 @@ export default function ListingCatalogPage({
         searchHref={categoryValue ? `/listings?category=${categoryValue}` : "/listings"}
       />
 
-      <div
-        className="mx-auto w-full lg:w-[calc(100%-4rem)] lg:max-w-[1136px]"
-        style={{ paddingTop: "var(--header-height)" }}
-      >
+      {/* No top padding here: the root layout already offsets the page by the header height. */}
+      <div className="mx-auto w-full lg:w-[calc(100%-4rem)] lg:max-w-[1136px]">
         {/* Desktop-only header — the fixed MobileAppBar above is phone-only. */}
         <div className="hidden items-center justify-between gap-3 border-b py-4 lg:flex" style={{ borderColor: "var(--border-soft)" }}>
           <div className="flex min-w-0 items-center gap-3">

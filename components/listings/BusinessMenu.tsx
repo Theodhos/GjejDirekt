@@ -176,13 +176,13 @@ export default function BusinessMenu({
   const accent = "var(--brand-accent)";
 
   return (
-    <div className={hasSidebar ? "grid grid-cols-[108px_minmax(0,1fr)] sm:grid-cols-[140px_minmax(0,1fr)]" : ""}>
+    <div className={hasSidebar ? "grid grid-cols-[96px_minmax(0,1fr)] sm:grid-cols-[140px_minmax(0,1fr)]" : ""}>
       {hasSidebar && (
         <aside
           className="sticky top-[calc(var(--header-height)+63px)] max-h-[calc(100vh-var(--header-height)-63px-var(--bottom-nav-height))] self-start overflow-y-auto border-r"
           style={{ borderColor: "var(--border-soft)", background: "var(--surface-page)", scrollbarWidth: "none" }}
         >
-          <p className="px-2.5 pb-2 pt-4 text-[10px] font-bold uppercase tracking-[0.03em] sm:px-3" style={{ color: "var(--text-tertiary)" }}>
+          <p className="px-2 pb-2 pt-4 text-center text-[10px] font-bold uppercase tracking-[0.03em] sm:px-3 sm:text-left" style={{ color: "var(--text-tertiary)" }}>
             {en ? "Categories" : "Kategoritë"}
           </p>
           <nav className="pb-24">
@@ -195,7 +195,7 @@ export default function BusinessMenu({
                   type="button"
                   onClick={() => setActiveKey(section.key)}
                   aria-current={isActive}
-                  className="flex w-full items-center gap-1.5 border-l-[3px] px-2 py-3 text-left text-[11.5px] transition-colors sm:gap-2 sm:px-3 sm:text-[13.5px]"
+                  className="flex w-full flex-col items-center gap-1 border-l-[3px] px-1.5 py-3 text-center text-[11px] leading-tight transition-colors sm:flex-row sm:gap-2 sm:px-3 sm:text-left sm:text-[13.5px]"
                   style={{
                     borderColor: isActive ? accent : "transparent",
                     background: isActive ? "var(--brand-light)" : "transparent",
@@ -203,8 +203,8 @@ export default function BusinessMenu({
                     fontWeight: isActive ? 700 : 500
                   }}
                 >
-                  <Icon className="h-4 w-4 shrink-0 sm:h-[18px] sm:w-[18px]" strokeWidth={1.8} />
-                  <span className="min-w-0 break-words leading-tight">{section.label}</span>
+                  <Icon className="h-[18px] w-[18px] shrink-0" strokeWidth={1.8} />
+                  <span className="min-w-0 max-w-full break-words leading-tight">{section.label}</span>
                 </button>
               );
             })}
@@ -213,22 +213,22 @@ export default function BusinessMenu({
                 type="button"
                 onClick={() => setAddOpen((value) => !value)}
                 aria-pressed={addOpen}
-                className="mt-1 flex w-full items-center gap-1.5 border-l-[3px] px-2 py-3 text-left text-[11.5px] font-semibold transition-colors sm:gap-2 sm:px-3 sm:text-[13.5px]"
+                className="mt-1 flex w-full flex-col items-center gap-1 border-l-[3px] px-1.5 py-3 text-center text-[11px] font-semibold leading-tight transition-colors sm:flex-row sm:gap-2 sm:px-3 sm:text-left sm:text-[13.5px]"
                 style={{
                   borderColor: addOpen ? accent : "transparent",
                   background: addOpen ? "var(--brand-light)" : "transparent",
                   color: accent
                 }}
               >
-                {addOpen ? <X className="h-4 w-4 shrink-0 sm:h-[18px] sm:w-[18px]" strokeWidth={1.8} /> : <Plus className="h-4 w-4 shrink-0 sm:h-[18px] sm:w-[18px]" strokeWidth={1.8} />}
-                <span className="min-w-0 break-words leading-tight">{en ? "Add" : "Shto"}</span>
+                {addOpen ? <X className="h-[18px] w-[18px] shrink-0" strokeWidth={1.8} /> : <Plus className="h-[18px] w-[18px] shrink-0" strokeWidth={1.8} />}
+                <span className="min-w-0 max-w-full break-words leading-tight">{en ? "Add" : "Shto"}</span>
               </button>
             )}
           </nav>
         </aside>
       )}
 
-      <div className="min-w-0 px-3.5 pb-28 pt-4 sm:px-5 lg:px-8">
+      <div className="min-w-0 px-3 pb-28 pt-4 sm:px-5 lg:px-8">
         {canEdit && addOpen && catalogListing && (
           <div
             className="mb-6 rounded-2xl border p-4 sm:p-5"
@@ -268,7 +268,7 @@ export default function BusinessMenu({
             return (
               <li key={product._id} className="flex gap-3 border-b py-3.5 last:border-b-0" style={{ borderColor: "var(--border-soft)" }}>
                 <div
-                  className="relative h-[84px] w-[84px] shrink-0 overflow-hidden rounded-xl sm:h-[100px] sm:w-[100px]"
+                  className="relative h-[76px] w-[76px] shrink-0 overflow-hidden rounded-xl sm:h-[100px] sm:w-[100px]"
                   style={{ background: "var(--surface-subtle)" }}
                 >
                   {product.image ? (
@@ -303,12 +303,14 @@ export default function BusinessMenu({
                     </span>
                   )}
 
-                  <div className="mt-auto flex items-end justify-between gap-2 pt-2">
+                  {/* Wraps on a narrow phone (price above the button) rather than pushing the
+                      button past the edge of the screen. */}
+                  <div className="mt-auto flex flex-wrap items-end justify-between gap-x-2 gap-y-2 pt-2">
                     {typeof product.price === "number" ? (
-                      <span className="whitespace-nowrap text-[14.5px] font-bold" style={{ color: accent }}>
-                        {formatPrice(product.price)}
+                      <span className="text-[14.5px] font-bold leading-tight" style={{ color: accent }}>
+                        <span className="whitespace-nowrap">{formatPrice(product.price)}</span>
                         {copy.perNight && (
-                          <span className="text-[11.5px] font-medium" style={{ color: "var(--text-tertiary)" }}>
+                          <span className="whitespace-nowrap text-[11.5px] font-medium" style={{ color: "var(--text-tertiary)" }}>
                             {" "}
                             {en ? "/ night" : "/ natë"}
                           </span>
@@ -346,7 +348,7 @@ export default function BusinessMenu({
                       <button
                         type="button"
                         onClick={() => handleAdd(product)}
-                        className="inline-flex h-8 min-h-0 items-center gap-1 rounded-lg border bg-white px-3 text-[13px] font-semibold transition-colors active:scale-95 hover:bg-[var(--brand-light)]"
+                        className="inline-flex h-8 min-h-0 shrink-0 items-center gap-1 rounded-lg border bg-white px-3 text-[13px] font-semibold transition-colors active:scale-95 hover:bg-[var(--brand-light)]"
                         style={{ borderColor: accent, color: accent }}
                       >
                         <Plus className="h-3.5 w-3.5" />

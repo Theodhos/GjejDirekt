@@ -135,18 +135,18 @@ export default function ListingRow({
         )}
 
         <div className="flex items-end justify-between gap-2">
-          {hasHours ? (
-            <OpenStatusLine hours={listing.businessHours} variant="row" />
-          ) : price !== null ? (
-            <p className="text-[12.5px]" style={{ color: "var(--text-secondary)" }}>
-              {fromPriceShort(language)}{" "}
-              <span className="font-bold" style={{ color: "var(--brand-accent)" }}>
-                {formatPrice(price)}
-              </span>
-            </p>
-          ) : (
-            <span />
-          )}
+          <div className="min-w-0 flex-1">
+            {hasHours ? (
+              <OpenStatusLine hours={listing.businessHours} variant="row" />
+            ) : price !== null ? (
+              <p className="truncate text-[12.5px]" style={{ color: "var(--text-secondary)" }}>
+                {fromPriceShort(language)}{" "}
+                <span className="font-bold" style={{ color: "var(--brand-accent)" }}>
+                  {formatPrice(price)}
+                </span>
+              </p>
+            ) : null}
+          </div>
 
           {action && (
             <Link

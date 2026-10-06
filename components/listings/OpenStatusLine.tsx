@@ -47,15 +47,26 @@ export default function OpenStatusLine({
 
   const isOpen = status.kind === "open";
   const label = isOpen ? (en ? "Open" : "Hapur") : en ? "Closed" : "Mbyllur";
+  // The row variant sits beside an action button on a phone, so it uses the short form
+  // ("deri 16:00" / "hapet 09:00"); the business page has room for the full sentence.
+  const compact = variant === "row";
   const detail =
     status.kind === "open"
       ? status.allDay
         ? en
           ? "24 hours"
           : "24 orë"
+        : compact
+        ? en
+          ? `until ${status.closesAt}`
+          : `deri ${status.closesAt}`
         : en
         ? `Closes at ${status.closesAt}`
         : `Mbyllet në ${status.closesAt}`
+      : compact
+      ? en
+        ? `opens ${status.opensAt}`
+        : `hapet ${status.opensAt}`
       : en
       ? `Opens at ${status.opensAt}`
       : `Hapet në ${status.opensAt}`;
@@ -67,14 +78,14 @@ export default function OpenStatusLine({
     : "var(--text-tertiary)";
 
   return (
-    <span className={`flex min-h-[18px] items-center gap-1.5 ${variant === "detail" ? "text-[12px]" : "text-[12.5px]"} ${className}`}>
+    <span className={`flex min-h-[18px] min-w-0 items-center gap-1.5 ${variant === "detail" ? "text-[12px]" : "text-[12.5px]"} ${className}`}>
       {variant === "detail" && (
         <span aria-hidden className="h-2 w-2 shrink-0 rounded-full" style={{ background: isOpen ? "#22C55E" : "#9CA3AF" }} />
       )}
-      <span className="font-bold" style={{ color: stateColor }}>
+      <span className="shrink-0 font-bold" style={{ color: stateColor }}>
         {label}
       </span>
-      <span style={{ color: "var(--text-secondary)" }}>
+      <span className="min-w-0 truncate" style={{ color: "var(--text-secondary)" }}>
         {variant === "detail" ? "·" : "•"} {detail}
       </span>
     </span>

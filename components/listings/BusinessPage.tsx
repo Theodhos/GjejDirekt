@@ -311,8 +311,8 @@ export default function BusinessPage({
         <div
           ref={tabsRef}
           role="tablist"
-          className="sticky z-30 grid border-y bg-white"
-          style={{ top: "var(--header-height)", gridTemplateColumns: `repeat(${tabs.length}, minmax(0, 1fr))`, borderColor: "var(--border-soft)" }}
+          className="gd-tabbar sticky z-30 flex overflow-x-auto border-y bg-white sm:grid"
+          style={{ top: "var(--header-height)", gridTemplateColumns: `repeat(${tabs.length}, minmax(0, 1fr))`, borderColor: "var(--border-soft)", scrollbarWidth: "none" }}
         >
           {tabs.map((item) => {
             const Icon = item.icon;
@@ -323,11 +323,11 @@ export default function BusinessPage({
                   href={item.href}
                   role="tab"
                   aria-selected={false}
-                  className="relative flex h-[62px] min-w-0 flex-col items-center justify-center gap-1 px-0.5 transition-colors"
+                  className="relative flex h-[62px] min-w-[72px] flex-1 shrink-0 flex-col items-center justify-center gap-1 px-2.5 transition-colors sm:min-w-0 sm:shrink sm:px-0.5"
                   style={{ color: "var(--text-secondary)" }}
                 >
                   <Icon className="h-[22px] w-[22px]" strokeWidth={1.7} />
-                  <span className="max-w-full truncate text-[11px] sm:text-[12.5px]" style={{ fontWeight: 500 }}>
+                  <span className="max-w-full whitespace-nowrap text-[11px] sm:truncate sm:text-[12.5px]" style={{ fontWeight: 500 }}>
                     {item.label}
                   </span>
                 </Link>
@@ -341,11 +341,11 @@ export default function BusinessPage({
                 role="tab"
                 aria-selected={active}
                 onClick={() => selectTab(item.key as TabKey)}
-                className="relative flex h-[62px] min-w-0 flex-col items-center justify-center gap-1 px-0.5 transition-colors"
+                className="relative flex h-[62px] min-w-[72px] flex-1 shrink-0 flex-col items-center justify-center gap-1 px-2.5 transition-colors sm:min-w-0 sm:shrink sm:px-0.5"
                 style={{ color: active ? "var(--brand-accent)" : "var(--text-secondary)" }}
               >
                 <Icon className="h-[22px] w-[22px]" strokeWidth={active ? 2.2 : 1.7} />
-                <span className="max-w-full truncate text-[11px] sm:text-[12.5px]" style={{ fontWeight: active ? 700 : 500 }}>
+                <span className="max-w-full whitespace-nowrap text-[11px] sm:truncate sm:text-[12.5px]" style={{ fontWeight: active ? 700 : 500 }}>
                   {item.label}
                 </span>
                 {active && <span className="absolute inset-x-2 bottom-[-1px] h-[2.5px] rounded-full" style={{ background: "var(--brand-accent)" }} />}

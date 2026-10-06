@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Calendar, Clock, Minus, Plus, MessageCircle, Lock, Users, X } from "lucide-react";
 import toast from "react-hot-toast";
 import { useLanguage } from "@/context/LanguageContext";
@@ -28,6 +28,15 @@ export default function ListingReservationModal({
   const { language } = useLanguage();
   const en = language === "en";
   const [open, setOpen] = useState(false);
+
+  // The sitewide chat bubble hides while this sheet is open (see globals.css).
+  useEffect(() => {
+    if (!open) return;
+    document.documentElement.dataset.sheetOpen = "1";
+    return () => {
+      delete document.documentElement.dataset.sheetOpen;
+    };
+  }, [open]);
   const [submitting, setSubmitting] = useState(false);
 
   const [date, setDate] = useState("");

@@ -77,6 +77,15 @@ export default function ListingCart({
     };
   }, [variant, items.length]);
 
+  // ...and disappear entirely while the checkout sheet is open (see globals.css).
+  useEffect(() => {
+    if (!open) return;
+    document.documentElement.dataset.sheetOpen = "1";
+    return () => {
+      delete document.documentElement.dataset.sheetOpen;
+    };
+  }, [open]);
+
   useEffect(() => {
     const syncItems = () => {
       const next = readCart(listingSlug);
