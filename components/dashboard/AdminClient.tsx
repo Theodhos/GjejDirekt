@@ -2,13 +2,28 @@
 
 import React from "react";
 import Link from "next/link";
-import { Clock3, LayoutDashboard, MapPinned, PlusCircle, ShieldCheck, Users, AlertTriangle, CreditCard, ArrowUpRight, ShoppingBag, CalendarCheck } from "lucide-react";
+import { Clock3, LayoutDashboard, MapPinned, PlusCircle, ShieldCheck, Users, AlertTriangle, CreditCard, ArrowUpRight, ShoppingBag, CalendarCheck, Store } from "lucide-react";
 import BlogStudio from "@/components/dashboard/BlogStudio";
 import CityStudio from "@/components/dashboard/CityStudio";
 import AdminProfile from "@/components/dashboard/AdminProfile";
 import { useLanguage } from "@/context/LanguageContext";
+import { formatPrice } from "@/lib/pricing";
 
 type ListingAny = any;
+
+/** One business's share of the platform's orders and reservations. */
+export type BusinessStat = {
+  id: string;
+  title: string;
+  slug: string;
+  location: string;
+  orders: number;
+  reservations: number;
+  /** Sum of every order/reservation total that carried a price, in lek. */
+  revenue: number;
+  /** ISO date of the most recent order or reservation, null when there is none. */
+  lastAt: string | null;
+};
 
 export default function AdminClient({
   totalUsers,
@@ -20,6 +35,7 @@ export default function AdminClient({
   totalOrders,
   totalReservations,
   totalCities,
+  businessStats = [],
   serializedBlogs,
   displayName,
   authEmail
@@ -33,13 +49,17 @@ export default function AdminClient({
   totalOrders: number;
   totalReservations: number;
   totalCities: number;
+  businessStats?: BusinessStat[];
   serializedBlogs: ListingAny[];
   displayName: string;
   authEmail: string;
 }) {
   const { t, language } = useLanguage();
+  const en = language === "en";
   const adminText = t.admin as Record<string, string>;
-  const viewLabel = language === "en" ? "View" : "Shiko";
+  const viewLabel = en ? "View" : "Shiko";
+  const formatWhen = (value: string | null) =>
+    value ? new Date(value).toLocaleDateString(en ? "en-GB" : "sq-AL", { day: "numeric", month: "short", year: "numeric" }) : "—";
 
   const stats = [
     { icon: Users, label: t.admin.users, value: totalUsers, accent: "bg-blue-50 text-blue-700", href: "/admin/users" },
@@ -99,6 +119,73 @@ export default function AdminClient({
             </span>
           </Link>
         ))}
+        </div>
+      </div>
+
+      {/* Orders and reservations per business — which businesses the platform is
+          actually sending customers to, busiest first. */}
+      <div className="mt-12" id="business-orders">
+        <div className="mb-4 flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <p className="eyebrow text-orange-600 flex items-center gap-2">
+              <Store className="w-4 h-4" /> {en ? "Per business" : "Sipas biznesit"}
+            </p>
+            <h2 className="mt-1 text-2xl font-black text-slate-950">{en ? "Orders by business" : "Porositë sipas biznesit"}</h2>
+            <p className="mt-1 text-sm text-slate-500">
+              {en
+                ? "How many orders and reservations every business has received, busiest first."
+                : "Sa porosi dhe rezervime ka marrë çdo biznes, më të ngarkuarit në krye."}
+            </p>
+          </div>
+          <span className="text-xs font-bold uppercase tracking-widest text-slate-400">
+            {businessStats.length} {en ? "businesses" : "biznese"}
+          </span>
+        </div>
+
+        <div className="surface overflow-hidden border-none shadow-xl rounded-[2rem] bg-white">
+          <div className="overflow-x-auto max-h-[60vh] overflow-y-auto no-scrollbar">
+            <table className="w-full border-collapse">
+              <thead className="sticky top-0 z-10 bg-slate-50/90 backdrop-blur-sm">
+                <tr className="border-b border-slate-100">
+                  <th className="px-6 py-4 text-left text-[10px] font-black uppercase tracking-widest text-slate-400">{en ? "Business" : "Biznesi"}</th>
+                  <th className="px-6 py-4 text-right text-[10px] font-black uppercase tracking-widest text-slate-400">{en ? "Orders" : "Porosi"}</th>
+                  <th className="px-6 py-4 text-right text-[10px] font-black uppercase tracking-widest text-slate-400">{en ? "Reservations" : "Rezervime"}</th>
+                  <th className="px-6 py-4 text-right text-[10px] font-black uppercase tracking-widest text-slate-400">{en ? "Total" : "Gjithsej"}</th>
+                  <th className="px-6 py-4 text-right text-[10px] font-black uppercase tracking-widest text-slate-400">{en ? "Value" : "Vlera"}</th>
+                  <th className="px-6 py-4 text-left text-[10px] font-black uppercase tracking-widest text-slate-400">{en ? "Last" : "E fundit"}</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {businessStats.length > 0 ? (
+                  businessStats.map((row) => (
+                    <tr key={row.id} className="hover:bg-slate-50/50 transition">
+                      <td className="px-6 py-4">
+                        {row.slug ? (
+                          <Link href={`/listings/${row.slug}`} className="font-bold text-slate-950 text-sm hover:underline">
+                            {row.title}
+                          </Link>
+                        ) : (
+                          <span className="text-sm font-bold text-slate-400">{row.title}</span>
+                        )}
+                        {row.location && <p className="text-xs text-slate-400">{row.location}</p>}
+                      </td>
+                      <td className="px-6 py-4 text-right text-sm font-bold text-orange-700">{row.orders.toLocaleString()}</td>
+                      <td className="px-6 py-4 text-right text-sm font-bold text-sky-700">{row.reservations.toLocaleString()}</td>
+                      <td className="px-6 py-4 text-right text-sm font-black text-slate-950">{(row.orders + row.reservations).toLocaleString()}</td>
+                      <td className="px-6 py-4 text-right text-sm text-slate-600">{row.revenue > 0 ? formatPrice(row.revenue) : "—"}</td>
+                      <td className="px-6 py-4 text-sm text-slate-500">{formatWhen(row.lastAt)}</td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={6} className="px-6 py-12 text-center">
+                      <p className="text-sm font-bold text-slate-500">{en ? "No orders or reservations yet." : "Ende asnjë porosi ose rezervim."}</p>
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
 

@@ -19,8 +19,12 @@ export interface IReservation extends Document {
   customerName: string;
   customerPhone: string;
   date: Date;
-  /** Check-out date for stays; omitted for a single-slot booking. */
+  /** Check-out date for stays, or the last day of any multi-day booking; omitted for a single-slot booking. */
   endDate?: Date;
+  /** How many days (nights) the booking runs — what the per-day price is multiplied by. 1 for a single slot. */
+  days?: number;
+  /** Price × days of the booked lines, in lek, when every line had a price. */
+  total?: number;
   time?: string;
   partySize?: number;
   notes?: string;
@@ -39,6 +43,8 @@ const ReservationSchema = new Schema<IReservation>(
     customerPhone: { type: String, required: true, trim: true },
     date: { type: Date, required: true },
     endDate: { type: Date },
+    days: { type: Number, min: 1 },
+    total: { type: Number, min: 0 },
     time: { type: String, trim: true },
     partySize: { type: Number, min: 1 },
     notes: { type: String, trim: true },

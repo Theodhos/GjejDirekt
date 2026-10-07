@@ -15,8 +15,12 @@ import {
   cartCount,
   cartTotal,
   onCartChange,
-  buildOrderWhatsappHref
+  buildOrderWhatsappHref,
+  bookingDayCount,
+  orderTotal,
+  type OrderDetails
 } from "@/lib/cart";
+import { formatBookingDays, isDateRange } from "@/lib/reservations";
 import { recordOrderContact } from "@/lib/order-history";
 import { getCategoryByValue } from "@/lib/constants";
 import { isFoodListing } from "@/lib/food";
@@ -105,9 +109,7 @@ export default function ListingCart({
   if (!items.length) return null;
 
   const count = cartCount(items);
-  const total = cartTotal(items);
-  const hasAllPrices = items.every((item) => typeof item.price === "number");
-  
+
   // Resolved through the category taxonomy (canonical value + every legacy alias:
   // "akomodim", "hotel", "hotels", "resort", ...) rather than a raw string match,
   // so any listing that actually belongs to Hotele & Akomodim is recognized. The
@@ -123,7 +125,10 @@ export default function ListingCart({
   const hasBooked = isBooking || bookedItems.length > 0;
   const isMixed = hasBooked && !isBooking;
 
-  const whatsappHref = buildOrderWhatsappHref(phoneDigits, businessName, items, language, {
+  // A stay runs check-in → check-out; any other booking may also run "from this date to
+  // that date" (a rental car for a week) through the optional end date. Either way the
+  // booked lines are charged per day, so the total is price × days — never one day flat.
+  const orderDetails: OrderDetails = {
     location: listing?.location,
     note: isBooking ? specialRequest : orderNote,
     isHotel: isBooking,
@@ -133,12 +138,23 @@ export default function ListingCart({
     checkOut: isStay ? checkOut : undefined,
     persons: isStay ? persons : undefined,
     date: hasBooked && !isStay ? checkIn : undefined,
+    endDate: hasBooked && !isStay ? checkOut || undefined : undefined,
     time: hasBooked && !isStay ? serviceTime : undefined,
     customerName,
     customerPhone: customerPhone.trim() || undefined,
     customerAddress: isBooking ? undefined : customerAddress,
     paymentMethod
-  });
+  };
+  const days = hasBooked ? bookingDayCount(orderDetails) : 1;
+  const bookedPerDay = cartTotal(isBooking ? items : bookedItems);
+  const bookedHasPrices = (isBooking ? items : bookedItems).every((item) => typeof item.price === "number");
+  const computedTotal = orderTotal(items, orderDetails);
+  const hasAllPrices = computedTotal !== null;
+  const total = computedTotal ?? 0;
+  const dayUnit = isStay ? (en ? "/ night" : "/ natë") : days > 1 ? (en ? "/ day" : "/ ditë") : "";
+  const rangeInvalid = Boolean(checkIn && checkOut) && !isDateRange(checkIn, checkOut);
+
+  const whatsappHref = buildOrderWhatsappHref(phoneDigits, businessName, items, language, orderDetails);
 
   const handleSend = (event: React.MouseEvent<HTMLAnchorElement>) => {
     // The link below is the only way this basket ever reaches the business, so it has
@@ -161,6 +177,17 @@ export default function ListingCart({
       toast.error(en ? "Please fill in the date and phone number for the booking." : "Plotëso datën dhe telefonin për rezervimin.");
       return;
     }
+    // An end date on or before the start would be charged as one day while reading as
+    // a range — stop it here rather than let the business untangle it on WhatsApp.
+    if (hasBooked && rangeInvalid) {
+      event.preventDefault();
+      toast.error(
+        isStay
+          ? en ? "Check-out must be after check-in." : "Data e daljes duhet të jetë pas datës së hyrjes."
+          : en ? "The end date must be after the start date." : "Data e mbarimit duhet të jetë pas datës së fillimit."
+      );
+      return;
+    }
 
     if (listingId) {
       fetch(`/api/listings/${listingId}/whatsapp-click`, { method: "POST", keepalive: true }).catch(() => {});
@@ -180,12 +207,16 @@ export default function ListingCart({
           customerName: customerName.trim(),
           customerPhone: customerPhone.trim(),
           date: checkIn,
-          endDate: isStay ? checkOut || undefined : undefined,
+          endDate: checkOut || undefined,
           time: isStay ? undefined : serviceTime || undefined,
           partySize: isStay ? persons : undefined,
           notes: specialRequest || undefined,
           productId: reserved[0]?.productId,
-          itemName: reserved.map((item) => item.name).join(", ")
+          itemName: reserved.map((item) => item.name).join(", "),
+          // The booked lines' price × the days they run — the number the business
+          // confirms on WhatsApp, kept on the record so the dashboards show it too.
+          days,
+          total: bookedHasPrices ? bookedPerDay * days : undefined
         }),
         keepalive: true
       }).catch(() => {});
@@ -384,7 +415,7 @@ export default function ListingCart({
                     
                     {typeof item.price === "number" && (
                       <p className="text-[12px] font-medium mt-1" style={{ color: "var(--text-secondary)" }}>
-                        {formatPrice(item.price)} {isStay ? "/ natë" : ""}
+                        {formatPrice(item.price)} {item.action === "rezervim" || isBooking ? dayUnit : ""}
                       </p>
                     )}
 
@@ -447,30 +478,50 @@ export default function ListingCart({
                     </div>
                   </div>
 
-                  {/* A service appointment: one day and, optionally, a time. */}
+                  {/* A service appointment: one day and, optionally, a time — or, for a booking
+                      that runs several days (a rental), an end date; the price is then per day. */}
                   {!isStay && (
-                    <div className="grid grid-cols-2 gap-3">
-                      <div>
-                        <label className="flex items-center gap-2 text-[13px] font-bold mb-2 text-neutral-700">
-                          <Calendar className="w-4 h-4" /> {en ? "Date" : "Data"}
-                        </label>
-                        <input
-                          type="date"
-                          value={checkIn}
-                          onChange={(e) => setCheckIn(e.target.value)}
-                          className="w-full border border-neutral-200 rounded-xl px-3 py-3 text-[14px] outline-none focus:border-red-500"
-                        />
+                    <div className="space-y-3">
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className="flex items-center gap-2 text-[13px] font-bold mb-2 text-neutral-700">
+                            <Calendar className="w-4 h-4" /> {en ? "Date" : "Data"}
+                          </label>
+                          <input
+                            type="date"
+                            value={checkIn}
+                            onChange={(e) => setCheckIn(e.target.value)}
+                            className="w-full border border-neutral-200 rounded-xl px-3 py-3 text-[14px] outline-none focus:border-red-500"
+                          />
+                        </div>
+                        <div>
+                          <label className="flex items-center gap-2 text-[13px] font-bold mb-2 text-neutral-700">
+                            <Clock className="w-4 h-4" /> {en ? "Time" : "Ora"}
+                          </label>
+                          <input
+                            type="time"
+                            value={serviceTime}
+                            onChange={(e) => setServiceTime(e.target.value)}
+                            className="w-full border border-neutral-200 rounded-xl px-3 py-3 text-[14px] outline-none focus:border-red-500"
+                          />
+                        </div>
                       </div>
                       <div>
                         <label className="flex items-center gap-2 text-[13px] font-bold mb-2 text-neutral-700">
-                          <Clock className="w-4 h-4" /> {en ? "Time" : "Ora"}
+                          <Calendar className="w-4 h-4" /> {en ? "Until (optional, for several days)" : "Deri më (opsionale, për disa ditë)"}
                         </label>
                         <input
-                          type="time"
-                          value={serviceTime}
-                          onChange={(e) => setServiceTime(e.target.value)}
-                          className="w-full border border-neutral-200 rounded-xl px-3 py-3 text-[14px] outline-none focus:border-red-500"
+                          type="date"
+                          value={checkOut}
+                          min={checkIn || undefined}
+                          onChange={(e) => setCheckOut(e.target.value)}
+                          className={`w-full border rounded-xl px-3 py-3 text-[14px] outline-none focus:border-red-500 ${rangeInvalid ? "border-red-400" : "border-neutral-200"}`}
                         />
+                        {rangeInvalid && (
+                          <p className="mt-1.5 text-[12px] font-medium text-red-600">
+                            {en ? "The end date must be after the start date." : "Data e mbarimit duhet të jetë pas datës së fillimit."}
+                          </p>
+                        )}
                       </div>
                     </div>
                   )}
@@ -492,12 +543,22 @@ export default function ListingCart({
                       <label className="flex items-center gap-2 text-[13px] font-bold mb-2 text-neutral-700">
                         <Calendar className="w-4 h-4" /> {en ? "Check-out date" : "Data e daljes"}
                       </label>
-                      <input 
-                        type="date" 
+                      <input
+                        type="date"
                         value={checkOut}
+                        min={checkIn || undefined}
                         onChange={(e) => setCheckOut(e.target.value)}
-                        className="w-full border border-neutral-200 rounded-xl px-4 py-3 text-[14px] outline-none focus:border-red-500" 
+                        className={`w-full border rounded-xl px-4 py-3 text-[14px] outline-none focus:border-red-500 ${rangeInvalid ? "border-red-400" : "border-neutral-200"}`}
                       />
+                      {rangeInvalid ? (
+                        <p className="mt-1.5 text-[12px] font-medium text-red-600">
+                          {en ? "Check-out must be after check-in." : "Data e daljes duhet të jetë pas datës së hyrjes."}
+                        </p>
+                      ) : checkIn && checkOut ? (
+                        <p className="mt-1.5 text-[12px] font-semibold" style={{ color: "var(--text-secondary)" }}>
+                          {formatBookingDays(days, "stay", language)}
+                        </p>
+                      ) : null}
                     </div>
                   </div>
 
@@ -524,17 +585,32 @@ export default function ListingCart({
                     />
                   </div>
 
-                  <div className={`bg-neutral-50 rounded-xl p-4 space-y-3 ${isStay ? "" : "hidden"}`}>
-                    <p className="font-bold text-[14px] mb-2">{en ? "Summary" : "Përmbledhje"}</p>
-                    <div className="flex justify-between text-[13px] text-neutral-600">
-                      <span>{formatPrice(total)} × 1 {en ? "night" : "natë"}</span>
-                      <span>{formatPrice(total)}</span>
+                  {/* Price × days, the arithmetic behind the total: every stay, and any
+                      other booking the customer stretched over more than one day. */}
+                  {(isStay || days > 1) && (
+                    <div className="bg-neutral-50 rounded-xl p-4 space-y-3">
+                      <p className="font-bold text-[14px] mb-2">{en ? "Summary" : "Përmbledhje"}</p>
+                      {bookedHasPrices ? (
+                        <div className="flex justify-between text-[13px] text-neutral-600">
+                          <span>
+                            {formatPrice(bookedPerDay)} × {formatBookingDays(days, isStay ? "stay" : "service", language)}
+                          </span>
+                          <span className="font-bold text-neutral-900">{formatPrice(bookedPerDay * days)}</span>
+                        </div>
+                      ) : (
+                        <div className="flex justify-between text-[13px] text-neutral-600">
+                          <span>{isStay ? (en ? "Nights" : "Netë") : en ? "Days" : "Ditë"}</span>
+                          <span>{days}</span>
+                        </div>
+                      )}
+                      {isStay && (
+                        <div className="flex justify-between text-[13px] text-neutral-600">
+                          <span>{en ? "Persons" : "Persona"}</span>
+                          <span>{persons}</span>
+                        </div>
+                      )}
                     </div>
-                    <div className="flex justify-between text-[13px] text-neutral-600">
-                      <span>{en ? "Persons" : "Persona"}</span>
-                      <span>{persons}</span>
-                    </div>
-                  </div>
+                  )}
                 </div>
               )}
 
@@ -603,6 +679,27 @@ export default function ListingCart({
                             className="w-full border border-neutral-200 rounded-xl px-3 py-3 text-[14px] outline-none focus:border-red-500"
                           />
                         </div>
+                      </div>
+                      <div>
+                        <label className="flex items-center gap-2 text-[13px] font-bold mb-2 text-neutral-700">
+                          <Calendar className="w-4 h-4" /> {en ? "Until (optional, for several days)" : "Deri më (opsionale, për disa ditë)"}
+                        </label>
+                        <input
+                          type="date"
+                          value={checkOut}
+                          min={checkIn || undefined}
+                          onChange={(e) => setCheckOut(e.target.value)}
+                          className={`w-full border rounded-xl px-3 py-3 text-[14px] outline-none focus:border-red-500 ${rangeInvalid ? "border-red-400" : "border-neutral-200"}`}
+                        />
+                        {rangeInvalid ? (
+                          <p className="mt-1.5 text-[12px] font-medium text-red-600">
+                            {en ? "The end date must be after the start date." : "Data e mbarimit duhet të jetë pas datës së fillimit."}
+                          </p>
+                        ) : days > 1 && bookedHasPrices ? (
+                          <p className="mt-1.5 text-[12px] font-semibold" style={{ color: "var(--text-secondary)" }}>
+                            {formatPrice(bookedPerDay)} × {formatBookingDays(days, "service", language)} = {formatPrice(bookedPerDay * days)}
+                          </p>
+                        ) : null}
                       </div>
                     </div>
                   )}

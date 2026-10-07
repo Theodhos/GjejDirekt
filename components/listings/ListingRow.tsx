@@ -54,12 +54,13 @@ export default function ListingRow({
   const price = startingPrice(listing);
   const hasHours = Boolean(parseHours(listing.businessHours));
 
-  // "Porosit" for a business that takes orders, "Rezervo" for one that books — straight into
-  // its Katalogu when it has one, otherwise its page (where the Rezervo button lives).
+  // "Porosit" for a business that takes orders, "Rezervo" for one that books — both open the
+  // business page, which lands on its offer tab when it has a catalog (the Rezervo button
+  // lives there otherwise).
   const actions = getListingActions(listing);
   const orders = actions.includes("porosi");
   const action = orders ? "porosi" : actions.includes("rezervim") ? "rezervim" : null;
-  const actionHref = listing.menuItems?.length ? `/listings/${listing.slug}/katalogu` : `/listings/${listing.slug}`;
+  const actionHref = `/listings/${listing.slug}`;
 
   return (
     <div

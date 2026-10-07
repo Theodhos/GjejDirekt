@@ -5,7 +5,7 @@ import { Calendar, Clock, Minus, Plus, MessageCircle, Lock, Users, X } from "luc
 import toast from "react-hot-toast";
 import { useLanguage } from "@/context/LanguageContext";
 import { recordOrderContact } from "@/lib/order-history";
-import { buildReservationWhatsappHref } from "@/lib/reservations";
+import { buildReservationWhatsappHref, countBookingDays, formatBookingDays, isDateRange } from "@/lib/reservations";
 
 /**
  * Standalone "Rezervo" entry point for businesses that take bookings but have
@@ -40,14 +40,21 @@ export default function ListingReservationModal({
   const [submitting, setSubmitting] = useState(false);
 
   const [date, setDate] = useState("");
+  // Optional last day — a booking that runs "from this date to that date" (a rental,
+  // a multi-day hire) is then counted in days, the number the business prices by.
+  const [endDate, setEndDate] = useState("");
   const [time, setTime] = useState("");
   const [partySize, setPartySize] = useState(1);
   const [notes, setNotes] = useState("");
   const [customerName, setCustomerName] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
 
+  const rangeInvalid = Boolean(date && endDate) && !isDateRange(date, endDate);
+  const days = rangeInvalid ? 1 : countBookingDays(date, endDate);
+
   const reset = () => {
     setDate("");
+    setEndDate("");
     setTime("");
     setPartySize(1);
     setNotes("");
@@ -58,6 +65,10 @@ export default function ListingReservationModal({
   const handleSubmit = async () => {
     if (!date || !customerName.trim() || !customerPhone.trim()) {
       toast.error(en ? "Please fill in the required fields." : "Plotësoni fushat e detyrueshme.");
+      return;
+    }
+    if (rangeInvalid) {
+      toast.error(en ? "The end date must be after the start date." : "Data e mbarimit duhet të jetë pas datës së fillimit.");
       return;
     }
 
@@ -71,6 +82,7 @@ export default function ListingReservationModal({
           customerName: customerName.trim(),
           customerPhone: customerPhone.trim(),
           date,
+          endDate: endDate || undefined,
           time: time || undefined,
           partySize,
           notes: notes.trim() || undefined
@@ -95,6 +107,7 @@ export default function ListingReservationModal({
           customerName: customerName.trim(),
           customerPhone: customerPhone.trim(),
           date,
+          endDate: endDate || undefined,
           time: time || undefined,
           partySize,
           notes: notes.trim() || undefined
@@ -176,6 +189,29 @@ export default function ListingReservationModal({
                   />
                 </label>
               </div>
+
+              <label className="block text-[13px] font-bold text-neutral-700">
+                <span className="mb-2 flex items-center gap-2">
+                  <Calendar className="w-4 h-4" />
+                  {en ? "Until (optional, for several days)" : "Deri më (opsionale, për disa ditë)"}
+                </span>
+                <input
+                  type="date"
+                  value={endDate}
+                  min={date || undefined}
+                  onChange={(e) => setEndDate(e.target.value)}
+                  className={`w-full rounded-xl border px-3 py-2.5 text-[14px] outline-none focus:border-red-500 ${rangeInvalid ? "border-red-400" : "border-neutral-200"}`}
+                />
+                {rangeInvalid ? (
+                  <span className="mt-1.5 block text-[12px] font-medium text-red-600">
+                    {en ? "The end date must be after the start date." : "Data e mbarimit duhet të jetë pas datës së fillimit."}
+                  </span>
+                ) : days > 1 ? (
+                  <span className="mt-1.5 block text-[12px] font-semibold" style={{ color: "var(--text-secondary)" }}>
+                    {formatBookingDays(days, "service", en ? "en" : "al")}
+                  </span>
+                ) : null}
+              </label>
 
               <div>
                 <p className="mb-2 flex items-center gap-2 text-[13px] font-bold text-neutral-700">

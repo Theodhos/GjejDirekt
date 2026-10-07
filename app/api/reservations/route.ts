@@ -9,6 +9,8 @@ import Listing from "@/models/Listing";
 import Product from "@/models/Product";
 import { getListingActions } from "@/lib/constants";
 import { isObjectId } from "@/lib/utils";
+import { countBookingDays, isDateRange } from "@/lib/reservations";
+import { formatPrice } from "@/lib/pricing";
 
 /**
  * GET /api/reservations
@@ -98,7 +100,17 @@ export async function POST(request: Request) {
       }
     }
 
-    const endDateValue = body.endDate ? new Date(body.endDate) : undefined;
+    const endDateRaw = body.endDate ? new Date(body.endDate) : undefined;
+    const endDateValue = endDateRaw && !Number.isNaN(endDateRaw.getTime()) ? endDateRaw : undefined;
+    if (endDateValue && !isDateRange(dateValue, endDateValue)) {
+      return NextResponse.json({ error: "Data e mbarimit duhet të jetë pas datës së fillimit." }, { status: 400 });
+    }
+    // Days are recomputed from the dates rather than trusted from the client, so the
+    // record can never say "3 ditë" over a two-day range; the total is the cart's
+    // per-day price × those days, as the customer saw it before sending.
+    const days = countBookingDays(dateValue, endDateValue);
+    const totalValue = Number(body.total);
+    const total = Number.isFinite(totalValue) && totalValue >= 0 ? Math.round(totalValue) : undefined;
     const partySize = Number(body.partySize);
 
     const reservation = await Reservation.create({
@@ -109,7 +121,9 @@ export async function POST(request: Request) {
       customerName,
       customerPhone,
       date: dateValue,
-      endDate: endDateValue && !Number.isNaN(endDateValue.getTime()) ? endDateValue : undefined,
+      endDate: endDateValue,
+      days,
+      total,
       time: body.time ? String(body.time).trim() : undefined,
       partySize: Number.isFinite(partySize) && partySize > 0 ? partySize : undefined,
       notes: body.notes ? String(body.notes).trim() : undefined
@@ -129,13 +143,20 @@ export async function POST(request: Request) {
     // Same ping as for an order: the owner sees the booking in the header bell and
     // the dashboard the moment the customer's WhatsApp message is sent.
     if (listing.owner) {
+      const formatDay = (value: Date) => value.toLocaleDateString("sq-AL", { day: "numeric", month: "short", year: "numeric" });
       const when = [
-        dateValue.toLocaleDateString("sq-AL", { day: "numeric", month: "short", year: "numeric" }),
+        endDateValue ? `${formatDay(dateValue)} → ${formatDay(endDateValue)} (${days} ditë)` : formatDay(dateValue),
         body.time ? String(body.time).trim() : undefined
       ]
         .filter(Boolean)
         .join(" ");
-      const details = [itemName, when, Number.isFinite(partySize) && partySize > 0 ? `${partySize} persona` : undefined, customerPhone]
+      const details = [
+        itemName,
+        when,
+        Number.isFinite(partySize) && partySize > 0 ? `${partySize} persona` : undefined,
+        typeof total === "number" ? formatPrice(total) : undefined,
+        customerPhone
+      ]
         .filter(Boolean)
         .join(" · ");
       await createNotification({

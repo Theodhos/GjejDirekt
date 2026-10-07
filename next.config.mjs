@@ -6,6 +6,11 @@ const nextConfig = {
   experimental: {
     optimizePackageImports: ["lucide-react"]
   },
+  // The per-business "Katalogu" page was removed (2026-10-07) — the business page's own
+  // offer tab is the catalog. Links already shared or indexed keep working.
+  async redirects() {
+    return [{ source: "/listings/:slug/katalogu", destination: "/listings/:slug", permanent: true }];
+  },
   images: {
     // Hosts allowed through the image optimizer. When adding one here, add it to
     // OPTIMIZED_HOSTS in lib/images.ts as well — <SafeImage> uses that list to decide

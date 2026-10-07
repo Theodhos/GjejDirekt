@@ -8,7 +8,7 @@ import { safeJson } from "@/lib/utils";
 
 /**
  * Shared data for every page built around one listing (the business page itself and
- * its Katalogu page): the listing, its catalog, and the basket/reservation wiring
+ * any sub-page of it): the listing, its catalog, and the basket/reservation wiring
  * that decides what renders at the bottom of the page. Kept in one place so the two
  * pages can never disagree about what counts as "has a catalog" or "books instead
  * of orders".

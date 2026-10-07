@@ -191,9 +191,9 @@ export default function ChatWidget() {
   );
   if (onListingForm) return null;
 
-  // A business page (and its Katalogu) on a phone: the bubble would cover the "+ Shto" /
+  // A business page on a phone: the bubble would cover the "+ Shto" /
   // "Rezervo" buttons along the right edge, so it only shows from `sm` up there.
-  const onBusinessPage = Boolean(pathname && /^\/listings\/[^/]+(\/katalogu)?\/?$/.test(pathname));
+  const onBusinessPage = Boolean(pathname && /^\/listings\/[^/]+\/?$/.test(pathname));
   // The results directory keeps its Porosit/Rezervo buttons on the right edge of every row,
   // so on a phone the bubble moves to the left corner there.
   const onDirectory = pathname === "/listings";

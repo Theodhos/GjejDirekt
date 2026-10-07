@@ -1,7 +1,6 @@
 "use client";
 
 import { useRef, useState } from "react";
-import Link from "next/link";
 import {
   BadgeCheck,
   Clock,
@@ -10,7 +9,6 @@ import {
   ImageIcon,
   Info,
   Instagram,
-  LayoutGrid,
   MapPin,
   MessageCircle,
   Navigation,
@@ -142,20 +140,15 @@ export default function BusinessPage({
   }
 
   // The offer tab exists once a catalog business has put something in it; the others (a dentist,
-  // a hairdresser...) keep the reservation button instead and open on Përmbledhje. "Katalogu" is
-  // the same full catalog as its own page (search + section pills + grid) — one design for every
-  // category — so it only makes sense wherever the offer tab does.
+  // a hairdresser...) keep the reservation button instead and open on Përmbledhje.
   const hasOffer = hasCatalog && products.length > 0;
   // The owner needs the Menu/Dhomat/Produktet/Shërbimet tab even with nothing in it
   // yet — it's where "+ Shto" lives — so it doesn't stay hidden behind the very
-  // items it's meant to let them add. The public "Katalogu" page still only makes
-  // sense once there is something to browse.
+  // items it's meant to let them add.
   const showMenuTab = canEdit ? hasCatalog : hasOffer;
-  type NavTab = { key: TabKey; label: string; icon: LucideIcon; href?: undefined } | { key: "katalogu"; label: string; icon: LucideIcon; href: string };
-  const tabs: NavTab[] = [
+  const tabs: { key: TabKey; label: string; icon: LucideIcon }[] = [
     { key: "overview", label: en ? "Overview" : "Përmbledhje", icon: ClipboardList },
     ...(showMenuTab ? [{ key: "menu" as const, label: offer.tab[en ? "en" : "sq"], icon: OfferIcon }] : []),
-    ...(hasOffer ? [{ key: "katalogu" as const, label: en ? "Catalog" : "Katalogu", icon: LayoutGrid, href: `/listings/${listing.slug}/katalogu` }] : []),
     { key: "reviews", label: en ? "Reviews" : "Vlerësime", icon: Star },
     { key: "photos", label: en ? "Photos" : "Foto", icon: ImageIcon },
     { key: "info", label: "Info", icon: Info }
@@ -316,23 +309,6 @@ export default function BusinessPage({
         >
           {tabs.map((item) => {
             const Icon = item.icon;
-            if (item.href) {
-              return (
-                <Link
-                  key={item.key}
-                  href={item.href}
-                  role="tab"
-                  aria-selected={false}
-                  className="relative flex h-[62px] flex-none flex-col items-center justify-center gap-1 px-3.5 transition-colors sm:min-w-0 sm:flex-1 sm:px-0.5"
-                  style={{ color: "var(--text-secondary)" }}
-                >
-                  <Icon className="h-[22px] w-[22px]" strokeWidth={1.7} />
-                  <span className="max-w-full whitespace-nowrap text-[11px] sm:truncate sm:text-[12.5px]" style={{ fontWeight: 500 }}>
-                    {item.label}
-                  </span>
-                </Link>
-              );
-            }
             const active = tab === item.key;
             return (
               <button
@@ -340,7 +316,7 @@ export default function BusinessPage({
                 type="button"
                 role="tab"
                 aria-selected={active}
-                onClick={() => selectTab(item.key as TabKey)}
+                onClick={() => selectTab(item.key)}
                 className="relative flex h-[62px] flex-none flex-col items-center justify-center gap-1 px-3.5 transition-colors sm:min-w-0 sm:flex-1 sm:px-0.5"
                 style={{ color: active ? "var(--brand-accent)" : "var(--text-secondary)" }}
               >

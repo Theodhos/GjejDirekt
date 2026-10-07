@@ -4,6 +4,8 @@ import { ArrowLeft, CalendarCheck } from "lucide-react";
 import { getAuthUser } from "@/lib/auth";
 import { connectDB } from "@/lib/db";
 import Reservation from "@/models/Reservation";
+import { countBookingDays } from "@/lib/reservations";
+import { formatPrice } from "@/lib/pricing";
 
 export const dynamic = "force-dynamic";
 
@@ -43,6 +45,8 @@ export default async function AdminReservationsPage() {
                 <th className="px-6 py-4 text-left text-[10px] font-black uppercase tracking-widest text-slate-400">Customer</th>
                 <th className="px-6 py-4 text-left text-[10px] font-black uppercase tracking-widest text-slate-400">Item</th>
                 <th className="px-6 py-4 text-left text-[10px] font-black uppercase tracking-widest text-slate-400">Date</th>
+                <th className="px-6 py-4 text-left text-[10px] font-black uppercase tracking-widest text-slate-400">Days</th>
+                <th className="px-6 py-4 text-left text-[10px] font-black uppercase tracking-widest text-slate-400">Total</th>
                 <th className="px-6 py-4 text-left text-[10px] font-black uppercase tracking-widest text-slate-400">Status</th>
                 <th className="px-6 py-4 text-left text-[10px] font-black uppercase tracking-widest text-slate-400">Placed</th>
               </tr>
@@ -70,6 +74,12 @@ export default async function AdminReservationsPage() {
                       {reservation.time ? ` · ${reservation.time}` : ""}
                       {reservation.endDate ? ` → ${new Date(reservation.endDate).toLocaleDateString()}` : ""}
                     </td>
+                    <td className="px-6 py-4 text-sm text-slate-600">
+                      {reservation.days ?? countBookingDays(reservation.date, reservation.endDate)}
+                    </td>
+                    <td className="px-6 py-4 text-sm font-bold text-slate-900">
+                      {typeof reservation.total === "number" ? formatPrice(reservation.total) : "—"}
+                    </td>
                     <td className="px-6 py-4">
                       <span
                         className={`inline-flex items-center rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-widest ${
@@ -88,7 +98,7 @@ export default async function AdminReservationsPage() {
                 ))
               ) : (
                 <tr>
-                  <td colSpan={6} className="px-6 py-12 text-center">
+                  <td colSpan={8} className="px-6 py-12 text-center">
                     <p className="text-sm font-bold text-slate-500">No reservations yet.</p>
                   </td>
                 </tr>

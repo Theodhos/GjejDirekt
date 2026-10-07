@@ -33,14 +33,14 @@ export default function ItemResultCard({
   const offerKind = getOfferKind(listing);
   const booked = getProductAction({ action: item.a }, offerKind) === "rezervim";
   const perNight = offerKind === "rooms";
-  const href = `/listings/${listing.slug}/katalogu?q=${encodeURIComponent(item.n)}`;
+  const href = `/listings/${listing.slug}`;
 
   return (
     <div
       className="group relative flex items-stretch gap-3.5 border-b px-4 py-3.5 transition-colors active:bg-neutral-50 lg:rounded-2xl lg:border lg:bg-white lg:p-3 lg:hover:shadow-[var(--shadow-hover)]"
       style={{ borderColor: "var(--border-soft)" }}
     >
-      {/* The whole card opens the item in the catalog; the heart and the button sit above this overlay. */}
+      {/* The whole card opens the business page (on its offer tab); the heart and the button sit above this overlay. */}
       <Link href={href} aria-label={`${item.n} – ${listing.title}`} className="absolute inset-0 z-0 rounded-2xl" />
 
       <div

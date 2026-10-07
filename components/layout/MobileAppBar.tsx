@@ -5,21 +5,8 @@ import { useRouter } from "next/navigation";
 import { ArrowLeft, Heart, Search, Share2 } from "lucide-react";
 import toast from "react-hot-toast";
 import Logo from "@/components/layout/Logo";
-import SafeImage from "@/components/ui/SafeImage";
-import OpenStatusLine from "@/components/listings/OpenStatusLine";
 import { useLanguage } from "@/context/LanguageContext";
 import useFavoriteToggle from "@/hooks/useFavoriteToggle";
-
-type CatalogListing = {
-  _id: string;
-  title: string;
-  description?: string;
-  logo?: string;
-  images?: string[];
-  photos?: string[];
-  bannerImage?: string;
-  businessHours?: string;
-};
 
 /**
  * The phone app bar the directory and business screens are designed around. Below
@@ -27,8 +14,6 @@ type CatalogListing = {
  * up); from `lg` up the regular site header is used and this bar disappears.
  *
  * "results": back arrow + logo. "listing": logo on the left, search / share /
- * heart on the right. "catalog": back arrow + the business's own logo, name and
- * open status (a sub-page of one business, e.g. its Katalogu), search / share /
  * heart on the right.
  */
 export default function MobileAppBar(
@@ -37,14 +22,6 @@ export default function MobileAppBar(
     | {
         variant: "listing";
         listing: { _id: string; title: string; description?: string };
-        /** Where the search icon leads. */
-        searchHref?: string;
-      }
-    | {
-        variant: "catalog";
-        listing: CatalogListing;
-        /** Where "back" goes when the page was opened directly. */
-        backHref?: string;
         /** Where the search icon leads. */
         searchHref?: string;
       }
@@ -74,40 +51,11 @@ export default function MobileAppBar(
             <Logo className="text-[20px]" />
           </Link>
         </div>
-      ) : props.variant === "listing" ? (
+      ) : (
         <>
           <Link href="/" aria-label="GjejDirekt" className="flex items-center">
             <Logo className="text-[20px]" />
           </Link>
-          <ListingActions listing={props.listing} searchHref={props.searchHref || "/listings"} />
-        </>
-      ) : (
-        <>
-          <div className="flex min-w-0 flex-1 items-center gap-2">
-            <button
-              type="button"
-              onClick={() => (window.history.length > 1 ? router.back() : router.push(props.backHref || "/"))}
-              className="flex h-9 min-h-0 w-9 shrink-0 items-center justify-center rounded-full transition-colors active:bg-neutral-100"
-              aria-label={en ? "Back" : "Kthehu"}
-            >
-              <ArrowLeft className="h-[22px] w-[22px]" style={{ color: "var(--text-primary)" }} />
-            </button>
-            <div className="relative h-8 w-8 shrink-0 overflow-hidden rounded-full" style={{ background: "#16181D" }}>
-              <SafeImage
-                src={props.listing.logo || props.listing.images?.[0] || props.listing.photos?.[0] || props.listing.bannerImage}
-                alt={props.listing.title}
-                fill
-                sizes="32px"
-                className="object-cover"
-              />
-            </div>
-            <div className="min-w-0">
-              <p className="truncate text-[13.5px] font-bold leading-tight" style={{ color: "var(--text-primary)" }}>
-                {props.listing.title}
-              </p>
-              <OpenStatusLine hours={props.listing.businessHours} variant="row" />
-            </div>
-          </div>
           <ListingActions listing={props.listing} searchHref={props.searchHref || "/listings"} />
         </>
       )}

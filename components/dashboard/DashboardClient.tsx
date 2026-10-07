@@ -9,6 +9,7 @@ import UserListingTable from "@/components/dashboard/UserListingTable";
 import NotificationsPanel from "@/components/dashboard/NotificationsPanel";
 import EmptyState from "@/components/ui/EmptyState";
 import { getCategoryLabel } from "@/lib/constants";
+import { formatPrice } from "@/lib/pricing";
 import { useLanguage } from "@/context/LanguageContext";
 
 type DashboardClientProps = {
@@ -440,6 +441,15 @@ function ClientPanels({
                         )}
                         <p className="text-[11px]" style={{ color: "var(--text-tertiary)" }}>
                           {formatDate(item.createdAt)}
+                          {isReservation && item.date && (
+                            <>
+                              {" · "}
+                              {formatDate(item.date)}
+                              {item.endDate ? ` → ${formatDate(item.endDate)}` : ""}
+                              {item.days > 1 ? ` (${item.days} ${en ? "days" : "ditë"})` : ""}
+                            </>
+                          )}
+                          {typeof item.total === "number" && item.total > 0 ? ` · ${formatPrice(item.total)}` : ""}
                         </p>
                       </div>
                     </li>

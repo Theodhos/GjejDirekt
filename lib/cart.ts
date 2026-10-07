@@ -1,5 +1,6 @@
 import { formatPrice } from "@/lib/pricing";
 import { PLATFORM_WHATSAPP_NUMBER } from "@/lib/constants";
+import { countBookingDays, formatBookingDays, isDateRange } from "@/lib/reservations";
 
 /**
  * The food-ordering cart, scoped per business.
@@ -121,6 +122,8 @@ export type OrderDetails = {
   persons?: number;
   /** Service bookings: the day and, optionally, the time of the appointment. */
   date?: string;
+  /** Service bookings that run for several days (a rental): the last day. Prices are then per day. */
+  endDate?: string;
   time?: string;
   /** Who's ordering/booking — this is what the business needs, not their own name. */
   customerName?: string;
@@ -141,6 +144,29 @@ export type OrderDetails = {
 const SEPARATOR = "━".repeat(20);
 
 /**
+ * How many days the booked lines of a basket are charged for. A stay is priced per
+ * night (check-in → check-out); a service booked "from this date to that date" (a
+ * rental car for a week) is priced per day. A single-day booking, or one with no
+ * end date, counts once.
+ */
+export function bookingDayCount(details: Pick<OrderDetails, "bookingKind" | "checkIn" | "checkOut" | "date" | "endDate">): number {
+  if (details.bookingKind === "stay") return countBookingDays(details.checkIn, details.checkOut);
+  return isDateRange(details.date, details.endDate) ? countBookingDays(details.date, details.endDate) : 1;
+}
+
+/**
+ * The basket's total as the customer will pay it: ordered lines once, booked lines
+ * multiplied by the number of days (nights) the booking covers. Null when any line
+ * has no price — a total that leaves lines out would read as the whole price.
+ */
+export function orderTotal(items: CartItem[], details: OrderDetails = {}): number | null {
+  if (!items.length || !items.every((item) => typeof item.price === "number")) return null;
+  const booked = details.isHotel ? items : items.filter((item) => item.action === "rezervim");
+  const ordered = details.isHotel ? [] : items.filter((item) => item.action !== "rezervim");
+  return cartTotal(ordered) + cartTotal(booked) * bookingDayCount(details);
+}
+
+/**
  * Builds the order text sent to the business's WhatsApp — a plain, receipt-style
  * recap addressed to the business, so it leads with who is ordering and where
  * to deliver (not the business's own name back at itself), then the items,
@@ -153,10 +179,10 @@ export function buildOrderMessage(
   details: OrderDetails = {}
 ) {
   const en = language === "en";
-  const hasAllPrices = items.every((item) => typeof item.price === "number");
-  const total = hasAllPrices ? cartTotal(items) : null;
+  const total = orderTotal(items, details);
   const isService = Boolean(details.isHotel) && details.bookingKind === "service";
-  const nightSuffix = details.isHotel && !isService ? (en ? "/night" : "/natë") : "";
+  const days = bookingDayCount(details);
+  const nightSuffix = details.isHotel && !isService ? (en ? "/night" : "/natë") : days > 1 ? (en ? "/day" : "/ditë") : "";
   const isFood = details.isFood ?? true;
 
   const parts = [SEPARATOR];
@@ -194,10 +220,22 @@ export function buildOrderMessage(
     if (isStay) {
       if (details.checkIn) parts.push(`• ${en ? "Check-in" : "Check-in"}: ${details.checkIn}`);
       if (details.checkOut) parts.push(`• ${en ? "Check-out" : "Check-out"}: ${details.checkOut}`);
+      if (details.checkIn && details.checkOut) parts.push(`• ${en ? "Nights" : "Netë"}: ${days}`);
       if (details.persons) parts.push(`• ${en ? "Guests" : "Persona"}: ${details.persons}`);
+    } else if (days > 1) {
+      parts.push(`• ${en ? "From" : "Nga"}: ${details.date}`);
+      parts.push(`• ${en ? "To" : "Deri më"}: ${details.endDate}`);
+      parts.push(`• ${en ? "Days" : "Ditë"}: ${days}`);
+      if (details.time) parts.push(`• ${en ? "Time" : "Ora"}: ${details.time}`);
     } else {
       if (details.date) parts.push(`• ${en ? "Date" : "Data"}: ${details.date}`);
       if (details.time) parts.push(`• ${en ? "Time" : "Ora"}: ${details.time}`);
+    }
+    // The per-day price times the days, spelled out so the business and the customer
+    // read the same arithmetic the TOTAL line below comes from.
+    if ((isStay || days > 1) && booked.every((item) => typeof item.price === "number")) {
+      const perDay = cartTotal(booked);
+      parts.push(`• ${formatPrice(perDay)} × ${formatBookingDays(days, isStay ? "stay" : "service", language)} = ${formatPrice(perDay * days)}`);
     }
   }
 
